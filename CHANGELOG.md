@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.1.0]
+
+### Added
+- The camera settings panel now contains actual input fields.
+- Activated layers and geometries now appear as counters in the sidebar.
+- The search input can now be navigated via arrows.
+- Added the Rheintal voxel layer.
+
+### Changed
+- Configurations that are relevant to the UI are now exposed via API endpoint.
+- The sidebar and header have been redesigned.
+- The data catalog panel has been redesigned.
+- The disclaimer has been redesigned and adjusted to align with other swissgeol applications.
+
+### Fixed
+- The maximum zoom level is now restricted again.
+- The order of layers now stays consistent on reload.
+- Editing of geometries no longer freezes after moving the map anchors.
+- Slicing box arrows no longer disappear when exaggerating.
+- The select input for adding members to projects now works as intended.
+- Geometry copies are now fully independent of their original.
+
 ## [1.0.0]
 
 ### Added
