@@ -1,67 +1,65 @@
-# Swissgeol viewer
+# swissgeol-viewer - 3D sub-surface viewer of Switzerland
 
+![Sliced 3D scene](ui/public/images/readme.png)
 
-## A Geology 3D viewer
+## Description
 
-Swissgeol is the new geology 3D viewer of [Swisstopo](https://swisstopo.ch), available at https://viewer.swissgeol.ch and developed by [Camptocamp](https://www.camptocamp.com/).
-It is Open Source and based on the Open Source CesiumJS 3D library.
+With viewer.swissgeol.ch you can get an overview of available geological data and their location below the earth’s surface. Existing data can be combined or supplemented with your own data.
 
-You are welcome to use and adapt this software for your own uses; see [LICENSE](./LICENSE). If you want to get started off rapidly, Camptocamp offers [support and expertise](https://www.camptocamp.com/geospatial_solutions) to meet your needs rapidly.
+With the swissgeol viewer you  can ...  
+... get an overview of existing data in the sub-surface of Switzerland  
+... combine data from above and below ground  
+... slice the 3D-scene and get an idea of Switzerland sub-surface  
+... add your own data  
+... and much more.
 
+## Installation
 
-## Your own version: getting started
+Follow the steps below to run the 3D sub-surface viewer in your local development environment.
 
-Clone the repository
+### Prerequisites
+
+- [node.js](https://nodejs.org/en)
+- [Rust](https://www.rust-lang.org/)
+- [Docker](https://www.docker.com/)
+
+> Note that the development environment is fully dockerized.
+> However, we recommend installing every programming language to optimize your experience.
+
+### Set Up the Development Environment
+Follow these steps to set up the development environment on your local machine:
+
+#### 1. Install API Dependencies
+Navigate to the API directory and download its dependencies:
 ```bash
-git clone https://github.com/swissgeol/ngm.git
+cd api && cargo fetch
 ```
 
-### Linux and Mac OS X
+#### 2. Install UI Dependencies
+Configure a `GITHUB_TOKEN` as described [here](https://github.com/swisstopo/swissgeol-ui-core/blob/develop/README.md#getting-started)
+so you can install the `@swisstopo/swissgeol-ui-core` library.
 
-> **Install** *node.js and npm*  
-> See instructions at [https://nodejs.org/en/download/package-manager](https://nodejs.org/en/download/package-manager)  
-
-#### Start frontend
-
-From the root directory change to the ```ui```-dirrectory
+Afterward, you can install the UI's dependencies:
 ```bash
-cd ui
-```
-Install dependencies
-```bash
-npm install
-```
-start development server
-```bash
-npm start
+cd ui && npm install
 ```
 
-open http://localhost:8000
-
-#### Start backend api
-
-> **Install** *Docker*  
-> See instructions at [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)  
-
-> **Install** *rust and cargo*  
-> See instructions at [https://doc.rust-lang.org/cargo/getting-started/installation.html](https://doc.rust-lang.org/cargo/getting-started/installation.html)
-
-Start the api and application
+### Start Development Environment
+Start the application's Docker containers:
 ```bash
-make run
+docker compose up
 ```
+This will automatically install all dockerized dependencies and also initialize the database.
 
-open http://localhost:8000
+## Usage
+The viewer's API and UI are available as Docker images:
 
+- [`ghcr.io/swisstopo/swissgeol-viewer-api`](https://github.com/swisstopo/swissgeol-viewer-suite/pkgs/container/swissgeol-viewer-api)
+- [`ghcr.io/swisstopo/swissgeol-viewer-ui`](https://github.com/swisstopo/swissgeol-viewer-suite/pkgs/container/swissgeol-viewer-ui)
 
-## Developing/deploying the Swisstopo version
+A full deployment for [Kubernetes](https://kubernetes.io/) is available as [Helm](https://helm.sh/) charts in [k8s/](./k8s/).
 
-See [DEVELOPING.md](./DEVELOPING.md).
-See [DEPLOY_VIEWER.md](./DEPLOY_VIEWER.md).
-See [DEPLOY_ABBREVIATOR.md](./DEPLOY_ABBREVIATOR.md).
-
-
-## URL Parameters
+### URL Parameters
 
 A few URL parameters will modify the behavior of the viewer:
 
@@ -81,6 +79,21 @@ A few URL parameters will modify the behavior of the viewer:
 - `light` a white light source from infinity (ex: 1-2-0-1000 will have direction (1, 2, 0) and intensity 1000)
 - `cesiumToolbar` display configuration panel for fog, ambient, background color and terrain underground color
 
-## Notes
 
-Keyboard layout made with [keyboard-layout-editor](http://www.keyboard-layout-editor.com/) and [json to import](https://jira.camptocamp.com/secure/attachment/42145/keyboard-layout_upd.json)
+## Support
+
+- [swissgeol@swisstopo.ch](mailto:swissgeol@swisstopo.ch)
+
+## Authors & acknowledgements
+
+- [swisstopo](https://www.swisstopo.admin.ch/de)
+- [EBP Schweiz AG](https://www.ebp.global/ch-de)
+
+## License
+
+- [BSD 3-Clause](LICENSE)
+
+## Related projects
+
+- [assets.swissgeol.ch](https://assets.swissgeol.ch)
+- [boreholes.swissgeol.ch](https://boreholes.swissgeol.ch)
