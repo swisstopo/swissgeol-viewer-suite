@@ -9,4 +9,3 @@ export interface ClientConfig {
     cognito_aws_region: string;
   };
 }
-
