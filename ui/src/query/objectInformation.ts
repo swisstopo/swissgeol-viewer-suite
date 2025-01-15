@@ -32,14 +32,21 @@ export function extractVoxelAttributes(
   const layer = primitive.layer;
   const attributes: [string, number][] = propertyNames.map((name) => {
     const value = voxelCell.getProperty(name);
+    if (name === 'Temp_C') {
+      return [i18next.t('vox_temperature'), value];
+    }
     if (layer && voxelLayerToFilter[layer]) {
       const filters = voxelLayerToFilter[layer];
       if (name === filters.lithologyDataName) {
         const label = filters.lithology.find(
-          (f) => f.index === value[0],
+          (f) => f.value === value[0],
         )?.label;
+        const title =
+          name === 'Klasse'
+            ? i18next.t('vox_filter_klasse')
+            : i18next.t('vox_filter_lithology');
         return [
-          i18next.t('vox_filter_lithology'),
+          title,
           label
             ? i18next.t(label)
             : i18next.t('vox_filter_undefined_lithology'),
@@ -55,9 +62,6 @@ export function extractVoxelAttributes(
           valueOrUndefined,
         ];
       }
-    }
-    if (name === 'Temp_C') {
-      return [i18next.t('vox_temperature'), value];
     }
     return [name, value];
   });
