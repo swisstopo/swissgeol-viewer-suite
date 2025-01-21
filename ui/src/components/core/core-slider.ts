@@ -1,6 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import './core-icon';
+import { styleMap } from 'lit/directives/style-map.js';
 
 @customElement('ngm-core-slider')
 export class CoreSlider extends LitElement {
@@ -20,9 +21,9 @@ export class CoreSlider extends LitElement {
   accessor value: number = 0;
 
   handleInputChange(event: InputEvent) {
-    this.value = parseInt((event.target as HTMLInputElement).value);
+    this.value = (event.target as HTMLInputElement).valueAsNumber;
     this.dispatchEvent(
-      new CustomEvent<SliderValueChangeEventDetail>('change', {
+      new CustomEvent<SliderChangeEventDetail>('change', {
         detail: {
           value: this.value,
         },
@@ -30,31 +31,50 @@ export class CoreSlider extends LitElement {
     );
   }
 
-  handlePointerUp() {
-    this.dispatchEvent(new CustomEvent('pointerup'));
+  handlePointerUp(e: Event) {
+    stopEvent(e);
+    this.dispatchEvent(new CustomEvent('done'));
   }
 
   readonly render = () => html`
     <input
       type="range"
       class="ngm-slider"
-      style="--value: ${this.value};"
-      .min=${this.min}
-      .max=${this.max}
-      .step=${this.step}
-      .value=${isNaN(this.value) ? 1 : this.value}
+      style="${styleMap({
+        '--value': this.value,
+        '--min': this.min,
+        '--max': this.max,
+      })}"
+      min=${this.min}
+      max=${this.max}
+      step=${this.step}
+      value=${isNaN(this.value) ? 1 : this.value}
       @input=${this.handleInputChange}
+      @pointerdown="${stopEvent}"
       @pointerup=${this.handlePointerUp}
+      @click="${stopEvent}"
+      @mousedown="${stopEvent}"
+      @mouseup="${stopEvent}"
+      @touchstart="${stopEvent}"
+      @touchend="${stopEvent}"
     />
   `;
 
   static readonly styles = css`
+    :host,
+    :host * {
+      box-sizing: border-box;
+    }
+
     :host {
       --slider-thumb-size: 24px;
+      --slider-thumb-border-size: 3px;
       --slider-track-height: 4px;
 
       display: flex;
+      align-items: center;
       width: 100%;
+      height: var(--slider-thumb-size);
     }
 
     input {
@@ -64,15 +84,18 @@ export class CoreSlider extends LitElement {
 
     input[type='range'] {
       appearance: none;
-      background-image: linear-gradient(
-        to right,
-        var(--color-primary--active),
-        var(--color-primary--active) calc(var(--value) * 5%),
-        var(--color-border--default) calc(var(--value) * 5%)
-      );
       cursor: pointer;
       width: 100%;
       margin: 0;
+
+      background-image: linear-gradient(
+        to right,
+        var(--color-primary--active),
+        var(--color-primary--active)
+          calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * 100%),
+        var(--color-border--default)
+          calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * 100%)
+      );
     }
 
     input[type='range']::-webkit-slider-runnable-track {
@@ -86,12 +109,13 @@ export class CoreSlider extends LitElement {
     }
 
     input[type='range']::-webkit-slider-thumb {
+      box-sizing: border-box;
       appearance: none;
       width: var(--slider-thumb-size);
       height: var(--slider-thumb-size);
       background: var(--color-bg--white) 0 0 no-repeat padding-box;
       box-shadow: 0 2px 2px #00000029;
-      border: 3px solid var(--color-primary);
+      border: var(--slider-thumb-border-size) solid var(--color-primary);
       border-radius: 50%;
       cursor: pointer;
       margin-top: calc(
@@ -100,19 +124,24 @@ export class CoreSlider extends LitElement {
     }
 
     input[type='range']::-moz-range-thumb {
+      box-sizing: border-box;
       width: var(--slider-thumb-size);
       height: var(--slider-thumb-size);
       background: var(--color-bg--white) 0 0 no-repeat padding-box;
       box-shadow: 0 2px 2px #00000029;
-      border: 3px solid var(--color-primary);
+      border: var(--slider-thumb-border-size) solid var(--color-primary);
       border-radius: 50%;
       cursor: pointer;
     }
   `;
 }
 
-export type SliderValueChangeEvent = CustomEvent<SliderValueChangeEventDetail>;
+export type SliderChangeEvent = CustomEvent<SliderChangeEventDetail>;
 
-export interface SliderValueChangeEventDetail {
+export interface SliderChangeEventDetail {
   value: number;
 }
+
+const stopEvent = (event: Event): void => {
+  event.stopPropagation();
+};

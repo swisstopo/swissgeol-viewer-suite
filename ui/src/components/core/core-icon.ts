@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { IconKey, icons } from '../../icons/icons';
+import { IconKey, icons } from 'src/icons/icons';
 
 @customElement('ngm-core-icon')
 export class CoreIcon extends LitElement {

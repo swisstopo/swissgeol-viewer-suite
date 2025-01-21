@@ -58,8 +58,8 @@
 
   --color-text--invert: #ffffff;
   --color-text--disabled: #828e9a;
-  --color-text--emphasis--medium: #2f4356;
-  --color-text--emphasis--high: #1c2834;
+  --color-text--emphasis-medium: #2f4356;
+  --color-text--emphasis-high: #1c2834;
   --color-text--link: #1d4ed8;
 
   --color-secondary: #ffffff;
@@ -71,8 +71,10 @@
   --color-tertiary--hovered: #dfe4e9;
 
   --color-border--default: #dfe4e9;
+  --color-border--emphasis-high: #acb4bd;
 
   --color-bg--white: #ffffff;
+  --color-bg--white--hovered: #f8fbfc;
   --color-bg--grey: #f1f3f5;
   --color-bg--disabled: #828e9a;
   --color-bg--error: #d8232a;

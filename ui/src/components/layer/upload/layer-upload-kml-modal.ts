@@ -1,9 +1,9 @@
 import { css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { applyTypography } from '../../../styles/theme';
+import { applyTypography } from 'src/styles/theme';
 import { KmlUploadEventDetail } from './layer-upload-kml';
 import i18next from 'i18next';
-import { LitElementI18n } from '../../../i18n';
+import { LitElementI18n } from 'src/i18n';
 
 @customElement('ngm-layer-upload-kml-modal')
 export class LayerUploadKmlModal extends LitElementI18n {
@@ -71,7 +71,7 @@ export class LayerUploadKmlModal extends LitElementI18n {
 
     h2 {
       ${applyTypography('modal-title-1')}
-      color: var(--color-text--emphasis--high);
+      color: var(--color-text--emphasis-high);
       margin: 0;
     }
 

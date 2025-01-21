@@ -1,18 +1,17 @@
 import { css, html, unsafeCSS } from 'lit';
 import i18next from 'i18next';
-import { SUPPORTED_LANGUAGES } from '../../constants';
+import { SUPPORTED_LANGUAGES } from 'src/constants';
 import { customElement } from 'lit/decorators.js';
-import { LitElementI18n } from '../../i18n';
+import { LitElementI18n } from 'src/i18n';
 import 'fomantic-ui-css/components/dropdown';
 import $ from 'jquery';
-import '../core/core-icon';
 import fomanticTransitionCss from 'fomantic-ui-css/components/transition.css?raw';
 import fomanticDropdownCss from 'fomantic-ui-css/components/dropdown.css?raw';
 import { applyTypography } from 'src/styles/theme';
 import { classMap } from 'lit/directives/class-map.js';
 
-@customElement('ngm-language-selector')
-export class NgmLanguageSelector extends LitElementI18n {
+@customElement('ngm-layout-language-selector')
+export class NgmLayoutLanguageSelector extends LitElementI18n {
   firstUpdated(): void {
     if (this.shadowRoot != null) {
       $(this.shadowRoot.querySelectorAll('.ui.dropdown')).dropdown({
@@ -72,7 +71,7 @@ export class NgmLanguageSelector extends LitElementI18n {
 
     .container:hover {
       background-color: var(--color-secondary--hovered);
-      color: var(--color-text--emphasis--medium);
+      color: var(--color-text--emphasis-medium);
     }
 
     .container.active ngm-core-icon[icon='dropdown'] {
