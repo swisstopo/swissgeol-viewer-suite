@@ -22,6 +22,19 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - name: "Select role"
+        env:
+          DEV_ROLE: ${{ secrets.VAULT_ROLE }}
+          INT_ROLE: ${{ secrets.VAULT_ROLE_INT }}
+          PROD_ROLE: ${{ secrets.VAULT_ROLE_PROD }}
+        run: |
+          case "$APP_ENV" in
+          dev) echo "VAULT_ROLE=$DEV_ROLE" >> $GITHUB_ENV ;;
+          int) echo "VAULT_ROLE=$INT_ROLE" >> $GITHUB_ENV ;;
+          prod) echo "VAULT_ROLE=$PROD_ROLE" >> $GITHUB_ENV ;;
+          *) echo "Invalid env"; exit 1 ;;
+          esac
+
       - name: "Load secrets"
         id: load-secrets
         uses: hashicorp/vault-action@v3
@@ -29,7 +42,7 @@ jobs:
           url: https://swisstopo-vault-public-vault-d680830d.382257a9.z1.hashicorp.cloud:8200
           caCertificate: ${{ secrets.VAULT_CA_CERT }}
           method: jwt
-          role: ${{ secrets.VAULT_ROLE }}
+          role: ${{ env.VAULT_ROLE }}
           namespace: admin/igi/igi-cloud/swisstopo-ngm
           secrets: |
             kv/data/${{ env.APP_ENV }}/k8s kubeconfig   | KUBECONFIG;
