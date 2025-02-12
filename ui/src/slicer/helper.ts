@@ -416,7 +416,7 @@ export function createCPCModelMatrixFromSphere(
   }
 
   const toLocalMatrix = Matrix4.inverse(
-    // @ts-ignore clippingPlanesOriginMatrix is private?
+    // @ts-expect-error clippingPlanesOriginMatrix is private?
     primitive.clippingPlanesOriginMatrix,
     new Matrix4(),
   );
