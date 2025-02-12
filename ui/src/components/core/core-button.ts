@@ -23,11 +23,22 @@ export class CoreButton extends LitElement {
   @property({ type: Boolean, attribute: 'active', reflect: true })
   accessor isActive: boolean = false;
 
+  @property({ type: Boolean, attribute: 'autofocus', reflect: true })
+  accessor hasAutoFocus: boolean = false;
+
   @property({ type: Boolean, attribute: 'transparent', reflect: true })
   accessor isTransparent: boolean = false;
 
+  firstUpdated(): void {
+    if (this.hasAutoFocus) {
+      setTimeout(() => {
+        this.shadowRoot!.querySelector('button')!.focus();
+      });
+    }
+  }
+
   readonly render = () => html`
-    <button ?disabled="${this.isDisabled}">
+    <button ?disabled="${this.isDisabled}" ?autofocus="${this.hasAutoFocus}">
       <slot></slot>
     </button>
   `;
@@ -62,7 +73,7 @@ export class CoreButton extends LitElement {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: var(-button-padding-v) var(--button-padding-h);
+      padding: var(--button-padding-v) var(--button-padding-h);
       border: 1px solid;
       border-radius: 4px;
       cursor: var(--button-cursor, pointer);

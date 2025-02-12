@@ -33,7 +33,9 @@ export class CoreModal extends LitElement {
 
     const close = () => {
       render(null, container);
-      document.body.removeChild(container);
+      if (container.parentElement != null) {
+        document.body.removeChild(container);
+      }
       if (props.onClose != null) {
         props.onClose();
       }
@@ -63,7 +65,11 @@ export class CoreModal extends LitElement {
     const handleCloseEvent = (event: Event) => {
       event.preventDefault();
       if (this.isPersistent) {
-        setTimeout(() => this.dialog?.showModal());
+        setTimeout(() => {
+          if (this.isConnected) {
+            this.dialog?.showModal();
+          }
+        });
       } else {
         this.close();
       }
@@ -71,7 +77,9 @@ export class CoreModal extends LitElement {
     this.dialog.addEventListener('cancel', handleCloseEvent);
     this.dialog.addEventListener('close', handleCloseEvent);
     this.closeDialog = this.dialog.close.bind(this.dialog);
-    this.dialog.close = () => { /* prevent closing */ };
+    this.dialog.close = () => {
+      /* prevent closing */
+    };
     this.dialog.showModal();
   }
 

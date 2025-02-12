@@ -74,6 +74,7 @@ import { BackgroundLayerService } from 'src/components/background/background-lay
 const SKIP_STEP2_TIMEOUT = 5000;
 
 const isLocalhost = document.location.hostname === 'localhost';
+const shouldShowDisclaimer = !isLocalhost;
 
 const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
   let sse = 2;
@@ -141,12 +142,12 @@ export class NgmApp extends LitElementI18n {
   constructor() {
     super();
 
-    if (process.env.NODE_ENV !== 'development') {
-      this.openDisclaimer();
-    }
-
     this.handleTrackingAllowedChanged =
       this.handleTrackingAllowedChanged.bind(this);
+
+    if (shouldShowDisclaimer) {
+      this.openDisclaimer();
+    }
 
     const boundingRect = document.body.getBoundingClientRect();
     this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
