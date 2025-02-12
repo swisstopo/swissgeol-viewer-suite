@@ -42,7 +42,7 @@ export class NgmTrackingConsentModal extends LitElementI18n {
         >
       </div>
       <div class="footer">
-        <ngm-core-button @click="${() => this.accept()}">
+        <ngm-core-button autofocus @click="${() => this.accept()}">
           ${i18next.t('accept')}
         </ngm-core-button>
       </div>

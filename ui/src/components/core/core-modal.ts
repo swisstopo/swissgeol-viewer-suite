@@ -33,7 +33,9 @@ export class CoreModal extends LitElement {
 
     const close = () => {
       render(null, container);
-      document.body.removeChild(container);
+      if (container.parentElement != null) {
+        document.body.removeChild(container);
+      }
       if (props.onClose != null) {
         props.onClose();
       }
@@ -56,13 +58,33 @@ export class CoreModal extends LitElement {
 
   private dialog: HTMLDialogElement | null = null;
 
+  private closeDialog: (() => void) | null = null;
+
   firstUpdated(): void {
     this.dialog = this.shadowRoot!.querySelector('dialog')!;
+    const handleCloseEvent = (event: Event) => {
+      event.preventDefault();
+      if (this.isPersistent) {
+        setTimeout(() => {
+          if (this.isConnected) {
+            this.dialog?.showModal();
+          }
+        });
+      } else {
+        this.close();
+      }
+    };
+    this.dialog.addEventListener('cancel', handleCloseEvent);
+    this.dialog.addEventListener('close', handleCloseEvent);
+    this.closeDialog = this.dialog.close.bind(this.dialog);
+    this.dialog.close = () => {
+      /* prevent closing */
+    };
     this.dialog.showModal();
   }
 
   disconnectedCallback(): void {
-    this.dialog?.close();
+    this.closeDialog?.();
   }
 
   close(): void {
@@ -94,6 +116,8 @@ export class CoreModal extends LitElement {
 
     dialog {
       border: none;
+      outline: none;
+      box-shadow: none;
       border-radius: 4px;
       padding: 0;
 
@@ -112,6 +136,8 @@ export class CoreModal extends LitElement {
     dialog::backdrop {
       background-color: #111827b2;
       opacity: 0.7;
+      border: none;
+      outline: none;
     }
 
     :host(:not([no-padding])) dialog > div {
