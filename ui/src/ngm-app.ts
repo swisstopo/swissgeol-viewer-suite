@@ -17,22 +17,29 @@ import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
-import './components/search/search-input';
 import '@geoblocks/cesium-view-cube';
-import './components/core';
-import './components/layout';
+import './components/layout/layout.module';
+import './elements/ngm-map-chooser';
+
+import 'src/components/background/background.module';
+import 'src/components/core/core.module';
+import 'src/components/navigation/navigation.module';
+import 'src/components/layout/layout.module';
 
 import { COGNITO_VARIABLES, DEFAULT_VIEW } from './constants';
 
-import { addMantelEllipsoid, setupBaseLayers, setupViewer } from './viewer';
+import { addMantelEllipsoid, setupViewer } from './viewer';
 
 import {
   getCameraView,
   getCesiumToolbarParam,
+  getMapParam,
   getTopicOrProject,
   getZoomToPosition,
   rewriteParams,
   syncCamera,
+  syncMapOpacityParam,
+  syncMapParam,
   syncStoredView,
 } from './permalink';
 import i18next from 'i18next';
@@ -47,18 +54,22 @@ import ToolboxStore from './store/toolbox';
 import { classMap } from 'lit/directives/class-map.js';
 import { customElement, query, state } from 'lit/decorators.js';
 import { showSnackbarInfo } from './notifications';
-import type MapChooser from './MapChooser';
 import type { NgmSlowLoading } from './elements/ngm-slow-loading';
-import { Event, FrameRateMonitor, Globe, Viewer } from 'cesium';
+import { Event, FrameRateMonitor, Globe, ImageryLayer, Viewer } from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type { SideBar } from './elements/ngm-side-bar';
 import { LayerConfig } from './layertree';
 import { clientConfigContext } from './context';
-import { consume } from '@lit/context';
+import { consume, provide } from '@lit/context';
 import { ClientConfig } from './api/client-config';
-import { CoreModal } from './components/core/core-modal';
-import { TrackingConsentModalEvent } from './components/layout/tracking-consent-modal';
+import { CoreModal } from 'src/components/core';
+import { TrackingConsentModalEvent } from './components/layout/layout-consent-modal';
+import { makeId } from 'src/models/id.model';
+import { BackgroundLayer } from 'src/components/layer/layer.model';
+import { distinctUntilKeyChanged } from 'rxjs';
+import { addSwisstopoLayer } from 'src/swisstopoImagery';
+import { BackgroundLayerService } from 'src/components/background/background-layer.service';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -82,8 +93,6 @@ const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
  */
 @customElement('ngm-app')
 export class NgmApp extends LitElementI18n {
-  @state()
-  accessor mapChooser: MapChooser | undefined;
   @state()
   accessor slicer_: Slicer | undefined;
   @state()
@@ -126,20 +135,18 @@ export class NgmApp extends LitElementI18n {
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
 
+  @consume({ context: BackgroundLayerService.context() })
+  accessor backgroundLayerService!: BackgroundLayerService;
+
   constructor() {
     super();
 
+    if (process.env.NODE_ENV !== 'development') {
+      this.openDisclaimer();
+    }
+
     this.handleTrackingAllowedChanged =
       this.handleTrackingAllowedChanged.bind(this);
-
-    this.disclaimer = CoreModal.open(
-      { isPersistent: true, size: 'large', hasNoPadding: true },
-      html`
-        <ngm-tracking-consent-modal
-          @confirm="${this.handleTrackingAllowedChanged}"
-        ></ngm-tracking-consent-modal>
-      `,
-    );
 
     const boundingRect = document.body.getBoundingClientRect();
     this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
@@ -148,15 +155,27 @@ export class NgmApp extends LitElementI18n {
       this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
     });
   }
+  @provide({ context: BackgroundLayerService.backgroundContext })
+  accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
+
+  private viewerRenderTimeout: number | null = null;
+
+  private openDisclaimer(): void {
+    this.disclaimer = CoreModal.open(
+      { isPersistent: true, size: 'large', hasNoPadding: true },
+      html`
+        <ngm-layout-consent-modal
+          @confirm="${this.handleTrackingAllowedChanged}"
+        ></ngm-layout-consent-modal>
+      `,
+    );
+  }
 
   /**
    * @param {CustomEvent} evt
    */
   onLayerAdded(evt) {
     const layer = evt.detail.layer;
-    if (layer.backgroundId !== undefined && this.mapChooser!.elements) {
-      this.mapChooser!.selectMap(layer.backgroundId);
-    }
     if (this.slicer_ && this.slicer_!.active) {
       if (layer && layer.promise) {
         this.slicer_!.applyClippingPlanesToTileset(layer.promise);
@@ -210,10 +229,13 @@ export class NgmApp extends LitElementI18n {
     this.slicer_ = new Slicer(viewer);
     ToolboxStore.setSlicer(this.slicer_);
 
-    // setup web components
-    this.mapChooser = setupBaseLayers(viewer);
-    this.mapChooser.addMapChooser(this.querySelector('.ngm-bg-chooser-map')!);
-    MainStore.setMapChooser(this.mapChooser);
+    MainStore.syncMap.subscribe(() => {
+      const id = makeId<BackgroundLayer>(getMapParam());
+      if (id != null) {
+        this.backgroundLayerService.setBackground(id);
+      }
+    });
+
     // Handle queries (local and Swisstopo)
     this.queryManager = new QueryManager(viewer);
 
@@ -324,6 +346,93 @@ export class NgmApp extends LitElementI18n {
         }
       });
     });
+
+    this.initializeBackgroundLayers();
+  }
+
+  private initializeBackgroundLayers(): void {
+    this.backgroundLayerService.background$.subscribe((background) => {
+      this.background = background;
+    });
+
+    let activeLayers: ImageryLayer[] = [];
+    this.backgroundLayerService.background$
+      .pipe(distinctUntilKeyChanged('children'))
+      .subscribe((background) => {
+        activeLayers.forEach((layer) =>
+          this.viewer!.scene.imageryLayers.remove(layer),
+        );
+        activeLayers = [];
+        const readyPromises = [] as Array<Promise<void>>;
+        for (const sublayer of background.children) {
+          const layer = addSwisstopoLayer(
+            this.viewer!,
+            sublayer.id as string,
+            sublayer.format,
+            sublayer.maximumLevel,
+          );
+          layer.show = true;
+          readyPromises.push(
+            new Promise<void>((resolve) => {
+              layer.readyEvent.addEventListener(() => {
+                resolve();
+              });
+            }),
+          );
+          activeLayers.push(layer);
+        }
+        this.updateBaseMapTranslucency(
+          background.opacity,
+          background.hasAlphaChannel,
+        );
+        syncMapParam(background.id);
+        Promise.all(readyPromises).then(() => this.requestViewerRender());
+      });
+
+    let opacityTimeout: number | null = null;
+    this.backgroundLayerService.background$
+      .pipe(distinctUntilKeyChanged('opacity'))
+      .subscribe((background) => {
+        if (opacityTimeout !== null) {
+          clearTimeout(opacityTimeout);
+        }
+        opacityTimeout = setTimeout(() => {
+          opacityTimeout = null;
+          syncMapOpacityParam(background.opacity);
+        }, 50) as unknown as number;
+
+        this.updateBaseMapTranslucency(
+          background.opacity,
+          background.hasAlphaChannel,
+        );
+        this.requestViewerRender();
+      });
+
+    this.backgroundLayerService.background$
+      .pipe(distinctUntilKeyChanged('isVisible'))
+      .subscribe((background) => {
+        if (background.isVisible) {
+          this.updateBaseMapTranslucency(
+            background.opacity,
+            background.hasAlphaChannel,
+          );
+          syncMapParam(background.id);
+        } else {
+          this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
+          syncMapParam('empty_map');
+        }
+        this.requestViewerRender();
+      });
+  }
+
+  private requestViewerRender(): void {
+    if (this.viewerRenderTimeout != null) {
+      return;
+    }
+    this.viewerRenderTimeout = setTimeout(() => {
+      this.viewerRenderTimeout = null;
+      this.viewer!.scene.requestRender();
+    }) as unknown as number;
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -378,6 +487,21 @@ export class NgmApp extends LitElementI18n {
       }
     }
     super.updated(changedProperties);
+  }
+
+  private updateBaseMapTranslucency(
+    opacity: number,
+    hasAlphaChannel: boolean,
+  ): void {
+    const { translucency } = this.viewer!.scene.globe;
+    translucency.frontFaceAlpha = opacity;
+    if (opacity === 1) {
+      translucency.enabled = hasAlphaChannel;
+      translucency.backFaceAlpha = 1;
+    } else {
+      translucency.backFaceAlpha = 0;
+      translucency.enabled = true;
+    }
   }
 
   showSlowLoadingWindow() {
@@ -459,17 +583,17 @@ export class NgmApp extends LitElementI18n {
             />
             <div class="logo-text visible-mobile">swissgeol</div>
           </a>
-          <ngm-search-input
+          <ngm-navigation-search
             .viewer="${this.viewer}"
             .sidebar="${this.sidebar}"
-          ></ngm-search-input>
+          ></ngm-navigation-search>
         </div>
         <div class="ngm-header-suffix">
           <ngm-cursor-information
             class="hidden-mobile"
             .viewer="${this.viewer}"
           ></ngm-cursor-information>
-          <ngm-language-selector></ngm-language-selector>
+          <ngm-layout-language-selector></ngm-layout-language-selector>
           <ngm-auth
             class="ngm-user"
             endpoint="https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize"

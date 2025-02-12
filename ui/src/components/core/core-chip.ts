@@ -1,13 +1,13 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import './core-icon';
-import { applyTypography } from '../../styles/theme';
-import { Variant } from './core-button';
+import { applyTypography } from 'src/styles/theme';
+import { ButtonVariant } from './core-button';
 
 @customElement('ngm-core-chip')
 export class CoreChip extends LitElement {
   @property({ reflect: true })
-  accessor variant: Variant = 'primary';
+  accessor variant: ButtonVariant = 'primary';
 
   readonly render = () => html`
     <span>
@@ -25,7 +25,7 @@ export class CoreChip extends LitElement {
 
     :host([variant='primary']) {
       background-color: var(--color-border--default);
-      color: var(--color-text--emphasis--high);
+      color: var(--color-text--emphasis-high);
       ${applyTypography('overline')};
     }
 

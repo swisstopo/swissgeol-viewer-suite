@@ -60,7 +60,9 @@ export default class LayersAction {
   }
 
   changeOpacity(config: LayerConfig, value: number) {
-    config.setOpacity!(value);
+    if (config.setOpacity != null) {
+      config.setOpacity!(value);
+    }
     this.viewer.scene.requestRender();
   }
 

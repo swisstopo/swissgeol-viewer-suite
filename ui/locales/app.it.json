@@ -88,6 +88,7 @@
   "dtd_no_file_to_upload_warn": "Nessun file da scaricare",
   "dtd_object_on_coordinates_not_found_warning": "Oggetto non trovato o camera spostata dalla sua posizione originale",
   "dtd_opacity_base_map": "Opacità della mappa di sfondo",
+  "dtd_opacity": "Opacità",
   "dtd_own_kml_tag": "Propio kml",
   "dtd_remove": "Rimuovere",
   "dtd_remove_assets_confirmation": "Il token è stato modificato, i set di dati attuali saranno rimossi.",
@@ -103,6 +104,7 @@
     "upload": "Upload",
     "options": "Impostazioni"
   },
+  "dtd_background_label": "",
   "duplicate_to_project": "Duplicare nei progetti",
   "edit_project": "Editare progetto",
   "header_search_placeholder": "Ricercare per...",

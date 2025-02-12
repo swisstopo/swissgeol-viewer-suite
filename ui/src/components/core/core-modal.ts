@@ -2,7 +2,7 @@ import { css, html, LitElement, render, TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 interface CoreModalProps {
-  size?: Size;
+  size?: ModalSize;
 
   /**
    * Makes the modal persistent, which disables closing it by clicking outside of it.
@@ -15,7 +15,7 @@ interface CoreModalProps {
 @customElement('ngm-core-modal')
 export class CoreModal extends LitElement {
   @property({ type: String, reflect: true })
-  accessor size: Size = 'auto';
+  accessor size: ModalSize = 'auto';
   @property({ type: Boolean })
   accessor isPersistent = true;
   @property({ type: Boolean, attribute: 'no-padding', reflect: true })
@@ -120,4 +120,4 @@ export class CoreModal extends LitElement {
   `;
 }
 
-type Size = 'auto' | 'small' | 'large';
+export type ModalSize = 'auto' | 'small' | 'large';

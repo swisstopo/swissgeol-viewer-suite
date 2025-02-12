@@ -1,10 +1,10 @@
 import { customElement, property, state } from 'lit/decorators.js';
-import { LitElementI18n } from '../../i18n';
+import { LitElementI18n } from 'src/i18n';
 import { css, html, PropertyValues } from 'lit';
 import i18next from 'i18next';
 import { BBox, Feature, GeoJsonProperties } from 'geojson';
 
-import '@geoblocks/ga-search';
+import '@geoblocks/ga-search'; // <ga-search> component
 import {
   getLayersConfig,
   SwisstopoImageryLayersConfig,
@@ -19,18 +19,18 @@ import {
 import { lv95ToDegrees } from 'src/projection';
 import { escapeRegExp } from 'src/utils';
 import { extractEntitiesAttributes } from 'src/query/objectInformation';
-import auth from '../../store/auth';
-import defaultLayerTree, { LayerTreeNode } from '../../layertree';
-import NavToolsStore from '../../store/navTools';
+import auth from 'src/store/auth';
+import defaultLayerTree, { LayerTreeNode } from 'src/layertree';
+import NavToolsStore from 'src/store/navTools';
 import {
   SearchLayer,
   SearchLayerWithLayer,
   SideBar,
-} from '../../elements/ngm-side-bar'; // <ga-search> component
+} from 'src/elements/ngm-side-bar';
 import { createRef, ref } from 'lit/directives/ref.js';
 
-@customElement('ngm-search-input')
-export class SearchInput extends LitElementI18n {
+@customElement('ngm-navigation-search')
+export class NavigationSearch extends LitElementI18n {
   @property()
   private accessor viewer: CesiumViewer | null = null;
 
@@ -66,41 +66,9 @@ export class SearchInput extends LitElementI18n {
     });
   }
 
-  render = () => html`
-    <ga-search
-      ${ref(this.searchRef)}
-      types="location,additionalSource,layer,feature"
-      locationOrigins="zipcode,gg25,gazetteer"
-      .filterResults="${this.matchFeature}"
-      .renderResult="${this.renderItem}"
-      .additionalSource="${{
-        search: this.searchAdditionalItems,
-        getResultValue: (item: AdditionalItem) => item.label,
-      }}"
-      @submit="${this.handleItemSelected}"
-    >
-      <!-- Freeze the event's target to this input, as otherwise, ga-input is unable to read the input's value. -->
-      <input
-        ${ref(this.inputRef)}
-        type="search"
-        placeholder="${i18next.t('header_search_placeholder')}"
-        @input="${freezeEventTarget}"
-        @click="${captureEvent}"
-        @keydown="${this.handleInputKeyPress}"
-      />
-      <ul
-        ${ref(this.resultsRef)}
-        @mouseover="${this.handleResultsHovered}"
-      ></ul>
-    </ga-search>
-
-    <ngm-core-icon icon="search" @click="${this.toggleActive}"></ngm-core-icon>
-    <ngm-core-icon icon="close" @click="${this.clear}"></ngm-core-icon>
-  `;
-
   protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
-    if (changedProperties.has('isActive' as keyof SearchInput)) {
+    if (changedProperties.has('isActive' as keyof NavigationSearch)) {
       if (this.isActive) {
         this.classList.add('is-active');
       } else {
@@ -427,6 +395,38 @@ export class SearchInput extends LitElementI18n {
     });
   }
 
+  readonly render = () => html`
+    <ga-search
+      ${ref(this.searchRef)}
+      types="location,additionalSource,layer,feature"
+      locationOrigins="zipcode,gg25,gazetteer"
+      .filterResults="${this.matchFeature}"
+      .renderResult="${this.renderItem}"
+      .additionalSource="${{
+        search: this.searchAdditionalItems,
+        getResultValue: (item: AdditionalItem) => item.label,
+      }}"
+      @submit="${this.handleItemSelected}"
+    >
+      <!-- Freeze the event's target to this input, as otherwise, ga-input is unable to read the input's value. -->
+      <input
+        ${ref(this.inputRef)}
+        type="search"
+        placeholder="${i18next.t('header_search_placeholder')}"
+        @input="${freezeEventTarget}"
+        @click="${captureEvent}"
+        @keydown="${this.handleInputKeyPress}"
+      />
+      <ul
+        ${ref(this.resultsRef)}
+        @mouseover="${this.handleResultsHovered}"
+      ></ul>
+    </ga-search>
+
+    <ngm-core-icon icon="search" @click="${this.toggleActive}"></ngm-core-icon>
+    <ngm-core-icon icon="close" @click="${this.clear}"></ngm-core-icon>
+  `;
+
   static readonly styles = css`
     :host {
       display: flex;
@@ -571,6 +571,7 @@ export class SearchInput extends LitElementI18n {
     }
 
     /* icon */
+
     ngm-core-icon {
       width: var(--icon-size);
       height: var(--icon-size);

@@ -2,13 +2,11 @@ import { css, html, unsafeCSS } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { LitElementI18n } from '../../../i18n';
-import { showSnackbarError, showSnackbarInfo } from '../../../notifications';
+import { LitElementI18n } from 'src/i18n';
+import { showSnackbarError, showSnackbarInfo } from 'src/notifications';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
-import '../../core';
-import './layer-upload-kml-modal';
-import { applyTransition, applyTypography } from '../../../styles/theme';
-import { CoreModal } from '../../core/core-modal';
+import { applyTransition, applyTypography } from 'src/styles/theme';
+import { CoreModal } from 'src/components/core';
 
 @customElement('ngm-layer-upload-kml')
 export default class NgmLayerUploadKml extends LitElementI18n {
@@ -199,9 +197,9 @@ export default class NgmLayerUploadKml extends LitElementI18n {
     button.upload.is-active {
       ${applyTransition('fade')};
 
-      color: var(--color-text--emphasis--medium);
+      color: var(--color-text--emphasis-medium);
       background-color: var(--color-secondary--hovered);
-      border-color: var(--color-text--emphasis--medium);
+      border-color: var(--color-text--emphasis-medium);
     }
 
     button.upload > .title {

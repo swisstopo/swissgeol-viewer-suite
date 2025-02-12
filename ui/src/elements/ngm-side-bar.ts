@@ -1,12 +1,8 @@
 import { html } from 'lit';
-import { LitElementI18n } from '../i18n.js';
-import '../toolbox/ngm-toolbox';
-import '../layers/ngm-layers';
-import '../layers/ngm-layers-sort';
-import './dashboard/ngm-dashboard';
-import './sidebar/ngm-menu-item';
-import '../components/core';
-import '../components/navigation/navigation-layer-panel';
+import { LitElementI18n } from 'src/i18n.js';
+import 'src/toolbox/ngm-toolbox';
+import 'src/elements/dashboard/ngm-dashboard';
+import 'src/elements/sidebar/ngm-menu-item';
 import LayersActions from '../layers/LayersActions';
 import { DEFAULT_LAYER_OPACITY, LayerType } from '../constants';
 import defaultLayerTree, { LayerConfig } from '../layertree';
@@ -20,11 +16,10 @@ import {
   getZoomToPosition,
   setCesiumToolbarParam,
   syncLayersParam,
-} from '../permalink';
-import { createCesiumObject } from '../layers/helpers';
+} from 'src/permalink';
+import { createCesiumObject } from 'src/layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
-import './ngm-map-configuration';
 import type { Cartesian2, Viewer } from 'cesium';
 import {
   BoundingSphere,
@@ -36,22 +31,18 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
 } from 'cesium';
-import { showSnackbarError, showSnackbarInfo } from '../notifications';
-import auth from '../store/auth';
+import { showSnackbarError, showSnackbarInfo } from 'src/notifications';
+import auth from 'src/store/auth';
 import './ngm-share-link';
-import '../layers/ngm-layers-upload';
-import MainStore from '../store/main';
+import MainStore from 'src/store/main';
 import { classMap } from 'lit/directives/class-map.js';
 import $ from 'jquery';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import type QueryManager from '../query/QueryManager';
+import type QueryManager from 'src/query/QueryManager';
 
-import DashboardStore from '../store/dashboard';
-import { getAssets } from '../api-ion';
-import {
-  LayerEvent,
-  LayersUpdateEvent,
-} from '../components/layer/layer-display';
+import DashboardStore from 'src/store/dashboard';
+import { getAssets } from 'src/api-ion';
+import { LayerEvent, LayersEvent } from 'src/components/layer';
 
 export type SearchLayer = SearchLayerWithLayer | SearchLayerWithSource;
 
@@ -69,12 +60,6 @@ export interface SearchLayerWithSource extends BaseSearchLayer {
   dataSourceName: string;
 }
 
-interface LayerClickEvent {
-  detail: {
-    layer: string;
-  };
-}
-
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
   @property({ type: Object })
@@ -90,7 +75,7 @@ export class SideBar extends LitElementI18n {
 
   // TODO change this back to `null`
   @state()
-  accessor activePanel: string | null = 'data';
+  accessor activePanel: string | null = null;
   @state()
   accessor showHeader = false;
   @state()
@@ -256,20 +241,20 @@ export class SideBar extends LitElementI18n {
         class="ngm-side-bar-panel ngm-large-panel"
         ?hidden=${this.activePanel !== 'dashboard'}
         @close=${() => (this.activePanel = null)}
-        @layerclick=${(e: LayerClickEvent) =>
+        @layerclick=${(e: LayerEvent) =>
           this.onCatalogLayerClicked(e.detail.layer)}
       ></ngm-dashboard>
-      <ngm-navigation-layer-panel
+      <ngm-layer-panel
         ?hidden="${this.activePanel !== 'data'}"
         .layers="${this.catalogLayers}"
         .displayLayers="${this.activeLayers}"
         @close="${() => (this.activePanel = null)}"
-        @layer-click=${(e: LayerClickEvent) =>
+        @layer-click=${(e: LayerEvent) =>
           this.onCatalogLayerClicked(e.detail.layer)}
         @display-layers-update="${this.handleDisplayLayersUpdate}"
         @display-layer-update="${this.handleDisplayLayerUpdate}"
         @display-layer-removal="${this.handleDisplayLayerRemoval}"
-      ></ngm-navigation-layer-panel>
+      ></ngm-layer-panel>
       <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
         <ngm-tools
           .toolsHidden=${this.activePanel !== 'tools'}
@@ -341,7 +326,7 @@ export class SideBar extends LitElementI18n {
     `;
   }
 
-  togglePanel(panelName, showHeader = true) {
+  async togglePanel(panelName, showHeader = true) {
     if (DashboardStore.projectMode.value === 'edit') {
       DashboardStore.showSaveOrCancelWarning(true);
       return;
@@ -352,6 +337,9 @@ export class SideBar extends LitElementI18n {
       return;
     }
     this.activePanel = panelName;
+    if (this.activePanel === 'data') {
+      await import('src/components/layer/layer.module');
+    }
   }
 
   async syncActiveLayers() {
@@ -493,7 +481,19 @@ export class SideBar extends LitElementI18n {
 
   async onCatalogLayerClicked(layer) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
+    layer.displayed = !layer.displayed;
+    await this.applyLayerVisibility(layer);
+  }
+
+  private async applyLayerVisibility(layer: LayerConfig): Promise<void> {
     if (layer.displayed) {
+      await (layer.promise || this.addLayer(layer));
+      layer.add && (layer.add as () => void)();
+      layer.visible = true;
+      layer.displayed = true;
+      this.activeLayers.push(layer);
+      this.maybeShowVisibilityHint(layer);
+    } else {
       if (layer.visible) {
         layer.displayed = false;
         layer.visible = false;
@@ -503,16 +503,8 @@ export class SideBar extends LitElementI18n {
       } else {
         layer.visible = true;
       }
-    } else {
-      await (layer.promise || this.addLayer(layer));
-      layer.add && layer.add();
-      layer.visible = true;
-      layer.displayed = true;
-      this.activeLayers.push(layer);
-      this.maybeShowVisibilityHint(layer);
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
-
     syncLayersParam(this.activeLayers);
     const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
     this.catalogLayers = [...catalogLayers];
@@ -540,8 +532,6 @@ export class SideBar extends LitElementI18n {
     syncLayersParam(this.activeLayers);
     const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
     this.catalogLayers = [...catalogLayers];
-    this.activeLayers = [...this.activeLayers];
-    this.requestUpdate();
   }
 
   getFlatLayers(tree, tileLoadCallback): any[] {
@@ -705,7 +695,7 @@ export class SideBar extends LitElementI18n {
     return layer.promise;
   }
 
-  private handleDisplayLayersUpdate(e: LayersUpdateEvent): void {
+  private handleDisplayLayersUpdate(e: LayersEvent): void {
     this.activeLayers = e.detail.layers;
   }
 

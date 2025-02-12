@@ -134,4 +134,4 @@ export class CoreCheckbox extends LitElement {
   `;
 }
 
-export type Variant = 'default' | 'text';
+export type CheckboxVariant = 'default' | 'text';

@@ -3,8 +3,6 @@ import { MANTEL_COLOR, SWITZERLAND_RECTANGLE } from './constants';
 import NavigableVolumeLimiter from './NavigableVolumeLimiter';
 import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
-import MapChooser from './MapChooser';
-import { addSwisstopoLayer } from './swisstopoImagery';
 
 import {
   CameraEventType,
@@ -375,55 +373,4 @@ export function addMantelEllipsoid(viewer: Viewer) {
         scene.backgroundColor = MANTEL_COLOR;
     }
   });
-}
-
-export function setupBaseLayers(viewer: Viewer) {
-  const arealLayer = 'ch.swisstopo.swissimage';
-  const greyLayer = 'ch.swisstopo.pixelkarte-grau';
-
-  const emptyLayer: EmptyLayer = {
-    layer: {
-      show: false,
-    },
-  };
-  const t = (a) => a;
-
-  const mapsConfig: BaseLayerConfig[] = [
-    {
-      id: arealLayer,
-      labelKey: t('dtd_aerial_map_label'),
-      backgroundImgSrc: '/images/arealimage.png',
-      layers: [addSwisstopoLayer(viewer, arealLayer, 'jpeg', 20)],
-    },
-    {
-      id: greyLayer,
-      default: true,
-      labelKey: t('dtd_grey_map_label'),
-      backgroundImgSrc: '/images/grey.png',
-      layers: [addSwisstopoLayer(viewer, greyLayer, 'jpeg', 18)],
-    },
-    {
-      id: 'lakes_rivers_map',
-      labelKey: t('dtd_lakes_rivers_map_label'),
-      backgroundImgSrc: '/images/lakes_rivers.png',
-      hasAlphaChannel: true,
-      layers: [
-        addSwisstopoLayer(viewer, 'ch.bafu.vec25-seen', 'png', 18),
-        addSwisstopoLayer(
-          viewer,
-          'ch.bafu.vec25-gewaessernetz_2000',
-          'png',
-          18,
-        ),
-      ],
-    },
-    {
-      id: 'empty_map',
-      labelKey: t('dtd_empty_map_label'),
-      backgroundImgSrc: '/images/empty.png',
-      layers: [emptyLayer],
-    },
-  ];
-
-  return new MapChooser(viewer, mapsConfig);
 }

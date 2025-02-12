@@ -1,20 +1,20 @@
 import { customElement, state } from 'lit/decorators.js';
-import { LitElementI18n } from '../../../i18n';
+import { LitElementI18n } from '../../i18n';
 import {
   CustomDataSource,
   DataSource,
   DataSourceCollection,
   Viewer,
 } from 'cesium';
-import MainStore from '../../../store/main';
+import MainStore from '../../store/main';
 import { css, html } from 'lit';
 import i18next from 'i18next';
-import { debounce } from '../../../utils';
-import { setExaggeration } from '../../../permalink';
-import NavToolsStore from '../../../store/navTools';
-import { updateExaggerationForKmlDataSource } from '../../../cesiumutils';
-import '../../core';
-import { SliderValueChangeEvent } from '../../core/core-slider';
+import { debounce } from '../../utils';
+import { setExaggeration } from '../../permalink';
+import NavToolsStore from '../../store/navTools';
+import { updateExaggerationForKmlDataSource } from '../../cesiumutils';
+import '../core';
+import { SliderChangeEvent } from '../core/core-slider';
 
 @customElement('ngm-layer-options')
 export class NgmLayerOptions extends LitElementI18n {
@@ -75,7 +75,7 @@ export class NgmLayerOptions extends LitElementI18n {
     this.viewer?.scene.requestRender();
   }
 
-  private updateExaggeration(event: SliderValueChangeEvent) {
+  private updateExaggeration(event: SliderChangeEvent) {
     if (this.viewer == null) {
       return;
     }
@@ -91,7 +91,7 @@ export class NgmLayerOptions extends LitElementI18n {
   readonly render = () => html`
     <div class="group">
       <ngm-core-icon
-        icon="${this.hideExaggeration ? 'invisible' : 'visible'}"
+        icon="${this.hideExaggeration ? 'hidden' : 'visible'}"
         title=${this.hideExaggeration
           ? i18next.t('dtd_show_exaggeration')
           : i18next.t('dtd_hide_exaggeration')}
@@ -107,7 +107,7 @@ export class NgmLayerOptions extends LitElementI18n {
         .step="${1}"
         .value="${this.exaggeration}"
         @change=${this.updateExaggeration}
-        @pointerup="${debounce(() => this.updateExaggerationForKmls(), 300)}"
+        @done="${debounce(() => this.updateExaggerationForKmls(), 300)}"
       ></ngm-core-slider>
       <div class="chip-container">
         <ngm-core-chip>${this.exaggeration.toFixed()}x</ngm-core-chip>

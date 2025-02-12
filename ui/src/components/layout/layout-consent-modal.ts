@@ -2,12 +2,10 @@ import { css, html } from 'lit';
 import i18next from 'i18next';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { customElement, state } from 'lit/decorators.js';
-import '../core';
-import '../layout/language-selector';
-import { LitElementI18n } from '../../i18n';
-import { applyTypography } from '../../styles/theme';
+import { LitElementI18n } from 'src/i18n';
+import { applyTypography } from 'src/styles/theme';
 
-@customElement('ngm-tracking-consent-modal')
+@customElement('ngm-layout-consent-modal')
 export class NgmTrackingConsentModal extends LitElementI18n {
   @state()
   accessor isAllowed: boolean = true;
@@ -28,7 +26,7 @@ export class NgmTrackingConsentModal extends LitElementI18n {
     return html`
       <div class="header">
         <h2>${i18next.t('tracking_header')}</h2>
-        <ngm-language-selector></ngm-language-selector>
+        <ngm-layout-language-selector></ngm-layout-language-selector>
       </div>
       <div class="main">
         <h3>${i18next.t('tracking_limitations_of_liability_header')}</h3>

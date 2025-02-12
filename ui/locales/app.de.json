@@ -88,6 +88,7 @@
   "dtd_no_file_to_upload_warn": "Keine Datei vorhanden",
   "dtd_object_on_coordinates_not_found_warning": "Objekt wurde nicht gefunden oder Kamera wurde von initialer Position wegbewegt",
   "dtd_opacity_base_map": "Deckkraft Hintergrundkarte",
+  "dtd_opacity": "Deckkraft",
   "dtd_own_kml_tag": "Eigene KML-Datei",
   "dtd_remove": "Entfernen",
   "dtd_remove_assets_confirmation": "Token hat geändert, aktuelle Datensätze werden entfernt",
@@ -103,6 +104,7 @@
     "upload": "Upload",
     "options": "Einstellungen"
   },
+  "dtd_background_label": "Hintergrund",
   "duplicate_to_project": "Zu Projekt duplizieren",
   "edit_project": "Projekt bearbeiten",
   "header_search_placeholder": "Suche nach...",
