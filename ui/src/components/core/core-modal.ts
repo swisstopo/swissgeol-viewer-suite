@@ -56,19 +56,27 @@ export class CoreModal extends LitElement {
 
   private dialog: HTMLDialogElement | null = null;
 
+  private closeDialog: (() => void) | null = null;
+
   firstUpdated(): void {
     this.dialog = this.shadowRoot!.querySelector('dialog')!;
-    this.dialog.addEventListener('cancel', (event) => {
+    const handleCloseEvent = (event: Event) => {
       event.preventDefault();
-      if (!this.isPersistent) {
+      if (this.isPersistent) {
+        setTimeout(() => this.dialog?.showModal());
+      } else {
         this.close();
       }
-    });
+    };
+    this.dialog.addEventListener('cancel', handleCloseEvent);
+    this.dialog.addEventListener('close', handleCloseEvent);
+    this.closeDialog = this.dialog.close.bind(this.dialog);
+    this.dialog.close = () => { /* prevent closing */ };
     this.dialog.showModal();
   }
 
   disconnectedCallback(): void {
-    this.dialog?.close();
+    this.closeDialog?.();
   }
 
   close(): void {
