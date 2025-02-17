@@ -1,2 +1,2 @@
-export * from './core-element';
-export * from './core-modal';
+export * from './core-element.element';
+export * from './core-modal.element';

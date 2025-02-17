@@ -1,7 +1,6 @@
 import { css } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import './core-icon';
-import { CoreBasePopupBox } from 'src/components/core/base/core-base-popup-box';
+import { CoreBasePopupBox } from 'src/components/core/base/core-base-popup-box.element';
 import { applyEffect, applyTypography } from 'src/styles/theme';
 
 @customElement('ngm-core-dropdown-box')

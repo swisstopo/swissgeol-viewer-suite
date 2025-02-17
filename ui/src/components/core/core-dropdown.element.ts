@@ -1,9 +1,8 @@
 import { css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import './core-dropdown-box';
-import { CoreBasePopup } from 'src/components/core/base/core-base-popup';
-import { CoreDropdownBox } from 'src/components/core/core-dropdown-box';
-import { CoreButton } from 'src/components/core/core-button';
+import { CoreBasePopup } from 'src/components/core/base/core-base-popup.element';
+import { CoreDropdownBox } from 'src/components/core/core-dropdown-box.element';
+import { CoreButton } from 'src/components/core/core-button.element';
 
 @customElement('ngm-core-dropdown')
 export class CoreDropdown extends CoreBasePopup<CoreDropdownBox> {

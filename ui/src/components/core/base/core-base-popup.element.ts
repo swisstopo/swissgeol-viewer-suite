@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { CoreBasePopupBox } from 'src/components/core/base/core-base-popup-box';
+import { CoreBasePopupBox } from 'src/components/core/base/core-base-popup-box.element';
 
 export abstract class CoreBasePopup<
   TBox extends CoreBasePopupBox,

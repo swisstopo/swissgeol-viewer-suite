@@ -1,8 +1,7 @@
 import { css } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import './core-icon';
 import { applyEffect } from 'src/styles/theme';
-import { CoreBasePopupBox } from 'src/components/core/base/core-base-popup-box';
+import { CoreBasePopupBox } from 'src/components/core/base/core-base-popup-box.element';
 
 @customElement('ngm-core-tooltip-box')
 export class CoreTooltipBox extends CoreBasePopupBox {

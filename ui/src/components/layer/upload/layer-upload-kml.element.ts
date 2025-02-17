@@ -9,7 +9,7 @@ import { applyTransition, applyTypography } from 'src/styles/theme';
 import { CoreModal } from 'src/components/core';
 
 @customElement('ngm-layer-upload-kml')
-export default class NgmLayerUploadKml extends LitElementI18n {
+export default class LayerUploadKml extends LitElementI18n {
   @property({ type: Number })
   accessor maxFileSize: number | null = null;
 

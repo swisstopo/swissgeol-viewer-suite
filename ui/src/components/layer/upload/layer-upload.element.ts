@@ -2,7 +2,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { LitElementI18n } from 'src/i18n';
 import { css, html, unsafeCSS } from 'lit';
 import i18next from 'i18next';
-import type { KmlUploadEvent } from './layer-upload-kml';
+import type { KmlUploadEvent } from './layer-upload-kml.element';
 import { CustomDataSource, Viewer } from 'cesium';
 import { parseKml, renderWithDelay } from 'src/cesiumutils';
 import MainStore from '../../../store/main';
@@ -13,7 +13,7 @@ import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
 import { LayerEventDetail } from 'src/components/layer';
 
 @customElement('ngm-layer-upload')
-export class NgmLayerUpload extends LitElementI18n {
+export class LayerUpload extends LitElementI18n {
   @property({ type: Object })
   accessor toastPlaceholder!: HTMLElement;
 
