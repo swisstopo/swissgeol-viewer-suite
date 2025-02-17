@@ -1,12 +1,12 @@
 import { customElement, property, state } from 'lit/decorators.js';
-import { LitElementI18n } from '../../i18n';
+import { LitElementI18n } from 'src/i18n';
 import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
 import { classMap } from 'lit/directives/class-map.js';
 import { Asset } from './ngm-dashboard';
 import '../../layers/ngm-layers-upload';
-import { PROJECT_ASSET_MAX_SIZE } from '../../constants';
-import type { KmlUploadEvent } from '../../components/layer/upload/layer-upload-kml';
+import { PROJECT_ASSET_MAX_SIZE } from 'src/constants';
+import { KmlUploadEvent } from 'src/features/layer/upload/layer-upload-kml.element';
 
 @customElement('ngm-project-assets-section')
 export class NgmProjectAssetsSection extends LitElementI18n {

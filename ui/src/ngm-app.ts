@@ -18,13 +18,13 @@ import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
 import '@geoblocks/cesium-view-cube';
-import './components/layout/layout.module';
+import 'src/features/layout/layout.module';
 import './elements/ngm-map-chooser';
 
-import 'src/components/background/background.module';
-import 'src/components/core/core.module';
-import 'src/components/navigation/navigation.module';
-import 'src/components/layout/layout.module';
+import 'src/features/background/background.module';
+import 'src/features/core/core.module';
+import 'src/features/navigation/navigation.module';
+import 'src/features/layout/layout.module';
 
 import { COGNITO_VARIABLES, DEFAULT_VIEW } from './constants';
 
@@ -63,13 +63,13 @@ import { LayerConfig } from './layertree';
 import { clientConfigContext } from './context';
 import { consume, provide } from '@lit/context';
 import { ClientConfig } from './api/client-config';
-import { CoreModal } from 'src/components/core';
-import { TrackingConsentModalEvent } from './components/layout/layout-consent-modal';
+import { CoreModal } from 'src/features/core';
 import { makeId } from 'src/models/id.model';
-import { BackgroundLayer } from 'src/components/layer/layer.model';
+import { BackgroundLayer } from 'src/features/layer/layer.model';
 import { distinctUntilKeyChanged } from 'rxjs';
 import { addSwisstopoLayer } from 'src/swisstopoImagery';
-import { BackgroundLayerService } from 'src/components/background/background-layer.service';
+import { BackgroundLayerService } from 'src/features/background/background-layer.service';
+import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 

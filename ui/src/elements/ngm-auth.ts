@@ -7,7 +7,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import DashboardStore from '../store/dashboard';
 import { consume } from '@lit/context';
 import { authServiceContext } from '../context';
-import '../components/core';
+import 'src/features/core';
 
 /**
  * Authentication component

@@ -1,0 +1,10 @@
+import './core-button.element';
+import './core-checkbox.element';
+import './core-chip.element';
+import './core-dropdown.element';
+import './core-dropdown-item.element';
+import './core-heading.element';
+import './core-icon.element';
+import './core-modal.element';
+import './core-slider.element';
+import './core-tooltip.element';
