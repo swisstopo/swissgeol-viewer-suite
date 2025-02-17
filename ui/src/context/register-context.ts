@@ -5,10 +5,11 @@ import {
   apiClientContext,
   authServiceContext,
   clientConfigContext,
+  gstServiceContext,
 } from './client-config.context';
 import { ApiClient } from '../api/api-client';
 import AuthService from '../authService';
-import { GstService } from '../gst.service'
+import { GstService } from '../gst.service';
 import {
   AnyBaseServiceType,
   BaseService,
@@ -40,10 +41,12 @@ export const registerAppContext = (
     }),
   );
 
-  contexts.push(new ContextProvider(element, {
-    context: gstServiceContext,
-    initialValue: new GstService(clientConfig),
-  }));
+  contexts.push(
+    new ContextProvider(element, {
+      context: gstServiceContext,
+      initialValue: new GstService(clientConfig),
+    }),
+  );
 
   const apiClient = new ApiClient(authService);
   contexts.push(
