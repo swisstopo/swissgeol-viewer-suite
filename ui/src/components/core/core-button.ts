@@ -101,7 +101,7 @@ export class CoreButton extends LitElement {
         color: var(--button-text--pressed);
         background-color: var(--button-bg--pressed);
         border-color: var(--button-border--pressed);
-        cursor: var(--button-cursor--pressed);
+        cursor: var(--button-cursor--pressed, var(--button-cursor, pointer));
       }
 
       &[disabled] {
