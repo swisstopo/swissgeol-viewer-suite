@@ -1,7 +1,6 @@
-import { LitElementI18n } from 'src/i18n';
 import { css, html } from 'lit';
 import i18next from 'i18next';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, query } from 'lit/decorators.js';
 import { LayerConfig } from 'src/layertree';
 import {
   LayerEvent,
@@ -10,14 +9,22 @@ import {
   LayersEventDetail,
 } from 'src/components/layer/layer-event.model';
 import 'src/components/navigation/navigation.module';
+import { CoreElement } from 'src/components/core';
 
 @customElement('ngm-layer-panel')
-export class LayerPanel extends LitElementI18n {
+export class LayerPanel extends CoreElement {
   @property()
   public accessor layers: LayerConfig[] | null = null;
 
   @property()
   public accessor displayLayers: LayerConfig[] | null = null;
+
+  @query('section.layers')
+  private accessor layersElement!: HTMLDivElement;
+
+  @query('section.tabs')
+  private accessor tabsElement!: HTMLDivElement;
+
   constructor() {
     super();
 
@@ -31,9 +38,20 @@ export class LayerPanel extends LitElementI18n {
     super.connectedCallback();
     this.setAttribute('role', 'complementary');
   }
+
+  firstUpdated(): void {
+    const observer = new ResizeObserver(() => {
+      const rect = this.layersElement.getBoundingClientRect();
+      this.tabsElement.style.setProperty('--layers-height', `${rect.height}px`);
+    });
+    observer.observe(this.layersElement);
+    this.register(() => observer.disconnect());
+  }
+
   private close(): void {
     this.dispatchEvent(new CustomEvent('close'));
   }
+
   private handleDisplayLayersUpdate(e: LayersEvent): void {
     this.dispatchEvent(
       new CustomEvent<LayersEventDetail>('display-layers-update', {
@@ -41,6 +59,7 @@ export class LayerPanel extends LitElementI18n {
       }),
     );
   }
+
   private handleDisplayLayerUpdate(e: LayerEvent): void {
     this.dispatchEvent(
       new CustomEvent<LayerEventDetail>('display-layer-update', {
@@ -48,6 +67,7 @@ export class LayerPanel extends LitElementI18n {
       }),
     );
   }
+
   private handleDisplayLayerRemoval(e: LayerEvent): void {
     this.dispatchEvent(
       new CustomEvent<LayerEventDetail>('display-layer-removal', {
@@ -70,9 +90,9 @@ export class LayerPanel extends LitElementI18n {
         ${i18next.t('dtd_displayed_data_label')}
       </ngm-navigation-panel-header>
       <div class="content">
-        <section>${this.renderLayers()}</section>
+        <section class="layers">${this.renderLayers()}</section>
         <hr />
-        <section>
+        <section class="tabs">
           <ngm-layer-tabs .layers=${this.layers}></ngm-layer-tabs>
         </section>
       </div>
@@ -93,14 +113,23 @@ export class LayerPanel extends LitElementI18n {
     :host,
     :host * {
       box-sizing: border-box;
+
+      --header-height: 64px;
     }
 
     .content > section {
       position: relative;
       background-color: var(--color-bg--dark);
       overflow-y: auto;
+    }
 
-      max-height: 50%;
+    .content > section.layers {
+      /* Layers can take up half of the available space, minus half the space reserved by the header and padding/gap. */
+      max-height: calc(50% - var(--header-height) / 2 - 16px);
+    }
+
+    .content > section.tabs {
+      max-height: calc(100% - var(--header-height) - var(--layers-height, 0));
     }
 
     section > * {
