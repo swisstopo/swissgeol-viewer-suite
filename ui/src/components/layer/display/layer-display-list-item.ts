@@ -343,6 +343,11 @@ export class LayerDisplayListItem extends CoreElement {
       border-color: var(--color-hovered);
     }
 
+    :host(.is-dragged),
+    :host(.is-in-drag) {
+      cursor: grabbing;
+    }
+
     :host > hr {
       --offset-h: 9px;
 
@@ -456,9 +461,6 @@ export class LayerDisplayListItem extends CoreElement {
     .handle ngm-core-button {
       --button-padding: 0;
       --button-border: var(--color-border--default);
-      --button-cursor: grab;
-      --button-cursor--pressed: grabbing;
-
       --button-icon-width: 16px;
       --button-icon-height: 22px;
     }
