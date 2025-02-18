@@ -48,7 +48,6 @@ export class NavigationSearch extends LitElementI18n {
     this.clear = this.clear.bind(this);
     this.handleItemSelected = this.handleItemSelected.bind(this);
     this.handleInputKeyPress = this.handleInputKeyPress.bind(this);
-    this.handleResultsHovered = this.handleResultsHovered.bind(this);
     this.matchFeature = this.matchFeature.bind(this);
     this.renderItem = this.renderItem.bind(this);
     this.searchAdditionalItems = this.searchAdditionalItems.bind(this);
@@ -217,17 +216,6 @@ export class NavigationSearch extends LitElementI18n {
     return results;
   }
 
-  private handleResultsHovered(event: MouseEvent): void {
-    const i = (event.target as HTMLElement).dataset['resultIndex'];
-    if (i == null) {
-      return;
-    }
-    const item = this.resultItems[i];
-    if (item != null) {
-      this.selectItem(item, { keepFocus: true });
-    }
-  }
-
   private handleItemSelected(event: SearchEvent): void {
     this.selectItem(event.detail.result, { allowLayerChanges: true });
   }
@@ -311,31 +299,15 @@ export class NavigationSearch extends LitElementI18n {
    */
   private handleInputKeyPress(event: KeyboardEvent): void {
     event.stopPropagation();
-    switch (event.key) {
-      case 'Enter': {
-        const target = this.findEnterTarget();
-        if (target != null) {
-          const [_item, element] = target;
-          element.click();
-        }
-        break;
-      }
-      case 'ArrowUp':
-      case 'ArrowDown': {
-        // Wait for a short interval before attempting to detect the currently selected item
-        // so the search has time to update the DOM.
-        setTimeout(() => {
-          const target = this.findActiveResult();
-          if (target != null) {
-            const [item, _element] = target;
-            this.selectItem(item, { keepFocus: true });
-          }
-        });
-        break;
-      }
-      default:
-        break;
+    if (event.key !== 'Enter') {
+      return;
     }
+    const target = this.findEnterTarget();
+    if (target == null) {
+      return;
+    }
+    const [_item, element] = target;
+    element.click();
   }
 
   private findEnterTarget(): [SearchItem, HTMLLIElement] | null {
@@ -417,10 +389,7 @@ export class NavigationSearch extends LitElementI18n {
         @click="${captureEvent}"
         @keydown="${this.handleInputKeyPress}"
       />
-      <ul
-        ${ref(this.resultsRef)}
-        @mouseover="${this.handleResultsHovered}"
-      ></ul>
+      <ul ${ref(this.resultsRef)}></ul>
     </ga-search>
 
     <ngm-core-icon icon="search" @click="${this.toggleActive}"></ngm-core-icon>
