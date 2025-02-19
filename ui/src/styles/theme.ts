@@ -68,11 +68,3 @@ export const upFrom = (breakpoint: Breakpoint): CSSResult => {
     @media (min-width: ${min}px);
   `;
 };
-
-export const hostStyles = css`
-  :host,
-  :host * {
-    ${applyTypography('body-1')};
-    box-sizing: border-box;
-  }
-`;

@@ -10,6 +10,17 @@ export class CoreElement extends LitElement {
 
   private readonly _subscription = new Subscription();
 
+  constructor() {
+    super();
+
+    for (const key of Object.keys(this.constructor)) {
+      const value = this[key];
+      if (typeof value === 'function') {
+        this[key] = value.bind(this);
+      }
+    }
+  }
+
   connectedCallback() {
     const handleLanguageChanged = (language) => {
       this.language = language;
