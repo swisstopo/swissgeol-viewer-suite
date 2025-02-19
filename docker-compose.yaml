@@ -1,4 +1,15 @@
 services:
+  titiler:
+    image: ghcr.io/developmentseed/titiler:latest
+    command: ["uvicorn", "titiler.application.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+    ports:
+      - "8481:8000"
+    volumes:
+      - ../tiles:/data:ro
+    environment:
+      CPL_VSIL_CURL_ALLOWED_EXTENSIONS: ".tif"
+      TITILER_API_DEBUG: "1"
+
   api:
     image: swissgeol-viewer-app/api:local
     build:

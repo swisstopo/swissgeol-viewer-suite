@@ -2,8 +2,10 @@ import { LitElementI18n } from '../i18n';
 import type { PropertyValues } from 'lit';
 import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import * as Cesium from 'cesium';
 import {
   Cartographic,
+  ImageryLayerFeatureInfo,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
 } from 'cesium';
@@ -29,39 +31,97 @@ export class NgmCoordinatePopup extends LitElementI18n {
   });
 
   connectedCallback() {
-    MainStore.viewer.subscribe((viewer) => {
-      if (viewer) {
-        this.eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
-        this.eventHandler.setInputAction((event) => {
-          this.opened = false;
-          const cartesian = viewer.scene.pickPosition(event.position);
-          if (cartesian) {
-            const cartCoords = Cartographic.fromCartesian(cartesian);
-            this.coordinatesLv95 = formatCartographicAs2DLv95(cartCoords);
-            this.coordinatesWgs84 = [
-              cartCoords.longitude,
-              cartCoords.latitude,
-            ].map(radToDeg);
-            this.elevation = this.integerFormat.format(
-              cartCoords.height / viewer.scene.verticalExaggeration,
-            );
-            const altitude = viewer.scene.globe.getHeight(cartCoords) || 0;
-            this.terrainDistance = this.integerFormat.format(
-              Math.abs(cartCoords.height - altitude),
-            );
-            this.style.left = event.position.x + 'px';
-            this.style.top = event.position.y + 10 + 'px';
-            this.opened = true;
-            return;
-          }
-        }, ScreenSpaceEventType.RIGHT_CLICK);
-        viewer.camera.moveStart.addEventListener(() => {
-          if (this.opened) this.opened = false;
-        });
-        this.eventHandler.setInputAction(() => {
-          if (this.opened) this.opened = false;
-        }, ScreenSpaceEventType.LEFT_DOWN);
+    MainStore.viewer.subscribe(async (viewer) => {
+      if (!viewer) {
+        return;
       }
+
+      // const layer = await IonImageryProvider.fromAssetId(3094071);
+      //
+      // viewer.imageryLayers.addImageryProvider(layer);
+
+      const band = 2;
+      const colormapName = 'gnbu_r';
+      const layer = new Cesium.UrlTemplateImageryProvider({
+        url: `http://localhost:8481/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=/data/output_3857_cog.tif&bidx=${band}&rescale=0,255&colormap_name=${colormapName}`,
+        rectangle: Cesium.Rectangle.fromDegrees(
+          7.30704928715091, // West longitude
+          46.590097316038246, // South latitude
+          7.964926907290575, // East longitude
+          47.04103374247295, // North latitude
+        ),
+        tilingScheme: new Cesium.WebMercatorTilingScheme(),
+        enablePickFeatures: true,
+        credit: 'TiTiler',
+        hasAlphaChannel: true,
+      });
+
+      const imagery = viewer.imageryLayers.addImageryProvider(layer);
+      imagery.alpha = 0.75;
+      layer.pickFeatures = async (x, y): Promise<ImageryLayerFeatureInfo[]> => {
+        const url = `http://localhost:8481/cog/point/${x},${y}?url=/data/output_3857_cog.tif`;
+        interface Json {
+          coorridnates: [number, number];
+          values: number[];
+          band_names: string[];
+        }
+
+        const json: Json = await Cesium.Resource.fetchJson({ url });
+        const info = new ImageryLayerFeatureInfo();
+        info.imageryLayer = imagery;
+        console.log(json);
+        return [info];
+      };
+
+      viewer.screenSpaceEventHandler.setInputAction(async (event) => {
+        const cartesian = viewer.scene.pickPosition(event.position);
+        const coords = Cartographic.fromCartesian(cartesian);
+
+        const longitude = Cesium.Math.toDegrees(coords.longitude);
+        const latitude = Cesium.Math.toDegrees(coords.latitude);
+
+        console.log({ longitude, latitude, coords });
+
+        const out = await layer.pickFeatures(
+          longitude,
+          latitude,
+          0,
+          coords.longitude,
+          coords.latitude,
+        );
+        console.log(out);
+      }, ScreenSpaceEventType.LEFT_CLICK);
+
+      this.eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
+      this.eventHandler.setInputAction((event) => {
+        this.opened = false;
+        const cartesian = viewer.scene.pickPosition(event.position);
+        if (cartesian) {
+          const cartCoords = Cartographic.fromCartesian(cartesian);
+          this.coordinatesLv95 = formatCartographicAs2DLv95(cartCoords);
+          this.coordinatesWgs84 = [
+            cartCoords.longitude,
+            cartCoords.latitude,
+          ].map(radToDeg);
+          this.elevation = this.integerFormat.format(
+            cartCoords.height / viewer.scene.verticalExaggeration,
+          );
+          const altitude = viewer.scene.globe.getHeight(cartCoords) || 0;
+          this.terrainDistance = this.integerFormat.format(
+            Math.abs(cartCoords.height - altitude),
+          );
+          this.style.left = event.position.x + 'px';
+          this.style.top = event.position.y + 10 + 'px';
+          this.opened = true;
+          return;
+        }
+      }, ScreenSpaceEventType.RIGHT_CLICK);
+      viewer.camera.moveStart.addEventListener(() => {
+        if (this.opened) this.opened = false;
+      });
+      this.eventHandler.setInputAction(() => {
+        if (this.opened) this.opened = false;
+      }, ScreenSpaceEventType.LEFT_DOWN);
     });
     super.connectedCallback();
   }

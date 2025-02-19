@@ -40,10 +40,10 @@ export default class QueryManager {
     this.objectSelector = new ObjectSelector(viewer);
     this.viewer = viewer;
     this.scene = viewer.scene;
-    viewer.screenSpaceEventHandler.setInputAction(
-      (click) => this.onclick(click),
-      ScreenSpaceEventType.LEFT_CLICK,
-    );
+    // viewer.screenSpaceEventHandler.setInputAction(
+    //   (click) => this.onclick(click),
+    //   ScreenSpaceEventType.LEFT_CLICK,
+    // );
     this.viewer.dataSources.add(this.highlightedGroup);
   }
 
