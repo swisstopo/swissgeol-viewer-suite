@@ -11,9 +11,7 @@ const resolveGitBranch = async () => {
   try {
     // Check if the current directory is a Git repository
     await execPromise('git rev-parse --is-inside-work-tree');
-    return (await execPromise('git rev-parse --abbrev-ref HEAD')).stdout
-      .toString()
-      .trim();
+    return (await execPromise('git rev-parse --abbrev-ref HEAD')).stdout.toString().trim();
   } catch (_gitError) {
     throw new Error('Failed to resolve git branch: not a git repository');
   }
@@ -21,10 +19,7 @@ const resolveGitBranch = async () => {
 
 try {
   const appVersion = process.env.APP_VERSION;
-  const version =
-    appVersion != null && appVersion.length !== 0
-      ? appVersion
-      : await resolveGitBranch();
+  const version = appVersion != null && appVersion.length !== 0 ? appVersion : await resolveGitBranch();
 
   const jsonContent = `{'branch': '${version}'}`;
   const content = `export const environment = ${jsonContent};`;

@@ -7,11 +7,7 @@ import DrawStore from '../store/draw';
 import MainStore from '../store/main';
 import MeasureTool from '../measure/MeasureTool';
 import { DrawInfo } from '../draw/CesiumDraw';
-import {
-  DEFAULT_AOI_COLOR,
-  GEOMETRY_LINE_ALPHA,
-  HIGHLIGHTED_GEOMETRY_COLOR,
-} from '../constants';
+import { DEFAULT_AOI_COLOR, GEOMETRY_LINE_ALPHA, HIGHLIGHTED_GEOMETRY_COLOR } from '../constants';
 import './ngm-line-info';
 
 @customElement('ngm-measure')
@@ -77,11 +73,8 @@ export class NgmMeasure extends LitElementI18n {
           <div class="ngm-line-draw-icon"></div>
           <div>${i18next.t('tbx_measure_line_label')}</div>
         </div>
-        <div class="ngm-hint" .hidden="${!this.active}">
-          ${i18next.t('tbx_measure_hint')}
-        </div>
-        <ngm-line-info .hidden="${!this.active}" .lineInfo=${this.lineInfo}>
-        </ngm-line-info>
+        <div class="ngm-hint" .hidden="${!this.active}">${i18next.t('tbx_measure_hint')}</div>
+        <ngm-line-info .hidden="${!this.active}" .lineInfo=${this.lineInfo}> </ngm-line-info>
       </div>
       ${this.lineInfo?.segments.map(
         (segment, indx) => html`
@@ -95,36 +88,20 @@ export class NgmMeasure extends LitElementI18n {
             </div>
             <div class="ngm-geom-info-content">
               <div>
-                <div class="ngm-geom-info-label">
-                  ${i18next.t('obj_info_length_label')}
-                </div>
-                <div class="ngm-geom-info-value">
-                  ${segment.length.toFixed(3)} km
-                </div>
+                <div class="ngm-geom-info-label">${i18next.t('obj_info_length_label')}</div>
+                <div class="ngm-geom-info-value">${segment.length.toFixed(3)} km</div>
               </div>
               <div>
-                <div class="ngm-geom-info-label">
-                  ${i18next.t('tbx_measure_easting_label')}
-                </div>
-                <div class="ngm-geom-info-value">
-                  ${segment.eastingDiff.toFixed(3)} km
-                </div>
+                <div class="ngm-geom-info-label">${i18next.t('tbx_measure_easting_label')}</div>
+                <div class="ngm-geom-info-value">${segment.eastingDiff.toFixed(3)} km</div>
               </div>
               <div>
-                <div class="ngm-geom-info-label">
-                  ${i18next.t('tbx_measure_northing_label')}
-                </div>
-                <div class="ngm-geom-info-value">
-                  ${segment.northingDiff.toFixed(3)} km
-                </div>
+                <div class="ngm-geom-info-label">${i18next.t('tbx_measure_northing_label')}</div>
+                <div class="ngm-geom-info-value">${segment.northingDiff.toFixed(3)} km</div>
               </div>
               <div>
-                <div class="ngm-geom-info-label">
-                  ${i18next.t('tbx_measure_height_label')}
-                </div>
-                <div class="ngm-geom-info-value">
-                  ${this.integerFormat.format(segment.heightDiff)} m
-                </div>
+                <div class="ngm-geom-info-label">${i18next.t('tbx_measure_height_label')}</div>
+                <div class="ngm-geom-info-value">${this.integerFormat.format(segment.heightDiff)} m</div>
               </div>
             </div>
           </div>

@@ -6,13 +6,7 @@ import { showSnackbarError, showSnackbarInfo } from '../notifications';
 import i18next from 'i18next';
 import { LitElementI18n } from '../i18n.js';
 import type { Viewer } from 'cesium';
-import {
-  Cartographic,
-  Color,
-  IonResource,
-  JulianDate,
-  KmlDataSource,
-} from 'cesium';
+import { Cartographic, Color, IonResource, JulianDate, KmlDataSource } from 'cesium';
 import './ngm-gst-modal';
 import '../elements/ngm-i18n-content.js';
 import $ from 'jquery';
@@ -49,8 +43,7 @@ export class NgmGstInteraction extends LitElementI18n {
     MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       this.initExtent().then(() => {
-        if (this.gstExtent?.show !== !this.hidden)
-          this.switchExtent(!this.hidden);
+        if (this.gstExtent?.show !== !this.hidden) this.switchExtent(!this.hidden);
       });
     });
 
@@ -104,22 +97,12 @@ export class NgmGstInteraction extends LitElementI18n {
 
   getGST(geom: NgmGeometry) {
     if (this.hasValidParams(geom)) {
-      const coordinates = geom.positions
-        .map((position) => cartesianToLv95(position))
-        .map(round);
+      const coordinates = geom.positions.map((position) => cartesianToLv95(position)).map(round);
       let promise;
       if (geom.type === 'point') {
-        promise = borehole(
-          coordinates,
-          this.abortController.signal,
-          this.outputFormat,
-        );
+        promise = borehole(coordinates, this.abortController.signal, this.outputFormat);
       } else if (geom.type === 'line') {
-        promise = verticalCrossSection(
-          coordinates,
-          this.abortController.signal,
-          this.outputFormat,
-        );
+        promise = verticalCrossSection(coordinates, this.abortController.signal, this.outputFormat);
       } else if (geom.type === 'rectangle') {
         promise = horizontalCrossSection(
           coordinates,
@@ -225,10 +208,7 @@ export class NgmGstInteraction extends LitElementI18n {
     if (!geom.id) return '';
     if (this.depth[geom.id] === undefined) this.depth[geom.id] = -1500;
     return html`
-      <div
-        class="ngm-gst-container"
-        ?hidden=${geom.id !== this.selectedId || !active}
-      >
+      <div class="ngm-gst-container" ?hidden=${geom.id !== this.selectedId || !active}>
         <div
           class="ngm-input ${classMap({
             'ngm-input-warning': !this.hasValidDepth(geom.id),
@@ -244,9 +224,7 @@ export class NgmGstInteraction extends LitElementI18n {
             max="${this.maxDepth_}"
             step="100"
           />
-          <span class="ngm-floating-label"
-            >${i18next.t('tbx_cross_sections_depth_label')}</span
-          >
+          <span class="ngm-floating-label">${i18next.t('tbx_cross_sections_depth_label')}</span>
         </div>
         <div class="ngm-section-format-container">
           <label>${i18next.t('tbx_cross_sections_format_label')}</label>
@@ -277,11 +255,9 @@ export class NgmGstInteraction extends LitElementI18n {
         .selectedId=${this.selectedId}
         .disabledTypes=${['polygon']}
         .disabledCallback=${(geom) => this.geometryOutsideExtent(geom)}
-        .optionsTemplate=${(geom, active) =>
-          this.interactionTemplate(geom, active)}
+        .optionsTemplate=${(geom, active) => this.interactionTemplate(geom, active)}
         @geomclick=${(evt) => this.onGeomClick(evt.detail)}
-        @geometriesadded=${(evt) =>
-          this.onGeometryAdded(evt.detail.newGeometries)}
+        @geometriesadded=${(evt) => this.onGeometryAdded(evt.detail.newGeometries)}
       >
       </ngm-geometries-list>`;
   }

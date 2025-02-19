@@ -4,22 +4,12 @@ import i18next from 'i18next';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { COLORS_WITH_BLACK_TICK, PROJECT_COLORS } from '../../constants';
-import {
-  Asset,
-  CreateProject,
-  Member,
-  Project,
-  type View,
-} from './ngm-dashboard';
+import { Asset, CreateProject, Member, Project, type View } from './ngm-dashboard';
 import { customElement, property, query } from 'lit/decorators.js';
 import $ from 'jquery';
 import '../../toolbox/ngm-geometries-list';
 import { ApiClient } from '../../api/api-client';
-import {
-  showSnackbarError,
-  showBannerWarning,
-  isBannerShown,
-} from '../../notifications';
+import { showSnackbarError, showBannerWarning, isBannerShown } from '../../notifications';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
 import { MemberToAdd } from './ngm-add-member-form';
@@ -56,19 +46,11 @@ export class NgmProjectEdit extends LitElementI18n {
       const response = await this.apiClient.uploadProjectAsset(file);
       const key: string = (await response.json())?.key;
       if (key) {
-        const assets = [
-          ...this.project!.assets,
-          { name: file.name, key, clampToGround },
-        ];
+        const assets = [...this.project!.assets, { name: file.name, key, clampToGround }];
         this.project = { ...this.project, assets };
         const viewer = MainStore.viewer.value;
         if (viewer && this.tempKmlDataSource) {
-          const name = await parseKml(
-            viewer,
-            file,
-            this.tempKmlDataSource,
-            clampToGround,
-          );
+          const name = await parseKml(viewer, file, this.tempKmlDataSource, clampToGround);
           MainStore.addUploadedKmlName(name);
           viewer.scene.requestRender();
           viewer.flyTo(this.tempKmlDataSource);
@@ -119,24 +101,16 @@ export class NgmProjectEdit extends LitElementI18n {
 
   showSaveOrCancelWarning() {
     if (!isBannerShown(this.toastPlaceholder))
-      showBannerWarning(
-        this.toastPlaceholder,
-        i18next.t('project_lost_changes_warning'),
-      );
+      showBannerWarning(this.toastPlaceholder, i18next.t('project_lost_changes_warning'));
     DashboardStore.showSaveOrCancelWarning(false);
   }
 
   updated(changedProperties) {
-    if (
-      changedProperties.has('saveOrCancelWarning') &&
-      this.saveOrCancelWarning
-    ) {
+    if (changedProperties.has('saveOrCancelWarning') && this.saveOrCancelWarning) {
       this.showSaveOrCancelWarning();
     }
     if (changedProperties.has('project')) {
-      this.querySelectorAll('.ui.dropdown').forEach((elem) =>
-        $(elem).dropdown(),
-      );
+      this.querySelectorAll('.ui.dropdown').forEach((elem) => $(elem).dropdown());
     }
   }
 
@@ -148,9 +122,7 @@ export class NgmProjectEdit extends LitElementI18n {
   render() {
     if (!this.project) return '';
     const project = this.project;
-    const backgroundImage = project.image?.length
-      ? `url('${project.image}')`
-      : '';
+    const backgroundImage = project.image?.length ? `url('${project.image}')` : '';
     return html`
       <div>
         <div class="ngm-toast-placeholder" id="project-toast"></div>
@@ -169,15 +141,11 @@ export class NgmProjectEdit extends LitElementI18n {
                 this.requestUpdate();
               }}
             />
-            <span class="ngm-floating-label"
-              >${i18next.t('project_title')}</span
-            >
+            <span class="ngm-floating-label">${i18next.t('project_title')}</span>
           </div>
           <div class="project-menu">
             <div class="edit-project active">
-              ${this.createMode
-                ? i18next.t('dashboard_project_create')
-                : i18next.t('dashboard_project_in_edit')}
+              ${this.createMode ? i18next.t('dashboard_project_create') : i18next.t('dashboard_project_in_edit')}
               <div class="ngm-edit-icon active"></div>
             </div>
           </div>
@@ -189,14 +157,8 @@ export class NgmProjectEdit extends LitElementI18n {
             </div>`}
         <div class="ngm-proj-information">
           <div class="project-image-and-color">
-            <div
-              class="ngm-proj-preview-img"
-              style=${styleMap({ backgroundImage })}
-            ></div>
-            <div
-              class="project-color-picker"
-              style=${styleMap({ backgroundColor: 'white' })}
-            >
+            <div class="ngm-proj-preview-img" style=${styleMap({ backgroundImage })}></div>
+            <div class="project-color-picker" style=${styleMap({ backgroundColor: 'white' })}>
               <div class="ngm-geom-colorpicker">
                 ${PROJECT_COLORS.map(
                   (color) =>
@@ -222,9 +184,7 @@ export class NgmProjectEdit extends LitElementI18n {
               .value=${<string>project.description || ''}
               @input=${(evt) => (project.description = evt.target.value)}
             ></textarea>
-            <span class="ngm-floating-label"
-              >${i18next.t('project_description')}</span
-            >
+            <span class="ngm-floating-label">${i18next.t('project_description')}</span>
           </div>
         </div>
       </div>
@@ -261,9 +221,7 @@ export class NgmProjectEdit extends LitElementI18n {
                     this.requestUpdate();
                   }}
                 />
-                <span class="ngm-floating-label"
-                  >${i18next.t('project_view')}</span
-                >
+                <span class="ngm-floating-label">${i18next.t('project_view')}</span>
               </div>
               <div class="ui dropdown right pointing ngm-action-menu">
                 <div class="ngm-view-icon ngm-action-menu-icon"></div>
@@ -305,14 +263,11 @@ export class NgmProjectEdit extends LitElementI18n {
       </div>
       <div class="ngm-divider"></div>
       <div class="ngm-proj-edit-assets">
-        <ngm-project-geoms-section
-          .geometries="${project.geometries}"
-        ></ngm-project-geoms-section>
+        <ngm-project-geoms-section .geometries="${project.geometries}"></ngm-project-geoms-section>
         <ngm-project-assets-section
           .assets="${project.assets}"
           .toastPlaceholder="${this.toastPlaceholder}"
-          .onKmlUpload="${(file: File, clampToGround: boolean) =>
-            this.onKmlUpload(file, clampToGround)}"
+          .onKmlUpload="${(file: File, clampToGround: boolean) => this.onKmlUpload(file, clampToGround)}"
           @assetsChanged="${(evt: { detail: { assets: Asset[] } }) => {
             project!.assets = evt.detail.assets;
             this.project = { ...project };
@@ -327,10 +282,7 @@ export class NgmProjectEdit extends LitElementI18n {
         @onMemberDelete=${(evt) => this.onMemberDelete(evt)}
       ></ngm-project-members-section>
       <div class="ngm-divider"></div>
-      <div
-        class="ngm-label-btn"
-        @click=${() => this.dispatchEvent(new CustomEvent('onBack'))}
-      >
+      <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onBack'))}>
         <div class="ngm-back-icon"></div>
         ${i18next.t('dashboard_back_to_topics')}
       </div>
@@ -339,10 +291,7 @@ export class NgmProjectEdit extends LitElementI18n {
           class="ui button ngm-action-btn ${classMap({
             'ngm-disabled': !project.title,
           })}"
-          @click=${() =>
-            this.dispatchEvent(
-              new CustomEvent('onSave', { detail: { project } }),
-            )}
+          @click=${() => this.dispatchEvent(new CustomEvent('onSave', { detail: { project } }))}
         >
           ${i18next.t('save_project')}
         </button>

@@ -53,13 +53,10 @@ export class NgmIonModal extends LitElementI18n {
     const currentToken = MainStore.ionToken.value;
     const assets = getAssetIds();
     if (currentToken !== this.token && assets.length) {
-      this.confirmationToast = showSnackbarConfirmation(
-        i18next.t('dtd_remove_assets_confirmation'),
-        {
-          onApprove: () => this.onLoadAssets(true),
-          onDeny: () => (this.confirmationToast = undefined),
-        },
-      );
+      this.confirmationToast = showSnackbarConfirmation(i18next.t('dtd_remove_assets_confirmation'), {
+        onApprove: () => this.onLoadAssets(true),
+        onDeny: () => (this.confirmationToast = undefined),
+      });
     } else {
       this.onLoadAssets();
     }
@@ -98,9 +95,7 @@ export class NgmIonModal extends LitElementI18n {
                 this.token = evt.target.value;
               }}
             />
-            <span class="ngm-floating-label"
-              >${i18next.t('dtd_ion_token_label')}</span
-            >
+            <span class="ngm-floating-label">${i18next.t('dtd_ion_token_label')}</span>
           </div>
           <button
             class="ui button ngm-load-ion-btn ngm-action-btn ${classMap({
@@ -109,20 +104,13 @@ export class NgmIonModal extends LitElementI18n {
             })}"
             @click=${() => this.loadAssets()}
           >
-            ${this.preloader
-              ? html` <div class="ui loader"></div>`
-              : i18next.t('dtd_load_ion_assets_btn')}
+            ${this.preloader ? html` <div class="ui loader"></div>` : i18next.t('dtd_load_ion_assets_btn')}
           </button>
         </div>
-        <label .hidden=${!this.errorMessage?.length} class="ngm-ion-error"
-          >${this.errorMessage}</label
-        >
+        <label .hidden=${!this.errorMessage?.length} class="ngm-ion-error">${this.errorMessage}</label>
         <div class="ngm-divider" .hidden=${!this.assets.length}></div>
         <div class="ngm-ion-assets">
-          <table
-            class="ui compact small very basic table ngm-info-table"
-            .hidden=${!this.assets.length}
-          >
+          <table class="ui compact small very basic table ngm-info-table" .hidden=${!this.assets.length}>
             <tbody>
               <tr class="top aligned">
                 <td class="key">ID</td>
@@ -135,10 +123,7 @@ export class NgmIonModal extends LitElementI18n {
                     <td class="key">${row.id}</td>
                     <td class="value">${row.name}</td>
                     <td>
-                      <button
-                        class="ui button ngm-add-ion-btn ngm-action-btn"
-                        @click=${() => this.addAsset(row)}
-                      >
+                      <button class="ui button ngm-add-ion-btn ngm-action-btn" @click=${() => this.addAsset(row)}>
                         ${i18next.t('dtd_add_ion_asset_btn')}
                       </button>
                     </td>

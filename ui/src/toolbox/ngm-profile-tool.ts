@@ -55,10 +55,8 @@ export class NgmProfileTool extends LitElementI18n {
       <ngm-geometries-list
         .selectedId=${this.selectedGeomId}
         .disabledTypes=${['polygon', 'rectangle', 'point']}
-        @geomclick=${(evt: CustomEvent<NgmGeometry>) =>
-          this.onGeomClick(evt.detail.id)}
-        @geometriesadded=${(evt) =>
-          this.onGeometryAdded(evt.detail.newGeometries)}
+        @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.onGeomClick(evt.detail.id)}
+        @geometriesadded=${(evt) => this.onGeometryAdded(evt.detail.newGeometries)}
       >
       </ngm-geometries-list>`;
   }

@@ -24,23 +24,16 @@ export type ProjectParamSubject = {
 export type ProjectMode = 'edit' | 'viewEdit' | 'viewOnly' | undefined;
 
 export default class DashboardStore {
-  private static readonly selectedTopicOrProjectSubject = new BehaviorSubject<
-    Topic | Project | undefined
-  >(undefined);
+  private static readonly selectedTopicOrProjectSubject = new BehaviorSubject<Topic | Project | undefined>(undefined);
   private static readonly viewIndexSubject = new Subject<number | undefined>();
   private static readonly topicOrProjectParamSubject = new BehaviorSubject<
     TopicParamSubject | ProjectParamSubject | undefined
   >(undefined);
-  private static readonly projectModeSubject = new BehaviorSubject<ProjectMode>(
-    undefined,
-  );
+  private static readonly projectModeSubject = new BehaviorSubject<ProjectMode>(undefined);
   private static readonly geometriesSubject = new Subject<NgmGeometry[]>();
-  private static readonly showSaveOrCancelWarningSubject =
-    new Subject<boolean>();
+  private static readonly showSaveOrCancelWarningSubject = new Subject<boolean>();
 
-  static get selectedTopicOrProject(): BehaviorSubject<
-    Topic | Project | undefined
-  > {
+  static get selectedTopicOrProject(): BehaviorSubject<Topic | Project | undefined> {
     return this.selectedTopicOrProjectSubject;
   }
 
@@ -52,9 +45,7 @@ export default class DashboardStore {
   static setViewIndex(value: number | undefined): void {
     const projectOrTopic = this.selectedTopicOrProjectSubject.value;
     if (value !== undefined && projectOrTopic) {
-      const mode = isProjectOwnerOrEditor(projectOrTopic)
-        ? 'viewEdit'
-        : 'viewOnly';
+      const mode = isProjectOwnerOrEditor(projectOrTopic) ? 'viewEdit' : 'viewOnly';
       if (this.projectMode.value !== mode) this.setProjectMode(mode);
     } else {
       this.setProjectMode(undefined);
@@ -66,15 +57,11 @@ export default class DashboardStore {
     return this.viewIndexSubject;
   }
 
-  static setTopicOrProjectParam(
-    value: TopicParamSubject | ProjectParamSubject,
-  ) {
+  static setTopicOrProjectParam(value: TopicParamSubject | ProjectParamSubject) {
     this.topicOrProjectParamSubject.next(value);
   }
 
-  static get topicOrProjectParam(): BehaviorSubject<
-    TopicParamSubject | ProjectParamSubject | undefined
-  > {
+  static get topicOrProjectParam(): BehaviorSubject<TopicParamSubject | ProjectParamSubject | undefined> {
     return this.topicOrProjectParamSubject;
   }
 

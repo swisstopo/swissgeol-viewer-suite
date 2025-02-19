@@ -35,12 +35,7 @@ export class NgmAddMemberForm extends LitElementI18n {
   ];
 
   onAdd() {
-    if (
-      !this.name ||
-      !this.surname ||
-      !isEmail(this.email) ||
-      !this.memberRole
-    ) {
+    if (!this.name || !this.surname || !isEmail(this.email) || !this.memberRole) {
       this.name = this.name ?? '';
       this.surname = this.surname ?? '';
       this.email = this.email ?? '';
@@ -81,9 +76,7 @@ export class NgmAddMemberForm extends LitElementI18n {
             this.name = evt.target.value;
           }}
         />
-        <span class="ngm-floating-label"
-          >${i18next.t('project_member_name')}</span
-        >
+        <span class="ngm-floating-label">${i18next.t('project_member_name')}</span>
       </div>
       <div
         class="ngm-input ${classMap({
@@ -98,9 +91,7 @@ export class NgmAddMemberForm extends LitElementI18n {
             this.surname = evt.target.value;
           }}
         />
-        <span class="ngm-floating-label"
-          >${i18next.t('project_member_surname')}</span
-        >
+        <span class="ngm-floating-label">${i18next.t('project_member_surname')}</span>
       </div>
       <div
         class="ngm-input ${classMap({
@@ -115,16 +106,13 @@ export class NgmAddMemberForm extends LitElementI18n {
             this.email = evt.target.value;
           }}
         />
-        <span class="ngm-floating-label"
-          >${i18next.t('project_member_email')}</span
-        >
+        <span class="ngm-floating-label">${i18next.t('project_member_email')}</span>
       </div>
       <ngm-dropdown
         .items=${this.roleDropdownItems}
         .selectedValue=${this.memberRole}
         .defaultText=${i18next.t('dashboard_project_choose_role')}
-        @changed=${(evt: DropdownChangedEvent<EditableRole>) =>
-          (this.memberRole = evt.detail.newValue)}
+        @changed=${(evt: DropdownChangedEvent<EditableRole>) => (this.memberRole = evt.detail.newValue)}
       >
       </ngm-dropdown>
       <div class="action-buttons">

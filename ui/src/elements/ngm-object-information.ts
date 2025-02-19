@@ -41,10 +41,7 @@ export class NgmObjectInformation extends LitElementI18n {
 
   render() {
     this.hidden = !this.opened;
-    if (
-      this.info &&
-      (this.info.popupItems?.length || this.info.properties?.length)
-    ) {
+    if (this.info && (this.info.popupItems?.length || this.info.properties?.length)) {
       const content = this.info.popupItems?.length
         ? this.info.popupItems.map(
             (it) =>
@@ -54,10 +51,7 @@ export class NgmObjectInformation extends LitElementI18n {
                 @mouseleave=${() => it.mouseLeave()}
               >
                 <div class="item-zoom-btn-container" ?hidden="${!it.zoom}">
-                  <button
-                    @click="${it.zoom}"
-                    class="ui button ngm-zoom-obj-btn ngm-action-btn"
-                  >
+                  <button @click="${it.zoom}" class="ui button ngm-zoom-obj-btn ngm-action-btn">
                     ${i18next.t('obj_info_zoom_to_object_btn_label')}
                     <div class="ngm-zoom-plus-icon"></div>
                   </button>
@@ -75,18 +69,14 @@ export class NgmObjectInformation extends LitElementI18n {
                     <tr class="top aligned">
                       <td class="key">${i18next.t(`assets:${key}`)}</td>
                       <td class="value">
-                        <a href="${value}" target="_blank" rel="noopener"
-                          >${value.split('/').pop()}</a
-                        >
+                        <a href="${value}" target="_blank" rel="noopener">${value.split('/').pop()}</a>
                       </td>
                     </tr>
                   `;
                 } else {
                   return html`
                     <tr class="top aligned">
-                      <td class="key">
-                        ${key.includes(' ') ? key : i18next.t(`assets:${key}`)}
-                      </td>
+                      <td class="key">${key.includes(' ') ? key : i18next.t(`assets:${key}`)}</td>
                       <td class="value">${value}</td>
                     </tr>
                   `;
@@ -104,16 +94,10 @@ export class NgmObjectInformation extends LitElementI18n {
 
       return html`
         <div class="ngm-floating-window-header drag-handle">
-          <div
-            class="ngm-close-icon"
-            @click=${() => (this.opened = false)}
-          ></div>
+          <div class="ngm-close-icon" @click=${() => (this.opened = false)}></div>
         </div>
         <div class="htmlpopup-header" ?hidden="${!this.info.zoom}">
-          <button
-            @click="${this.info.zoom}"
-            class="ui button ngm-zoom-obj-btn ngm-action-btn"
-          >
+          <button @click="${this.info.zoom}" class="ui button ngm-zoom-obj-btn ngm-action-btn">
             ${i18next.t('obj_info_zoom_to_object_btn_label')}
             <div class="ngm-zoom-plus-icon"></div>
           </button>

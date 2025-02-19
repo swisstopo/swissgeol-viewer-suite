@@ -136,9 +136,7 @@ export default class LayerUploadKml extends LitElementI18n {
 
   private isFileTooLarge(file: File): boolean {
     return (
-      typeof this.maxFileSize === 'number' &&
-      !isNaN(this.maxFileSize) &&
-      file.size > this.maxFileSize * 1024 * 1024
+      typeof this.maxFileSize === 'number' && !isNaN(this.maxFileSize) && file.size > this.maxFileSize * 1024 * 1024
     );
   }
 
@@ -146,24 +144,13 @@ export default class LayerUploadKml extends LitElementI18n {
     <button class="upload" @click="${() => this.fileInput.click()}">
       <span class="title">
         <ngm-core-icon icon="upload" ?hidden=${this.isLoading}></ngm-core-icon>
-        <div
-          class="ui inline mini loader ${classMap({ active: this.isLoading })}"
-        ></div>
+        <div class="ui inline mini loader ${classMap({ active: this.isLoading })}"></div>
         ${i18next.t('dtd_kml_upload_button_title')}
       </span>
-      <span class="subtitle">
-        ${i18next.t('dtd_kml_upload_button_subtitle')}
-      </span>
+      <span class="subtitle"> ${i18next.t('dtd_kml_upload_button_subtitle')} </span>
     </button>
-    <input
-      type="file"
-      accept=".kml,.KML"
-      hidden
-      @change=${this.handleFileSelection}
-    />
-    ${this.violation == null
-      ? ''
-      : html` <span class="violation">${this.violation}</span> `}
+    <input type="file" accept=".kml,.KML" hidden @change=${this.handleFileSelection} />
+    ${this.violation == null ? '' : html` <span class="violation">${this.violation}</span> `}
   `;
 
   static readonly styles = css`

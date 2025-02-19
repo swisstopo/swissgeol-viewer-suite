@@ -11,10 +11,7 @@ export default class LayersUpload extends LitElementI18n {
   @property({ type: Object })
   accessor toastPlaceholder!: HTMLElement;
   @property({ type: Function })
-  accessor onKmlUpload!: (
-    file: File,
-    clampToGround: boolean,
-  ) => Promise<void> | void;
+  accessor onKmlUpload!: (file: File, clampToGround: boolean) => Promise<void> | void;
   @property({ type: Number })
   accessor maxFileSize: number | undefined;
   @state()
@@ -34,10 +31,7 @@ export default class LayersUpload extends LitElementI18n {
       !isNaN(this.maxFileSize) &&
       file.size > this.maxFileSize * 1024 * 1024
     ) {
-      showBannerError(
-        this.toastPlaceholder,
-        `${i18next.t('dtd_max_size_exceeded_warn')} ${this.maxFileSize}MB`,
-      );
+      showBannerError(this.toastPlaceholder, `${i18next.t('dtd_max_size_exceeded_warn')} ${this.maxFileSize}MB`);
     } else {
       try {
         this.loading = true;
@@ -47,10 +41,7 @@ export default class LayersUpload extends LitElementI18n {
       } catch (e) {
         this.loading = false;
         console.error(e);
-        showBannerError(
-          this.toastPlaceholder,
-          i18next.t('dtd_cant_upload_kml_error'),
-        );
+        showBannerError(this.toastPlaceholder, i18next.t('dtd_cant_upload_kml_error'));
       }
     }
   }
@@ -72,17 +63,11 @@ export default class LayersUpload extends LitElementI18n {
         @drop="${this.onDrop}"
         @dragenter=${(event: DragEvent) => $(event.target!).addClass('active')}
         @dragover="${(event: DragEvent) => event.preventDefault()}"
-        @dragleave=${(event: DragEvent) =>
-          $(event.target!).removeClass('active')}
+        @dragleave=${(event: DragEvent) => $(event.target!).removeClass('active')}
       >
         ${i18next.t('dtd_add_own_kml')}
-        <div
-          ?hidden=${this.loading}
-          class="ngm-layer-icon ngm-file-upload-icon"
-        ></div>
-        <div
-          class="ui inline mini loader ${classMap({ active: this.loading })}"
-        ></div>
+        <div ?hidden=${this.loading} class="ngm-layer-icon ngm-file-upload-icon"></div>
+        <div class="ui inline mini loader ${classMap({ active: this.loading })}"></div>
       </button>
       <input
         class="ngm-upload-kml"
@@ -93,10 +78,7 @@ export default class LayersUpload extends LitElementI18n {
       />
       <div
         class="ngm-checkbox ${classMap({ active: this.clampToGround })}"
-        @click=${() =>
-          (<HTMLInputElement>(
-            this.querySelector('.ngm-checkbox > input')
-          )).click()}
+        @click=${() => (<HTMLInputElement>this.querySelector('.ngm-checkbox > input')).click()}
       >
         <input
           type="checkbox"

@@ -43,15 +43,10 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
     if (!this.item) return;
     if (this.item.swissforagesId) {
       // show
-      window.open(
-        `${SWISSFORAGES_EDITOR_URL}${this.item.swissforagesId}`,
-        '_blank',
-      );
+      window.open(`${SWISSFORAGES_EDITOR_URL}${this.item.swissforagesId}`, '_blank');
     } else {
       // create
-      const cartographicPosition = Cartographic.fromCartesian(
-        this.item.positions[0],
-      );
+      const cartographicPosition = Cartographic.fromCartesian(this.item.positions[0]);
       this.updateModalOptions!({
         id: this.item.id,
         name: this.item.name,
@@ -99,18 +94,11 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
       const entity = this.dataSource!.entities.getById(id);
       if (!entity || !entity.properties) return;
       if (boreholeData) {
-        entity.properties.depth =
-          boreholeData.length || entity.properties.depth;
+        entity.properties.depth = boreholeData.length || entity.properties.depth;
         if (boreholeData.location_x && boreholeData.location_y) {
           const height = boreholeData.elevation_z || 0;
-          const positionlv95 = lv95ToDegrees([
-            boreholeData.location_x,
-            boreholeData.location_y,
-          ]);
-          const cartographicPosition = Cartographic.fromDegrees(
-            positionlv95[0],
-            positionlv95[1],
-          );
+          const positionlv95 = lv95ToDegrees([boreholeData.location_x, boreholeData.location_y]);
+          const cartographicPosition = Cartographic.fromDegrees(positionlv95[0], positionlv95[1]);
           cartographicPosition.height = height;
           entity.position = <any>Cartographic.toCartesian(cartographicPosition);
           updateBoreholeHeights(entity, this.julianDate);
@@ -120,9 +108,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
           entity.name = boreholeData.custom.public_name;
         }
       } else {
-        showSnackbarInfo(
-          i18next.t('tbx_swissforages_borehole_not_exists_warning'),
-        );
+        showSnackbarInfo(i18next.t('tbx_swissforages_borehole_not_exists_warning'));
         entity.ellipse!.show = <any>false;
         entity.properties.swissforagesId = undefined;
       }
@@ -151,10 +137,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
     return html`
       <div class="ngm-swissforages-btns-container">
         <div class="ui tiny buttons">
-          <button
-            class="ui button"
-            @click=${() => this.showSwissforagesModal()}
-          >
+          <button class="ui button" @click=${() => this.showSwissforagesModal()}>
             ${this.item.swissforagesId
               ? i18next.t('tbx_swissforages_show_btn_label')
               : i18next.t('tbx_swissforages_create_btn_label')}
@@ -162,11 +145,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
           ${this.item.swissforagesId
             ? html` <button
                 class="ui button ngm-swissforages-sync"
-                @click=${this.syncPointWithSwissforages.bind(
-                  this,
-                  this.item.id,
-                  this.item.swissforagesId,
-                )}
+                @click=${this.syncPointWithSwissforages.bind(this, this.item.id, this.item.swissforagesId)}
                 data-tooltip=${i18next.t('tbx_swissforages_sync_hint')}
                 data-position="top right"
                 data-variation="tiny"
@@ -184,12 +163,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
       <div class="ui mini popup ngm-swissforages-config-popup">
         <label>${i18next.t('tbx_swissforages_depth_label')}</label>
         <div class="ui input tiny">
-          <input
-            type="number"
-            .value="${this.item.depth}"
-            @change="${this.onDepthChange}"
-            step="100"
-          />
+          <input type="number" .value="${this.item.depth}" @change="${this.onDepthChange}" step="100" />
         </div>
       </div>
     `;

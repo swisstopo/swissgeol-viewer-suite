@@ -35,20 +35,12 @@ export class NgmMinimap extends LitElementI18n {
   constructor() {
     super();
     this.addEventListener('mousemove', (evt: MouseEvent) => {
-      if (
-        this.moveMarker &&
-        evt.target &&
-        (evt.target as Element).classList.contains('ngm-cam')
-      ) {
+      if (this.moveMarker && evt.target && (evt.target as Element).classList.contains('ngm-cam')) {
         this.moveCamera(evt.x, evt.y, 'mousemove');
       }
     });
     this.addEventListener('click', (evt: MouseEvent) => {
-      if (
-        !this.moveMarker &&
-        evt.target &&
-        (evt.target as Element).classList.contains('ngm-map-overview')
-      ) {
+      if (!this.moveMarker && evt.target && (evt.target as Element).classList.contains('ngm-map-overview')) {
         NavToolsStore.hideTargetPoint();
         this.moveCamera(evt.x, evt.y, 'click');
       }
@@ -59,11 +51,9 @@ export class NgmMinimap extends LitElementI18n {
 
   updated() {
     if (this.viewer && !this.unlistenPostRender) {
-      this.unlistenPostRender = this.viewer.scene.postRender.addEventListener(
-        () => {
-          this.updateFromCamera();
-        },
-      );
+      this.unlistenPostRender = this.viewer.scene.postRender.addEventListener(() => {
+        this.updateFromCamera();
+      });
     }
   }
 
@@ -99,23 +89,13 @@ export class NgmMinimap extends LitElementI18n {
     const position = this.viewer.scene.camera.positionCartographic;
     const lon = CesiumMath.toDegrees(position.longitude);
     const lat = CesiumMath.toDegrees(position.latitude);
-    this.left =
-      (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
-    this.bottom =
-      (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
+    this.left = (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
+    this.bottom = (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
     this.heading = this.viewer.scene.camera.heading - 1.57;
 
     const isNadirView =
-      CesiumMath.equalsEpsilon(
-        this.viewer.scene.camera.pitch,
-        -CesiumMath.PI_OVER_TWO,
-        CesiumMath.EPSILON1,
-      ) ||
-      CesiumMath.equalsEpsilon(
-        this.viewer.scene.camera.pitch,
-        CesiumMath.PI_OVER_TWO,
-        CesiumMath.EPSILON1,
-      );
+      CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, -CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1) ||
+      CesiumMath.equalsEpsilon(this.viewer.scene.camera.pitch, CesiumMath.PI_OVER_TWO, CesiumMath.EPSILON1);
     if (this.nadirViewActive !== !isNadirView) {
       this.toggleNadirStatus();
     }
@@ -124,40 +104,25 @@ export class NgmMinimap extends LitElementI18n {
   moveCamera(evtX: number, evtY: number, evtType: string) {
     if (!this.viewer) return;
     const camera = this.viewer.scene.camera;
-    const cameraRect = camera.computeViewRectangle(
-      this.viewer.scene.globe.ellipsoid,
-      new Rectangle(),
-    );
+    const cameraRect = camera.computeViewRectangle(this.viewer.scene.globe.ellipsoid, new Rectangle());
     let pinchScaleW = 1;
     let pinchScaleH = 1;
     if (cameraRect) {
       const position = camera.positionCartographic;
-      pinchScaleW =
-        cameraRect.west > position.longitude
-          ? position.longitude / cameraRect.west
-          : 1;
-      pinchScaleH =
-        cameraRect.south > position.latitude
-          ? position.latitude / cameraRect.south
-          : 1;
+      pinchScaleW = cameraRect.west > position.longitude ? position.longitude / cameraRect.west : 1;
+      pinchScaleH = cameraRect.south > position.latitude ? position.latitude / cameraRect.south : 1;
     }
     // calculate left, bottom percentage from event
     const boundingRect = this.getBoundingClientRect();
     const x = evtType === 'mousemove' ? evtX + Math.sin(camera.heading) : evtX;
     const y = evtType === 'mousemove' ? evtY - Math.cos(camera.heading) : evtY;
-    const left =
-      (x - boundingRect.left) / (boundingRect.right - boundingRect.left);
-    const bottom =
-      (y - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
+    const left = (x - boundingRect.left) / (boundingRect.right - boundingRect.left);
+    const bottom = (y - boundingRect.bottom) / (boundingRect.top - boundingRect.bottom);
 
     // get distance to point in radians
     const lon = (west + (east - west) * left) * pinchScaleW;
     const lat = (south + (north - south) * bottom) * pinchScaleH;
-    camera.position = Cartesian3.fromRadians(
-      lon,
-      lat,
-      camera.positionCartographic.height,
-    );
+    camera.position = Cartesian3.fromRadians(lon, lat, camera.positionCartographic.height);
   }
 
   onIconPress(evt) {

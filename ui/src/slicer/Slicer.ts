@@ -84,13 +84,9 @@ export default class Slicer {
       fillColor: DEFAULT_AOI_COLOR,
       minPointsStop: true,
     });
-    this.draw.addEventListener('drawend', (evt) =>
-      this.endDrawing(<DrawEndDetails>(<CustomEvent>evt).detail),
-    );
+    this.draw.addEventListener('drawend', (evt) => this.endDrawing(<DrawEndDetails>(<CustomEvent>evt).detail));
     this.draw.addEventListener('drawerror', (evt) => {
-      if (
-        this.draw.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error
-      ) {
+      if (this.draw.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
         showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
       }
     });
@@ -125,12 +121,8 @@ export default class Slicer {
       if (!(this.slicingTool instanceof SlicingToolBase))
         throw new Error('Slicing tools should extend SlicingToolBase');
 
-      if (
-        this.sliceOptions.type?.includes('view') &&
-        !this.sliceOptions.slicePoints
-      ) {
-        this.draw!.type =
-          this.sliceOptions.type === 'view-box' ? 'rectangle' : 'line';
+      if (this.sliceOptions.type?.includes('view') && !this.sliceOptions.slicePoints) {
+        this.draw!.type = this.sliceOptions.type === 'view-box' ? 'rectangle' : 'line';
         this.draw!.active = true;
       } else {
         this.activateSlicing();
@@ -138,8 +130,7 @@ export default class Slicer {
     } else {
       this.deactivateDrawing();
       this.sliceActive = false;
-      if (this.sliceOptions.deactivationCallback)
-        this.sliceOptions.deactivationCallback();
+      if (this.sliceOptions.deactivationCallback) this.sliceOptions.deactivationCallback();
       this.sliceOptions = { ...DEFAULT_SLICE_OPTIONS };
       this.slicerDataSource.entities.removeAll();
       if (this.slicingTool) this.slicingTool.deactivate();
@@ -183,11 +174,7 @@ export default class Slicer {
       tileset.readyPromise.then((primitive) => {
         if (!primitive.clippingPlanes && this.slicingTool) {
           this.slicingTool.addClippingPlanes(primitive);
-          if (
-            this.sliceOptions.type === 'box' ||
-            this.sliceOptions.type === 'view-box'
-          )
-            this.slicingBox.syncPlanes();
+          if (this.sliceOptions.type === 'box' || this.sliceOptions.type === 'view-box') this.slicingBox.syncPlanes();
         }
       });
     }
@@ -227,8 +214,7 @@ export default class Slicer {
   activateSlicing() {
     this.sliceActive = true;
     this.slicingTool!.activate(this.sliceOptions);
-    if (this.sliceOptions.activationCallback)
-      this.sliceOptions.activationCallback();
+    if (this.sliceOptions.activationCallback) this.sliceOptions.activationCallback();
   }
 
   addSliceGeometry(type: GeometryTypes) {
@@ -237,12 +223,7 @@ export default class Slicer {
     let geomToCreate: NgmGeometry = { type: type, positions: positions };
     if (type === 'rectangle') {
       const bbox = this.slicingBox.bbox!;
-      positions = [
-        bbox.corners.bottomRight,
-        bbox.corners.bottomLeft,
-        bbox.corners.topLeft,
-        bbox.corners.topRight,
-      ];
+      positions = [bbox.corners.bottomRight, bbox.corners.bottomLeft, bbox.corners.topLeft, bbox.corners.topRight];
       geomToCreate = {
         ...geomToCreate,
         positions: positions,

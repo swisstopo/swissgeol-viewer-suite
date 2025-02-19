@@ -1,17 +1,14 @@
 import type { OutputFormat } from './toolbox/ngm-gst-interaction';
 
-const boreholeBaseUrl =
-  'https://viewer.geomol.ch/webgui/createBoreholeWithOverviewMap.php';
+const boreholeBaseUrl = 'https://viewer.geomol.ch/webgui/createBoreholeWithOverviewMap.php';
 const boreholeParams =
   'csRootElement=0&csRootScale=-1&intersectionGeometry=multipoint%20z%20(({coordinates}))&legendTemplateFile=&maxBoreDepth={depth}&outputType={outputType}&projectZ=true&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=11510&templateFile=02-BH_swisstopo_Map_2019a.svg&title={title}&user=NGM&crs=EPSG:2056&verticalExageration=-1';
 
-const verticalCrossSectionBaseUrl =
-  'https://viewer.geomol.ch/webgui/createCrossSectionWithOverviewMap.php';
+const verticalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createCrossSectionWithOverviewMap.php';
 const verticalCrossSectionParams =
   'csRootElement=0&csRootScale=-1&depthRangeMax=3.40282e%2B38&depthRangeMin=-3.40282e%2B38&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType={outputType}&overviewMap=&pointProjectionDistance=0&propertySelection=&secret=SAS2019@ngm&srs=18&subtreeRootElement=11510&templateFile=03-CS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056&verticalExageration=-1';
 
-const horizontalCrossSectionBaseUrl =
-  'https://viewer.geomol.ch/webgui/createHorizontalSectionWithOverviewMap.php';
+const horizontalCrossSectionBaseUrl = 'https://viewer.geomol.ch/webgui/createHorizontalSectionWithOverviewMap.php';
 const horizontalSectionParams =
   'boxWidth={width}&colorMapId=&csRootElement=0&csRootScale=-1&depth={depth}&direction={direction}&errorImageName=&geometryFileType=SFSP&intersectionGeometry=multilinestring%20z%20(({coordinates}))&legendTemplateFile=&outputType={outputType}&overviewMap=&propertySelection=&scale=-1&secret=SAS2019@ngm&srs=18&subtreeRootElement=11510&templateFile=04-HS_swisstopo_Map_2019.svg&title={title}&user=NGM&crs=EPSG:2056&verticalExageration=-1';
 
@@ -23,10 +20,7 @@ export function borehole(
   title = '',
 ): Promise<any> {
   const url = `${boreholeBaseUrl}?${boreholeParams}`
-    .replace(
-      '{coordinates}',
-      coordinates.map((coordinate) => coordinate.join(' ')).join(','),
-    )
+    .replace('{coordinates}', coordinates.map((coordinate) => coordinate.join(' ')).join(','))
     .replace('{depth}', String(depth))
     .replace('{outputType}', outputType)
     .replace('{title}', title);
@@ -41,10 +35,7 @@ export function verticalCrossSection(
   title = '',
 ): Promise<any> {
   const url = `${verticalCrossSectionBaseUrl}?${verticalCrossSectionParams}`
-    .replace(
-      '{coordinates}',
-      coordinates.map((coordinate) => coordinate.join(' ')).join(','),
-    )
+    .replace('{coordinates}', coordinates.map((coordinate) => coordinate.join(' ')).join(','))
     .replace('{outputType}', outputType)
     .replace('{title}', title);
 
@@ -71,16 +62,11 @@ export function horizontalCrossSection(
   const v30y = coordinates[0][1] - coordinates[3][1];
   const magnitude = Math.sqrt(v30x * v30x + v30y * v30y);
 
-  const direction = isLeft(coordinates[0], coordinates[1], coordinates[3])
-    ? 'left'
-    : 'right';
+  const direction = isLeft(coordinates[0], coordinates[1], coordinates[3]) ? 'left' : 'right';
 
   const side = [coordinates[0], coordinates[1]];
   const url = `${horizontalCrossSectionBaseUrl}?${horizontalSectionParams}`
-    .replace(
-      '{coordinates}',
-      side.map((coordinate) => coordinate.join(' ')).join(', '),
-    ) // space after comma is required for overview map
+    .replace('{coordinates}', side.map((coordinate) => coordinate.join(' ')).join(', ')) // space after comma is required for overview map
     .replace('{direction}', direction)
     .replace('{width}', String(magnitude))
     .replace('{depth}', String(depth))

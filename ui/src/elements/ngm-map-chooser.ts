@@ -31,15 +31,8 @@ export class NgmMapChooser extends LitElement {
       <ngm-background-layer-select></ngm-background-layer-select>
       <div class="ngm-close-icon" @click=${() => (this.open = false)}></div>
     </div>
-    <div
-      class="ngm-selected-map-container"
-      .hidden=${this.open}
-      @click=${() => (this.open = true)}
-    >
-      <ngm-background-layer-item
-        .layer="${this.background}"
-        size="large"
-      ></ngm-background-layer-item>
+    <div class="ngm-selected-map-container" .hidden=${this.open} @click=${() => (this.open = true)}>
+      <ngm-background-layer-item .layer="${this.background}" size="large"></ngm-background-layer-item>
     </div>
   `;
 }

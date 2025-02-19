@@ -9,21 +9,9 @@ import {
   JulianDate,
   ScreenSpaceEventHandler,
 } from 'cesium';
-import {
-  DEFAULT_CONFIG_FOR_SLICING_ARROW,
-  SLICING_GEOMETRY_COLOR,
-} from '../constants';
-import {
-  getDirectionFromPoints,
-  updateHeightForCartesianPositions,
-} from '../cesiumutils';
-import type {
-  Viewer,
-  DataSource,
-  ColorBlendMode,
-  Quaternion,
-  ShadowMode,
-} from 'cesium';
+import { DEFAULT_CONFIG_FOR_SLICING_ARROW, SLICING_GEOMETRY_COLOR } from '../constants';
+import { getDirectionFromPoints, updateHeightForCartesianPositions } from '../cesiumutils';
+import type { Viewer, DataSource, ColorBlendMode, Quaternion, ShadowMode } from 'cesium';
 import type { BBox } from './helper';
 import { debounce } from '../utils';
 
@@ -103,36 +91,25 @@ export default class SlicerArrows {
    * @param {DataSource} dataSource - dataSource to store entities
    * @param {SlicerArrowOptions} options
    */
-  constructor(
-    viewer: Viewer,
-    dataSource: DataSource,
-    options: SlicerArrowOptions,
-  ) {
+  constructor(viewer: Viewer, dataSource: DataSource, options: SlicerArrowOptions) {
     this.viewer = viewer;
     this.dataSource = dataSource;
     this.moveCallback = options.moveCallback;
     this.positionUpdateCallback = options.positionUpdateCallback;
     this.arrowsList = options.arrowsList;
-    this.arrowConfiguration =
-      options.arrowConfiguration || DEFAULT_CONFIG_FOR_SLICING_ARROW;
+    this.arrowConfiguration = options.arrowConfiguration || DEFAULT_CONFIG_FOR_SLICING_ARROW;
     this.bbox = options.bbox;
   }
 
   show() {
     this.createMoveArrows();
     this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-    this.eventHandler.setInputAction(
-      this.onLeftDown.bind(this),
-      ScreenSpaceEventType.LEFT_DOWN,
-    );
+    this.eventHandler.setInputAction(this.onLeftDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
     this.eventHandler.setInputAction(
       debounce((evt) => this.onMouseMove(evt), 250),
       ScreenSpaceEventType.MOUSE_MOVE,
     );
-    this.eventHandler.setInputAction(
-      this.onLeftUp.bind(this),
-      ScreenSpaceEventType.LEFT_UP,
-    );
+    this.eventHandler.setInputAction(this.onLeftUp.bind(this), ScreenSpaceEventType.LEFT_UP);
   }
 
   hide() {
@@ -144,29 +121,19 @@ export default class SlicerArrows {
 
   onLeftDown(event) {
     const pickedObject = this.viewer.scene.pick(event.position);
-    const isModelPicked =
-      pickedObject && pickedObject.id && pickedObject.id.model;
-    if (
-      isModelPicked &&
-      pickedObject.id.properties &&
-      pickedObject.id.properties.side
-    ) {
+    const isModelPicked = pickedObject && pickedObject.id && pickedObject.id.model;
+    if (isModelPicked && pickedObject.id.properties && pickedObject.id.properties.side) {
       this.selectedArrow = pickedObject.id;
-      this.enableInputs =
-        this.viewer.scene.screenSpaceCameraController.enableInputs;
+      this.enableInputs = this.viewer.scene.screenSpaceCameraController.enableInputs;
       this.viewer.scene.screenSpaceCameraController.enableInputs = false;
-      this.eventHandler!.setInputAction(
-        (evt) => this.onMouseMove(evt),
-        ScreenSpaceEventType.MOUSE_MOVE,
-      );
+      this.eventHandler!.setInputAction((evt) => this.onMouseMove(evt), ScreenSpaceEventType.MOUSE_MOVE);
     }
   }
 
   onLeftUp() {
     if (this.selectedArrow) {
       this.selectedArrow = null;
-      this.viewer.scene.screenSpaceCameraController.enableInputs =
-        this.enableInputs;
+      this.viewer.scene.screenSpaceCameraController.enableInputs = this.enableInputs;
       // for better performance
       this.eventHandler!.setInputAction(
         debounce((evt) => this.onMouseMove(evt), 250),
@@ -193,17 +160,9 @@ export default class SlicerArrows {
         throw new Error("Move axis can't be created. Second position missing");
       }
 
-      const arrowPosition3d = this.selectedArrow.position!.getValue(
-        this.julianDate,
-      )!;
-      scene.cartesianToCanvasCoordinates(
-        arrowPosition3d,
-        this.scratchArrowPosition2d_,
-      );
-      scene.cartesianToCanvasCoordinates(
-        oppositePosition3d,
-        this.scratchOppositeArrowPosition2d_,
-      );
+      const arrowPosition3d = this.selectedArrow.position!.getValue(this.julianDate)!;
+      scene.cartesianToCanvasCoordinates(arrowPosition3d, this.scratchArrowPosition2d_);
+      scene.cartesianToCanvasCoordinates(oppositePosition3d, this.scratchOppositeArrowPosition2d_);
 
       // get pixel size for calculation move distance in meters
       this.scratchBoundingSphere_.center = arrowPosition3d;
@@ -219,53 +178,24 @@ export default class SlicerArrows {
         this.scratchArrowPosition2d_,
         this.scratchAxisVector2d_,
       );
-      Cartesian2.subtract(
-        movement.endPosition,
-        this.scratchArrowPosition2d_,
-        this.scratchMouseMoveVector_,
-      );
+      Cartesian2.subtract(movement.endPosition, this.scratchArrowPosition2d_, this.scratchMouseMoveVector_);
       const scalar2d =
-        Cartesian2.dot(
-          this.scratchMouseMoveVector_,
-          this.scratchAxisVector2d_,
-        ) /
+        Cartesian2.dot(this.scratchMouseMoveVector_, this.scratchAxisVector2d_) /
         Cartesian2.dot(this.scratchAxisVector2d_, this.scratchAxisVector2d_);
 
       // calculate distance in meters
-      Cartesian2.multiplyByScalar(
-        this.scratchAxisVector2d_,
-        scalar2d,
-        this.scratchObjectMoveVector2d_,
-      );
-      Cartesian2.add(
-        this.scratchArrowPosition2d_,
-        this.scratchObjectMoveVector2d_,
-        this.scratchNewArrowPosition2d_,
-      );
-      const distance =
-        Cartesian2.distance(
-          this.scratchNewArrowPosition2d_,
-          this.scratchArrowPosition2d_,
-        ) * pixelSize;
+      Cartesian2.multiplyByScalar(this.scratchAxisVector2d_, scalar2d, this.scratchObjectMoveVector2d_);
+      Cartesian2.add(this.scratchArrowPosition2d_, this.scratchObjectMoveVector2d_, this.scratchNewArrowPosition2d_);
+      const distance = Cartesian2.distance(this.scratchNewArrowPosition2d_, this.scratchArrowPosition2d_) * pixelSize;
 
       // calculate Cartesian3 position of arrow
       const scalarDirection = (1 / scalar2d) * Math.abs(scalar2d);
-      const scalar3d =
-        (distance / Cartesian3.distance(arrowPosition3d, oppositePosition3d)) *
-        scalarDirection;
+      const scalar3d = (distance / Cartesian3.distance(arrowPosition3d, oppositePosition3d)) * scalarDirection;
 
       this.updateAxisVector(arrowPosition3d, oppositePosition3d);
 
-      const objectMoveVector3d = Cartesian3.multiplyByScalar(
-        this.axisVector3d,
-        scalar3d,
-        new Cartesian3(),
-      );
-      const newArrowPosition3d = Cartesian3.add(
-        arrowPosition3d,
-        objectMoveVector3d,
-        new Cartesian3(),
-      );
+      const objectMoveVector3d = Cartesian3.multiplyByScalar(this.axisVector3d, scalar3d, new Cartesian3());
+      const newArrowPosition3d = Cartesian3.add(arrowPosition3d, objectMoveVector3d, new Cartesian3());
 
       // directly update arrow position if position callback not provided
       if (!this.positionUpdateCallback) {
@@ -274,9 +204,7 @@ export default class SlicerArrows {
       }
       if (this.moveCallback) {
         // calculate move amount (distance with direction)
-        const moveAmount =
-          distance *
-          getDirectionFromPoints(arrowPosition3d, newArrowPosition3d);
+        const moveAmount = distance * getDirectionFromPoints(arrowPosition3d, newArrowPosition3d);
 
         this.moveCallback(side, moveAmount, objectMoveVector3d);
       }
@@ -302,10 +230,7 @@ export default class SlicerArrows {
       arrowEntityOptions.model!.uri = arrow.uri;
       if (this.positionUpdateCallback) {
         // @ts-ignore 2322
-        arrowEntityOptions.position = new CallbackProperty(
-          () => this.positionUpdateCallback(arrow.side),
-          false,
-        );
+        arrowEntityOptions.position = new CallbackProperty(() => this.positionUpdateCallback(arrow.side), false);
       } else {
         arrowEntityOptions.position = arrow.position;
       }
@@ -321,13 +246,8 @@ export default class SlicerArrows {
 
   highlightArrow(position) {
     const pickedObject = this.viewer.scene.pick(position);
-    const isModelPicked =
-      pickedObject && pickedObject.id && pickedObject.id.model;
-    if (
-      isModelPicked &&
-      pickedObject.id.properties &&
-      pickedObject.id.properties.side
-    ) {
+    const isModelPicked = pickedObject && pickedObject.id && pickedObject.id.model;
+    if (isModelPicked && pickedObject.id.properties && pickedObject.id.properties.side) {
       this.highlightedArrow = pickedObject.id;
       this.viewer.canvas.style.cursor = 'pointer';
       // @ts-ignore 2322
@@ -354,71 +274,29 @@ export default class SlicerArrows {
     const corners = this.bbox!.corners;
     const type = this.selectedArrow!.properties!.side.getValue();
     if (type === 'left' || type === 'right') {
-      Cartesian3.midpoint(
-        corners.bottomLeft,
-        corners.topLeft,
-        this.scratchLeft,
-      );
-      Cartesian3.midpoint(
-        corners.bottomRight,
-        corners.topRight,
-        this.scratchRight,
-      );
-      updateHeightForCartesianPositions(
-        [this.scratchLeft, this.scratchRight],
-        0,
-        undefined,
-        true,
-      );
+      Cartesian3.midpoint(corners.bottomLeft, corners.topLeft, this.scratchLeft);
+      Cartesian3.midpoint(corners.bottomRight, corners.topRight, this.scratchRight);
+      updateHeightForCartesianPositions([this.scratchLeft, this.scratchRight], 0, undefined, true);
     } else {
       Cartesian3.midpoint(corners.topLeft, corners.topRight, this.scratchTop);
-      Cartesian3.midpoint(
-        corners.bottomLeft,
-        corners.bottomRight,
-        this.scratchBottom,
-      );
-      updateHeightForCartesianPositions(
-        [this.scratchTop, this.scratchBottom],
-        0,
-        undefined,
-        true,
-      );
+      Cartesian3.midpoint(corners.bottomLeft, corners.bottomRight, this.scratchBottom);
+      updateHeightForCartesianPositions([this.scratchTop, this.scratchBottom], 0, undefined, true);
     }
     switch (type) {
       case 'right':
-        Cartesian3.subtract(
-          this.scratchLeft,
-          this.scratchRight,
-          this.axisVector3d,
-        );
+        Cartesian3.subtract(this.scratchLeft, this.scratchRight, this.axisVector3d);
         break;
       case 'left':
-        Cartesian3.subtract(
-          this.scratchRight,
-          this.scratchLeft,
-          this.axisVector3d,
-        );
+        Cartesian3.subtract(this.scratchRight, this.scratchLeft, this.axisVector3d);
         break;
       case 'front':
-        Cartesian3.subtract(
-          this.scratchBottom,
-          this.scratchTop,
-          this.axisVector3d,
-        );
+        Cartesian3.subtract(this.scratchBottom, this.scratchTop, this.axisVector3d);
         break;
       case 'back':
-        Cartesian3.subtract(
-          this.scratchTop,
-          this.scratchBottom,
-          this.axisVector3d,
-        );
+        Cartesian3.subtract(this.scratchTop, this.scratchBottom, this.axisVector3d);
         break;
       default:
-        Cartesian3.subtract(
-          oppositePosition3d,
-          arrowPosition3d,
-          this.axisVector3d,
-        );
+        Cartesian3.subtract(oppositePosition3d, arrowPosition3d, this.axisVector3d);
     }
   }
 }

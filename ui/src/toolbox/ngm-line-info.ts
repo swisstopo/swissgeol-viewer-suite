@@ -25,14 +25,10 @@ export class NgmLineInfo extends LitElementI18n {
             ? i18next.t('tbx_length_of_last_segment_label')
             : i18next.t('obj_info_length_label')}
         </div>
-        <div class="ngm-geom-info-value">
-          ${this.lineInfo.length.toFixed(3)} km
-        </div>
+        <div class="ngm-geom-info-value">${this.lineInfo.length.toFixed(3)} km</div>
       </div>
       <div>
-        <div class="ngm-geom-info-label">
-          ${i18next.t('obj_info_number_segments_label')}
-        </div>
+        <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
         <div class="ngm-geom-info-value">${this.lineInfo.numberOfSegments}</div>
       </div>
     </div>`;

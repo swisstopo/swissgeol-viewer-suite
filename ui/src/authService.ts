@@ -64,16 +64,14 @@ export default class AuthService {
 
     const accessToken = this.getAccessToken();
     if (accessToken && this._clientConfig) {
-      const { cognito_pool_id, cognito_identity_pool_id, cognito_aws_region } =
-        this._clientConfig.auth;
+      const { cognito_pool_id, cognito_identity_pool_id, cognito_aws_region } = this._clientConfig.auth;
       (window as any)['AWSCred'] = _AWSCredentials = fromCognitoIdentityPool({
         client: new CognitoIdentityClient({
           region: cognito_aws_region,
         }),
         identityPoolId: cognito_identity_pool_id,
         logins: {
-          [`cognito-idp.${cognito_aws_region}.amazonaws.com/${cognito_pool_id}`]:
-            accessToken,
+          [`cognito-idp.${cognito_aws_region}.amazonaws.com/${cognito_pool_id}`]: accessToken,
         },
       });
     }
@@ -91,10 +89,7 @@ export default class AuthService {
       localStorage.setItem(cognitoState, state);
     }
     if (localStorage.getItem(cognitoState) === null) {
-      localStorage.setItem(
-        cognitoState,
-        Math.random().toString(36).substring(2),
-      );
+      localStorage.setItem(cognitoState, Math.random().toString(36).substring(2));
     }
     return localStorage.getItem(cognitoState);
   }

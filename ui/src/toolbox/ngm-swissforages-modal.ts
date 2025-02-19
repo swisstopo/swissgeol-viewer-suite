@@ -71,10 +71,7 @@ export class NgmSwissforagesModal extends LitElementI18n {
     }
     this.toggleLoading();
     try {
-      this.userWorkgroups = await this.service.login(
-        this.username,
-        this.password,
-      );
+      this.userWorkgroups = await this.service.login(this.username, this.password);
       this.initWorkgroupSelector();
       this.toggleLoading();
       if (this.options.onLoggedIn) {
@@ -100,11 +97,7 @@ export class NgmSwissforagesModal extends LitElementI18n {
         this.options.depth,
         this.options.name,
       );
-      this.options.onSwissforagesBoreholeCreated(
-        this.options.id,
-        boreholeId,
-        this.options.depth,
-      );
+      this.options.onSwissforagesBoreholeCreated(this.options.id, boreholeId, this.options.depth);
       this.toggleLoading();
     } catch (e) {
       showSnackbarInfo(<string>e);
@@ -117,25 +110,15 @@ export class NgmSwissforagesModal extends LitElementI18n {
   }
 
   render() {
-    if (this.element)
-      this.element[0].querySelector(
-        'input.ngm-swissforages-depth-input',
-      ).value = this.options.depth;
+    if (this.element) this.element[0].querySelector('input.ngm-swissforages-depth-input').value = this.options.depth;
     return html`
-      <div
-        class="ngm-swissforages-modal top aligned ui modal ${this
-          .modalSizeClass}"
-      >
+      <div class="ngm-swissforages-modal top aligned ui modal ${this.modalSizeClass}">
         <div class="ui inverted dimmer ${this.loading ? 'active' : ''}">
           <div class="ui loader"></div>
         </div>
         <div class="content ${this.modalSizeClass}">
-          <div
-            ?hidden="${this.service.userToken || this.options.swissforagesId}"
-          >
-            <h5 class="ui dividing header">
-              ${i18next.t('tbx_swissforages_login_label')}
-            </h5>
+          <div ?hidden="${this.service.userToken || this.options.swissforagesId}">
+            <h5 class="ui dividing header">${i18next.t('tbx_swissforages_login_label')}</h5>
             <div class="ui form">
               <div class="two fields">
                 <div class="field">
@@ -143,9 +126,7 @@ export class NgmSwissforagesModal extends LitElementI18n {
                   <input
                     type="text"
                     autocomplete="username"
-                    placeholder="${i18next.t(
-                      'tbx_swissforages_username_label',
-                    )}"
+                    placeholder="${i18next.t('tbx_swissforages_username_label')}"
                     @input="${(evt) => (this.username = evt.target.value)}"
                   />
                 </div>
@@ -154,25 +135,19 @@ export class NgmSwissforagesModal extends LitElementI18n {
                   <input
                     type="password"
                     autocomplete="current-password"
-                    placeholder="${i18next.t(
-                      'tbx_swissforages_password_label',
-                    )}"
+                    placeholder="${i18next.t('tbx_swissforages_password_label')}"
                     @input="${(evt) => (this.password = evt.target.value)}"
                   />
                 </div>
               </div>
             </div>
           </div>
-          <div
-            ?hidden="${!this.service.userToken || this.options.swissforagesId}"
-            class="ui form"
-          >
+          <div ?hidden="${!this.service.userToken || this.options.swissforagesId}" class="ui form">
             <div class="two fields">
               <div class="field">
                 <label>${i18next.t('tbx_swissforages_workgroup_label')}</label>
                 <div
-                  class="ui selection dropdown ngm-swissforages-workgroup-selector ${this
-                    .userWorkgroups.length === 1
+                  class="ui selection dropdown ngm-swissforages-workgroup-selector ${this.userWorkgroups.length === 1
                     ? 'disabled'
                     : ''}"
                 >
@@ -186,8 +161,7 @@ export class NgmSwissforagesModal extends LitElementI18n {
                   class="ngm-swissforages-depth-input"
                   type="number"
                   .value="${this.options.depth}"
-                  @change="${(evt) =>
-                    (this.options.depth = Number(evt.target.value))}"
+                  @change="${(evt) => (this.options.depth = Number(evt.target.value))}"
                   step="100"
                 />
               </div>
@@ -195,9 +169,7 @@ export class NgmSwissforagesModal extends LitElementI18n {
           </div>
         </div>
         <div class="actions">
-          <div class="ui cancel small button">
-            ${i18next.t('tbx_gst_close_label')}
-          </div>
+          <div class="ui cancel small button">${i18next.t('tbx_gst_close_label')}</div>
           <div
             class="ui green small button"
             ?hidden="${this.options.swissforagesId || this.service.userToken}"

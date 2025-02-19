@@ -31,18 +31,11 @@ export default class KeyboardNavigation {
   constructor(scene, options = {}) {
     this.scene_ = scene;
 
-    this.moveAmount_ =
-      options.moveAmount !== undefined ? options.moveAmount : 50;
-    this.rotateAmount_ =
-      options.rotateAmount !== undefined ? options.rotateAmount : Math.PI / 400;
-    this.boostFactor_ =
-      options.boostFactor !== undefined ? options.boostFactor : 4;
-    this.slowFactor_ =
-      options.slowFactor !== undefined ? options.slowFactor : 0.15;
-    this.accelerationFactor_ =
-      options.accelerationFactor !== undefined
-        ? options.accelerationFactor
-        : 1.2;
+    this.moveAmount_ = options.moveAmount !== undefined ? options.moveAmount : 50;
+    this.rotateAmount_ = options.rotateAmount !== undefined ? options.rotateAmount : Math.PI / 400;
+    this.boostFactor_ = options.boostFactor !== undefined ? options.boostFactor : 4;
+    this.slowFactor_ = options.slowFactor !== undefined ? options.slowFactor : 0.15;
+    this.accelerationFactor_ = options.accelerationFactor !== undefined ? options.accelerationFactor : 1.2;
 
     this.moveUpKeys_ = options.moveUpKeys || ['q', ' ', '+'];
     this.moveDownKeys_ = options.moveDownKeys || ['e', '-'];
@@ -185,14 +178,10 @@ export default class KeyboardNavigation {
     let pitch;
 
     if (this.flags_.moveUp) {
-      NavToolsStore.setCameraHeight(
-        camera.positionCartographic.height + moveAmount,
-      );
+      NavToolsStore.setCameraHeight(camera.positionCartographic.height + moveAmount);
     }
     if (this.flags_.moveDown) {
-      NavToolsStore.setCameraHeight(
-        camera.positionCartographic.height - moveAmount,
-      );
+      NavToolsStore.setCameraHeight(camera.positionCartographic.height - moveAmount);
     }
     if (this.flags_.moveForward) {
       verticalDirectionRotate(camera, angle);
@@ -246,8 +235,5 @@ const notEditableTypes = ['checkbox', 'range'];
  * @return {boolean}
  */
 function targetNotEditable(target) {
-  return (
-    (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') ||
-    notEditableTypes.includes(target.type)
-  );
+  return (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') || notEditableTypes.includes(target.type);
 }

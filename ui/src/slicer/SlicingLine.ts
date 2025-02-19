@@ -1,18 +1,8 @@
 import { getOrthogonalViewPoints, planeFromTwoPoints } from '../cesiumutils';
 import { executeForAllPrimitives } from '../utils';
-import {
-  createClippingPlanes,
-  createCPCModelMatrixFromSphere,
-  getClippingPlaneFromSegmentWithTricks,
-} from './helper';
+import { createClippingPlanes, createCPCModelMatrixFromSphere, getClippingPlaneFromSegmentWithTricks } from './helper';
 import SlicingToolBase from './SlicingToolBase';
-import {
-  Matrix4,
-  Cartesian3,
-  Plane,
-  ClippingPlaneCollection,
-  VoxelPrimitive,
-} from 'cesium';
+import { Matrix4, Cartesian3, Plane, ClippingPlaneCollection, VoxelPrimitive } from 'cesium';
 import type { Cesium3DTileset } from 'cesium';
 
 export interface SlicingLineOptions {
@@ -36,17 +26,11 @@ export default class SlicingLine extends SlicingToolBase {
     }
 
     // This plane is in World coordinates
-    this.plane = planeFromTwoPoints(
-      options.slicePoints[0],
-      options.slicePoints[1],
-      options.negate,
-    );
+    this.plane = planeFromTwoPoints(options.slicePoints[0], options.slicePoints[1], options.negate);
     this.viewer.scene.globe.clippingPlanes = createClippingPlanes([this.plane]);
 
     // For primitives Cesium needs planes in the local coordinates of each primitive
-    executeForAllPrimitives(this.viewer, (primitive) =>
-      this.addClippingPlanes(primitive),
-    );
+    executeForAllPrimitives(this.viewer, (primitive) => this.addClippingPlanes(primitive));
   }
 
   deactivate() {
@@ -69,11 +53,7 @@ export default class SlicingLine extends SlicingToolBase {
 
     if (primitive instanceof VoxelPrimitive && this.options) {
       // works vice-verse to the globe \o/
-      const plane = planeFromTwoPoints(
-        this.options.slicePoints[0],
-        this.options.slicePoints[1],
-        !this.options.negate,
-      );
+      const plane = planeFromTwoPoints(this.options.slicePoints[0], this.options.slicePoints[1], !this.options.negate);
       primitive.clippingPlanes = createClippingPlanes([plane]);
       return;
     }
@@ -86,20 +66,11 @@ export default class SlicingLine extends SlicingToolBase {
     const p1 = this.options.slicePoints[0];
     const p2 = this.options.slicePoints[1];
     const mapRect = this.viewer.scene.globe.cartographicLimitRectangle;
-    const transformCenter = Matrix4.getTranslation(
-      primitive.root.transform,
-      new Cartesian3(),
-    );
+    const transformCenter = Matrix4.getTranslation(primitive.root.transform, new Cartesian3());
     const tileCenter = Cartesian3.equals(transformCenter, Cartesian3.ZERO)
       ? primitive.boundingSphere.center
       : transformCenter;
-    const plane = getClippingPlaneFromSegmentWithTricks(
-      p1,
-      p2,
-      tileCenter,
-      mapRect,
-      planeNormal,
-    );
+    const plane = getClippingPlaneFromSegmentWithTricks(p1, p2, tileCenter, mapRect, planeNormal);
     if (this.options.negate) {
       plane.normal.x *= -1;
       plane.normal.y *= -1;

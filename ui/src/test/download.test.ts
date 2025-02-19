@@ -110,20 +110,16 @@ describe('Download', () => {
           return Promise.resolve(csvString);
         },
       };
-      const fetcher = (() =>
-        Promise.resolve(fakeFetchResult)) as unknown as typeof fetch;
+      const fetcher = (() => Promise.resolve(fakeFetchResult)) as unknown as typeof fetch;
       const spec = {
         type: 'csv',
         url: 'blabla://some.url/and_path/the_csv.csv',
         layer: 'somelayer1',
       };
-      const data = await toArray(
-        createDataGenerator([spec], [0, 0, 1, 1], fetcher),
-      );
+      const data = await toArray(createDataGenerator([spec], [0, 0, 1, 1], fetcher));
       chaiAssert.deepEqual(data, [
         {
-          content:
-            'index,XCOORD,YCOORD,x4326,y4326,ZCOORDB,ORIGNAME\nxx,aa,bb,0,0,inside,èè\nxx,aa,bb,0,1,inside,èè',
+          content: 'index,XCOORD,YCOORD,x4326,y4326,ZCOORDB,ORIGNAME\nxx,aa,bb,0,0,inside,èè\nxx,aa,bb,0,1,inside,èè',
           filename: 'filtered_the_csv.csv',
           layer: 'somelayer1',
         },
@@ -159,9 +155,7 @@ describe('Download', () => {
         layer: 'somelayer1',
       };
 
-      const data = await toArray(
-        createDataGenerator([spec], [7, 46, 8, 47], fetcher),
-      );
+      const data = await toArray(createDataGenerator([spec], [7, 46, 8, 47], fetcher));
       chaiAssert.deepEqual(data, [
         {
           content: new ArrayBuffer(5),

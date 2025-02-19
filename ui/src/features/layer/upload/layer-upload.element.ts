@@ -56,12 +56,7 @@ export class LayerUpload extends LitElementI18n {
     }
 
     const dataSource = new CustomDataSource();
-    const name = await parseKml(
-      this.viewer,
-      e.detail.file,
-      dataSource,
-      e.detail.isClampEnabled,
-    );
+    const name = await parseKml(this.viewer, e.detail.file, dataSource, e.detail.isClampEnabled);
     const layer = `${name.replace(' ', '_')}_${Date.now()}`;
 
     // name used as id for datasource
@@ -98,16 +93,9 @@ export class LayerUpload extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <ngm-layer-upload-kml
-      .toastPlaceholder=${this.toastPlaceholder}
-      @upload=${this.handleKmlUpload}
-    >
+    <ngm-layer-upload-kml .toastPlaceholder=${this.toastPlaceholder} @upload=${this.handleKmlUpload}>
     </ngm-layer-upload-kml>
-    <ngm-core-button
-      variant="tertiary"
-      shape="large"
-      @click=${this.emitIonModalOpening}
-    >
+    <ngm-core-button variant="tertiary" shape="large" @click=${this.emitIonModalOpening}>
       <ngm-core-icon icon="cesium"></ngm-core-icon>
       ${i18next.t('dtd_add_ion_token')}
     </ngm-core-button>

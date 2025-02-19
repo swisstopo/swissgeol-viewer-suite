@@ -17,15 +17,11 @@ export function escapeRegExp(string: string) {
   return string ? string.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&') : string;
 }
 
-export function executeForAllPrimitives(
-  viewer: Viewer,
-  functionToExecute: (primitive: any) => void,
-) {
+export function executeForAllPrimitives(viewer: Viewer, functionToExecute: (primitive: any) => void) {
   const primitives = viewer.scene.primitives;
   for (let i = 0, ii = primitives.length; i < ii; i++) {
     const primitive = primitives.get(i);
-    if (primitive.ready || !primitive.readyPromise)
-      functionToExecute(primitive);
+    if (primitive.ready || !primitive.readyPromise) functionToExecute(primitive);
     else primitive.readyPromise.then(() => functionToExecute(primitive));
   }
 }
@@ -38,10 +34,7 @@ export function areBboxIntersecting(b1: number[], b2: number[]): boolean {
    */
   // this version adapted from Cesium code
   // https://github.com/CesiumGS/cesium/blob/1.76/Source/Core/Rectangle.js#L681
-  return (
-    Math.max(b1[0], b2[0]) <= Math.min(b1[2], b2[2]) &&
-    Math.max(b1[1], b2[1]) <= Math.min(b1[3], b2[3])
-  );
+  return Math.max(b1[0], b2[0]) <= Math.min(b1[2], b2[2]) && Math.max(b1[1], b2[1]) <= Math.min(b1[3], b2[3]);
 }
 
 export function coordinatesToBbox(coordinates: number[][]): number[] {
@@ -96,9 +89,7 @@ export function filterCsvString(str: string, bbox4326: number[]): string {
   );
 }
 
-export function parseJson(
-  string: string | null,
-): Record<string, any> | undefined {
+export function parseJson(string: string | null): Record<string, any> | undefined {
   if (!string) return undefined;
   try {
     return JSON.parse(string);
@@ -107,11 +98,7 @@ export function parseJson(
   }
 }
 
-export function interpolateBetweenNumbers(
-  min: number,
-  max: number,
-  percent: number,
-): number {
+export function interpolateBetweenNumbers(min: number, max: number, percent: number): number {
   const diff = max - min;
   return min + (percent / 100) * diff;
 }

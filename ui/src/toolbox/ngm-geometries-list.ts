@@ -15,9 +15,7 @@ export default class NgmGeometriesList extends LitElementI18n {
   @property({ type: String })
   accessor selectedId = '';
   @property({ type: Object })
-  accessor optionsTemplate:
-    | ((geom: NgmGeometry, active: boolean) => TemplateResult)
-    | undefined;
+  accessor optionsTemplate: ((geom: NgmGeometry, active: boolean) => TemplateResult) | undefined;
   @property({ type: Array })
   accessor disabledTypes: string[] = [];
   @property({ type: Object })
@@ -41,9 +39,7 @@ export default class NgmGeometriesList extends LitElementI18n {
     ToolboxStore.noEditGeometries.subscribe((geoms) => {
       this.noEditGeometries = geoms;
     });
-    ToolboxStore.openedGeometryOptions.subscribe(
-      (options) => (this.editingEnabled = !!options?.editing),
-    );
+    ToolboxStore.openedGeometryOptions.subscribe((options) => (this.editingEnabled = !!options?.editing));
     this.querySelectorAll('.ngm-action-menu').forEach((el) => $(el).dropdown());
   }
 
@@ -51,9 +47,7 @@ export default class NgmGeometriesList extends LitElementI18n {
     const geoms = changedProperties.get('geometries');
     const noEditGeometries = changedProperties.get('noEditGeometries');
     if (geoms || noEditGeometries || changedProperties.get('selectedFilter')) {
-      this.querySelectorAll('.ngm-action-menu').forEach((el) =>
-        $(el).dropdown(),
-      );
+      this.querySelectorAll('.ngm-action-menu').forEach((el) => $(el).dropdown());
     }
 
     if (this.scrollDown) {
@@ -63,16 +57,13 @@ export default class NgmGeometriesList extends LitElementI18n {
 
     if (geoms && geoms.length < this.geometries.length) {
       const newGeometries = this.geometries.filter(
-        (leftValue) =>
-          !geoms.some((rightValue) => leftValue.id === rightValue.id),
+        (leftValue) => !geoms.some((rightValue) => leftValue.id === rightValue.id),
       );
       if (newGeometries.length) {
         this.selectedFilter = undefined;
         this.scrollDown = true;
       }
-      this.dispatchEvent(
-        new CustomEvent('geometriesadded', { detail: { newGeometries } }),
-      );
+      this.dispatchEvent(new CustomEvent('geometriesadded', { detail: { newGeometries } }));
     }
 
     super.updated(changedProperties);
@@ -80,8 +71,7 @@ export default class NgmGeometriesList extends LitElementI18n {
 
   render() {
     const projectMode = DashboardStore.projectMode.value;
-    const isProjectEditMode =
-      projectMode === 'viewEdit' || projectMode === 'edit';
+    const isProjectEditMode = projectMode === 'viewEdit' || projectMode === 'edit';
     const selectedProject = DashboardStore.selectedTopicOrProject.value;
     return html` <ngm-geometries-simple-list
         .hidden=${!this.noEditGeometries?.length}

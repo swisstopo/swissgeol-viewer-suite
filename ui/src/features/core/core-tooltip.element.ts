@@ -14,20 +14,10 @@ export class CoreTooltip extends CoreBasePopup<CoreTooltipBox> {
   readonly leaveEvents = ['pointerleave', 'blur'];
 
   get preventedEvents(): string[] {
-    return [
-      'mousedown',
-      'mouseup',
-      'touchstart',
-      'touchend',
-      'pointerdown',
-      'pointerup',
-    ];
+    return ['mousedown', 'mouseup', 'touchstart', 'touchend', 'pointerdown', 'pointerup'];
   }
 
-  readonly findBoxElement = () =>
-    this.shadowRoot!.querySelector('ngm-core-tooltip-box')! as CoreTooltipBox;
+  readonly findBoxElement = () => this.shadowRoot!.querySelector('ngm-core-tooltip-box')! as CoreTooltipBox;
 
-  readonly renderBox = () => html`
-    <ngm-core-tooltip-box></ngm-core-tooltip-box>
-  `;
+  readonly renderBox = () => html` <ngm-core-tooltip-box></ngm-core-tooltip-box> `;
 }

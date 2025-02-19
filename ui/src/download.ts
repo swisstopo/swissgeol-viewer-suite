@@ -1,9 +1,5 @@
 import JSZip from 'jszip/dist/jszip.js';
-import {
-  coordinatesToBbox,
-  areBboxIntersecting,
-  filterCsvString,
-} from './utils';
+import { coordinatesToBbox, areBboxIntersecting, filterCsvString } from './utils';
 
 type DataPiece = {
   layer: string;
@@ -49,13 +45,8 @@ export function createZipFromData(pieces: DataPiece[]): JSZip {
  * @param {fetch} fetcher
  * @return {Promise<DataPiece>}
  */
-async function handleCSV(
-  spec: DataSpec,
-  bbox: number[],
-  fetcher: typeof fetch,
-): Promise<DataPiece> {
-  const filename =
-    'filtered_' + spec.url.substring(spec.url.lastIndexOf('/') + 1);
+async function handleCSV(spec: DataSpec, bbox: number[], fetcher: typeof fetch): Promise<DataPiece> {
+  const filename = 'filtered_' + spec.url.substring(spec.url.lastIndexOf('/') + 1);
   const filteredCSV = await fetcher(spec.url)
     .then((r) => r.text())
     .then((txt) => filterCsvString(txt, bbox));
@@ -115,9 +106,7 @@ async function* createIndexedDataGenerator(
   const path = spec.url.substring(0, spec.url.lastIndexOf('/'));
   for await (const { filename, extent } of index) {
     if (areBboxIntersecting(extent, bbox)) {
-      const content = await fetcher(path + '/' + filename).then((r) =>
-        r.arrayBuffer(),
-      );
+      const content = await fetcher(path + '/' + filename).then((r) => r.arrayBuffer());
       yield {
         layer: spec.layer,
         filename: filename,
@@ -134,11 +123,7 @@ async function* createIndexedDataGenerator(
  * @param {fetch|null} fetcher
  * @yields {DataPiece}
  */
-export async function* createDataGenerator(
-  specs: DataSpec[],
-  bbox: number[],
-  fetcher: typeof fetch | null = fetch,
-) {
+export async function* createDataGenerator(specs: DataSpec[], bbox: number[], fetcher: typeof fetch | null = fetch) {
   const indices = {};
   for await (const spec of specs) {
     switch (spec.type) {
@@ -146,12 +131,7 @@ export async function* createDataGenerator(
         yield await handleCSV(spec, bbox, fetcher!);
         break;
       case 'indexed_download':
-        for await (const result of createIndexedDataGenerator(
-          indices,
-          spec,
-          bbox,
-          fetcher!,
-        )) {
+        for await (const result of createIndexedDataGenerator(indices, spec, bbox, fetcher!)) {
           yield result;
         }
         break;

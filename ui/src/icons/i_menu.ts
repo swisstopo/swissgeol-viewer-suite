@@ -1,13 +1,7 @@
 import { html } from 'lit';
 
 export const menuIcon = html`
-  <svg
-    width="4"
-    height="16"
-    viewBox="0 0 4 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="4" height="16" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M2.00008 8.83301C2.46032 8.83301 2.83341 8.45991 2.83341 7.99967C2.83341 7.53944 2.46032 7.16634 2.00008 7.16634C1.53984 7.16634 1.16675 7.53944 1.16675 7.99967C1.16675 8.45991 1.53984 8.83301 2.00008 8.83301Z"
       stroke="currentColor"

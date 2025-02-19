@@ -7,13 +7,7 @@ export const viewLessIcon = html`<svg
   viewBox="0 0 24 24"
   fill="currentColor"
 >
-  <rect
-    id="Rechteck_2775"
-    data-name="Rechteck 2775"
-    width="24"
-    height="24"
-    fill="none"
-  />
+  <rect id="Rechteck_2775" data-name="Rechteck 2775" width="24" height="24" fill="none" />
   <path
     id="Pfad_9440"
     data-name="Pfad 9440"

@@ -27,15 +27,12 @@ export class NgmProjectMembersSection extends LitElementI18n {
   memberInfoRender(member: Member, role: MemberRole) {
     let roleText = i18next.t('dashboard_project_owner');
     if (role === 'editor') roleText = i18next.t('dashboard_project_editor');
-    else if (role === 'viewer')
-      roleText = i18next.t('dashboard_project_viewer');
+    else if (role === 'viewer') roleText = i18next.t('dashboard_project_viewer');
     return html`
       <div class="ngm-member-container">
         <div class="ngm-member">
           <div class="ngm-member-icon">
-            ${member.name.charAt(0).toUpperCase()}${member.surname
-              .charAt(0)
-              .toUpperCase()}
+            ${member.name.charAt(0).toUpperCase()}${member.surname.charAt(0).toUpperCase()}
           </div>
           <div class="ngm-member-info">
             <div>${member.name} ${member.surname} (${roleText})</div>
@@ -61,19 +58,12 @@ export class NgmProjectMembersSection extends LitElementI18n {
       <div class="project-edit-fields">
         <div class="ngm-members-list">
           ${this.memberInfoRender(this.project.owner, 'owner')}
-          ${this.project.editors.map((editor) =>
-            this.memberInfoRender(editor, 'editor'),
-          )}
-          ${this.project.viewers.map((viewer) =>
-            this.memberInfoRender(viewer, 'viewer'),
-          )}
+          ${this.project.editors.map((editor) => this.memberInfoRender(editor, 'editor'))}
+          ${this.project.viewers.map((viewer) => this.memberInfoRender(viewer, 'viewer'))}
         </div>
         ${!this.edit || this.showAddForm
           ? ''
-          : html` <div
-              class="ngm-label-btn"
-              @click=${() => (this.showAddForm = true)}
-            >
+          : html` <div class="ngm-label-btn" @click=${() => (this.showAddForm = true)}>
               ${i18next.t('dashboard_project_add_member')}
               <div class="ngm-zoom-p-icon"></div>
             </div>`}

@@ -8,9 +8,7 @@ import { getMapOpacityParam, getMapParam } from 'src/permalink';
 import { createContext } from '@lit/context';
 
 export class BackgroundLayerService extends BaseService {
-  static readonly backgroundContext = createContext<BackgroundLayer>(
-    'BackgroundLayerService.background',
-  );
+  static readonly backgroundContext = createContext<BackgroundLayer>('BackgroundLayerService.background');
 
   constructor() {
     super();
@@ -138,8 +136,6 @@ const WATERS_BACKGROUND: BackgroundLayer = {
   ],
 };
 
-const LAYERS = [SATELLITE_BACKGROUND, GREY_BACKGROUND, WATERS_BACKGROUND].map(
-  Object.freeze,
-) as BackgroundLayer[];
+const LAYERS = [SATELLITE_BACKGROUND, GREY_BACKGROUND, WATERS_BACKGROUND].map(Object.freeze) as BackgroundLayer[];
 
 const LAYER_MAPPING = Object.freeze(makeModelMapping(LAYERS));

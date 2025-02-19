@@ -14,17 +14,11 @@ export { LayerType, DEFAULT_LAYER_OPACITY } from './layertree';
 export const SWITZERLAND_BOUNDS_WGS84 = [4.54249, 44.61921, 12.6725, 48.45365];
 export const SWITZERLAND_BOUNDS_LV95 = [2370000, 945000, 2987000, 1380000];
 
-export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(
-  ...SWITZERLAND_BOUNDS_WGS84,
-);
+export const SWITZERLAND_RECTANGLE = Rectangle.fromDegrees(...SWITZERLAND_BOUNDS_WGS84);
 
-export const MINIMAP_EXTENT = [
-  5.910642046, 45.191912227, 10.554524194, 48.04750923,
-];
+export const MINIMAP_EXTENT = [5.910642046, 45.191912227, 10.554524194, 48.04750923];
 
-export const MAP_RECTANGLE = Rectangle.fromDegrees(
-  ...[5.91, 45.8179, 10.9, 47.9],
-);
+export const MAP_RECTANGLE = Rectangle.fromDegrees(...[5.91, 45.8179, 10.9, 47.9]);
 
 export const WEB_MERCATOR_TILING_SCHEME = new GeographicTilingScheme({
   ellipsoid: Ellipsoid.WGS84,
@@ -32,11 +26,7 @@ export const WEB_MERCATOR_TILING_SCHEME = new GeographicTilingScheme({
 });
 
 export const DEFAULT_VIEW = {
-  destination: Cartesian3.fromDegrees(
-    8.41011994246399,
-    46.831646400427914,
-    425641,
-  ),
+  destination: Cartesian3.fromDegrees(8.41011994246399, 46.831646400427914, 425641),
   orientation: {
     heading: CMath.toRadians(0),
     pitch: CMath.toRadians(-90.0),
@@ -72,30 +62,15 @@ export const GEOMETRY_LINE_ALPHA = 0.8;
 export const GEOMETRY_POLYGON_ALPHA = 0.3;
 export const HIGHLIGHTED_GEOMETRY_COLOR = Color.YELLOW;
 
-export const CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD = [
-  'polygon',
-  'polyline',
-  'point',
-];
-export const AVAILABLE_GEOMETRY_TYPES = [
-  'polygon',
-  'line',
-  'point',
-  'rectangle',
-];
+export const CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD = ['polygon', 'polyline', 'point'];
+export const AVAILABLE_GEOMETRY_TYPES = ['polygon', 'line', 'point', 'rectangle'];
 
 export const GEOMETRY_DATASOURCE_NAME = 'toolboxGeometry';
 export const NO_EDIT_GEOMETRY_DATASOURCE_NAME = 'noEditToolboxGeometry';
 
-export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString(
-  '#B3FF30',
-  new Color(),
-);
+export const OBJECT_HIGHLIGHT_COLOR = Color.fromCssColorString('#B3FF30', new Color());
 export const OBJECT_HIGHLIGHT_NORMALIZED_RGB = '0.702, 1.0, 0.188';
-export const SWISSTOPO_IT_HIGHLIGHT_COLOR = Color.fromCssColorString(
-  '#ff8000',
-  new Color(),
-);
+export const SWISSTOPO_IT_HIGHLIGHT_COLOR = Color.fromCssColorString('#ff8000', new Color());
 export const OBJECT_ZOOMTO_RADIUS = 500;
 
 const hostname = document.location.hostname;
@@ -142,10 +117,7 @@ export const PROJECT_COLORS = [
 
 export const COLORS_WITH_BLACK_TICK = ['white', 'yellow', 'orange'];
 
-export const POINT_SYMBOLS = [
-  'marker-icon-white.png',
-  'triangle-icon-white.png',
-];
+export const POINT_SYMBOLS = ['marker-icon-white.png', 'triangle-icon-white.png'];
 
 export const SLICE_BOX_ARROWS_INSIDE = [
   { side: 'left', oppositeSide: 'right', uri: '/images/arrowV.glb' },
@@ -221,5 +193,4 @@ const _COGNITO_VARIABLES = {
   },
 };
 _COGNITO_VARIABLES['default_active_env'] = _COGNITO_VARIABLES['dev'];
-export const COGNITO_VARIABLES =
-  _COGNITO_VARIABLES[(window as any).activeEnvironment];
+export const COGNITO_VARIABLES = _COGNITO_VARIABLES[(window as any).activeEnvironment];

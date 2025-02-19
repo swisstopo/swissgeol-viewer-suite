@@ -2,11 +2,7 @@ import { LitElementI18n } from '../i18n';
 import type { PropertyValues } from 'lit';
 import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import {
-  Cartographic,
-  ScreenSpaceEventHandler,
-  ScreenSpaceEventType,
-} from 'cesium';
+import { Cartographic, ScreenSpaceEventHandler, ScreenSpaceEventType } from 'cesium';
 import MainStore from '../store/main';
 import { formatCartographicAs2DLv95, radToDeg } from '../projection';
 import i18next from 'i18next';
@@ -38,17 +34,10 @@ export class NgmCoordinatePopup extends LitElementI18n {
           if (cartesian) {
             const cartCoords = Cartographic.fromCartesian(cartesian);
             this.coordinatesLv95 = formatCartographicAs2DLv95(cartCoords);
-            this.coordinatesWgs84 = [
-              cartCoords.longitude,
-              cartCoords.latitude,
-            ].map(radToDeg);
-            this.elevation = this.integerFormat.format(
-              cartCoords.height / viewer.scene.verticalExaggeration,
-            );
+            this.coordinatesWgs84 = [cartCoords.longitude, cartCoords.latitude].map(radToDeg);
+            this.elevation = this.integerFormat.format(cartCoords.height / viewer.scene.verticalExaggeration);
             const altitude = viewer.scene.globe.getHeight(cartCoords) || 0;
-            this.terrainDistance = this.integerFormat.format(
-              Math.abs(cartCoords.height - altitude),
-            );
+            this.terrainDistance = this.integerFormat.format(Math.abs(cartCoords.height - altitude));
             this.style.left = event.position.x + 'px';
             this.style.top = event.position.y + 10 + 'px';
             this.opened = true;
@@ -86,15 +75,11 @@ export class NgmCoordinatePopup extends LitElementI18n {
           <tbody>
             <tr class="top aligned">
               <td class="key">CH1903+ / LV95</td>
-              <td class="value">
-                ${this.coordinatesLv95[0]}, ${this.coordinatesLv95[1]}
-              </td>
+              <td class="value">${this.coordinatesLv95[0]}, ${this.coordinatesLv95[1]}</td>
             </tr>
             <tr class="top aligned">
               <td class="key">WGS 84 (lat/lon)</td>
-              <td class="value">
-                ${this.coordinatesWgs84[0]}, ${this.coordinatesWgs84[1]}
-              </td>
+              <td class="value">${this.coordinatesWgs84[0]}, ${this.coordinatesWgs84[1]}</td>
             </tr>
             <tr class="top aligned">
               <td class="key">${i18next.t('map_elevation_label')}</td>

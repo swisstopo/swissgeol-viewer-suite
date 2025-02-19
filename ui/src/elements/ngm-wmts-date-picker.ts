@@ -55,9 +55,7 @@ export class NgmWmtsDatePicker extends LitElementI18n {
   render() {
     if (!this.dates || !this.config?.setVisibility) return '';
     return html` <div class="ngm-floating-window-header drag-handle">
-        <div class="ngm-floating-window-header-title">
-          ${this.config?.label}
-        </div>
+        <div class="ngm-floating-window-header-title">${this.config?.label}</div>
         <div class="ngm-close-icon" @click=${this.onClose}></div>
       </div>
       <div class="ngm-project-popup-content ngm-date-picker">

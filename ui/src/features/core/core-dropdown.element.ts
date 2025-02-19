@@ -15,14 +15,7 @@ export class CoreDropdown extends CoreBasePopup<CoreDropdownBox> {
   readonly leaveEvents = ['click'];
 
   get preventedEvents(): string[] {
-    return [
-      'mousedown',
-      'mouseup',
-      'touchstart',
-      'touchend',
-      'pointerdown',
-      'pointerup',
-    ];
+    return ['mousedown', 'mouseup', 'touchstart', 'touchend', 'pointerdown', 'pointerup'];
   }
 
   connectedCallback(): void {
@@ -51,14 +44,10 @@ export class CoreDropdown extends CoreBasePopup<CoreDropdownBox> {
   }
 
   readonly findBoxElement = () => {
-    return this.shadowRoot!.querySelector(
-      'ngm-core-dropdown-box',
-    )! as CoreDropdownBox;
+    return this.shadowRoot!.querySelector('ngm-core-dropdown-box')! as CoreDropdownBox;
   };
 
-  readonly renderBox = () => html`
-    <ngm-core-dropdown-box></ngm-core-dropdown-box>
-  `;
+  readonly renderBox = () => html` <ngm-core-dropdown-box></ngm-core-dropdown-box> `;
 
   static readonly styles = css`
     ${CoreBasePopup.styles}

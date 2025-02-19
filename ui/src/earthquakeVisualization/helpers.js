@@ -4,9 +4,7 @@ export const EARTHQUAKE_SPHERE_SIZE_COEF = 200;
 
 export function parseEarthquakeData(data) {
   const earthquakeArr = data.trim().split('\n');
-  const propsArr = earthquakeArr[0]
-    .split('|')
-    .map((propName) => propName.replace(/\W/g, ''));
+  const propsArr = earthquakeArr[0].split('|').map((propName) => propName.replace(/\W/g, ''));
   const values = earthquakeArr.slice(1);
   return values
     .map((val) => {
@@ -15,17 +13,13 @@ export function parseEarthquakeData(data) {
       for (const i in propsArr) {
         switch (propsArr[i]) {
           case 'Time':
-            earthquakeData[propsArr[i]] = valuesArr[i]
-              .split('.')[0]
-              .replace('T', ' ');
+            earthquakeData[propsArr[i]] = valuesArr[i].split('.')[0].replace('T', ' ');
             break;
           case 'Magnitude':
-            earthquakeData[propsArr[i]] =
-              parseFloat(valuesArr[i]).toFixed(1) + ' MLhc';
+            earthquakeData[propsArr[i]] = parseFloat(valuesArr[i]).toFixed(1) + ' MLhc';
             break;
           case 'Depthkm':
-            earthquakeData[propsArr[i]] =
-              parseFloat(valuesArr[i]).toFixed(1) + ' km';
+            earthquakeData[propsArr[i]] = parseFloat(valuesArr[i]).toFixed(1) + ' km';
             break;
           case 'EventLocationName':
           case 'Latitude':
@@ -40,11 +34,7 @@ export function parseEarthquakeData(data) {
     })
     .filter(
       (ed) =>
-        !!ed.Latitude &&
-        ed.Latitude.length &&
-        !!ed.Longitude &&
-        ed.Longitude.length &&
-        !ed.Depthkm.startsWith('NaN'),
+        !!ed.Latitude && ed.Latitude.length && !!ed.Longitude && ed.Longitude.length && !ed.Depthkm.startsWith('NaN'),
     );
 }
 

@@ -50,10 +50,7 @@ export class NgmLayerLegend extends LitElementI18n {
     return html`
       <div class="ngm-floating-window-header drag-handle">
         ${i18next.t(this.config.label)}
-        <div
-          class="ngm-close-icon"
-          @click=${() => this.dispatchEvent(new CustomEvent('close'))}
-        ></div>
+        <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
       <div
         class="content-container ${classMap({

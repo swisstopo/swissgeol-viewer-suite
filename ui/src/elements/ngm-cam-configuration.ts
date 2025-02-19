@@ -18,11 +18,7 @@ import {
   ScreenSpaceEventType,
   Ellipsoid,
 } from 'cesium';
-import {
-  formatCartographicAs2DLv95,
-  lv95ToDegrees,
-  radToDeg,
-} from '../projection';
+import { formatCartographicAs2DLv95, lv95ToDegrees, radToDeg } from '../projection';
 import { styleMap } from 'lit/directives/style-map.js';
 import { classMap } from 'lit/directives/class-map.js';
 import './ngm-cam-coordinates';
@@ -40,8 +36,7 @@ export const ABSOLUTE_ELEVATION_MAX = 700000;
  * The input between 0.5 and 1 is mapped to the height between 0m and +300'000m
  */
 export function heightToValue(height: number): number {
-  const m =
-    0.5 / (height < 0 ? ABSOLUTE_ELEVATION_MIN : ABSOLUTE_ELEVATION_MAX);
+  const m = 0.5 / (height < 0 ? ABSOLUTE_ELEVATION_MIN : ABSOLUTE_ELEVATION_MAX);
   return m * height + 0.5;
 }
 
@@ -90,10 +85,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   private removeOnTick: Event.RemoveCallback | undefined;
   private readonly configurations = [
     {
-      label: () =>
-        html`${i18next.t('camera_position_height_label')}<br />${i18next.t(
-            'camera_position_height_unit',
-          )}`,
+      label: () => html`${i18next.t('camera_position_height_label')}<br />${i18next.t('camera_position_height_unit')}`,
       iconClass: () =>
         classMap({
           'ngm-cam-h-icon': true,
@@ -109,8 +101,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       getValue: () => heightToValue(this.elevation),
       getInputValue: () => this.elevation.toFixed(1),
       getValueLabel: () => `${this.integerFormat.format(this.elevation)} m`,
-      onSliderChange: (evt) =>
-        this.updateHeight(valueToHeight(Number(evt.target.value))),
+      onSliderChange: (evt) => this.updateHeight(valueToHeight(Number(evt.target.value))),
       onInputChange: (evt) => {
         if (this.timeout) {
           clearTimeout(this.timeout);
@@ -181,13 +172,10 @@ export class NgmCamConfiguration extends LitElementI18n {
     if (this.viewer && !this.unlistenPostRender) {
       this.scene = this.viewer.scene;
       this.handler = new ScreenSpaceEventHandler(this.viewer.canvas);
-      this.unlistenPostRender = this.scene.postRender.addEventListener(() =>
-        this.updateFromCamera(),
-      );
+      this.unlistenPostRender = this.scene.postRender.addEventListener(() => this.updateFromCamera());
       this.updateFromCamera();
     }
-    if (changedProperties.has('lockType'))
-      NavToolsStore.setNavLockType(this.lockType);
+    if (changedProperties.has('lockType')) NavToolsStore.setNavLockType(this.lockType);
     super.updated(changedProperties);
   }
 
@@ -209,8 +197,7 @@ export class NgmCamConfiguration extends LitElementI18n {
   }
 
   updateHeight(value: number) {
-    const altitude =
-      this.scene!.globe.getHeight(this.scene!.camera.positionCartographic) ?? 0;
+    const altitude = this.scene!.globe.getHeight(this.scene!.camera.positionCartographic) ?? 0;
     NavToolsStore.setCameraHeight(value + altitude);
   }
 
@@ -236,26 +223,17 @@ export class NgmCamConfiguration extends LitElementI18n {
 
   updateCoordinates(event: CustomEvent<CoordinateWithCrs>) {
     const detail = event.detail;
-    const coordinates =
-      detail.crs === 'lv95'
-        ? lv95ToDegrees([detail.long, detail.lat])
-        : [detail.long, detail.lat];
+    const coordinates = detail.crs === 'lv95' ? lv95ToDegrees([detail.long, detail.lat]) : [detail.long, detail.lat];
     this.scene?.camera.setView({
       destination: Cartesian3.fromDegrees(
         coordinates[0],
         coordinates[1],
-        Ellipsoid.WGS84.cartesianToCartographic(this.scene.camera.position)
-          .height,
+        Ellipsoid.WGS84.cartesianToCartographic(this.scene.camera.position).height,
       ),
     });
   }
 
-  getSliderStyle(
-    value: number,
-    minValue: number,
-    maxValue: number,
-    oneDirection = false,
-  ) {
+  getSliderStyle(value: number, minValue: number, maxValue: number, oneDirection = false) {
     if (oneDirection) {
       return {
         'background-image': `linear-gradient(to right, var(--ngm-interaction-active), var(--ngm-interaction-active) ${(value / maxValue) * 100}%, white ${(value / maxValue) * 100}%)`,
@@ -313,9 +291,7 @@ export class NgmCamConfiguration extends LitElementI18n {
         this.lockMove = false;
       }, ScreenSpaceEventType.LEFT_UP);
 
-      this.removeOnTick = this.viewer!.clock.onTick.addEventListener(() =>
-        this.onTick(),
-      );
+      this.removeOnTick = this.viewer!.clock.onTick.addEventListener(() => this.onTick());
     }
   }
 
@@ -330,21 +306,14 @@ export class NgmCamConfiguration extends LitElementI18n {
     this.handler?.removeInputAction(ScreenSpaceEventType.LEFT_DOWN);
     this.handler?.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
     this.handler?.removeInputAction(ScreenSpaceEventType.LEFT_UP);
-    this.handler?.removeInputAction(
-      ScreenSpaceEventType.LEFT_DOWN,
-      KeyboardEventModifier.CTRL,
-    );
+    this.handler?.removeInputAction(ScreenSpaceEventType.LEFT_DOWN, KeyboardEventModifier.CTRL);
     this.removeOnTick && this.removeOnTick();
   }
 
   onTick() {
     if (this.lockMove) {
-      const x =
-        (this.lockMovePosition.x - this.lockMoveStartPosition.x) /
-        this.viewer!.canvas.clientWidth;
-      const y =
-        -(this.lockMovePosition.y - this.lockMoveStartPosition.y) /
-        this.viewer!.canvas.clientHeight;
+      const x = (this.lockMovePosition.x - this.lockMoveStartPosition.x) / this.viewer!.canvas.clientWidth;
+      const y = -(this.lockMovePosition.y - this.lockMoveStartPosition.y) / this.viewer!.canvas.clientHeight;
       const moveFactor = 1000;
       switch (this.lockType) {
         case 'elevation':
@@ -366,21 +335,14 @@ export class NgmCamConfiguration extends LitElementI18n {
     return html`
       <div class="ngm-floating-window-header drag-handle">
         ${i18next.t('cam_configuration_header')}
-        <div
-          class="ngm-close-icon"
-          @click=${() => this.dispatchEvent(new CustomEvent('close'))}
-        ></div>
+        <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
       <div class="ngm-cam-container">
         <ngm-minimap .viewer=${this.viewer}></ngm-minimap>
         ${this.configurations.map(
           (c) =>
             html` <div>
-              <div
-                class=${c.iconClass()}
-                title=${i18next.t('cam_lock')}
-                @click=${c.lock}
-              ></div>
+              <div class=${c.iconClass()} title=${i18next.t('cam_lock')} @click=${c.lock}></div>
               <div class="ngm-cam-conf-slider">
                 <div>
                   <label>${c.label()}</label>
@@ -391,9 +353,7 @@ export class NgmCamConfiguration extends LitElementI18n {
                     max="${c.maxInputValue ?? c.maxValue}"
                     step="${c.inputStep ?? c.step}"
                     .value=${c.getInputValue ? c.getInputValue() : c.getValue()}
-                    @input=${c.onInputChange
-                      ? c.onInputChange
-                      : c.onSliderChange}
+                    @input=${c.onInputChange ? c.onInputChange : c.onSliderChange}
                   />
                 </div>
                 <input
@@ -405,9 +365,7 @@ export class NgmCamConfiguration extends LitElementI18n {
                   step=${c.step}
                   .value=${c.getValue()}
                   @input=${c.onSliderChange}
-                  @keydown="${(e) =>
-                    (e.key === 'ArrowLeft' || e.key === 'ArrowRight') &&
-                    e.stopPropagation()}"
+                  @keydown="${(e) => (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.stopPropagation()}"
                 />
               </div>
             </div>`,

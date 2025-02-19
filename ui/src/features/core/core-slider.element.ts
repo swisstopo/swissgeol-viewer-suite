@@ -90,10 +90,8 @@ export class CoreSlider extends LitElement {
       background-image: linear-gradient(
         to right,
         var(--color-primary--active),
-        var(--color-primary--active)
-          calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * 100%),
-        var(--color-border--default)
-          calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * 100%)
+        var(--color-primary--active) calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * 100%),
+        var(--color-border--default) calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * 100%)
       );
     }
 
@@ -117,9 +115,7 @@ export class CoreSlider extends LitElement {
       border: var(--slider-thumb-border-size) solid var(--color-primary);
       border-radius: 50%;
       cursor: pointer;
-      margin-top: calc(
-        (var(--slider-track-height) / 2) - (var(--slider-thumb-size) / 2)
-      );
+      margin-top: calc((var(--slider-track-height) / 2) - (var(--slider-thumb-size) / 2));
     }
 
     input[type='range']::-moz-range-thumb {

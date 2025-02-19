@@ -77,9 +77,7 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
           </div>
         </form>
         <div>
-          <button class="ui button" @click="${() => this.applyFilter()}">
-            ${i18next.t('vox_filter_apply')}
-          </button>
+          <button class="ui button" @click="${() => this.applyFilter()}">${i18next.t('vox_filter_apply')}</button>
         </div>
       </div>
       ${dragArea}
@@ -120,9 +118,7 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
   }
 
   resetForm() {
-    this.querySelectorAll<HTMLFormElement>('.content-container form').forEach(
-      (form) => form.reset(),
-    );
+    this.querySelectorAll<HTMLFormElement>('.content-container form').forEach((form) => form.reset());
   }
 
   firstUpdated() {

@@ -77,26 +77,11 @@ export class NgmNavTools extends LitElementI18n {
   private readonly oldPolylineUpdate: any = PolylineCollection.prototype.update;
   private readonly xyAxisCalculation = (axis, side) => [
     this.axisCenter,
-    positionFromPxDistance(
-      this.viewer!.scene,
-      this.axisCenter!,
-      AXIS_LENGTH,
-      axis,
-      side,
-    ),
+    positionFromPxDistance(this.viewer!.scene, this.axisCenter!, AXIS_LENGTH, axis, side),
   ];
-  private readonly xAxisCallback = new CallbackProperty(
-    () => this.xyAxisCalculation('x', -1),
-    false,
-  );
-  private readonly yAxisCallback = new CallbackProperty(
-    () => this.xyAxisCalculation('y', 1),
-    false,
-  );
-  private readonly zAxisCallback = new CallbackProperty(
-    () => this.xyAxisCalculation('z', -1),
-    false,
-  );
+  private readonly xAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('x', -1), false);
+  private readonly yAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('y', 1), false);
+  private readonly zAxisCallback = new CallbackProperty(() => this.xyAxisCalculation('z', -1), false);
   private exaggeration = 1;
 
   constructor() {
@@ -104,30 +89,21 @@ export class NgmNavTools extends LitElementI18n {
     MainStore.viewer.subscribe(async (v) => {
       this.viewer = v;
       if (!this.viewer) return;
-      this.axisDataSource = await this.viewer!.dataSources.add(
-        new CustomDataSource('navigationAxes'),
-      );
+      this.axisDataSource = await this.viewer!.dataSources.add(new CustomDataSource('navigationAxes'));
       this.toggleAxis(this.axisCenter);
       this.exaggeration = this.viewer.scene.verticalExaggeration;
     });
     NavToolsStore.syncTargetPoint.subscribe(() => this.syncPoint());
-    NavToolsStore.hideTargetPointListener.subscribe(() =>
-      this.removeTargetPoint(),
-    );
+    NavToolsStore.hideTargetPointListener.subscribe(() => this.removeTargetPoint());
     NavToolsStore.cameraHeightUpdate.subscribe(async (height) => {
       if (!this.viewer) return;
       this.showTargetPoint && this.stopTracking();
       const pc = this.viewer.camera.positionCartographic;
-      this.viewer.camera.position = Cartesian3.fromRadians(
-        pc.longitude,
-        pc.latitude,
-        height,
-      );
+      this.viewer.camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, height);
       this.showTargetPoint && this.startTracking();
     });
     NavToolsStore.navLockType.subscribe((type) => {
-      if (type !== '' && type !== 'elevation' && this.showTargetPoint)
-        this.removeTargetPoint();
+      if (type !== '' && type !== 'elevation' && this.showTargetPoint) this.removeTargetPoint();
       this.lockType = type;
     });
     NavToolsStore.exaggerationChanged.subscribe((exaggeration) => {
@@ -140,20 +116,12 @@ export class NgmNavTools extends LitElementI18n {
         const cartographic = Cartographic.fromCartesian(centerOfView);
         const height = cartographic.height;
         const offset = height * exaggerationScale - height;
-        this.viewer.camera.position = Cartesian3.fromRadians(
-          pc.longitude,
-          pc.latitude,
-          pc.height + offset,
-        );
+        this.viewer.camera.position = Cartesian3.fromRadians(pc.longitude, pc.latitude, pc.height + offset);
       }
       if (this.showTargetPoint) {
-        const iconPos = Cartographic.fromCartesian(
-          this.refIcon.position!.getValue(this.julianDate)!,
-        );
+        const iconPos = Cartographic.fromCartesian(this.refIcon.position!.getValue(this.julianDate)!);
         iconPos.height = iconPos.height * exaggerationScale;
-        this.refIcon.position = new ConstantPositionProperty(
-          Cartographic.toCartesian(iconPos),
-        );
+        this.refIcon.position = new ConstantPositionProperty(Cartographic.toCartesian(iconPos));
         this.startTracking();
         syncTargetParam(iconPos);
       }
@@ -165,8 +133,7 @@ export class NgmNavTools extends LitElementI18n {
     if (this.viewer && !this.unlistenFromPostRender) {
       const scene: Scene = this.viewer.scene;
       this.unlistenFromPostRender = scene.postRender.addEventListener(() => {
-        const amount =
-          Math.abs(scene.camera.positionCartographic.height) / this.moveAmount;
+        const amount = Math.abs(scene.camera.positionCartographic.height) / this.moveAmount;
         if (this.zoomingIn) {
           scene.camera.moveForward(amount);
         } else if (this.zoomingOut) {
@@ -252,14 +219,8 @@ export class NgmNavTools extends LitElementI18n {
         debounce((event) => this.onMouseMove(event), 250),
         ScreenSpaceEventType.MOUSE_MOVE,
       );
-      this.eventHandler.setInputAction(
-        (event) => this.onLeftDown(event),
-        ScreenSpaceEventType.LEFT_DOWN,
-      );
-      this.eventHandler.setInputAction(
-        () => this.onLeftUp(),
-        ScreenSpaceEventType.LEFT_UP,
-      );
+      this.eventHandler.setInputAction((event) => this.onLeftDown(event), ScreenSpaceEventType.LEFT_DOWN);
+      this.eventHandler.setInputAction(() => this.onLeftUp(), ScreenSpaceEventType.LEFT_UP);
       position = position || pickCenterOnMapOrObject(this.viewer!.scene);
       if (!position) {
         showSnackbarError(i18next.t('nav_tools_out_glob_warn'));
@@ -299,11 +260,7 @@ export class NgmNavTools extends LitElementI18n {
 
   onLeftDown(event) {
     const pickedObject = this.viewer!.scene.pick(event.position);
-    if (
-      pickedObject &&
-      pickedObject.id &&
-      pickedObject.id.id === this.refIcon.id
-    ) {
+    if (pickedObject && pickedObject.id && pickedObject.id.id === this.refIcon.id) {
       this.stopTracking();
       this.moveRef = true;
     }
@@ -340,24 +297,16 @@ export class NgmNavTools extends LitElementI18n {
 
   onMouseMove(event) {
     if (this.moveRef) {
-      const position = pickPositionOrVoxel(
-        this.viewer!.scene,
-        event.endPosition,
-      );
+      const position = pickPositionOrVoxel(this.viewer!.scene, event.endPosition);
       if (!position) return;
       this.addTargetPoint(position);
       syncTargetParam(Cartographic.fromCartesian(position));
       this.viewer!.scene.requestRender();
     } else {
       const pickedObject = this.viewer!.scene.pick(event.endPosition);
-      if (
-        pickedObject &&
-        pickedObject.id &&
-        pickedObject.id.id === this.refIcon.id
-      )
+      if (pickedObject && pickedObject.id && pickedObject.id.id === this.refIcon.id)
         this.viewer!.canvas.style.cursor = 'pointer';
-      else if (this.viewer!.canvas.style.cursor === 'pointer')
-        this.viewer!.canvas.style.cursor = '';
+      else if (this.viewer!.canvas.style.cursor === 'pointer') this.viewer!.canvas.style.cursor = '';
     }
   }
 
@@ -408,9 +357,7 @@ export class NgmNavTools extends LitElementI18n {
         frameState.morphTime = oldMorphTime;
       };
     }
-    this.dispatchEvent(
-      new CustomEvent('axisstate', { detail: { showAxis: !!this.axisCenter } }),
-    );
+    this.dispatchEvent(new CustomEvent('axisstate', { detail: { showAxis: !!this.axisCenter } }));
   }
 
   render() {
@@ -422,11 +369,7 @@ export class NgmNavTools extends LitElementI18n {
           class="ngm-zoom-p-icon"
           @pointerdown=${(e) => this.startZoomIn(e)}
         ></div>
-        <div
-          title="${i18next.t('nav_fly_home')}"
-          class="ngm-zoom-o-icon"
-          @click=${() => this.flyToHome()}
-        ></div>
+        <div title="${i18next.t('nav_fly_home')}" class="ngm-zoom-o-icon" @click=${() => this.flyToHome()}></div>
         <div
           title="${i18next.t('nav_zoom_out')}"
           class="ngm-zoom-m-icon"
@@ -444,8 +387,7 @@ export class NgmNavTools extends LitElementI18n {
           title="${i18next.t('nav_target_point')}"
           class="ngm-coords-icon ${classMap({
             'ngm-active-icon': this.showTargetPoint,
-            'ngm-disabled':
-              this.lockType !== '' && this.lockType !== 'elevation',
+            'ngm-disabled': this.lockType !== '' && this.lockType !== 'elevation',
           })}"
           @click=${() => this.toggleReference()}
         ></div>

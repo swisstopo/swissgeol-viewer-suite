@@ -23,9 +23,7 @@ export class NgmProjectAssetsSection extends LitElementI18n {
 
   updated(changedProperties: PropertyValues) {
     if (changedProperties.has('assets')) {
-      this.dispatchEvent(
-        new CustomEvent('assetsChanged', { detail: { assets: this.assets } }),
-      );
+      this.dispatchEvent(new CustomEvent('assetsChanged', { detail: { assets: this.assets } }));
     }
     super.updated(changedProperties);
   }
@@ -103,9 +101,7 @@ export class NgmProjectAssetsSection extends LitElementI18n {
             </div>
           `;
         })}
-        <div .hidden=${this.assets?.length > 0}>
-          ${i18next.t('dashboard_no_assets_text')}
-        </div>
+        <div .hidden=${this.assets?.length > 0}>${i18next.t('dashboard_no_assets_text')}</div>
       </div>
     </div>`;
   }

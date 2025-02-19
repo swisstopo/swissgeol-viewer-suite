@@ -11,8 +11,7 @@ import { ConfigService } from './api/config.service';
 export class NgmAppBoot extends LitElement {
   private readonly viewerInitialization = new Task(this, {
     task: async () => {
-      const clientConfig =
-        (await new ConfigService().getConfig()) as ClientConfig;
+      const clientConfig = (await new ConfigService().getConfig()) as ClientConfig;
       if (!clientConfig) {
         console.error('Failed to load client config');
         return;

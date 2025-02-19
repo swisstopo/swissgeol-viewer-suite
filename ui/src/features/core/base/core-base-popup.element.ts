@@ -2,9 +2,7 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { CoreBasePopupBox } from 'src/features/core/base/core-base-popup-box.element';
 
-export abstract class CoreBasePopup<
-  TBox extends CoreBasePopupBox,
-> extends LitElement {
+export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitElement {
   @property()
   accessor position: PopupPosition | null = null;
 
@@ -41,15 +39,9 @@ export abstract class CoreBasePopup<
     if (target == null) {
       return;
     }
-    this.enterEvents.forEach((event) =>
-      target.addEventListener(event, this.show),
-    );
-    this.leaveEvents.forEach((event) =>
-      target.addEventListener(event, this.hide),
-    );
-    this.preventedEvents.forEach((event) =>
-      target.addEventListener(event, stopEvent),
-    );
+    this.enterEvents.forEach((event) => target.addEventListener(event, this.show));
+    this.leaveEvents.forEach((event) => target.addEventListener(event, this.hide));
+    this.preventedEvents.forEach((event) => target.addEventListener(event, stopEvent));
   }
 
   private unregisterTarget(): void {
@@ -57,15 +49,9 @@ export abstract class CoreBasePopup<
     if (target == null) {
       return;
     }
-    this.enterEvents.forEach((event) =>
-      target.removeEventListener(event, this.show),
-    );
-    this.leaveEvents.forEach((event) =>
-      target.removeEventListener(event, this.hide),
-    );
-    this.preventedEvents.forEach((event) =>
-      target.removeEventListener(event, stopEvent),
-    );
+    this.enterEvents.forEach((event) => target.removeEventListener(event, this.show));
+    this.leaveEvents.forEach((event) => target.removeEventListener(event, this.hide));
+    this.preventedEvents.forEach((event) => target.removeEventListener(event, stopEvent));
   }
 
   connectedCallback(): void {
@@ -122,9 +108,7 @@ export abstract class CoreBasePopup<
 
   private syncSlot(): void {
     if (this.box == null) {
-      throw new Error(
-        "can't sync slot as the box has not yet been initialized",
-      );
+      throw new Error("can't sync slot as the box has not yet been initialized");
     }
     const slot = this.shadowRoot!.querySelector('slot')!;
     const assignedNodes = slot.assignedNodes({ flatten: true });
@@ -132,10 +116,7 @@ export abstract class CoreBasePopup<
     while (box.lastChild != null) {
       box.removeChild(box.lastChild);
     }
-    this.box.style.setProperty(
-      '--count',
-      `${assignedNodes.filter((it) => it instanceof HTMLElement).length}`,
-    );
+    this.box.style.setProperty('--count', `${assignedNodes.filter((it) => it instanceof HTMLElement).length}`);
     if (assignedNodes.length === 0) {
       this.updatePosition();
       return;
@@ -174,9 +155,7 @@ export abstract class CoreBasePopup<
     this.isShown = false;
   }
 
-  private updatePosition(
-    options: { position?: PopupPosition; allowViewportCheck?: boolean } = {},
-  ): void {
+  private updatePosition(options: { position?: PopupPosition; allowViewportCheck?: boolean } = {}): void {
     if (this.target == null || this.box == null) {
       return;
     }
