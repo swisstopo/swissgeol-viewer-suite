@@ -456,20 +456,22 @@ export class NgmDashboard extends LitElementI18n {
   previewTemplate(projOrTopic?: Topic | Project) {
     if (!projOrTopic) return '';
     const backgroundImage = projOrTopic.image?.length ? `url('${projOrTopic.image}')` : 'none';
-    return html` <div
-      class="ngm-proj-preview ${classMap({
-        'cursor-preloader': this.showCursorPreloader,
-      })}"
-      @click=${() => this.onProjectPreviewClick(projOrTopic)}
-    >
-      <div class="ngm-proj-preview-img" style=${styleMap({ backgroundImage })}></div>
-      <div class="ngm-proj-preview-title" style=${styleMap({ backgroundColor: projOrTopic.color })}>
-        <span>${translated(projOrTopic.title)}</span>
+    return html`
+      <div
+        class="ngm-proj-preview ${classMap({
+          'cursor-preloader': this.showCursorPreloader,
+        })}"
+        @click=${() => this.onProjectPreviewClick(projOrTopic)}
+      >
+        <div class="ngm-proj-preview-img" style=${styleMap({ backgroundImage })}></div>
+        <div class="ngm-proj-preview-title" style=${styleMap({ backgroundColor: projOrTopic.color })}>
+          <span>${translated(projOrTopic.title)}</span>
+        </div>
+        <div class="ngm-proj-preview-subtitle">
+          <span>${projOrTopic.description ? translated(projOrTopic.description) : ''}</span>
+        </div>
       </div>
-      <div class="ngm-proj-preview-subtitle">
-        <span>${projOrTopic.description ? translated(projOrTopic.description) : ''}</span>
-      </div>
-    </div>`;
+    `;
   }
 
   recentlyViewedTemplate() {
@@ -488,12 +490,14 @@ export class NgmDashboard extends LitElementI18n {
       .filter((item) => item !== undefined);
 
     return recentlyViewed.length > 0
-      ? html` <div>
-          <div class="ngm-proj-title">${i18next.t('dashboard_recently_viewed')}</div>
-          <hide-overflow class="ngm-projects-list">
-            ${recentlyViewed.map((data) => this.previewTemplate(data))}
-          </hide-overflow>
-        </div>`
+      ? html`
+          <div>
+            <div class="ngm-proj-title">${i18next.t('dashboard_recently_viewed')}</div>
+            <hide-overflow class="ngm-projects-list">
+              ${recentlyViewed.map((data) => this.previewTemplate(data))}
+            </hide-overflow>
+          </div>
+        `
       : html``;
   }
 
@@ -507,7 +511,9 @@ export class NgmDashboard extends LitElementI18n {
           </hide-overflow>
         `;
       } else {
-        return html`<div class="ngm-hint">${i18next.t('dashboard_overview_not_logged_in')}</div>`;
+        return html`
+          <div class="ngm-hint">${i18next.t('dashboard_overview_not_logged_in')}</div>
+        `;
       }
     }
     return html``;
@@ -619,28 +625,32 @@ export class NgmDashboard extends LitElementI18n {
         </div>
         <div ?hidden=${!this.isProjectSelected}>
           ${this.projectTabState !== 'view'
-            ? html`<ngm-project-edit
-                .project="${this.projectTabState === 'create' ? this.projectToCreate : this.selectedTopicOrProject}"
-                .saveOrCancelWarning="${this.saveOrCancelWarning}"
-                .createMode="${this.projectTabState === 'create'}"
-                .userEmail="${this.userEmail}"
-                .tempKmlDataSource="${this.tempKmlDataSource}"
-                @onBack=${this.deselectTopicOrProject}
-                @onSave="${async (evt: { detail: { project: Project } }) => this.onProjectSave(evt.detail.project)}"
-                @onCancel="${this.cancelEditCreate}"
-              ></ngm-project-edit>`
-            : html`<ngm-project-topic-overview
-                .topicOrProject="${this.selectedTopicOrProject}"
-                .toastPlaceholder="${this.toastPlaceholder}"
-                .activeTab="${this.activeTab}"
-                .selectedViewIndx="${this.selectedViewIndx}"
-                .userEmail="${this.userEmail}"
-                @onDeselect="${this.deselectTopicOrProject}"
-                @onEdit="${this.onProjectEdit}"
-                @onProjectDuplicated="${(evt: { detail: { project: Project } }) =>
-                  this.onProjectDuplicated(evt.detail.project)}"
-                @onModalConfirmation="${() => this.deselectTopicOrProject()}"
-              ></ngm-project-topic-overview>`}
+            ? html`
+                <ngm-project-edit
+                  .project="${this.projectTabState === 'create' ? this.projectToCreate : this.selectedTopicOrProject}"
+                  .saveOrCancelWarning="${this.saveOrCancelWarning}"
+                  .createMode="${this.projectTabState === 'create'}"
+                  .userEmail="${this.userEmail}"
+                  .tempKmlDataSource="${this.tempKmlDataSource}"
+                  @onBack=${this.deselectTopicOrProject}
+                  @onSave="${async (evt: { detail: { project: Project } }) => this.onProjectSave(evt.detail.project)}"
+                  @onCancel="${this.cancelEditCreate}"
+                ></ngm-project-edit>
+              `
+            : html`
+                <ngm-project-topic-overview
+                  .topicOrProject="${this.selectedTopicOrProject}"
+                  .toastPlaceholder="${this.toastPlaceholder}"
+                  .activeTab="${this.activeTab}"
+                  .selectedViewIndx="${this.selectedViewIndx}"
+                  .userEmail="${this.userEmail}"
+                  @onDeselect="${this.deselectTopicOrProject}"
+                  @onEdit="${this.onProjectEdit}"
+                  @onProjectDuplicated="${(evt: { detail: { project: Project } }) =>
+                    this.onProjectDuplicated(evt.detail.project)}"
+                  @onModalConfirmation="${() => this.deselectTopicOrProject()}"
+                ></ngm-project-topic-overview>
+              `}
         </div>
       </div>
     `;

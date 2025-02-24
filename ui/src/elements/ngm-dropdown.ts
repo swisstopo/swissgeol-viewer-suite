@@ -46,8 +46,8 @@ export class NgmDropdown extends LitElement {
         <div class="text ${classMap({ default: this.defaultText === text })}">${text}</div>
         <div class="menu ${classMap({ visible: this.dropdownShown })}">
           ${this.items.map(
-            (item) =>
-              html` <div
+            (item) => html`
+              <div
                 class="item ${classMap({
                   selected: item.value === this.selectedValue,
                 })}"
@@ -55,7 +55,8 @@ export class NgmDropdown extends LitElement {
                 @click=${() => this.handleSelectionChange(item.value)}
               >
                 ${item.title}
-              </div>`,
+              </div>
+            `,
           )}
         </div>
       </div>

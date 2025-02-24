@@ -88,18 +88,20 @@ export class LayerCatalog extends CoreElement {
         <input type="checkbox" ?checked=${!!layer.displayed} />
         <span class="ngm-checkbox-icon"></span>
         <label class=${layer.displayed ? 'displayed' : ''}>
-          <i class=${layer.restricted ? 'lock icon' : ''}></i>${i18next.t(layer.label)}
+          <i class=${layer.restricted ? 'lock icon' : ''}></i>
+          ${i18next.t(layer.label)}
         </label>
       </div>
     `;
   }
 
-  readonly render = () =>
-    html`${repeat(
+  readonly render = () => html`
+    ${repeat(
       this.layers,
       (node) => node,
       (node) => this.getCategoryOrLayerTemplate(node, 'first-level'),
-    )}`;
+    )}
+  `;
 
   static readonly styles = css`
     ${unsafeCSS(fomanticTransitionCss)}

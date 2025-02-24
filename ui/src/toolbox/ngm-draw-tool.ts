@@ -22,15 +22,16 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
   }
 
   render() {
-    return html` <ngm-draw-section ?hidden=${this.hidden}></ngm-draw-section>
+    return html`
+      <ngm-draw-section ?hidden=${this.hidden}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
         .selectedId=${this.selectedAreaId}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => {
           ToolboxStore.setOpenedGeometryOptions({ id: evt.detail.id! });
         }}
-      >
-      </ngm-geometries-list>`;
+      ></ngm-geometries-list>
+    `;
   }
 
   createRenderRoot() {

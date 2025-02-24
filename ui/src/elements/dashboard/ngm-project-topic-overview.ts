@@ -176,13 +176,15 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         </a>
         ${isProject(this.topicOrProject) && this.topicOrProject.owner.email !== this.userEmail
           ? ''
-          : html` <div
-              class="item"
-              ?hidden=${this.activeTab === 'topics'}
-              @click=${() => (this.deleteWarningModal.show = true)}
-            >
-              ${i18next.t('delete')}
-            </div>`}
+          : html`
+              <div
+                class="item"
+                ?hidden=${this.activeTab === 'topics'}
+                @click=${() => (this.deleteWarningModal.show = true)}
+              >
+                ${i18next.t('delete')}
+              </div>
+            `}
       </div>
     `;
   }

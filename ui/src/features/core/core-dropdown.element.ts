@@ -47,7 +47,9 @@ export class CoreDropdown extends CoreBasePopup<CoreDropdownBox> {
     return this.shadowRoot!.querySelector('ngm-core-dropdown-box')! as CoreDropdownBox;
   };
 
-  readonly renderBox = () => html` <ngm-core-dropdown-box></ngm-core-dropdown-box> `;
+  readonly renderBox = () => html`
+    <ngm-core-dropdown-box></ngm-core-dropdown-box>
+  `;
 
   static readonly styles = css`
     ${CoreBasePopup.styles}

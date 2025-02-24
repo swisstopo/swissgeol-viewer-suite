@@ -324,32 +324,35 @@ export class NgmGeometryEdit extends LitElementI18n {
         <div class="geom-styles-title">${i18next.t('tbx_styles_title')}</div>
         <div class="ngm-geom-colorpicker">
           ${GEOMETRY_COLORS.map(
-            (color) =>
-              html` <div
+            (color) => html`
+              <div
                 style="background-color: ${color.color};"
                 @click=${() => this.onColorChange(color.value)}
                 class="ngm-geom-color ${classMap({
                   active: this.selectedColor === color.value.toCssColorString(),
                   'black-tick': COLORS_WITH_BLACK_TICK.includes(color.color),
                 })}"
-              ></div>`,
+              ></div>
+            `,
           )}
         </div>
       </div>
       <div class="ngm-geom-symbolpicker" ?hidden=${!this.editingEntity.billboard}>
         ${POINT_SYMBOLS.map((image) => {
           const imgSrc = `/images/${image}`;
-          return html` <div
-            class="ngm-geom-symbol ${classMap({
-              active: this.selectedSymbol === imgSrc,
-            })}"
-            style=${styleMap({
-              '-webkit-mask-image': `url('${imgSrc}')`,
-              'mask-image': `url('${imgSrc}')`,
-              backgroundColor: this.selectedColor,
-            })}
-            @click=${() => this.onSymbolChange(image)}
-          ></div>`;
+          return html`
+            <div
+              class="ngm-geom-symbol ${classMap({
+                active: this.selectedSymbol === imgSrc,
+              })}"
+              style=${styleMap({
+                '-webkit-mask-image': `url('${imgSrc}')`,
+                'mask-image': `url('${imgSrc}')`,
+                backgroundColor: this.selectedColor,
+              })}
+              @click=${() => this.onSymbolChange(image)}
+            ></div>
+          `;
         })}
       </div>
       <div class="ngm-geom-edit-actions">

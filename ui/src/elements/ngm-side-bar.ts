@@ -193,10 +193,12 @@ export class SideBar extends LitElementI18n {
     const projectsBtn = this.renderMenuItem('projects', 'menu_projects', 'dashboard');
     const shareBtn = this.renderMenuItem('share', 'menu_share', 'share');
     const settingsBtn = this.renderMenuItem('config', 'menu_settings', 'settings');
-    const mobileExpandBtn = html` <ngm-menu-item
-      icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
-      @click=${() => (this.mobileShowAll = !this.mobileShowAll)}
-    ></ngm-menu-item>`;
+    const mobileExpandBtn = html`
+      <ngm-menu-item
+        icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
+        @click=${() => (this.mobileShowAll = !this.mobileShowAll)}
+      ></ngm-menu-item>
+    `;
 
     return html`
       <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
@@ -240,7 +242,11 @@ export class SideBar extends LitElementI18n {
           ${i18next.t('lsb_share')}
           <div class="ngm-close-icon" @click=${() => (this.activePanel = null)}></div>
         </div>
-        ${this.activePanel !== 'share' ? '' : html` <ngm-share-link></ngm-share-link>`}
+        ${this.activePanel !== 'share'
+          ? ''
+          : html`
+              <ngm-share-link></ngm-share-link>
+            `}
       </div>
       <div .hidden=${this.activePanel !== 'settings'} class="ngm-side-bar-panel">
         <div class="ngm-panel-header">
@@ -260,12 +266,12 @@ export class SideBar extends LitElementI18n {
               <span class="ngm-checkbox-icon"></span>
               <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
             </div>
-            <a class="contact-mailto-link" target="_blank" href="mailto:swissgeol@swisstopo.ch"
-              >${i18next.t('contact_mailto_text')}</a
-            >
-            <a class="disclaimer-link" target="_blank" href="${i18next.t('disclaimer_href')}"
-              >${i18next.t('disclaimer_text')}</a
-            >
+            <a class="contact-mailto-link" target="_blank" href="mailto:swissgeol@swisstopo.ch">
+              ${i18next.t('contact_mailto_text')}
+            </a>
+            <a class="disclaimer-link" target="_blank" href="${i18next.t('disclaimer_href')}">
+              ${i18next.t('disclaimer_text')}
+            </a>
           </div>
         </div>
       </div>

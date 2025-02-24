@@ -181,8 +181,9 @@ export class LayerDisplayListItem extends CoreElement {
                 })}"
                 role="button"
                 @click="${this.toggleBackgroundActive}"
-                >${this.label}</span
               >
+                ${this.label}
+              </span>
             `}
 
         <ngm-core-button

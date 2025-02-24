@@ -54,14 +54,15 @@ export class NgmWmtsDatePicker extends LitElementI18n {
 
   render() {
     if (!this.dates || !this.config?.setVisibility) return '';
-    return html` <div class="ngm-floating-window-header drag-handle">
+    return html`
+      <div class="ngm-floating-window-header drag-handle">
         <div class="ngm-floating-window-header-title">${this.config?.label}</div>
         <div class="ngm-close-icon" @click=${this.onClose}></div>
       </div>
       <div class="ngm-project-popup-content ngm-date-picker">
         ${this.dates.map(
-          (d) =>
-            html` <div
+          (d) => html`
+            <div
               class="ngm-label-btn ${classMap({
                 active: d.value === this.config?.wmtsCurrentTime,
               })}"
@@ -73,10 +74,12 @@ export class NgmWmtsDatePicker extends LitElementI18n {
               }}
             >
               ${d.title}
-            </div>`,
+            </div>
+          `,
         )}
       </div>
-      ${dragArea}`;
+      ${dragArea}
+    `;
   }
 
   createRenderRoot() {

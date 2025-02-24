@@ -29,7 +29,8 @@ export class NgmProjectAssetsSection extends LitElementI18n {
   }
 
   editButtons(index: number) {
-    return html` <div
+    return html`
+      <div
         class="ngm-icon ngm-edit-icon ${classMap({
           active: this.kmlEditIndex === index,
         })}"
@@ -43,7 +44,8 @@ export class NgmProjectAssetsSection extends LitElementI18n {
           this.assets.splice(index, 1);
           this.assets = [...this.assets];
         }}
-      ></div>`;
+      ></div>
+    `;
   }
 
   handleKmlUpload(e: KmlUploadEvent): void {
@@ -53,57 +55,61 @@ export class NgmProjectAssetsSection extends LitElementI18n {
   }
 
   render() {
-    return html` <div>
-      <div class="ngm-proj-title-icon">
-        <div class="ngm-file-upload-icon"></div>
-        <div>${i18next.t('dashboard_project_kml')}</div>
-      </div>
-      <div class="project-edit-fields">
-        ${this.viewMode
-          ? ''
-          : html`
-              <ngm-layer-upload-kml
-                .toastPlaceholder=${this.toastPlaceholder}
-                .maxFileSize=${PROJECT_ASSET_MAX_SIZE}
-                @upload=${this.handleKmlUpload}
-              ></ngm-layer-upload-kml>
-            `}
-        ${this.assets?.map((kml, index) => {
-          return html`
-            <div class="ngm-action-list-item ngm-geom-item">
-              <div
-                class="ngm-action-list-item-header ${classMap({
-                  view: this.viewMode,
-                })}"
-              >
-                <div>
-                  ${this.kmlEditIndex !== index
-                    ? kml.name
-                    : html` <div
-                        class="ngm-input ${classMap({
-                          'ngm-input-warning': !kml.name,
-                        })}"
-                      >
-                        <input
-                          type="text"
-                          placeholder="required"
-                          .value=${kml.name}
-                          @input=${(evt) => {
-                            kml.name = evt.target.value;
-                            this.assets[index] = kml;
-                            this.assets = [...this.assets];
-                          }}
-                        />
-                      </div>`}
+    return html`
+      <div>
+        <div class="ngm-proj-title-icon">
+          <div class="ngm-file-upload-icon"></div>
+          <div>${i18next.t('dashboard_project_kml')}</div>
+        </div>
+        <div class="project-edit-fields">
+          ${this.viewMode
+            ? ''
+            : html`
+                <ngm-layer-upload-kml
+                  .toastPlaceholder=${this.toastPlaceholder}
+                  .maxFileSize=${PROJECT_ASSET_MAX_SIZE}
+                  @upload=${this.handleKmlUpload}
+                ></ngm-layer-upload-kml>
+              `}
+          ${this.assets?.map((kml, index) => {
+            return html`
+              <div class="ngm-action-list-item ngm-geom-item">
+                <div
+                  class="ngm-action-list-item-header ${classMap({
+                    view: this.viewMode,
+                  })}"
+                >
+                  <div>
+                    ${this.kmlEditIndex !== index
+                      ? kml.name
+                      : html`
+                          <div
+                            class="ngm-input ${classMap({
+                              'ngm-input-warning': !kml.name,
+                            })}"
+                          >
+                            <input
+                              type="text"
+                              placeholder="required"
+                              .value=${kml.name}
+                              @input=${(evt) => {
+                                kml.name = evt.target.value;
+                                this.assets[index] = kml;
+                                this.assets = [...this.assets];
+                              }}
+                            />
+                          </div>
+                        `}
+                  </div>
+                  ${this.viewMode ? '' : this.editButtons(index)}
                 </div>
-                ${this.viewMode ? '' : this.editButtons(index)}
               </div>
-            </div>
-          `;
-        })}
-        <div .hidden=${this.assets?.length > 0}>${i18next.t('dashboard_no_assets_text')}</div>
+            `;
+          })}
+          <div .hidden=${this.assets?.length > 0}>${i18next.t('dashboard_no_assets_text')}</div>
+        </div>
       </div>
-    </div>`;
+    `;
   }
 
   createRenderRoot() {

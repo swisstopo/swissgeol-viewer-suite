@@ -44,12 +44,8 @@ export class NgmObjectInformation extends LitElementI18n {
     if (this.info && (this.info.popupItems?.length || this.info.properties?.length)) {
       const content = this.info.popupItems?.length
         ? this.info.popupItems.map(
-            (it) =>
-              html` <div
-                class="query-list-item"
-                @mouseenter=${() => it.mouseEnter()}
-                @mouseleave=${() => it.mouseLeave()}
-              >
+            (it) => html`
+              <div class="query-list-item" @mouseenter=${() => it.mouseEnter()} @mouseleave=${() => it.mouseLeave()}>
                 <div class="item-zoom-btn-container" ?hidden="${!it.zoom}">
                   <button @click="${it.zoom}" class="ui button ngm-zoom-obj-btn ngm-action-btn">
                     ${i18next.t('obj_info_zoom_to_object_btn_label')}
@@ -57,33 +53,36 @@ export class NgmObjectInformation extends LitElementI18n {
                   </button>
                 </div>
                 ${unsafeHTML(it.content)}
-              </div>`,
+              </div>
+            `,
           )
-        : html` <table class="ui compact small very basic table ngm-info-table">
-            <tbody>
-              ${this.info.properties!.map((row) => {
-                const key = row[0];
-                const value = row[1];
-                if (typeof value === 'string' && value.startsWith('http')) {
-                  return html`
-                    <tr class="top aligned">
-                      <td class="key">${i18next.t(`assets:${key}`)}</td>
-                      <td class="value">
-                        <a href="${value}" target="_blank" rel="noopener">${value.split('/').pop()}</a>
-                      </td>
-                    </tr>
-                  `;
-                } else {
-                  return html`
-                    <tr class="top aligned">
-                      <td class="key">${key.includes(' ') ? key : i18next.t(`assets:${key}`)}</td>
-                      <td class="value">${value}</td>
-                    </tr>
-                  `;
-                }
-              })}
-            </tbody>
-          </table>`;
+        : html`
+            <table class="ui compact small very basic table ngm-info-table">
+              <tbody>
+                ${this.info.properties!.map((row) => {
+                  const key = row[0];
+                  const value = row[1];
+                  if (typeof value === 'string' && value.startsWith('http')) {
+                    return html`
+                      <tr class="top aligned">
+                        <td class="key">${i18next.t(`assets:${key}`)}</td>
+                        <td class="value">
+                          <a href="${value}" target="_blank" rel="noopener">${value.split('/').pop()}</a>
+                        </td>
+                      </tr>
+                    `;
+                  } else {
+                    return html`
+                      <tr class="top aligned">
+                        <td class="key">${key.includes(' ') ? key : i18next.t(`assets:${key}`)}</td>
+                        <td class="value">${value}</td>
+                      </tr>
+                    `;
+                  }
+                })}
+              </tbody>
+            </table>
+          `;
 
       if (this.opened && this.info.onshow) {
         this.info.onshow();

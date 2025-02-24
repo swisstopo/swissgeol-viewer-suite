@@ -132,7 +132,8 @@ export class CesiumToolbar extends LitElement {
   }
 
   render() {
-    return html` <div>
+    return html`
+      <div>
         Ambient Occlusion
         <input type="checkbox" ?checked=${this.show} @change=${(event) => (this.show = event.target.checked)} />
       </div>
@@ -462,7 +463,8 @@ export class CesiumToolbar extends LitElement {
           <option .value=${ShadowMode.CAST_ONLY}>CAST_ONLY</option>
           <option .value=${ShadowMode.RECEIVE_ONLY}>RECEIVE_ONLY</option>
         </select>
-      </div>`;
+      </div>
+    `;
   }
   static readonly styles = css`
     :host {

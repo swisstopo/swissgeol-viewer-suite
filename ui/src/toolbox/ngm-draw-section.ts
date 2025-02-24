@@ -89,24 +89,26 @@ export class NgmDrawSection extends LitElementI18n {
       <div class="ngm-draw-list">
         ${this.shownDrawTypes.map((it) => {
           const isActive = !isDisabled && this.draw!.active && it.type === this.draw!.type;
-          return html` <div
-            class="ngm-action-list-item ${classMap({
-              active: isActive,
-              disabled: isDisabled,
-            })}"
-            @click=${() =>
-              ToolboxStore.nextGeometryAction({
-                type: <GeometryTypes>it.type,
-                action: 'add',
-              })}
-          >
-            <div class="ngm-action-list-item-header">
-              <div class=${it.icon}></div>
-              <div>${it.label()}</div>
+          return html`
+            <div
+              class="ngm-action-list-item ${classMap({
+                active: isActive,
+                disabled: isDisabled,
+              })}"
+              @click=${() =>
+                ToolboxStore.nextGeometryAction({
+                  type: <GeometryTypes>it.type,
+                  action: 'add',
+                })}
+            >
+              <div class="ngm-action-list-item-header">
+                <div class=${it.icon}></div>
+                <div>${it.label()}</div>
+              </div>
+              <div ?hidden=${!isActive} class="ngm-hint">${i18next.t('tbx_area_of_interest_add_hint')}</div>
+              <ngm-line-info .hidden="${!isActive || it.type !== 'line'}" .lineInfo=${this.lineInfo}></ngm-line-info>
             </div>
-            <div ?hidden=${!isActive} class="ngm-hint">${i18next.t('tbx_area_of_interest_add_hint')}</div>
-            <ngm-line-info .hidden="${!isActive || it.type !== 'line'}" .lineInfo=${this.lineInfo}> </ngm-line-info>
-          </div>`;
+          `;
         })}
         <div
           .hidden=${!this.showUpload}

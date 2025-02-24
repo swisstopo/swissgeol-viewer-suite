@@ -147,10 +147,14 @@ export default class LayerUploadKml extends LitElementI18n {
         <div class="ui inline mini loader ${classMap({ active: this.isLoading })}"></div>
         ${i18next.t('dtd_kml_upload_button_title')}
       </span>
-      <span class="subtitle"> ${i18next.t('dtd_kml_upload_button_subtitle')} </span>
+      <span class="subtitle">${i18next.t('dtd_kml_upload_button_subtitle')}</span>
     </button>
     <input type="file" accept=".kml,.KML" hidden @change=${this.handleFileSelection} />
-    ${this.violation == null ? '' : html` <span class="violation">${this.violation}</span> `}
+    ${this.violation == null
+      ? ''
+      : html`
+          <span class="violation">${this.violation}</span>
+        `}
   `;
 
   static readonly styles = css`

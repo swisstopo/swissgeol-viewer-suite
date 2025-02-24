@@ -195,20 +195,24 @@ export class NgmGeometryInfo extends LitElementI18n {
         </div>
         <div>
           ${geom.pointSymbol
-            ? html` <div
-                class="ngm-geom-symbol"
-                style=${styleMap({
-                  '-webkit-mask-image': `url('${geom.pointSymbol}')`,
-                  'mask-image': `url('${geom.pointSymbol}')`,
-                  backgroundColor: geom.color?.toCssColorString(),
-                })}
-              ></div>`
-            : html` <div
-                class="ngm-geom-color"
-                style=${styleMap({
-                  background: geom.color?.withAlpha(1).toCssColorString(),
-                })}
-              ></div>`}
+            ? html`
+                <div
+                  class="ngm-geom-symbol"
+                  style=${styleMap({
+                    '-webkit-mask-image': `url('${geom.pointSymbol}')`,
+                    'mask-image': `url('${geom.pointSymbol}')`,
+                    backgroundColor: geom.color?.toCssColorString(),
+                  })}
+                ></div>
+              `
+            : html`
+                <div
+                  class="ngm-geom-color"
+                  style=${styleMap({
+                    background: geom.color?.withAlpha(1).toCssColorString(),
+                  })}
+                ></div>
+              `}
         </div>
       </div>
     `;
@@ -240,21 +244,25 @@ export class NgmGeometryInfo extends LitElementI18n {
           ></div>
           ${this.noEdit
             ? ''
-            : html` <div
-                class="ngm-icon ngm-edit-icon ${classMap({
-                  active: this.editing,
-                  disabled: !this.geometry.editable,
-                })}"
-                title=${i18next.t('tbx_edit_btn')}
-                @click=${() => this.onEditClick()}
-              ></div>`}
+            : html`
+                <div
+                  class="ngm-icon ngm-edit-icon ${classMap({
+                    active: this.editing,
+                    disabled: !this.geometry.editable,
+                  })}"
+                  title=${i18next.t('tbx_edit_btn')}
+                  @click=${() => this.onEditClick()}
+                ></div>
+              `}
         </div>
         <div class="ngm-divider"></div>
         ${this.editing
-          ? html` <ngm-geometry-edit
-              .entity=${this.geomEntity}
-              .volumeShowed=${this.geometry.volumeShowed}
-            ></ngm-geometry-edit>`
+          ? html`
+              <ngm-geometry-edit
+                .entity=${this.geomEntity}
+                .volumeShowed=${this.geometry.volumeShowed}
+              ></ngm-geometry-edit>
+            `
           : this.infoTemplate}
       </div>
       ${dragArea}

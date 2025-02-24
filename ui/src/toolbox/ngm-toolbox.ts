@@ -274,7 +274,7 @@ export class NgmToolbox extends LitElementI18n {
         </div>
       </div>
       <div class="ngm-toast-placeholder"></div>
-      <ngm-draw-tool ?hidden="${this.activeTool !== 'draw'}"> </ngm-draw-tool>
+      <ngm-draw-tool ?hidden="${this.activeTool !== 'draw'}"></ngm-draw-tool>
       <ngm-slicer
         ?hidden=${this.activeTool !== 'slicing'}
         .geometriesDataSource=${this.geometriesDataSource}
@@ -283,7 +283,11 @@ export class NgmToolbox extends LitElementI18n {
       <ngm-gst-interaction ?hidden="${this.activeTool !== 'gst'}"></ngm-gst-interaction>
       <ngm-gst-modal .imageUrl="${this.sectionImageUrl}"></ngm-gst-modal>
       <ngm-profile-tool ?hidden="${this.activeTool !== 'profile'}"></ngm-profile-tool>
-      ${this.activeTool === 'measure' ? html`<ngm-measure></ngm-measure>` : ''}
+      ${this.activeTool === 'measure'
+        ? html`
+            <ngm-measure></ngm-measure>
+          `
+        : ''}
     `;
   }
 

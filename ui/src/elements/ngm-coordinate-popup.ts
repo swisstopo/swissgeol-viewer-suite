@@ -65,7 +65,8 @@ export class NgmCoordinatePopup extends LitElementI18n {
 
   render() {
     this.hidden = !this.opened;
-    return html` <div class="popup-arrow"></div>
+    return html`
+      <div class="popup-arrow"></div>
       <div class="ngm-floating-window-header">
         ${i18next.t('map_position_label')}
         <div class="ngm-close-icon" @click=${() => (this.opened = false)}></div>
@@ -91,7 +92,8 @@ export class NgmCoordinatePopup extends LitElementI18n {
             </tr>
           </tbody>
         </table>
-      </div>`;
+      </div>
+    `;
   }
 
   createRenderRoot() {

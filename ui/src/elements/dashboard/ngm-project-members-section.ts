@@ -41,42 +41,45 @@ export class NgmProjectMembersSection extends LitElementI18n {
         </div>
         ${!this.edit || role === 'owner'
           ? ''
-          : html` <div
-              class="ngm-icon ngm-delete-icon"
-              @click=${() => this.onMemberDelete({ ...member, role })}
-            ></div>`}
+          : html`
+              <div class="ngm-icon ngm-delete-icon" @click=${() => this.onMemberDelete({ ...member, role })}></div>
+            `}
       </div>
     `;
   }
 
   render() {
-    return html` <div>
-      <div class="ngm-proj-title-icon">
-        <div class="ngm-user-icon"></div>
-        <div>${i18next.t('dashboard_project_members')}</div>
-      </div>
-      <div class="project-edit-fields">
-        <div class="ngm-members-list">
-          ${this.memberInfoRender(this.project.owner, 'owner')}
-          ${this.project.editors.map((editor) => this.memberInfoRender(editor, 'editor'))}
-          ${this.project.viewers.map((viewer) => this.memberInfoRender(viewer, 'viewer'))}
+    return html`
+      <div>
+        <div class="ngm-proj-title-icon">
+          <div class="ngm-user-icon"></div>
+          <div>${i18next.t('dashboard_project_members')}</div>
         </div>
-        ${!this.edit || this.showAddForm
-          ? ''
-          : html` <div class="ngm-label-btn" @click=${() => (this.showAddForm = true)}>
-              ${i18next.t('dashboard_project_add_member')}
-              <div class="ngm-zoom-p-icon"></div>
-            </div>`}
-        ${!this.edit || !this.showAddForm
-          ? ''
-          : html`
-              <ngm-add-member-form
-                @onMemberAdd=${(evt) => this.onMemberAdd(evt)}
-                @onCancel=${() => (this.showAddForm = false)}
-              ></ngm-add-member-form>
-            `}
+        <div class="project-edit-fields">
+          <div class="ngm-members-list">
+            ${this.memberInfoRender(this.project.owner, 'owner')}
+            ${this.project.editors.map((editor) => this.memberInfoRender(editor, 'editor'))}
+            ${this.project.viewers.map((viewer) => this.memberInfoRender(viewer, 'viewer'))}
+          </div>
+          ${!this.edit || this.showAddForm
+            ? ''
+            : html`
+                <div class="ngm-label-btn" @click=${() => (this.showAddForm = true)}>
+                  ${i18next.t('dashboard_project_add_member')}
+                  <div class="ngm-zoom-p-icon"></div>
+                </div>
+              `}
+          ${!this.edit || !this.showAddForm
+            ? ''
+            : html`
+                <ngm-add-member-form
+                  @onMemberAdd=${(evt) => this.onMemberAdd(evt)}
+                  @onCancel=${() => (this.showAddForm = false)}
+                ></ngm-add-member-form>
+              `}
+        </div>
       </div>
-    </div>`;
+    `;
   }
 
   createRenderRoot() {

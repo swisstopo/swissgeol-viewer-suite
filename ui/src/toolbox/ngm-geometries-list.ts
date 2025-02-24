@@ -73,7 +73,8 @@ export default class NgmGeometriesList extends LitElementI18n {
     const projectMode = DashboardStore.projectMode.value;
     const isProjectEditMode = projectMode === 'viewEdit' || projectMode === 'edit';
     const selectedProject = DashboardStore.selectedTopicOrProject.value;
-    return html` <ngm-geometries-simple-list
+    return html`
+      <ngm-geometries-simple-list
         .hidden=${!this.noEditGeometries?.length}
         .geometries=${this.noEditGeometries}
         .noEditMode=${true}
@@ -85,8 +86,7 @@ export default class NgmGeometriesList extends LitElementI18n {
         .disabledTypes=${this.disabledTypes}
         .disabledCallback=${this.disabledCallback}
         .editingEnabled=${this.editingEnabled}
-      >
-      </ngm-geometries-simple-list>
+      ></ngm-geometries-simple-list>
 
       <ngm-geometries-simple-list
         .geometries=${this.geometries}
@@ -98,8 +98,8 @@ export default class NgmGeometriesList extends LitElementI18n {
         .disabledTypes=${this.disabledTypes}
         .disabledCallback=${this.disabledCallback}
         .editingEnabled=${this.editingEnabled}
-      >
-      </ngm-geometries-simple-list>`;
+      ></ngm-geometries-simple-list>
+    `;
   }
 
   createRenderRoot() {

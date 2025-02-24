@@ -20,7 +20,9 @@ export class BackgroundLayerItem extends CoreElement {
     if (this.layer == null) {
       return;
     }
-    return html` <img src="${this.layer.imagePath}" alt="${i18next.t(this.layer.label)}" loading="eager" /> `;
+    return html`
+      <img src="${this.layer.imagePath}" alt="${i18next.t(this.layer.label)}" loading="eager" />
+    `;
   }
 
   static readonly styles = css`

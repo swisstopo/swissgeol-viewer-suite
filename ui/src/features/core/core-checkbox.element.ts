@@ -36,7 +36,13 @@ export class CoreCheckbox extends LitElement {
           />
         </svg>
       </div>
-      ${this.hasSlot ? html`<span class="label"><slot></slot></span>` : html`<slot></slot>`}
+      ${this.hasSlot
+        ? html`
+            <span class="label"><slot></slot></span>
+          `
+        : html`
+            <slot></slot>
+          `}
     </label>
   `;
 

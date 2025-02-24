@@ -19,5 +19,7 @@ export class CoreTooltip extends CoreBasePopup<CoreTooltipBox> {
 
   readonly findBoxElement = () => this.shadowRoot!.querySelector('ngm-core-tooltip-box')! as CoreTooltipBox;
 
-  readonly renderBox = () => html` <ngm-core-tooltip-box></ngm-core-tooltip-box> `;
+  readonly renderBox = () => html`
+    <ngm-core-tooltip-box></ngm-core-tooltip-box>
+  `;
 }

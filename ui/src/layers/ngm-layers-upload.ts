@@ -85,7 +85,7 @@ export default class LayersUpload extends LitElementI18n {
           ?checked=${this.clampToGround}
           @change=${(evt) => (this.clampToGround = evt.target.checked)}
         />
-        <span class="ngm-checkbox-icon"> </span>
+        <span class="ngm-checkbox-icon"></span>
         <label>${i18next.t('dtd_clamp_to_ground')}</label>
       </div>
     `;

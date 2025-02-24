@@ -271,7 +271,7 @@ export class NgmSlicer extends LitElementI18n {
           @click=${() => (<HTMLInputElement>this.querySelector('.ngm-slice-box-toggle > input')).click()}
         >
           <input type="checkbox" ?checked=${this.showBox} @change="${this.onShowBoxChange}" />
-          <span class="ngm-checkbox-icon"> </span>
+          <span class="ngm-checkbox-icon"></span>
           <label>${i18next.t('nav_box_show_slice_box')}</label>
         </div>
       </div>
@@ -301,7 +301,7 @@ export class NgmSlicer extends LitElementI18n {
             <div>${i18next.t('tbx_slice_line')}</div>
           </div>
           ${this.sliceOptionsTemplate({ type: 'view-line' })}
-          <ngm-line-info .hidden=${this.slicingType !== 'view-line'} .lineInfo=${this.lineInfo}> </ngm-line-info>
+          <ngm-line-info .hidden=${this.slicingType !== 'view-line'} .lineInfo=${this.lineInfo}></ngm-line-info>
         </div>
       </div>
       <div class="ngm-divider"></div>
@@ -310,8 +310,7 @@ export class NgmSlicer extends LitElementI18n {
         .disabledTypes=${['point', 'polygon']}
         .optionsTemplate=${(geom) => this.sliceOptionsTemplate({ geom })}
         @geomclick=${(evt: CustomEvent<NgmGeometry>) => ToolboxStore.setSliceGeometry(evt.detail)}
-      >
-      </ngm-geometries-list>
+      ></ngm-geometries-list>
     `;
   }
 

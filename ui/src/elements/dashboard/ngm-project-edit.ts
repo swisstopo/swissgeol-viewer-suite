@@ -152,17 +152,19 @@ export class NgmProjectEdit extends LitElementI18n {
         </div>
         ${this.createMode || !isProject(project)
           ? ''
-          : html` <div class="ngm-proj-data">
-              ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(project.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
-            </div>`}
+          : html`
+              <div class="ngm-proj-data">
+                ${`${i18next.t('dashboard_modified_title')} ${toLocaleDateString(project.modified)} ${i18next.t('dashboard_by_swisstopo_title')}`}
+              </div>
+            `}
         <div class="ngm-proj-information">
           <div class="project-image-and-color">
             <div class="ngm-proj-preview-img" style=${styleMap({ backgroundImage })}></div>
             <div class="project-color-picker" style=${styleMap({ backgroundColor: 'white' })}>
               <div class="ngm-geom-colorpicker">
                 ${PROJECT_COLORS.map(
-                  (color) =>
-                    html` <div
+                  (color) => html`
+                    <div
                       style="background-color: ${color};"
                       @click=${() => {
                         project.color = color;
@@ -172,7 +174,8 @@ export class NgmProjectEdit extends LitElementI18n {
                         active: project.color === color,
                         'black-tick': COLORS_WITH_BLACK_TICK.includes(color),
                       })}"
-                    ></div>`,
+                    ></div>
+                  `,
                 )}
               </div>
             </div>

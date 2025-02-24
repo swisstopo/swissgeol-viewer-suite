@@ -24,9 +24,15 @@ export class NgmAppBoot extends LitElement {
 
   render() {
     return this.viewerInitialization.render({
-      pending: () => html`<p>Loading</p>`,
-      complete: () => html` <ngm-app></ngm-app>`,
-      error: (e) => html`<p>Error: ${e}</p>`,
+      pending: () => html`
+        <p>Loading</p>
+      `,
+      complete: () => html`
+        <ngm-app></ngm-app>
+      `,
+      error: (e) => html`
+        <p>Error: ${e}</p>
+      `,
     });
   }
 

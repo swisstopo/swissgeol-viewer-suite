@@ -50,7 +50,8 @@ export class NgmProjectPopup extends LitElementI18n {
 
   render() {
     if (!this.selectedTopic || this.viewIndex === undefined) return '';
-    return html` <div class="ngm-floating-window-header drag-handle">
+    return html`
+      <div class="ngm-floating-window-header drag-handle">
         <div class="ngm-floating-window-header-title">${translated(this.selectedTopic.title)}</div>
         <div class="ngm-close-icon" @click=${this.onClose}></div>
       </div>
@@ -59,7 +60,8 @@ export class NgmProjectPopup extends LitElementI18n {
         <div class="ngm-project-view-title">${translated(this.selectedTopic.views[this.viewIndex].title)}</div>
         <div class="ngm-play-icon" @click=${() => this.changeView(1)}></div>
       </div>
-      ${dragArea}`;
+      ${dragArea}
+    `;
   }
 
   createRenderRoot() {

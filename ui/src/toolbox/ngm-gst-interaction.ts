@@ -246,10 +246,8 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   render() {
-    return html` <ngm-draw-section
-        ?hidden=${this.hidden}
-        .enabledTypes=${['line', 'rectangle', 'point']}
-      ></ngm-draw-section>
+    return html`
+      <ngm-draw-section ?hidden=${this.hidden} .enabledTypes=${['line', 'rectangle', 'point']}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
         .selectedId=${this.selectedId}
@@ -258,8 +256,8 @@ export class NgmGstInteraction extends LitElementI18n {
         .optionsTemplate=${(geom, active) => this.interactionTemplate(geom, active)}
         @geomclick=${(evt) => this.onGeomClick(evt.detail)}
         @geometriesadded=${(evt) => this.onGeometryAdded(evt.detail.newGeometries)}
-      >
-      </ngm-geometries-list>`;
+      ></ngm-geometries-list>
+    `;
   }
 
   createRenderRoot() {

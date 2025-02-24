@@ -93,8 +93,10 @@ export class LayerUpload extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <ngm-layer-upload-kml .toastPlaceholder=${this.toastPlaceholder} @upload=${this.handleKmlUpload}>
-    </ngm-layer-upload-kml>
+    <ngm-layer-upload-kml
+      .toastPlaceholder=${this.toastPlaceholder}
+      @upload=${this.handleKmlUpload}
+    ></ngm-layer-upload-kml>
     <ngm-core-button variant="tertiary" shape="large" @click=${this.emitIonModalOpening}>
       <ngm-core-icon icon="cesium"></ngm-core-icon>
       ${i18next.t('dtd_add_ion_token')}

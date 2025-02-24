@@ -29,6 +29,8 @@ export class HideOverflow extends LitElement {
   }
 
   override render() {
-    return html` <slot @slotchange="${this.slotReady}"></slot> `;
+    return html`
+      <slot @slotchange="${this.slotReady}"></slot>
+    `;
   }
 }

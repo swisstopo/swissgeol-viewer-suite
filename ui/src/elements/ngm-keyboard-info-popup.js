@@ -74,16 +74,18 @@ class NgmKeyboardInfoPopup extends LitElementI18n {
 
   get infoLineTemplate() {
     return infoConfig.map(
-      (value) =>
-        html` <div class="row">
+      (value) => html`
+        <div class="row">
           <div>${i18next.t(value.title)}:</div>
           <div>${i18next.t(value.content)}</div>
-        </div>`,
+        </div>
+      `,
     );
   }
 
   render() {
-    return html` <button id=${btnId} class="ui compact mini icon button">
+    return html`
+      <button id=${btnId} class="ui compact mini icon button">
         <i class="keyboard icon"></i>
       </button>
       <div id=${popupId} class="ui popup">
@@ -93,7 +95,8 @@ class NgmKeyboardInfoPopup extends LitElementI18n {
           ${this.infoLineTemplate}
         </div>
         <h4 class="ngm-keyboard-tip">${i18next.t('nav_info_tip')}</h4>
-      </div>`;
+      </div>
+    `;
   }
 
   createRenderRoot() {

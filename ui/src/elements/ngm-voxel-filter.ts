@@ -114,15 +114,16 @@ export class NgmVoxelFilter extends LitElementI18n {
           <div class="filter-label">${i18next.t('vox_filter_lithology')}</div>
           ${repeat(
             this.config!.voxelFilter.lithology,
-            (lithology: any, index: number) =>
-              html` <label>
+            (lithology: any, index: number) => html`
+              <label>
                 <input type="checkbox" value="${lithology.index}" checked />
                 <div
                   ?hidden=${hideCheckboxColor}
                   style="background-color: ${this.config!.voxelColors?.colors[index]}; width: 20px;"
                 ></div>
                 ${i18next.t(lithology.label)}
-              </label>`,
+              </label>
+            `,
           )}
           <div class="lithology-filter-buttons">
             <button

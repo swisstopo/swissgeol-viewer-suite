@@ -143,21 +143,25 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
               : i18next.t('tbx_swissforages_create_btn_label')}
           </button>
           ${this.item.swissforagesId
-            ? html` <button
-                class="ui button ngm-swissforages-sync"
-                @click=${this.syncPointWithSwissforages.bind(this, this.item.id, this.item.swissforagesId)}
-                data-tooltip=${i18next.t('tbx_swissforages_sync_hint')}
-                data-position="top right"
-                data-variation="tiny"
-              >
-                <div class="ui very light dimmer">
-                  <div class="ui tiny loader"></div>
-                </div>
-                <i class="sync icon"></i>
-              </button>`
-            : html` <button class="ui icon button ngm-tools-btn">
-                <i class="tools icon"></i>
-              </button>`}
+            ? html`
+                <button
+                  class="ui button ngm-swissforages-sync"
+                  @click=${this.syncPointWithSwissforages.bind(this, this.item.id, this.item.swissforagesId)}
+                  data-tooltip=${i18next.t('tbx_swissforages_sync_hint')}
+                  data-position="top right"
+                  data-variation="tiny"
+                >
+                  <div class="ui very light dimmer">
+                    <div class="ui tiny loader"></div>
+                  </div>
+                  <i class="sync icon"></i>
+                </button>
+              `
+            : html`
+                <button class="ui icon button ngm-tools-btn">
+                  <i class="tools icon"></i>
+                </button>
+              `}
         </div>
       </div>
       <div class="ui mini popup ngm-swissforages-config-popup">

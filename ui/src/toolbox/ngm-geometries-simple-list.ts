@@ -80,24 +80,28 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
     if (this.viewMode) return '';
     const editButton = this.noEditMode
       ? ''
-      : html` <div
-          class="item ${classMap({ disabled: !geom.editable })}"
-          @click=${() =>
-            ToolboxStore.setOpenedGeometryOptions({
-              id: geom.id!,
-              editing: true,
-            })}
-        >
-          ${i18next.t('tbx_edit_btn')}
-        </div>`;
+      : html`
+          <div
+            class="item ${classMap({ disabled: !geom.editable })}"
+            @click=${() =>
+              ToolboxStore.setOpenedGeometryOptions({
+                id: geom.id!,
+                editing: true,
+              })}
+          >
+            ${i18next.t('tbx_edit_btn')}
+          </div>
+        `;
     const copyButton = this.noEditMode
       ? ''
-      : html` <div
-          class="item ${classMap({ disabled: !geom.copyable })}"
-          @click=${() => ToolboxStore.nextGeometryAction({ id: geom.id!, action: 'copy' })}
-        >
-          ${i18next.t('tbx_copy_btn')}
-        </div>`;
+      : html`
+          <div
+            class="item ${classMap({ disabled: !geom.copyable })}"
+            @click=${() => ToolboxStore.nextGeometryAction({ id: geom.id!, action: 'copy' })}
+          >
+            ${i18next.t('tbx_copy_btn')}
+          </div>
+        `;
     return html`
       <div class="menu">
         ${this.hideMapInteractionButtons
@@ -120,29 +124,33 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
             `}
         ${copyButton}
         ${geom.type === 'line'
-          ? html` <div
-              class="item"
-              @click=${() =>
-                ToolboxStore.nextGeometryAction({
-                  id: geom.id!,
-                  action: 'profile',
-                })}
-            >
-              ${i18next.t('tbx_profile_btn')}
-            </div>`
+          ? html`
+              <div
+                class="item"
+                @click=${() =>
+                  ToolboxStore.nextGeometryAction({
+                    id: geom.id!,
+                    action: 'profile',
+                  })}
+              >
+                ${i18next.t('tbx_profile_btn')}
+              </div>
+            `
           : html``}
         ${this.noEditMode
           ? ''
-          : html` <div
-              class="item ${classMap({ disabled: !geom.editable })}"
-              @click=${() =>
-                ToolboxStore.nextGeometryAction({
-                  id: geom.id!,
-                  action: 'remove',
-                })}
-            >
-              ${i18next.t('tbx_remove_btn_label')}
-            </div>`}
+          : html`
+              <div
+                class="item ${classMap({ disabled: !geom.editable })}"
+                @click=${() =>
+                  ToolboxStore.nextGeometryAction({
+                    id: geom.id!,
+                    action: 'remove',
+                  })}
+              >
+                ${i18next.t('tbx_remove_btn_label')}
+              </div>
+            `}
       </div>
     `;
   }
@@ -190,9 +198,11 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
   }
 
   geometryNameTemplate(geom: NgmGeometry, index: number, disabled: boolean) {
-    return html` <div>
+    return html`
+      <div>
         ${this.nameEditIndex !== index
-          ? html` <div
+          ? html`
+              <div
                 title=${geom.show ? i18next.t('tbx_hide_btn_label') : i18next.t('tbx_unhide_btn_label')}
                 class="ngm-layer-icon ${classMap({
                   'ngm-visible-icon': !!geom.show,
@@ -216,26 +226,32 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                   )}
               >
                 ${geom.name}
-              </div>`
-          : html` <div class="ngm-input ${classMap({ 'ngm-input-warning': !geom.name })}">
-              <input
-                type="text"
-                placeholder="required"
-                .value=${geom.name}
-                @input=${(evt) => {
-                  geom.name = evt.target.value;
-                }}
-              />
-            </div>`}
+              </div>
+            `
+          : html`
+              <div class="ngm-input ${classMap({ 'ngm-input-warning': !geom.name })}">
+                <input
+                  type="text"
+                  placeholder="required"
+                  .value=${geom.name}
+                  @input=${(evt) => {
+                    geom.name = evt.target.value;
+                  }}
+                />
+              </div>
+            `}
       </div>
       ${this.directNameEdit
-        ? html` <div
-            class="ngm-icon ngm-edit-icon ${classMap({
-              active: this.nameEditIndex === index,
-            })}"
-            @click=${() => this.onEditNameClick(index)}
-          ></div>`
-        : ''}`;
+        ? html`
+            <div
+              class="ngm-icon ngm-edit-icon ${classMap({
+                active: this.nameEditIndex === index,
+              })}"
+              @click=${() => this.onEditNameClick(index)}
+            ></div>
+          `
+        : ''}
+    `;
   }
 
   render() {
@@ -246,7 +262,8 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
     if (!geometries.length && !this.selectedFilter) {
       return '';
     }
-    return html` <div .hidden="${!this.listTitle}" class="ngm-geom-label">${this.listTitle}</div>
+    return html`
+      <div .hidden="${!this.listTitle}" class="ngm-geom-label">${this.listTitle}</div>
       <div class="ngm-action-list-item ngm-geom-filter">
         <div class="ngm-action-list-item-header">
           <div class=${classMap({ active: !this.selectedFilter })} @click=${() => this.selectFilter()}>
@@ -282,10 +299,12 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
           ></div>
           ${this.viewMode
             ? ''
-            : html` <div class="ui dropdown right pointing ngm-action-menu">
-                <div class="ngm-action-menu-icon"></div>
-                ${this.filterMenuTemplate()}
-              </div>`}
+            : html`
+                <div class="ui dropdown right pointing ngm-action-menu">
+                  <div class="ngm-action-menu-icon"></div>
+                  ${this.filterMenuTemplate()}
+                </div>
+              `}
         </div>
       </div>
       <div class="ngm-geom-list">
@@ -312,10 +331,12 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
                 ${this.geometryNameTemplate(geom, index, isDisabled)}
                 ${this.viewMode
                   ? ''
-                  : html` <div class="ui dropdown right pointing ngm-action-menu">
-                      <div class="ngm-action-menu-icon"></div>
-                      ${this.actionMenuTemplate(geom)}
-                    </div>`}
+                  : html`
+                      <div class="ui dropdown right pointing ngm-action-menu">
+                        <div class="ngm-action-menu-icon"></div>
+                        ${this.actionMenuTemplate(geom)}
+                      </div>
+                    `}
               </div>
               ${this.optionsTemplate ? this.optionsTemplate(geom, isActive) : ''}
             </div>
@@ -335,8 +356,8 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
           cancelBtn: i18next.t('cancel'),
           confirmBtn: i18next.t('tbx_remove_all_btn'),
         }}"
-      >
-      </ngm-confirmation-modal>`;
+      ></ngm-confirmation-modal>
+    `;
   }
 
   createRenderRoot() {

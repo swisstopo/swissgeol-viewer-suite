@@ -62,71 +62,72 @@ export class NgmAddMemberForm extends LitElementI18n {
   }
 
   render() {
-    return html` <div class="ngm-member-add-form">
-      <div
-        class="ngm-input ${classMap({
-          'ngm-input-warning': !this.name && this.name !== undefined,
-        })}"
-      >
-        <input
-          type="text"
-          placeholder="required"
-          .value=${this.name ?? ''}
-          @input=${(evt) => {
-            this.name = evt.target.value;
-          }}
-        />
-        <span class="ngm-floating-label">${i18next.t('project_member_name')}</span>
-      </div>
-      <div
-        class="ngm-input ${classMap({
-          'ngm-input-warning': !this.surname && this.surname !== undefined,
-        })}"
-      >
-        <input
-          type="text"
-          placeholder="required"
-          .value=${this.surname ?? ''}
-          @input=${(evt) => {
-            this.surname = evt.target.value;
-          }}
-        />
-        <span class="ngm-floating-label">${i18next.t('project_member_surname')}</span>
-      </div>
-      <div
-        class="ngm-input ${classMap({
-          'ngm-input-warning': !isEmail(this.email) && this.email !== undefined,
-        })}"
-      >
-        <input
-          type="email"
-          placeholder="required"
-          .value=${this.email ?? ''}
-          @input=${(evt) => {
-            this.email = evt.target.value;
-          }}
-        />
-        <span class="ngm-floating-label">${i18next.t('project_member_email')}</span>
-      </div>
-      <ngm-dropdown
-        .items=${this.roleDropdownItems}
-        .selectedValue=${this.memberRole}
-        .defaultText=${i18next.t('dashboard_project_choose_role')}
-        @changed=${(evt: DropdownChangedEvent<EditableRole>) => (this.memberRole = evt.detail.newValue)}
-      >
-      </ngm-dropdown>
-      <div class="action-buttons">
-        <button class="ui button ngm-action-btn" @click=${this.onAdd}>
-          ${i18next.t('dashboard_project_add_member')}
-        </button>
-        <button
-          class="ui button ngm-action-btn ngm-cancel-btn"
-          @click=${() => this.dispatchEvent(new CustomEvent('onCancel'))}
+    return html`
+      <div class="ngm-member-add-form">
+        <div
+          class="ngm-input ${classMap({
+            'ngm-input-warning': !this.name && this.name !== undefined,
+          })}"
         >
-          ${i18next.t('cancel')}
-        </button>
+          <input
+            type="text"
+            placeholder="required"
+            .value=${this.name ?? ''}
+            @input=${(evt) => {
+              this.name = evt.target.value;
+            }}
+          />
+          <span class="ngm-floating-label">${i18next.t('project_member_name')}</span>
+        </div>
+        <div
+          class="ngm-input ${classMap({
+            'ngm-input-warning': !this.surname && this.surname !== undefined,
+          })}"
+        >
+          <input
+            type="text"
+            placeholder="required"
+            .value=${this.surname ?? ''}
+            @input=${(evt) => {
+              this.surname = evt.target.value;
+            }}
+          />
+          <span class="ngm-floating-label">${i18next.t('project_member_surname')}</span>
+        </div>
+        <div
+          class="ngm-input ${classMap({
+            'ngm-input-warning': !isEmail(this.email) && this.email !== undefined,
+          })}"
+        >
+          <input
+            type="email"
+            placeholder="required"
+            .value=${this.email ?? ''}
+            @input=${(evt) => {
+              this.email = evt.target.value;
+            }}
+          />
+          <span class="ngm-floating-label">${i18next.t('project_member_email')}</span>
+        </div>
+        <ngm-dropdown
+          .items=${this.roleDropdownItems}
+          .selectedValue=${this.memberRole}
+          .defaultText=${i18next.t('dashboard_project_choose_role')}
+          @changed=${(evt: DropdownChangedEvent<EditableRole>) => (this.memberRole = evt.detail.newValue)}
+        ></ngm-dropdown>
+        <div class="action-buttons">
+          <button class="ui button ngm-action-btn" @click=${this.onAdd}>
+            ${i18next.t('dashboard_project_add_member')}
+          </button>
+          <button
+            class="ui button ngm-action-btn ngm-cancel-btn"
+            @click=${() => this.dispatchEvent(new CustomEvent('onCancel'))}
+          >
+            ${i18next.t('cancel')}
+          </button>
+        </div>
       </div>
-    </div>`;
+    `;
   }
 
   createRenderRoot() {

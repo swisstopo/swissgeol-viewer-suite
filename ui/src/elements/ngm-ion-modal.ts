@@ -104,7 +104,11 @@ export class NgmIonModal extends LitElementI18n {
             })}"
             @click=${() => this.loadAssets()}
           >
-            ${this.preloader ? html` <div class="ui loader"></div>` : i18next.t('dtd_load_ion_assets_btn')}
+            ${this.preloader
+              ? html`
+                  <div class="ui loader"></div>
+                `
+              : i18next.t('dtd_load_ion_assets_btn')}
           </button>
         </div>
         <label .hidden=${!this.errorMessage?.length} class="ngm-ion-error">${this.errorMessage}</label>

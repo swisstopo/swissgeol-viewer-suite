@@ -163,7 +163,9 @@ export class NgmApp extends LitElementI18n {
   private openDisclaimer(): void {
     this.disclaimer = CoreModal.open(
       { isPersistent: true, size: 'large', hasNoPadding: true },
-      html` <ngm-layout-consent-modal @confirm="${this.handleTrackingAllowedChanged}"></ngm-layout-consent-modal> `,
+      html`
+        <ngm-layout-consent-modal @confirm="${this.handleTrackingAllowedChanged}"></ngm-layout-consent-modal>
+      `,
     );
   }
 
@@ -558,8 +560,7 @@ export class NgmApp extends LitElementI18n {
             this.showCesiumToolbar = evt.detail.active;
           }}
           @openIonModal=${() => (this.showIonModal = true)}
-        >
-        </ngm-side-bar>
+        ></ngm-side-bar>
         <div class="map" oncontextmenu="return false;">
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>
@@ -571,23 +572,20 @@ export class NgmApp extends LitElementI18n {
               .showCamConfig=${this.showCamConfig}
               @togglecamconfig=${() => (this.showCamConfig = !this.showCamConfig)}
               @axisstate=${(evt) => (this.showAxisOnMap = evt.detail.showAxis)}
-            >
-            </ngm-nav-tools>
+            ></ngm-nav-tools>
             <ngm-cam-configuration
               class="ngm-floating-window"
               .hidden=${!this.showCamConfig}
               .viewer=${this.viewer}
               @close=${() => (this.showCamConfig = false)}
-            >
-            </ngm-cam-configuration>
+            ></ngm-cam-configuration>
             <ngm-project-popup
               class="ngm-floating-window ${classMap({
                 compact: this.mobileView,
               })}"
               .hidden=${!this.showProjectPopup}
               @close=${() => (this.showProjectPopup = false)}
-            >
-            </ngm-project-popup>
+            ></ngm-project-popup>
             ${[...this.legendConfigs].map((config) =>
               config
                 ? html`
@@ -620,13 +618,16 @@ export class NgmApp extends LitElementI18n {
               ></ngm-map-chooser>
             </div>
           </div>
-          ${this.showCesiumToolbar ? html` <cesium-toolbar></cesium-toolbar>` : ''}
+          ${this.showCesiumToolbar
+            ? html`
+                <cesium-toolbar></cesium-toolbar>
+              `
+            : ''}
           <ngm-ion-modal
             class="ngm-floating-window"
             .hidden=${!this.showIonModal}
             @close=${() => (this.showIonModal = false)}
-          >
-          </ngm-ion-modal>
+          ></ngm-ion-modal>
         </div>
       </main>
     `;

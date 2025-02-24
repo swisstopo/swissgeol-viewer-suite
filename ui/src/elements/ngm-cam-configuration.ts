@@ -85,7 +85,11 @@ export class NgmCamConfiguration extends LitElementI18n {
   private removeOnTick: Event.RemoveCallback | undefined;
   private readonly configurations = [
     {
-      label: () => html`${i18next.t('camera_position_height_label')}<br />${i18next.t('camera_position_height_unit')}`,
+      label: () => html`
+        ${i18next.t('camera_position_height_label')}
+        <br />
+        ${i18next.t('camera_position_height_unit')}
+      `,
       iconClass: () =>
         classMap({
           'ngm-cam-h-icon': true,
@@ -121,7 +125,11 @@ export class NgmCamConfiguration extends LitElementI18n {
       lock: () => this.toggleLock('elevation'),
     },
     {
-      label: () => html`${i18next.t('camera_position_angle_label')}<br />(°)`,
+      label: () => html`
+        ${i18next.t('camera_position_angle_label')}
+        <br />
+        (°)
+      `,
       iconClass: () =>
         classMap({
           'ngm-cam-d-icon': true,
@@ -137,7 +145,11 @@ export class NgmCamConfiguration extends LitElementI18n {
       lock: () => this.toggleLock('angle'),
     },
     {
-      label: () => html`${i18next.t('camera_position_pitch_label')}<br />(°)`,
+      label: () => html`
+        ${i18next.t('camera_position_pitch_label')}
+        <br />
+        (°)
+      `,
       iconClass: () =>
         classMap({
           'ngm-cam-t-icon': true,
@@ -340,8 +352,8 @@ export class NgmCamConfiguration extends LitElementI18n {
       <div class="ngm-cam-container">
         <ngm-minimap .viewer=${this.viewer}></ngm-minimap>
         ${this.configurations.map(
-          (c) =>
-            html` <div>
+          (c) => html`
+            <div>
               <div class=${c.iconClass()} title=${i18next.t('cam_lock')} @click=${c.lock}></div>
               <div class="ngm-cam-conf-slider">
                 <div>
@@ -368,7 +380,8 @@ export class NgmCamConfiguration extends LitElementI18n {
                   @keydown="${(e) => (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.stopPropagation()}"
                 />
               </div>
-            </div>`,
+            </div>
+          `,
         )}
         <div>
           <div
