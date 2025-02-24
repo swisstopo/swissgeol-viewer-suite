@@ -42,7 +42,7 @@ import type QueryManager from 'src/query/QueryManager';
 
 import DashboardStore from 'src/store/dashboard';
 import { getAssets } from 'src/api-ion';
-import { LayerEvent, LayersEvent } from 'src/components/layer';
+import { LayerEvent, LayersEvent } from 'src/features/layer';
 
 export type SearchLayer = SearchLayerWithLayer | SearchLayerWithSource;
 
@@ -337,7 +337,7 @@ export class SideBar extends LitElementI18n {
     }
     this.activePanel = panelName;
     if (this.activePanel === 'data') {
-      await import('src/components/layer/layer.module');
+      await import('src/features/layer/layer.module');
     }
   }
 

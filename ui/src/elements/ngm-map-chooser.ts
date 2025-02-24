@@ -1,9 +1,9 @@
 import { html, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { consume } from '@lit/context';
-import { BackgroundLayerService } from 'src/components/background/background-layer.service';
-import { BackgroundLayer } from 'src/components/layer/layer.model';
-import 'src/components/background/background.module';
+import { BackgroundLayerService } from 'src/features/background/background-layer.service';
+import { BackgroundLayer } from 'src/features/layer/layer.model';
+import 'src/features/background/background.module';
 
 @customElement('ngm-map-chooser')
 export class NgmMapChooser extends LitElement {
