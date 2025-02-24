@@ -182,11 +182,9 @@ export class SideBar extends LitElementI18n {
   `;
 
   render() {
-    if (!this.queryManager) {
-      return '';
+    if (this.queryManager) {
+      this.queryManager.activeLayers = this.activeLayers.filter((config) => config.visible && !config.noQuery);
     }
-
-    this.queryManager.activeLayers = this.activeLayers.filter((config) => config.visible && !config.noQuery);
 
     const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
     const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
@@ -230,13 +228,7 @@ export class SideBar extends LitElementI18n {
         @display-layer-update="${this.handleDisplayLayerUpdate}"
         @display-layer-removal="${this.handleDisplayLayerRemoval}"
       ></ngm-layer-panel>
-      <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
-        <ngm-tools
-          .toolsHidden=${this.activePanel !== 'tools'}
-          @open=${() => (this.activePanel = 'tools')}
-          @close=${() => (this.activePanel = null)}
-        ></ngm-tools>
-      </div>
+      <ngm-tool-panel ?hidden="${this.activePanel !== 'tools'}"></ngm-tool-panel>
       <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel ngm-share-panel">
         <div class="ngm-panel-header">
           ${i18next.t('lsb_share')}
@@ -277,6 +269,14 @@ export class SideBar extends LitElementI18n {
       </div>
     `;
   }
+  //
+  // <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
+  // <ngm-tools
+  //   .toolsHidden=${this.activePanel !== 'tools'}
+  // @open=${() => (this.activePanel = 'tools')}
+  // @close=${() => (this.activePanel = null)}
+  // ></ngm-tools>
+  // </div>
 
   async togglePanel(panelName, showHeader = true) {
     if (DashboardStore.projectMode.value === 'edit') {
@@ -289,8 +289,15 @@ export class SideBar extends LitElementI18n {
       return;
     }
     this.activePanel = panelName;
-    if (this.activePanel === 'data') {
-      await import('src/features/layer/layer.module');
+    switch (this.activePanel) {
+      case 'data':
+        await import('src/features/layer/layer.module');
+        break;
+      case 'tools':
+        await import('src/features/tool/tool.module');
+        break;
+      default:
+        break;
     }
   }
 

@@ -4,8 +4,16 @@ import { customElement } from 'lit/decorators.js';
 
 @customElement('ngm-navigation-panel')
 export class NavigationPanel extends LitElementI18n {
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.setAttribute('role', 'complementary');
+  }
+
   readonly render = () => html`
-    <slot></slot>
+    <slot name="heading"></slot>
+    <div class="content">
+      <slot></slot>
+    </div>
   `;
 
   static readonly styles = css`
@@ -28,6 +36,14 @@ export class NavigationPanel extends LitElementI18n {
       z-index: 5;
 
       background-color: var(--color-bg--dark);
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 16px;
+      height: calc(var(--panel-height) - 64px);
     }
   `;
 }

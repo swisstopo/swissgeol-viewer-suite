@@ -20,20 +20,6 @@ export class LayerPanel extends CoreElement {
   @query('section.tabs')
   private accessor tabsElement!: HTMLDivElement;
 
-  constructor() {
-    super();
-
-    this.close = this.close.bind(this);
-    this.handleDisplayLayersUpdate = this.handleDisplayLayersUpdate.bind(this);
-    this.handleDisplayLayerUpdate = this.handleDisplayLayerUpdate.bind(this);
-    this.handleDisplayLayerRemoval = this.handleDisplayLayerRemoval.bind(this);
-  }
-
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.setAttribute('role', 'complementary');
-  }
-
   firstUpdated(): void {
     const observer = new ResizeObserver(() => {
       const rect = this.layersElement.getBoundingClientRect();
@@ -81,16 +67,14 @@ export class LayerPanel extends CoreElement {
 
   readonly render = () => html`
     <ngm-navigation-panel>
-      <ngm-navigation-panel-header closeable @close="${this.close}">
+      <ngm-navigation-panel-header slot="heading" closeable @close="${this.close}">
         ${i18next.t('dtd_displayed_data_label')}
       </ngm-navigation-panel-header>
-      <div class="content">
-        <section class="layers">${this.renderLayers()}</section>
-        <hr />
-        <section class="tabs">
-          <ngm-layer-tabs .layers=${this.layers}></ngm-layer-tabs>
-        </section>
-      </div>
+      <section class="layers">${this.renderLayers()}</section>
+      <hr />
+      <section class="tabs">
+        <ngm-layer-tabs .layers=${this.layers}></ngm-layer-tabs>
+      </section>
     </ngm-navigation-panel>
   `;
 
@@ -112,18 +96,19 @@ export class LayerPanel extends CoreElement {
       --header-height: 64px;
     }
 
-    .content > section {
+    /* section */
+    section {
       position: relative;
       background-color: var(--color-bg--dark);
       overflow-y: auto;
     }
 
-    .content > section.layers {
+    section.layers {
       /* Layers can take up half of the available space, minus half the space reserved by the header and padding/gap. */
       max-height: calc(50% - var(--header-height) / 2 - 16px);
     }
 
-    .content > section.tabs {
+    section.tabs {
       max-height: calc(100% - var(--header-height) - var(--layers-height, 0));
     }
 
@@ -131,20 +116,8 @@ export class LayerPanel extends CoreElement {
       max-width: calc(100vw);
     }
 
-    ngm-layer-catalog {
-      display: block;
-    }
-
-    .content {
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      gap: 16px;
-
-      height: calc(var(--panel-height) - 64px);
-    }
-
-    .content > hr {
+    /* hr */
+    hr {
       height: 1px;
       margin: 0 12px;
       border: 0;

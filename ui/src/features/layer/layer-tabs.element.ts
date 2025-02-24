@@ -20,13 +20,11 @@ export class LayerTabs extends LitElementI18n {
   @query('.ngm-toast-placeholder')
   accessor toastPlaceholder!: HTMLElement;
 
-  constructor() {
-    super();
-  }
-
   private handleTabChange(event: TabValueChangeEvent<Tab>): void {
     this.activeTab = event.detail.value;
   }
+
+  private readonly translateTabName = (tab: Tab) => i18next.t(`dtd_tab_labels.${tab}`);
 
   readonly render = () => html`
     ${renderTabs(Tab, {
@@ -46,8 +44,6 @@ export class LayerTabs extends LitElementI18n {
       },
     })}
   `;
-
-  readonly translateTabName = (tab: Tab) => i18next.t(`dtd_tab_labels.${tab}`);
 
   static readonly styles = css`
     :host,
