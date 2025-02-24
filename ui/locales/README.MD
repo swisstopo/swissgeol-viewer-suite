@@ -3,8 +3,9 @@
 ## 1) Run i18next-scanner
 - Change to `swissgeol-viewer-app/ui`:
 ```bash
-cd swissgeol-viewer-app/ui
+cd ui/
 ```
+
 - (*optional*) Modifiy configuration:  
 Edit `swissgeol-viewer-app/ui/i18next-scanner.config.cjs`
 
