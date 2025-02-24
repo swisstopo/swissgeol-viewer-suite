@@ -10,6 +10,7 @@ const execPromise = promisify(exec);
 const resolveGitBranch = async () => {
   try {
     // Check if the current directory is a Git repository
+    await execPromise('git config --global --add safe.directory /app');
     await execPromise('git rev-parse --is-inside-work-tree');
     return (await execPromise('git rev-parse --abbrev-ref HEAD')).stdout
       .toString()
