@@ -122,11 +122,7 @@ export class CoreButton extends LitElement {
     /** large */
     :host([shape='large']) button {
       padding: 11px 15px;
-    }
-
-    :host([shape='large']) ::slotted(ngm-core-icon) {
-      width: 24px;
-      height: 24px;
+      gap: 12px;
     }
 
     /* primary */

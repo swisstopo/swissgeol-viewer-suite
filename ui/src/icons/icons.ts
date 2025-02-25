@@ -23,6 +23,10 @@ import { legendIcon } from 'src/icons/i_legend';
 import { downloadIcon } from 'src/icons/i_download';
 import { filterIcon } from 'src/icons/i_filter';
 import { turnPageIcon } from 'src/icons/i_turnPage';
+import { pointShapeIcon } from 'src/icons/i_shape_point';
+import { lineShapeIcon } from 'src/icons/i_shape_line';
+import { polygonShapeIcon } from 'src/icons/i_shape_polygon';
+import { rectangleShapeIcon } from 'src/icons/i_shape_rectangle';
 
 export const icons = {
   cesium: cesiumIcon,
@@ -50,6 +54,11 @@ export const icons = {
   viewLess: viewLessIcon,
   visible: visibleIcon,
   zoomPlus: zoomPlusIcon,
+
+  pointShape: pointShapeIcon,
+  lineShape: lineShapeIcon,
+  polygonShape: polygonShapeIcon,
+  rectangleShape: rectangleShapeIcon,
 };
 
 export type IconKey = keyof typeof icons;

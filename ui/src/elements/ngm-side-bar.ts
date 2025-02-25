@@ -169,6 +169,9 @@ export class SideBar extends LitElementI18n {
 
     const sliceOptions = getSliceParam();
     if (sliceOptions?.type && sliceOptions.slicePoints) this.activePanel = 'tools';
+
+    // TODO remove this
+    this.togglePanel('tools').then();
   }
 
   private readonly renderMenuItem = (icon: string, title: string, panel: string) => html`
@@ -269,14 +272,6 @@ export class SideBar extends LitElementI18n {
       </div>
     `;
   }
-  //
-  // <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
-  // <ngm-tools
-  //   .toolsHidden=${this.activePanel !== 'tools'}
-  // @open=${() => (this.activePanel = 'tools')}
-  // @close=${() => (this.activePanel = null)}
-  // ></ngm-tools>
-  // </div>
 
   async togglePanel(panelName, showHeader = true) {
     if (DashboardStore.projectMode.value === 'edit') {

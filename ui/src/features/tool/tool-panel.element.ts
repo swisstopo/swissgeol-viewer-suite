@@ -28,7 +28,9 @@ export class ToolPanel extends CoreElement {
         onValueChange: this.handleTabChange,
         tab: this.translateTabName,
         panels: {
-          [Tab.Draw]: html``,
+          [Tab.Draw]: html`
+            <ngm-tool-list></ngm-tool-list>
+          `,
           [Tab.Measure]: html``,
           [Tab.Upload]: html``,
         },

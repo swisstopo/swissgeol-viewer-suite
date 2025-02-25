@@ -5,6 +5,12 @@
       "draw": "Zeichnen",
       "measure": "Messen",
       "upload": "Upload"
+    },
+    "shapes": {
+      "point": "Punkt",
+      "line": "Line",
+      "polygon": "Polygon",
+      "rectangle": "Rechteck"
     }
   }
 }
