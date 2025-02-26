@@ -17,7 +17,16 @@ import {
   Viewer,
 } from 'cesium';
 import MainStore from 'src/store/main';
-import { Drawing, DrawTool, LineDrawing, PointDrawing, Tool, ToolShape, ToolType } from 'src/features/tool/tool.model';
+import {
+  Drawing,
+  DrawTool,
+  LineDrawing,
+  PointDrawing,
+  RectangleDrawing,
+  Tool,
+  ToolShape,
+  ToolType,
+} from 'src/features/tool/tool.model';
 import { BaseService } from 'src/utils/base.service';
 import { DrawPointToolController } from 'src/features/tool/draw/draw-point-tool.controller';
 import { DrawController } from 'src/features/tool/draw/draw-tool.controller';
@@ -93,7 +102,7 @@ export class ToolService extends BaseService {
     let lastClickTimestamp = 0;
     screen.setInputAction((e: { position?: Cartesian2 }) => {
       const timestamp = Date.now();
-      if (timestamp - lastClickTimestamp <= 250) {
+      if (timestamp - lastClickTimestamp <= 250 || controller.isComplete) {
         shouldBeSaved = true;
         this.deactivate();
         return;
@@ -195,7 +204,7 @@ const updateEntityByDrawing = (entity: Entity, drawing: Drawing): Entity => {
     case ToolShape.Polygon:
       throw new Error('not yet implemented');
     case ToolShape.Rectangle:
-      throw new Error('not yet implemented');
+      return updateEntityByRectangleDrawing(entity, drawing);
   }
 };
 
@@ -218,7 +227,7 @@ const updateEntityByPointDrawing = (entity: Entity, drawing: PointDrawing): Enti
       scale: 0.5,
       verticalOrigin: VerticalOrigin.BOTTOM,
       disableDepthTestDistance: 0,
-      heightReference: HeightReference.RELATIVE_TO_GROUND,
+      heightReference: HeightReference.RELATIVE_TO_TERRAIN,
     },
   });
 };
@@ -233,6 +242,36 @@ const updateEntityByLineDrawing = (entity: Entity, drawing: LineDrawing): Entity
     id: entity.id,
     properties: {
       type: ToolShape.Line,
+      coordinates: drawing.coordinates,
+    },
+    polyline: {
+      positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),
+      material,
+      clampToGround: true,
+      width: 4,
+      classificationType: ClassificationType.TERRAIN,
+    },
+    polylineVolume: {
+      cornerType: CornerType.MITERED,
+      outline: true,
+      outlineColor: material,
+      material: material,
+    },
+  });
+  return newEntity;
+};
+
+const updateEntityByRectangleDrawing = (entity: Entity, drawing: RectangleDrawing): Entity => {
+  if (entity.properties?.type != null && entity.properties.type.getValue(JulianDate.now()) === ToolShape.Rectangle) {
+    (entity.properties.coordinates as ConstantProperty).setValue([...drawing.coordinates, drawing.coordinates[0]]);
+
+    return entity;
+  }
+  const material = Color.BLUE;
+  const newEntity = new Entity({
+    id: entity.id,
+    properties: {
+      type: ToolShape.Rectangle,
       coordinates: drawing.coordinates,
     },
     polyline: {

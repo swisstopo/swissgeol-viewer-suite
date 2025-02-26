@@ -3,7 +3,9 @@ import { Drawing } from 'src/features/tool/tool.model';
 import { Observable } from 'rxjs';
 
 export interface DrawController {
-  drawing$: Observable<Drawing>;
+  readonly drawing$: Observable<Drawing>;
+
+  readonly isComplete: boolean;
 
   handleClick(position: Cartesian3): void;
 

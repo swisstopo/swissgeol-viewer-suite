@@ -11,6 +11,8 @@ export class DrawLineToolController implements DrawController {
   private isFixed = false;
   private readonly coordinates: Cartesian3[] = [Cartesian3.ZERO];
 
+  readonly isComplete = false;
+
   get drawing$(): Observable<Drawing> {
     return this._drawing$.asObservable();
   }
@@ -30,7 +32,7 @@ export class DrawLineToolController implements DrawController {
 
   private draw(position: Cartesian3): void {
     const cartographic = Cartographic.fromCartesian(position);
-    cartographic.height = 500; // Some high value, so the point is above the map.
+    cartographic.height = 10_000; // Some high value, so the point is above the map.
     position = Cartographic.toCartesian(cartographic);
 
     this.coordinates[this.coordinates.length - 1] = position;

@@ -58,6 +58,9 @@ export interface RectangleDrawing extends BaseDrawing {
   /**
    * The rectangle's corner coordinates, in counter-clockwise rotation.
    */
-  coordinates: [Cartesian3, Cartesian3, Cartesian3, Cartesian3];
+  coordinates: RectangleCoordinates;
 }
+
+export type RectangleCoordinates = [Cartesian3, Cartesian3, Cartesian3, Cartesian3];
+
 export type Drawing = PointDrawing | LineDrawing | PolygonDrawing | RectangleDrawing;

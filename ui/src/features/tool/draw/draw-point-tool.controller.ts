@@ -8,13 +8,14 @@ export class DrawPointToolController implements DrawController {
   private readonly id = asId(crypto.randomUUID());
   private readonly _drawing$ = new Subject<PointDrawing>();
 
+  readonly isComplete = true;
+
   get drawing$(): Observable<PointDrawing> {
     return this._drawing$.asObservable();
   }
 
   handleClick(position: Cartesian3): void {
     this.draw(position);
-    this._drawing$.complete();
   }
 
   handleMouseMove(position: Cartesian3): void {
@@ -27,7 +28,7 @@ export class DrawPointToolController implements DrawController {
 
   private draw(position: Cartesian3): void {
     const cartographic = Cartographic.fromCartesian(position);
-    cartographic.height = 500; // Some high value, so the point is above the map.
+    cartographic.height = 10_000; // Some high value, so the point is above the map.
     position = Cartographic.toCartesian(cartographic);
     this._drawing$.next({
       id: this.id,
