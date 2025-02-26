@@ -1,7 +1,9 @@
 import { CoreElement } from 'src/features/core';
 import { customElement } from 'lit/decorators.js';
 import { css, html } from 'lit';
-import i18next from 'i18next';
+import { ToolShape } from 'src/features/tool/tool.model';
+import { repeat } from 'lit/directives/repeat.js';
+import { identity } from 'rxjs';
 
 @customElement('ngm-tool-list')
 export class ToolList extends CoreElement {
@@ -11,12 +13,13 @@ export class ToolList extends CoreElement {
   }
 
   readonly render = () => html`
-    <ngm-tool-list-item icon="pointShape">${i18next.t('tool.shapes.point', { ns: 'features' })}</ngm-tool-list-item>
-    <ngm-tool-list-item icon="lineShape">${i18next.t('tool.shapes.line', { ns: 'features' })}</ngm-tool-list-item>
-    <ngm-tool-list-item icon="polygonShape">${i18next.t('tool.shapes.polygon', { ns: 'features' })}</ngm-tool-list-item>
-    <ngm-tool-list-item icon="rectangleShape">
-      ${i18next.t('tool.shapes.rectangle', { ns: 'features' })}
-    </ngm-tool-list-item>
+    ${repeat(
+      Object.values(ToolShape),
+      identity,
+      (shape) => html`
+        <ngm-tool-list-item shape="${shape}"></ngm-tool-list-item>
+      `,
+    )}
   `;
 
   static readonly styles = css`

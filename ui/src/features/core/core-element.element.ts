@@ -3,6 +3,7 @@ import { state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { Subscription, TeardownLogic } from 'rxjs';
 import { PropertyValues } from '@lit/reactive-element';
+import { bindMethods } from 'src/utils/bind';
 
 export class CoreElement extends LitElement {
   @state()
@@ -13,12 +14,7 @@ export class CoreElement extends LitElement {
   constructor() {
     super();
 
-    for (const key of Object.keys(this.constructor)) {
-      const value = this[key];
-      if (typeof value === 'function') {
-        this[key] = value.bind(this);
-      }
-    }
+    bindMethods(this);
   }
 
   connectedCallback() {

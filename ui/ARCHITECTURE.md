@@ -17,3 +17,25 @@ going forward.
   and should be thought as domain-independent.
 - Domain-specific base types (e.g. an abstract base type, shared models)
   are to be stored in `src/{content}` (e.g. `src/services`, `src/models`).
+
+## Types of files
+### Elements (`.element.ts`)
+*Elements* define a class that extends `LitElement`.
+They implement a Web Component that can be used in HTML.
+
+### Services (`.service.ts`)
+*Services* are globally available, single-instance types
+that group a common set of business logic and/or data.
+
+They should **never** directly interact with the UI.
+
+### Controllers (`.controller.ts`)
+*Controllers* implement behavior for a specific part of the UI.
+They define how specific elements act and react,
+without specifying exact structure and style.
+
+Controllers can be thought of as extraction of component behavior
+into an independent and loosely coupled container. 
+
+Unlike services, controllers are generally not globally available,
+and should be tied to a specific element, which controls the controller's lifetime.

@@ -191,6 +191,7 @@ export class SideBar extends LitElementI18n {
 
     const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
     const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
+    const toolsOldBtn = this.renderMenuItem('tools', 'menu_tools', 'tools_old');
     const projectsBtn = this.renderMenuItem('projects', 'menu_projects', 'dashboard');
     const shareBtn = this.renderMenuItem('share', 'menu_share', 'share');
     const settingsBtn = this.renderMenuItem('config', 'menu_settings', 'settings');
@@ -210,7 +211,7 @@ export class SideBar extends LitElementI18n {
       </div>
       <div class="ngm-menu">
         <div class="ngm-menu-top">
-          ${layerBtn} ${toolsBtn} ${!this.mobileView ? shareBtn : ''} ${projectsBtn}
+          ${layerBtn} ${toolsBtn} ${toolsOldBtn} ${!this.mobileView ? shareBtn : ''} ${projectsBtn}
           ${this.mobileView ? mobileExpandBtn : ''}
         </div>
         <div ?hidden="${this.mobileView}" class="ngm-menu-top">${settingsBtn}</div>
@@ -242,6 +243,13 @@ export class SideBar extends LitElementI18n {
           : html`
               <ngm-share-link></ngm-share-link>
             `}
+      </div>
+      <div .hidden=${this.activePanel !== 'tools_old'} class="ngm-side-bar-panel">
+        <ngm-tools
+          .toolsHidden=${this.activePanel !== 'tools_old'}
+          @open=${() => (this.activePanel = 'tools_old')}
+          @close=${() => (this.activePanel = null)}
+        ></ngm-tools>
       </div>
       <div .hidden=${this.activePanel !== 'settings'} class="ngm-side-bar-panel">
         <div class="ngm-panel-header">

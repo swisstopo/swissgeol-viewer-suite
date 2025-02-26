@@ -6,6 +6,7 @@ import { ApiClient } from '../api/api-client';
 import AuthService from '../authService';
 import { AnyBaseServiceType, BaseService, ServiceContext } from 'src/utils/base.service';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
+import { ToolService } from 'src/features/tool/tool.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (element: LitElement, clientConfig: ClientConfig): AppContext[] => {
@@ -37,6 +38,7 @@ export const registerAppContext = (element: LitElement, clientConfig: ClientConf
   );
 
   contexts.push(makeProvider(BackgroundLayerService));
+  contexts.push(makeProvider(ToolService));
   return contexts;
 };
 

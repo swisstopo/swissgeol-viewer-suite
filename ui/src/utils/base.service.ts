@@ -1,4 +1,5 @@
 import { Context, createContext } from '@lit/context';
+import { bindMethods } from 'src/utils/bind';
 const classToContext = new Map<typeof BaseService, ServiceContext<BaseService>>();
 
 export type ServiceContext<T extends BaseService> = Context<AnyBaseServiceType<T>, T>;
@@ -7,6 +8,10 @@ export type AnyBaseServiceType<T extends BaseService = BaseService> = typeof Bas
   (new (...args: unknown[]) => T);
 
 export abstract class BaseService {
+  constructor() {
+    bindMethods(this);
+  }
+
   static context<T extends BaseService>(this: AnyBaseServiceType<T>): ServiceContext<T> {
     const existingContext = classToContext.get(this);
     if (existingContext != null) {
