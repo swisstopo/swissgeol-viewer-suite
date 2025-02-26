@@ -5,8 +5,8 @@ import { Observable, Subject } from 'rxjs';
 import { asId } from 'src/models/id.model';
 
 export class DrawPointToolController implements DrawController {
-  private readonly _drawing$ = new Subject<PointDrawing>();
   private readonly id = asId(crypto.randomUUID());
+  private readonly _drawing$ = new Subject<PointDrawing>();
 
   get drawing$(): Observable<PointDrawing> {
     return this._drawing$.asObservable();
@@ -20,8 +20,6 @@ export class DrawPointToolController implements DrawController {
   handleMouseMove(position: Cartesian3): void {
     this.draw(position);
   }
-
-  handleStop(): void {}
 
   destroy(): void {
     this._drawing$.complete();

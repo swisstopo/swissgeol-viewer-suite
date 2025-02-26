@@ -1,8 +1,12 @@
 import {
+  CallbackProperty,
   Cartesian2,
   Cartesian3,
+  ClassificationType,
   Color,
   ConstantPositionProperty,
+  ConstantProperty,
+  CornerType,
   CustomDataSource,
   Entity,
   HeightReference,
@@ -13,14 +17,15 @@ import {
   Viewer,
 } from 'cesium';
 import MainStore from 'src/store/main';
-import { Drawing, DrawTool, PointDrawing, Tool, ToolShape, ToolType } from 'src/features/tool/tool.model';
+import { Drawing, DrawTool, LineDrawing, PointDrawing, Tool, ToolShape, ToolType } from 'src/features/tool/tool.model';
 import { BaseService } from 'src/utils/base.service';
 import { DrawPointToolController } from 'src/features/tool/draw/draw-point-tool.controller';
 import { DrawController } from 'src/features/tool/draw/draw-tool.controller';
-import { BehaviorSubject, Subscription, take } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Id } from 'src/models/id.model';
 import { DEFAULT_AOI_COLOR, POINT_SYMBOLS } from 'src/constants';
 import { DrawRectangleToolController } from 'src/features/tool/draw/draw-rectangle-tool.controller';
+import { DrawLineToolController } from 'src/features/tool/draw/draw-line-tool.controller';
 
 export class ToolService extends BaseService {
   private dataSource = new CustomDataSource('tool-drawings');
@@ -83,23 +88,22 @@ export class ToolService extends BaseService {
     const controller = this.makeDrawController(tool.shape);
     const screen = new ScreenSpaceEventHandler(this.viewer.canvas);
 
-    let timeoutForClick: NodeJS.Timeout | null = null;
+    let shouldBeSaved = false;
+
+    let lastClickTimestamp = 0;
     screen.setInputAction((e: { position?: Cartesian2 }) => {
-      if (timeoutForClick !== null) {
-        clearTimeout(timeoutForClick);
-        timeoutForClick = null;
-        controller.handleStop();
+      const timestamp = Date.now();
+      if (timestamp - lastClickTimestamp <= 250) {
+        shouldBeSaved = true;
+        this.deactivate();
         return;
       }
+      lastClickTimestamp = timestamp;
       const position = this.pick(e.position);
       if (position === null) {
         return;
       }
-      const action = () => {
-        timeoutForClick = null;
-        controller.handleClick(position);
-      };
-      timeoutForClick = setTimeout(action, 250);
+      controller.handleClick(position);
     }, ScreenSpaceEventType.LEFT_CLICK);
 
     screen.setInputAction((e: { endPosition?: Cartesian2 }) => {
@@ -110,8 +114,10 @@ export class ToolService extends BaseService {
       controller.handleMouseMove(position);
     }, ScreenSpaceEventType.MOUSE_MOVE);
 
+    let id: Id<Drawing> | null = null;
     controller.drawing$.subscribe({
       next: (drawing) => {
+        id = drawing.id;
         const entity = this.drawingsToEntities.get(drawing.id);
         if (entity == null) {
           // It's a new drawing.
@@ -128,9 +134,16 @@ export class ToolService extends BaseService {
           }
         }
         this.drawings.set(drawing.id, drawing);
+        this.viewer!.scene.requestRender();
       },
       complete: () => {
         controller.destroy();
+        if (!shouldBeSaved && id !== null) {
+          this.drawings.delete(id);
+          this.drawingsToEntities.delete(id);
+          this.dataSource.entities.removeById(`${id}`);
+        }
+        this.viewer!.scene.requestRender();
       },
     });
 
@@ -146,7 +159,7 @@ export class ToolService extends BaseService {
       case ToolShape.Point:
         return new DrawPointToolController();
       case ToolShape.Line:
-        throw new Error('not yet implemented');
+        return new DrawLineToolController();
       case ToolShape.Polygon:
         throw new Error('not yet implemented');
       case ToolShape.Rectangle:
@@ -178,7 +191,7 @@ const updateEntityByDrawing = (entity: Entity, drawing: Drawing): Entity => {
     case ToolShape.Point:
       return updateEntityByPointDrawing(entity, drawing);
     case ToolShape.Line:
-      throw new Error('not yet implemented');
+      return updateEntityByLineDrawing(entity, drawing);
     case ToolShape.Polygon:
       throw new Error('not yet implemented');
     case ToolShape.Rectangle:
@@ -187,14 +200,19 @@ const updateEntityByDrawing = (entity: Entity, drawing: Drawing): Entity => {
 };
 
 const updateEntityByPointDrawing = (entity: Entity, drawing: PointDrawing): Entity => {
-  if (entity.properties?.type != null && entity.properties.type.getValue(JulianDate.now()) === 'point') {
-    entity.position = new ConstantPositionProperty(drawing.coordinate);
+  if (entity.properties?.type != null && entity.properties.type.getValue(JulianDate.now()) === ToolShape.Point) {
+    (entity.position as ConstantPositionProperty).setValue(drawing.coordinate);
     return entity;
   }
   return new Entity({
     id: entity.id,
     position: drawing.coordinate,
+    show: true,
+    properties: {
+      type: ToolShape.Point,
+    },
     billboard: {
+      show: true,
       image: `/images/${POINT_SYMBOLS[0]}`,
       color: DEFAULT_AOI_COLOR,
       scale: 0.5,
@@ -203,4 +221,33 @@ const updateEntityByPointDrawing = (entity: Entity, drawing: PointDrawing): Enti
       heightReference: HeightReference.RELATIVE_TO_GROUND,
     },
   });
+};
+
+const updateEntityByLineDrawing = (entity: Entity, drawing: LineDrawing): Entity => {
+  if (entity.properties?.type != null && entity.properties.type.getValue(JulianDate.now()) === ToolShape.Line) {
+    (entity.properties.coordinates as ConstantProperty).setValue(drawing.coordinates);
+    return entity;
+  }
+  const material = Color.BLUE;
+  const newEntity = new Entity({
+    id: entity.id,
+    properties: {
+      type: ToolShape.Line,
+      coordinates: drawing.coordinates,
+    },
+    polyline: {
+      positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),
+      material,
+      clampToGround: true,
+      width: 4,
+      classificationType: ClassificationType.TERRAIN,
+    },
+    polylineVolume: {
+      cornerType: CornerType.MITERED,
+      outline: true,
+      outlineColor: material,
+      material: material,
+    },
+  });
+  return newEntity;
 };

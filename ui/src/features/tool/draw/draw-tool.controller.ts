@@ -9,7 +9,5 @@ export interface DrawController {
 
   handleMouseMove(position: Cartesian3): void;
 
-  handleStop(): void;
-
   destroy(): void;
 }
