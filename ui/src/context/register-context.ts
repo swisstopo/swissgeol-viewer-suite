@@ -13,7 +13,7 @@ import {
   BaseService,
   ServiceContext,
 } from 'src/utils/base.service';
-import { BackgroundLayerService } from 'src/components/background/background-layer.service';
+import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
