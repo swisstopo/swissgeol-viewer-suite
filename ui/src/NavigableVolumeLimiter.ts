@@ -10,17 +10,8 @@ export default class NavigableVolumeLimiter {
   private readonly boundingSphere: BoundingSphere;
   private readonly ratioFunction: (height: number) => number;
 
-  constructor(
-    scene: Scene,
-    rectangle: Rectangle,
-    height: number,
-    ratioFunction: (height: number) => number,
-  ) {
-    this.boundingSphere = BoundingSphere.fromRectangle3D(
-      rectangle,
-      Ellipsoid.WGS84,
-      height,
-    );
+  constructor(scene: Scene, rectangle: Rectangle, height: number, ratioFunction: (height: number) => number) {
+    this.boundingSphere = BoundingSphere.fromRectangle3D(rectangle, Ellipsoid.WGS84, height);
     this.ratioFunction = ratioFunction;
     scene.camera.moveEnd.addEventListener(() => this.limit(scene), scene);
   }
@@ -31,10 +22,7 @@ export default class NavigableVolumeLimiter {
       const position = camera.position;
       const carto = Cartographic.fromCartesian(position);
       const ratio = this.ratioFunction(carto.height);
-      if (
-        Cartesian3.distance(this.boundingSphere.center, position) >
-        this.boundingSphere.radius * ratio
-      ) {
+      if (Cartesian3.distance(this.boundingSphere.center, position) > this.boundingSphere.radius * ratio) {
         this.blockLimiter = true;
         const unblockLimiter = () => (this.blockLimiter = false);
         camera.flyToBoundingSphere(this.boundingSphere, {

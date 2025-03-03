@@ -22,8 +22,7 @@ type Typography =
   | 'body-2-bold';
 
 export const applyTypography = (typo: Typography): CSSResult => {
-  const v = (suffix: string): CSSResult =>
-    unsafeCSS(`var(--typo-${typo}--${suffix})`);
+  const v = (suffix: string): CSSResult => unsafeCSS(`var(--typo-${typo}--${suffix})`);
   return css`
     font-family: ${v('family')};
     font-weight: ${v('weight')};
@@ -60,9 +59,7 @@ const breakpoints: Record<Breakpoint, number> = {
 export const upFrom = (breakpoint: Breakpoint): CSSResult => {
   const min = breakpoints[breakpoint];
   if (min === 0) {
-    throw new Error(
-      `can't target breakpoint '${breakpoint}' with media query as it starts at zero pixels`,
-    );
+    throw new Error(`can't target breakpoint '${breakpoint}' with media query as it starts at zero pixels`);
   }
   return css`
     @media (min-width: ${min}px);

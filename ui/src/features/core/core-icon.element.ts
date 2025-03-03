@@ -11,7 +11,9 @@ export class CoreIcon extends LitElement {
   accessor isInteractive: boolean = false;
 
   readonly render = () => {
-    return html`${icons[this.icon]}`;
+    return html`
+      ${icons[this.icon]}
+    `;
   };
 
   static readonly styles = css`

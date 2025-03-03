@@ -1,14 +1,5 @@
-import {
-  CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD,
-  DEFAULT_VOLUME_HEIGHT_LIMITS,
-} from '../constants';
-import {
-  ConstantProperty,
-  Entity,
-  exportKmlResultKml,
-  Globe,
-  Scene,
-} from 'cesium';
+import { CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD, DEFAULT_VOLUME_HEIGHT_LIMITS } from '../constants';
+import { ConstantProperty, Entity, exportKmlResultKml, Globe, Scene } from 'cesium';
 import {
   BoundingSphere,
   exportKml,
@@ -20,11 +11,7 @@ import {
   Color,
   EntityCollection,
 } from 'cesium';
-import {
-  extendKmlWithProperties,
-  getMeasurements,
-  updateHeightForCartesianPositions,
-} from '../cesiumutils';
+import { extendKmlWithProperties, getMeasurements, updateHeightForCartesianPositions } from '../cesiumutils';
 import { calculateBoxHeight } from '../slicer/helper';
 import { saveAs } from 'file-saver';
 import { translated } from '../i18n';
@@ -32,9 +19,7 @@ import type { GeometryTypes, NgmGeometry } from './interfaces';
 
 const julianDate = new JulianDate();
 
-export function getUploadedEntityType(
-  entity: Entity,
-): GeometryTypes | undefined {
+export function getUploadedEntityType(entity: Entity): GeometryTypes | undefined {
   for (const geometry of CESIUM_GRAPHICS_AVAILABLE_TO_UPLOAD) {
     if (entity[geometry] !== undefined) {
       return geometry === 'polyline' ? 'line' : <GeometryTypes>geometry;
@@ -44,11 +29,8 @@ export function getUploadedEntityType(
 }
 
 export function updateBoreholeHeights(entity: Entity, date: JulianDate) {
-  if (!entity || !entity.position || !entity.properties || !entity.ellipse)
-    return;
-  const depth = entity.properties.depth
-    ? entity.properties.depth.getValue()
-    : undefined;
+  if (!entity || !entity.position || !entity.properties || !entity.ellipse) return;
+  const depth = entity.properties.depth ? entity.properties.depth.getValue() : undefined;
   if (depth) {
     const position = entity.position.getValue(date);
     if (!position) return;
@@ -69,11 +51,7 @@ export function getAreaPositions(area: Entity, julianDate: JulianDate) {
   return undefined;
 }
 
-export function updateVolumePositions(
-  entity,
-  positions: Cartesian3[],
-  globe: Globe,
-) {
+export function updateVolumePositions(entity, positions: Cartesian3[], globe: Globe) {
   const volumeHeightLimits = entity.properties.volumeHeightLimits.getValue();
   let midLowerLimit = 0;
   positions.forEach((p) => {
@@ -82,10 +60,7 @@ export function updateVolumePositions(
     midLowerLimit += volumeHeightLimits.lowerLimit + altitude;
   });
   midLowerLimit /= positions.length;
-  entity.polylineVolume.positions = updateHeightForCartesianPositions(
-    positions,
-    midLowerLimit,
-  );
+  entity.polylineVolume.positions = updateHeightForCartesianPositions(positions, midLowerLimit);
   entity.polylineVolume.shape = [
     new Cartesian2(0, 0),
     new Cartesian2(0, 0),
@@ -110,23 +85,15 @@ export function updateEntityVolume(entity: Entity, globe: Globe) {
       const side1Distance = Cartesian3.distance(positions[0], positions[1]);
       const side2Distance = Cartesian3.distance(positions[1], positions[2]);
       const area = (side1Distance / 1000) * (side2Distance / 1000);
-      volumeHeightLimits = calculateBoxHeight(
-        volumeHeightLimits.height,
-        volumeHeightLimits.lowerLimit,
-        area,
-      );
+      volumeHeightLimits = calculateBoxHeight(volumeHeightLimits.height, volumeHeightLimits.lowerLimit, area);
     }
   }
 
-  if (
-    !entity.properties.volumeShowed ||
-    !entity.properties.volumeHeightLimits
-  ) {
+  if (!entity.properties.volumeShowed || !entity.properties.volumeHeightLimits) {
     entity.properties.addProperty('volumeHeightLimits', volumeHeightLimits);
     entity.properties.addProperty('volumeShowed', true);
   } else {
-    if (!entity.properties.volumeHeightLimits.getValue())
-      entity.properties.volumeHeightLimits = volumeHeightLimits;
+    if (!entity.properties.volumeHeightLimits.getValue()) entity.properties.volumeHeightLimits = volumeHeightLimits;
     entity.properties.volumeShowed = true;
   }
 
@@ -202,19 +169,11 @@ export function getAreaProperties(entity: Entity, type: GeometryTypes) {
   };
 }
 
-export function flyToGeom(
-  scene: Scene,
-  entity: Entity,
-  pitch = -(Math.PI / 2),
-  boundingSphereScale = 1,
-) {
+export function flyToGeom(scene: Scene, entity: Entity, pitch = -(Math.PI / 2), boundingSphereScale = 1) {
   const flyToEntity = (repeat) => {
     let positions = getAreaPositions(entity, julianDate);
     positions = updateHeightForCartesianPositions(positions, undefined, scene);
-    const boundingSphere = BoundingSphere.fromPoints(
-      positions,
-      new BoundingSphere(),
-    );
+    const boundingSphere = BoundingSphere.fromPoints(positions, new BoundingSphere());
     boundingSphere.radius *= boundingSphereScale;
     const zoomHeadingPitchRange = new HeadingPitchRange(0, pitch, 0);
     scene.camera.flyToBoundingSphere(boundingSphere, {
@@ -249,23 +208,17 @@ export function fromGeoJSON(feature: GeoJSON.Feature): NgmGeometry {
     type = 'rectangle';
   }
 
-  const coordinates = (
-    feature.geometry as GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon
-  ).coordinates;
+  const coordinates = (feature.geometry as GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon).coordinates;
   return {
     id: feature.id?.toString(),
     type: type,
     positions: CoordinatesParser[type](coordinates),
     name: feature.properties?.name,
-    description: feature.properties?.description
-      ? translated(feature.properties.description)
-      : undefined,
+    description: feature.properties?.description ? translated(feature.properties.description) : undefined,
     image: feature.properties?.image,
     website: feature.properties?.website,
     pointSymbol: feature.properties?.pointSymbol,
-    color: feature.properties?.color
-      ? Color.fromCssColorString(feature.properties.color)
-      : undefined,
+    color: feature.properties?.color ? Color.fromCssColorString(feature.properties.color) : undefined,
   };
 }
 
@@ -275,10 +228,7 @@ export function fromGeoJSON(feature: GeoJSON.Feature): NgmGeometry {
  * @param {Function} originalMethod
  * @param _context
  */
-export function pauseGeometryCollectionEvents(
-  originalMethod: any,
-  _context: any,
-) {
+export function pauseGeometryCollectionEvents(originalMethod: any, _context: any) {
   return function (this: any, ...args: any[]) {
     if (!this.geometriesDataSource) {
       console.warn('No geometriesDataSource.');

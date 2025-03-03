@@ -4,7 +4,9 @@ import { applyTransition } from 'src/styles/theme';
 
 @customElement('ngm-core-dropdown-item')
 export class CoreDropdownItem extends LitElement {
-  readonly render = () => html` <slot></slot> `;
+  readonly render = () => html`
+    <slot></slot>
+  `;
 
   private static readonly containerStyles = css`
     display: flex;

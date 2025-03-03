@@ -67,15 +67,9 @@ export class NgmDrawSection extends LitElementI18n {
 
   update(changedProperties: PropertyValues) {
     if (changedProperties.has('enabledTypes') && this.enabledTypes) {
-      this.shownDrawTypes = this.drawGeometries.filter((geom) =>
-        this.enabledTypes!.includes(<GeometryTypes>geom.type),
-      );
+      this.shownDrawTypes = this.drawGeometries.filter((geom) => this.enabledTypes!.includes(<GeometryTypes>geom.type));
     }
-    if (
-      this.draw &&
-      changedProperties.has('hidden') &&
-      !changedProperties.get('hidden')
-    ) {
+    if (this.draw && changedProperties.has('hidden') && !changedProperties.get('hidden')) {
       this.draw.active = false;
       this.draw.clear();
     }
@@ -94,32 +88,27 @@ export class NgmDrawSection extends LitElementI18n {
     return html`
       <div class="ngm-draw-list">
         ${this.shownDrawTypes.map((it) => {
-          const isActive =
-            !isDisabled && this.draw!.active && it.type === this.draw!.type;
-          return html` <div
-            class="ngm-action-list-item ${classMap({
-              active: isActive,
-              disabled: isDisabled,
-            })}"
-            @click=${() =>
-              ToolboxStore.nextGeometryAction({
-                type: <GeometryTypes>it.type,
-                action: 'add',
-              })}
-          >
-            <div class="ngm-action-list-item-header">
-              <div class=${it.icon}></div>
-              <div>${it.label()}</div>
-            </div>
-            <div ?hidden=${!isActive} class="ngm-hint">
-              ${i18next.t('tbx_area_of_interest_add_hint')}
-            </div>
-            <ngm-line-info
-              .hidden="${!isActive || it.type !== 'line'}"
-              .lineInfo=${this.lineInfo}
+          const isActive = !isDisabled && this.draw!.active && it.type === this.draw!.type;
+          return html`
+            <div
+              class="ngm-action-list-item ${classMap({
+                active: isActive,
+                disabled: isDisabled,
+              })}"
+              @click=${() =>
+                ToolboxStore.nextGeometryAction({
+                  type: <GeometryTypes>it.type,
+                  action: 'add',
+                })}
             >
-            </ngm-line-info>
-          </div>`;
+              <div class="ngm-action-list-item-header">
+                <div class=${it.icon}></div>
+                <div>${it.label()}</div>
+              </div>
+              <div ?hidden=${!isActive} class="ngm-hint">${i18next.t('tbx_area_of_interest_add_hint')}</div>
+              <ngm-line-info .hidden="${!isActive || it.type !== 'line'}" .lineInfo=${this.lineInfo}></ngm-line-info>
+            </div>
+          `;
         })}
         <div
           .hidden=${!this.showUpload}

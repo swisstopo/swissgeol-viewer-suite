@@ -72,20 +72,15 @@ export class CesiumToolbar extends LitElement {
     super();
     MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
-      if (viewer)
-        this.frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
+      if (viewer) this.frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
     });
   }
 
   protected updated(changedProperties) {
     if (this.viewer) {
-      const ambientOcclusion =
-        this.viewer!.scene.postProcessStages.ambientOcclusion;
-      ambientOcclusion.enabled =
-        Boolean(this.show) || Boolean(this.ambientOcclusionOnly);
-      ambientOcclusion.uniforms.ambientOcclusionOnly = Boolean(
-        this.ambientOcclusionOnly,
-      );
+      const ambientOcclusion = this.viewer!.scene.postProcessStages.ambientOcclusion;
+      ambientOcclusion.enabled = Boolean(this.show) || Boolean(this.ambientOcclusionOnly);
+      ambientOcclusion.uniforms.ambientOcclusionOnly = Boolean(this.ambientOcclusionOnly);
       ambientOcclusion.uniforms.intensity = Number(this.intensity);
       ambientOcclusion.uniforms.bias = Number(this.bias);
       ambientOcclusion.uniforms.lengthCap = Number(this.lengthCap);
@@ -93,23 +88,15 @@ export class CesiumToolbar extends LitElement {
       ambientOcclusion.uniforms.blurStepSize = Number(this.blurStepSize);
 
       const fog = this.viewer!.scene.postProcessStages.get(0);
-      fog.uniforms.fogByDistance = new Cartesian4(
-        this.fogX,
-        this.fogY,
-        this.fogZ,
-        this.fogIntensity,
-      );
+      fog.uniforms.fogByDistance = new Cartesian4(this.fogX, this.fogY, this.fogZ, this.fogIntensity);
       fog.uniforms.fogColor = Color.fromCssColorString(this.fogColor);
 
-      this.viewer.scene.globe.undergroundColor = Color.fromCssColorString(
-        this.undergroundColor,
-      ).withAlpha(this.undergroundColorAlpha);
-      this.viewer.scene.backgroundColor = Color.fromCssColorString(
-        this.backgroundColor,
+      this.viewer.scene.globe.undergroundColor = Color.fromCssColorString(this.undergroundColor).withAlpha(
+        this.undergroundColorAlpha,
       );
+      this.viewer.scene.backgroundColor = Color.fromCssColorString(this.backgroundColor);
 
-      this.viewer.scene.atmosphere.lightIntensity =
-        this.atmosphereLightIntensity;
+      this.viewer.scene.atmosphere.lightIntensity = this.atmosphereLightIntensity;
 
       this.showFramesPerSecond = this.viewer.scene.debugShowFramesPerSecond;
 
@@ -128,26 +115,15 @@ export class CesiumToolbar extends LitElement {
     if (changedProperties.has('autoScale') && this.viewer) {
       if (this.autoScale) {
         this.currentScale = this.viewer!.resolutionScale;
-        this.scaleListenerRemove =
-          this.viewer.scene.postRender.addEventListener(() => {
-            if (
-              this.frameRateMonitor!.lastFramesPerSecond < this.scaleDownFps &&
-              this.viewer!.resolutionScale > 0.45
-            ) {
-              this.viewer!.resolutionScale = Number(
-                (this.viewer!.resolutionScale - 0.05).toFixed(2),
-              );
-              this.currentScale = this.viewer!.resolutionScale;
-            } else if (
-              this.frameRateMonitor!.lastFramesPerSecond > this.scaleUpFps &&
-              this.viewer!.resolutionScale < 1
-            ) {
-              this.viewer!.resolutionScale = Number(
-                (this.viewer!.resolutionScale + 0.05).toFixed(2),
-              );
-              this.currentScale = this.viewer!.resolutionScale;
-            }
-          });
+        this.scaleListenerRemove = this.viewer.scene.postRender.addEventListener(() => {
+          if (this.frameRateMonitor!.lastFramesPerSecond < this.scaleDownFps && this.viewer!.resolutionScale > 0.45) {
+            this.viewer!.resolutionScale = Number((this.viewer!.resolutionScale - 0.05).toFixed(2));
+            this.currentScale = this.viewer!.resolutionScale;
+          } else if (this.frameRateMonitor!.lastFramesPerSecond > this.scaleUpFps && this.viewer!.resolutionScale < 1) {
+            this.viewer!.resolutionScale = Number((this.viewer!.resolutionScale + 0.05).toFixed(2));
+            this.currentScale = this.viewer!.resolutionScale;
+          }
+        });
       } else if (this.scaleListenerRemove) {
         this.scaleListenerRemove();
       }
@@ -156,21 +132,17 @@ export class CesiumToolbar extends LitElement {
   }
 
   render() {
-    return html` <div>
+    return html`
+      <div>
         Ambient Occlusion
-        <input
-          type="checkbox"
-          ?checked=${this.show}
-          @change=${(event) => (this.show = event.target.checked)}
-        />
+        <input type="checkbox" ?checked=${this.show} @change=${(event) => (this.show = event.target.checked)} />
       </div>
       <div>
         Ambient Occlusion Only
         <input
           type="checkbox"
           ?checked=${this.ambientOcclusionOnly}
-          @change=${(event) =>
-            (this.ambientOcclusionOnly = event.target.checked)}
+          @change=${(event) => (this.ambientOcclusionOnly = event.target.checked)}
         />
       </div>
       <div>
@@ -257,8 +229,7 @@ export class CesiumToolbar extends LitElement {
           max="50"
           step="1"
           .value=${this.atmosphereLightIntensity}
-          @input=${(evt) =>
-            (this.atmosphereLightIntensity = Number(evt.target.value))}
+          @input=${(evt) => (this.atmosphereLightIntensity = Number(evt.target.value))}
         />
         <input
           type="number"
@@ -266,8 +237,7 @@ export class CesiumToolbar extends LitElement {
           max="50"
           step="1"
           .value=${this.atmosphereLightIntensity}
-          @input=${(evt) =>
-            (this.atmosphereLightIntensity = Number(evt.target.value))}
+          @input=${(evt) => (this.atmosphereLightIntensity = Number(evt.target.value))}
         />
       </div>
       <div class="divider"></div>
@@ -341,11 +311,7 @@ export class CesiumToolbar extends LitElement {
       </div>
       <div>
         Fog Color
-        <input
-          type="color"
-          .value=${this.fogColor}
-          @input=${(evt) => (this.fogColor = evt.target.value)}
-        />
+        <input type="color" .value=${this.fogColor} @input=${(evt) => (this.fogColor = evt.target.value)} />
       </div>
       <div class="divider"></div>
       <div>
@@ -364,8 +330,7 @@ export class CesiumToolbar extends LitElement {
           max="1"
           step="0.1"
           .value=${this.undergroundColorAlpha}
-          @input=${(evt) =>
-            (this.undergroundColorAlpha = Number(evt.target.value))}
+          @input=${(evt) => (this.undergroundColorAlpha = Number(evt.target.value))}
         />
       </div>
       <div class="divider"></div>
@@ -383,9 +348,7 @@ export class CesiumToolbar extends LitElement {
         <input
           type="checkbox"
           ?checked=${this.showFramesPerSecond}
-          @change=${(event) =>
-            (this.viewer!.scene.debugShowFramesPerSecond =
-              event.target.checked)}
+          @change=${(event) => (this.viewer!.scene.debugShowFramesPerSecond = event.target.checked)}
         />
       </div>
       <div>
@@ -463,8 +426,7 @@ export class CesiumToolbar extends LitElement {
         <input
           type="checkbox"
           ?checked=${this.shadowFadingEnabled}
-          @change=${(event) =>
-            (this.shadowFadingEnabled = event.target.checked)}
+          @change=${(event) => (this.shadowFadingEnabled = event.target.checked)}
         />
       </div>
       <div>
@@ -495,15 +457,14 @@ export class CesiumToolbar extends LitElement {
       </div>
       <div>
         Terrain Shadows Mode
-        <select
-          @change=${(e) => (this.terrainShadowMode = Number(e.target.value))}
-        >
+        <select @change=${(e) => (this.terrainShadowMode = Number(e.target.value))}>
           <option .value=${ShadowMode.ENABLED}>ENABLED</option>
           <option .value=${ShadowMode.DISABLED}>DISABLED</option>
           <option .value=${ShadowMode.CAST_ONLY}>CAST_ONLY</option>
           <option .value=${ShadowMode.RECEIVE_ONLY}>RECEIVE_ONLY</option>
         </select>
-      </div>`;
+      </div>
+    `;
   }
   static readonly styles = css`
     :host {

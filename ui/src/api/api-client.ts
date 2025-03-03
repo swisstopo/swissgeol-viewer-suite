@@ -1,10 +1,7 @@
 import AuthService from '../authService';
 import AuthStore from '../store/auth';
 import { API_BY_PAGE_HOST } from '../constants';
-import type {
-  CreateProject,
-  Project,
-} from '../elements/dashboard/ngm-dashboard';
+import type { CreateProject, Project } from '../elements/dashboard/ngm-dashboard';
 import { Subject } from 'rxjs';
 import { NgmGeometry } from '../toolbox/interfaces';
 
@@ -61,10 +58,7 @@ export class ApiClient {
     });
   }
 
-  updateProjectGeometries(
-    id: string,
-    geometries: NgmGeometry[],
-  ): Promise<Response> {
+  updateProjectGeometries(id: string, geometries: NgmGeometry[]): Promise<Response> {
     const headers = {
       'Content-Type': 'application/json',
     };

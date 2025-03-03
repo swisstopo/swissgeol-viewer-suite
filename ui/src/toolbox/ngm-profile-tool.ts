@@ -46,21 +46,16 @@ export class NgmProfileTool extends LitElementI18n {
   }
 
   render() {
-    return html` <ngm-draw-section
-        ?hidden=${this.hidden}
-        .enabledTypes=${['line']}
-        .showUpload=${false}
-      ></ngm-draw-section>
+    return html`
+      <ngm-draw-section ?hidden=${this.hidden} .enabledTypes=${['line']} .showUpload=${false}></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
         .selectedId=${this.selectedGeomId}
         .disabledTypes=${['polygon', 'rectangle', 'point']}
-        @geomclick=${(evt: CustomEvent<NgmGeometry>) =>
-          this.onGeomClick(evt.detail.id)}
-        @geometriesadded=${(evt) =>
-          this.onGeometryAdded(evt.detail.newGeometries)}
-      >
-      </ngm-geometries-list>`;
+        @geomclick=${(evt: CustomEvent<NgmGeometry>) => this.onGeomClick(evt.detail.id)}
+        @geometriesadded=${(evt) => this.onGeometryAdded(evt.detail.newGeometries)}
+      ></ngm-geometries-list>
+    `;
   }
 
   createRenderRoot() {

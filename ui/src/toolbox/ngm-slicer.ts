@@ -39,9 +39,7 @@ export class NgmSlicer extends LitElementI18n {
   @state()
   accessor lineInfo: DrawInfo | undefined;
   private sliceGeomId: string | undefined;
-  private sliceInfo:
-    | { slicePoints: Cartesian3[]; height?: number; lowerLimit?: number }
-    | undefined;
+  private sliceInfo: { slicePoints: Cartesian3[]; height?: number; lowerLimit?: number } | undefined;
 
   constructor() {
     super();
@@ -60,27 +58,16 @@ export class NgmSlicer extends LitElementI18n {
       });
       this.syncSlice();
     });
-    ToolboxStore.sliceGeometry
-      .pipe(skip(1))
-      .subscribe((geom) => this.toggleGeomSlicer(geom));
+    ToolboxStore.sliceGeometry.pipe(skip(1)).subscribe((geom) => this.toggleGeomSlicer(geom));
     ToolboxStore.openedGeometryOptions.subscribe((options) => {
       this.editingEnabled = !!options?.editing;
-      if (
-        this.editingEnabled &&
-        (this.slicer?.active || this.slicer?.draw.active)
-      )
-        this.toggleSlicer();
+      if (this.editingEnabled && (this.slicer?.active || this.slicer?.draw.active)) this.toggleSlicer();
     });
     ToolboxStore.syncSlice.subscribe(() => this.syncSlice());
   }
 
   protected update(changedProperties) {
-    if (
-      changedProperties.get('hidden') &&
-      !this.hidden &&
-      !this.slicer?.active &&
-      !this.editingEnabled
-    )
+    if (changedProperties.get('hidden') && !this.hidden && !this.slicer?.active && !this.editingEnabled)
       this.toggleSlicer('view-line');
     super.update(changedProperties);
   }
@@ -141,10 +128,7 @@ export class NgmSlicer extends LitElementI18n {
       if (geom.type === 'line') {
         this.slicer.sliceOptions = {
           type: 'line',
-          slicePoints: [
-            geom.positions[0],
-            geom.positions[geom.positions.length - 1],
-          ],
+          slicePoints: [geom.positions[0], geom.positions[geom.positions.length - 1]],
           negate: this.negateSlice,
           deactivationCallback: () => this.onGeomSliceDeactivation(geom),
           activationCallback: () =>
@@ -163,14 +147,12 @@ export class NgmSlicer extends LitElementI18n {
           negate: this.negateSlice,
           showBox: this.showBox,
           deactivationCallback: () => this.onGeomSliceDeactivation(geom),
-          syncBoxPlanesCallback: (sliceInfo) =>
-            this.syncSliceInfo({ ...sliceInfo, type: 'view-box' }),
+          syncBoxPlanesCallback: (sliceInfo) => this.syncSliceInfo({ ...sliceInfo, type: 'view-box' }),
         };
       }
       const entity = this.getEntity(geom.id!);
       if (!entity) return;
-      !isGeometryInViewport(MainStore.viewerValue!, geom.positions) &&
-        this.flyToSlicingGeom(entity);
+      !isGeometryInViewport(MainStore.viewerValue!, geom.positions) && this.flyToSlicingGeom(entity);
       entity!.show = false;
       this.sliceGeomId = geom.id;
       this.slicer.active = true;
@@ -189,12 +171,7 @@ export class NgmSlicer extends LitElementI18n {
       const bboxCorners = bbox.corners;
       height = bbox.height;
       lowerLimit = bbox.lowerLimit - bbox.altitude;
-      positions = [
-        bboxCorners.bottomLeft,
-        bboxCorners.bottomRight,
-        bboxCorners.topRight,
-        bboxCorners.topLeft,
-      ];
+      positions = [bboxCorners.bottomLeft, bboxCorners.bottomRight, bboxCorners.topRight, bboxCorners.topLeft];
     }
     this.sliceGeomId = undefined;
     const entity = this.getEntity(geom.id!);
@@ -237,9 +214,7 @@ export class NgmSlicer extends LitElementI18n {
     this.negateSlice = negate;
     const type = this.slicer!.sliceOptions.type;
     this.slicer!.active = false;
-    geom
-      ? this.toggleGeomSlicer(geom)
-      : this.toggleSlicer(type, this.sliceInfo);
+    geom ? this.toggleGeomSlicer(geom) : this.toggleSlicer(type, this.sliceInfo);
   }
 
   flyToSlicingGeom(entity) {
@@ -249,16 +224,11 @@ export class NgmSlicer extends LitElementI18n {
   }
 
   get sceneSlicingActive() {
-    return (
-      (this.slicer?.active && !this.sliceGeomId) || this.slicer?.draw.active
-    );
+    return (this.slicer?.active && !this.sliceGeomId) || this.slicer?.draw.active;
   }
 
   getEntity(id: string) {
-    return (
-      this.geometriesDataSource!.entities.getById(id) ||
-      this.noEditGeometriesDataSource!.entities.getById(id)
-    );
+    return this.geometriesDataSource!.entities.getById(id) || this.noEditGeometriesDataSource!.entities.getById(id);
   }
 
   sliceOptionsTemplate(options) {
@@ -271,17 +241,13 @@ export class NgmSlicer extends LitElementI18n {
     return html`
       <div
         class="ngm-hint"
-        ?hidden=${(!id && this.slicingType !== type) ||
-        id !== this.sliceGeomId ||
-        !this.slicer!.draw.active}
+        ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || !this.slicer!.draw.active}
       >
         ${i18next.t('tbx_slice_draw_hint')}
       </div>
       <div
         class="ngm-slice-options"
-        ?hidden=${(!id && this.slicingType !== type) ||
-        id !== this.sliceGeomId ||
-        this.slicer!.draw.active}
+        ?hidden=${(!id && this.slicingType !== type) || id !== this.sliceGeomId || this.slicer!.draw.active}
       >
         <div class="ngm-slice-type-label">${i18next.t('tbx_slicing_type')}</div>
         <div class="ngm-slice-side">
@@ -289,27 +255,12 @@ export class NgmSlicer extends LitElementI18n {
             class=${classMap({ active: !this.negateSlice })}
             @click=${() => this.changeSliceSide(false, options.geom)}
           >
-            <div
-              class=${type.includes('box')
-                ? 'ngm-out-box-icon'
-                : 'ngm-slice-left-icon'}
-            ></div>
-            ${type.includes('box')
-              ? i18next.t('tbx_slice_outside_label')
-              : i18next.t('tbx_slice_left_label')}
+            <div class=${type.includes('box') ? 'ngm-out-box-icon' : 'ngm-slice-left-icon'}></div>
+            ${type.includes('box') ? i18next.t('tbx_slice_outside_label') : i18next.t('tbx_slice_left_label')}
           </div>
-          <div
-            class=${classMap({ active: this.negateSlice })}
-            @click=${() => this.changeSliceSide(true, options.geom)}
-          >
-            <div
-              class=${type.includes('box')
-                ? 'ngm-in-box-icon'
-                : 'ngm-slice-right-icon'}
-            ></div>
-            ${type.includes('box')
-              ? i18next.t('tbx_slice_inside_label')
-              : i18next.t('tbx_slice_right_label')}
+          <div class=${classMap({ active: this.negateSlice })} @click=${() => this.changeSliceSide(true, options.geom)}>
+            <div class=${type.includes('box') ? 'ngm-in-box-icon' : 'ngm-slice-right-icon'}></div>
+            ${type.includes('box') ? i18next.t('tbx_slice_inside_label') : i18next.t('tbx_slice_right_label')}
           </div>
         </div>
         <div
@@ -317,17 +268,10 @@ export class NgmSlicer extends LitElementI18n {
           class="ngm-checkbox ngm-slice-box-toggle ${classMap({
             active: this.showBox,
           })}"
-          @click=${() =>
-            (<HTMLInputElement>(
-              this.querySelector('.ngm-slice-box-toggle > input')
-            )).click()}
+          @click=${() => (<HTMLInputElement>this.querySelector('.ngm-slice-box-toggle > input')).click()}
         >
-          <input
-            type="checkbox"
-            ?checked=${this.showBox}
-            @change="${this.onShowBoxChange}"
-          />
-          <span class="ngm-checkbox-icon"> </span>
+          <input type="checkbox" ?checked=${this.showBox} @change="${this.onShowBoxChange}" />
+          <span class="ngm-checkbox-icon"></span>
           <label>${i18next.t('nav_box_show_slice_box')}</label>
         </div>
       </div>
@@ -337,18 +281,13 @@ export class NgmSlicer extends LitElementI18n {
   render() {
     if (!this.slicer) return '';
     return html`
-      <div
-        class="ngm-slice-types ${classMap({ disabled: this.editingEnabled })}"
-      >
+      <div class="ngm-slice-types ${classMap({ disabled: this.editingEnabled })}">
         <div
           class="ngm-action-list-item ${classMap({
             active: this.slicingType === 'view-box',
           })}"
         >
-          <div
-            class="ngm-action-list-item-header"
-            @click=${() => this.toggleSlicer('view-box')}
-          >
+          <div class="ngm-action-list-item-header" @click=${() => this.toggleSlicer('view-box')}>
             <div>${i18next.t('tbx_slice_box')}</div>
           </div>
           ${this.sliceOptionsTemplate({ type: 'view-box' })}
@@ -358,18 +297,11 @@ export class NgmSlicer extends LitElementI18n {
             active: this.slicingType === 'view-line',
           })}"
         >
-          <div
-            class="ngm-action-list-item-header"
-            @click=${() => this.toggleSlicer('view-line')}
-          >
+          <div class="ngm-action-list-item-header" @click=${() => this.toggleSlicer('view-line')}>
             <div>${i18next.t('tbx_slice_line')}</div>
           </div>
           ${this.sliceOptionsTemplate({ type: 'view-line' })}
-          <ngm-line-info
-            .hidden=${this.slicingType !== 'view-line'}
-            .lineInfo=${this.lineInfo}
-          >
-          </ngm-line-info>
+          <ngm-line-info .hidden=${this.slicingType !== 'view-line'} .lineInfo=${this.lineInfo}></ngm-line-info>
         </div>
       </div>
       <div class="ngm-divider"></div>
@@ -377,10 +309,8 @@ export class NgmSlicer extends LitElementI18n {
         .selectedId=${this.sliceGeomId}
         .disabledTypes=${['point', 'polygon']}
         .optionsTemplate=${(geom) => this.sliceOptionsTemplate({ geom })}
-        @geomclick=${(evt: CustomEvent<NgmGeometry>) =>
-          ToolboxStore.setSliceGeometry(evt.detail)}
-      >
-      </ngm-geometries-list>
+        @geomclick=${(evt: CustomEvent<NgmGeometry>) => ToolboxStore.setSliceGeometry(evt.detail)}
+      ></ngm-geometries-list>
     `;
   }
 

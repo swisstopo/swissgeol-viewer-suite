@@ -11,8 +11,7 @@ import { ConfigService } from './api/config.service';
 export class NgmAppBoot extends LitElement {
   private readonly viewerInitialization = new Task(this, {
     task: async () => {
-      const clientConfig =
-        (await new ConfigService().getConfig()) as ClientConfig;
+      const clientConfig = (await new ConfigService().getConfig()) as ClientConfig;
       if (!clientConfig) {
         console.error('Failed to load client config');
         return;
@@ -25,9 +24,15 @@ export class NgmAppBoot extends LitElement {
 
   render() {
     return this.viewerInitialization.render({
-      pending: () => html`<p>Loading</p>`,
-      complete: () => html` <ngm-app></ngm-app>`,
-      error: (e) => html`<p>Error: ${e}</p>`,
+      pending: () => html`
+        <p>Loading</p>
+      `,
+      complete: () => html`
+        <ngm-app></ngm-app>
+      `,
+      error: (e) => html`
+        <p>Error: ${e}</p>
+      `,
     });
   }
 

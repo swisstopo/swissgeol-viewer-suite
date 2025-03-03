@@ -24,9 +24,7 @@ export class MenuItem extends LitElementI18n {
           <div class="icon">
             <ngm-core-icon icon=${this.icon}></ngm-core-icon>
           </div>
-          <div class="title" ?hidden="${this.isMobile}">
-            ${i18next.t(this.title)}
-          </div>
+          <div class="title" ?hidden="${this.isMobile}">${i18next.t(this.title)}</div>
         </div>
       </div>
     `;

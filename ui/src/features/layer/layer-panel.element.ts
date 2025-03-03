@@ -2,12 +2,7 @@ import { css, html } from 'lit';
 import i18next from 'i18next';
 import { customElement, property, query } from 'lit/decorators.js';
 import { LayerConfig } from 'src/layertree';
-import {
-  LayerEvent,
-  LayerEventDetail,
-  LayersEvent,
-  LayersEventDetail,
-} from 'src/features/layer/layer-event.model';
+import { LayerEvent, LayerEventDetail, LayersEvent, LayersEventDetail } from 'src/features/layer/layer-event.model';
 import 'src/features/navigation/navigation.module';
 import { CoreElement } from 'src/features/core';
 

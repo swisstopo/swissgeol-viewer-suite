@@ -26,9 +26,7 @@ export class CoreElement extends LitElement {
       this.language = language;
     };
     i18next.on('languageChanged', handleLanguageChanged);
-    this._subscription.add(() =>
-      i18next.off('languageChanged', handleLanguageChanged),
-    );
+    this._subscription.add(() => i18next.off('languageChanged', handleLanguageChanged));
 
     super.connectedCallback();
   }

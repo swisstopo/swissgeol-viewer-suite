@@ -31,10 +31,12 @@ export class NgmLayerLegend extends LitElementI18n {
       : undefined;
     return (
       legendImage &&
-      html` <div class="ngm-legend-container">
-        <div>${i18next.t('dtd_legend')}</div>
-        <div class="ngm-legend-image"><img src="${legendImage}" /></div>
-      </div>`
+      html`
+        <div class="ngm-legend-container">
+          <div>${i18next.t('dtd_legend')}</div>
+          <div class="ngm-legend-image"><img src="${legendImage}" /></div>
+        </div>
+      `
     );
   }
 
@@ -43,17 +45,16 @@ export class NgmLayerLegend extends LitElementI18n {
       `https://api3.geo.admin.ch/rest/services/api/MapServer/${this.config.layer}/legend?lang=${i18next.language}`,
     );
     const legendHtml = await response.text();
-    return html` <div class="ngm-legend-html">${unsafeHTML(legendHtml)}</div>`;
+    return html`
+      <div class="ngm-legend-html">${unsafeHTML(legendHtml)}</div>
+    `;
   }
 
   render() {
     return html`
       <div class="ngm-floating-window-header drag-handle">
         ${i18next.t(this.config.label)}
-        <div
-          class="ngm-close-icon"
-          @click=${() => this.dispatchEvent(new CustomEvent('close'))}
-        ></div>
+        <div class="ngm-close-icon" @click=${() => this.dispatchEvent(new CustomEvent('close'))}></div>
       </div>
       <div
         class="content-container ${classMap({
@@ -61,7 +62,12 @@ export class NgmLayerLegend extends LitElementI18n {
         })}"
       >
         ${this.config.type === LayerType.swisstopoWMTS
-          ? until(this.getWmtsLegend(), html` <div class="ui loader"></div>`)
+          ? until(
+              this.getWmtsLegend(),
+              html`
+                <div class="ui loader"></div>
+              `,
+            )
           : this.getImageLegend()}
       </div>
       ${dragArea}

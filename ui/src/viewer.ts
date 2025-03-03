@@ -95,10 +95,7 @@ export interface BaseLayerConfig {
   hasAlphaChannel?: boolean;
 }
 
-export async function setupViewer(
-  container: Element,
-  rethrowRenderErrors: boolean,
-) {
+export async function setupViewer(container: Element, rethrowRenderErrors: boolean) {
   const searchParams = new URLSearchParams(location.search);
 
   const zExaggeration = getExaggeration();
@@ -126,9 +123,7 @@ export async function setupViewer(
   }
 
   const shouldRequestRenderMode = !searchParams.has('norequestrendermode');
-  const terrainProvider = searchParams.has('noterrain')
-    ? undefined
-    : await CesiumTerrainProvider.fromUrl(terrainUrl);
+  const terrainProvider = searchParams.has('noterrain') ? undefined : await CesiumTerrainProvider.fromUrl(terrainUrl);
 
   const webgl: WebGLOptions = {
     powerPreference: 'high-performance',
@@ -163,21 +158,14 @@ export async function setupViewer(
   const scene = viewer.scene;
   scene.rethrowRenderErrors = rethrowRenderErrors;
   // remove the default behaviour of calling 'zoomTo' on the double clicked entity
-  viewer.screenSpaceEventHandler.removeInputAction(
-    ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
-  );
+  viewer.screenSpaceEventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
   enableCenterOfRotate(viewer);
 
   const globe = scene.globe;
   scene.verticalExaggeration = zExaggeration;
 
   if (searchParams.get('swissrectangle') !== 'false') {
-    const rectangle = Rectangle.fromDegrees(
-      5.86725126512748,
-      45.8026860136571,
-      10.9209100671547,
-      47.8661652478939,
-    );
+    const rectangle = Rectangle.fromDegrees(5.86725126512748, 45.8026860136571, 10.9209100671547, 47.8661652478939);
     globe.cartographicLimitRectangle = rectangle;
   }
 
@@ -209,10 +197,7 @@ export async function setupViewer(
     });
     scene.preRender.addEventListener((scene) => {
       if (scene.cameraUnderground) {
-        flashlight.direction = Cartesian3.clone(
-          scene.camera.directionWC,
-          flashlight.direction,
-        );
+        flashlight.direction = Cartesian3.clone(scene.camera.directionWC, flashlight.direction);
         scene.light = flashlight;
       } else {
         scene.light = sunLight;
@@ -222,9 +207,7 @@ export async function setupViewer(
 
   // Limit the volume inside which the user can navigate
   if (!hasNoLimit) {
-    new NavigableVolumeLimiter(scene, SWITZERLAND_RECTANGLE, 193, (height) =>
-      height > 3000 ? 9 : 3,
-    );
+    new NavigableVolumeLimiter(scene, SWITZERLAND_RECTANGLE, 193, (height) => (height > 3000 ? 9 : 3));
   }
 
   new KeyboardNavigation(viewer.scene);
@@ -364,13 +347,11 @@ export function addMantelEllipsoid(viewer: Viewer) {
     if (scene.cameraUnderground && !hasUsedUndergroundValue) {
       (<any>entity.ellipsoid.radii) = mantelRadii;
       hasUsedUndergroundValue = true;
-      if (!Color.equals(scene.backgroundColor, Color.TRANSPARENT))
-        scene.backgroundColor = Color.TRANSPARENT;
+      if (!Color.equals(scene.backgroundColor, Color.TRANSPARENT)) scene.backgroundColor = Color.TRANSPARENT;
     } else if (!scene.cameraUnderground && hasUsedUndergroundValue) {
       (<any>entity.ellipsoid.radii) = mantelRadiiAboveTerrain;
       hasUsedUndergroundValue = false;
-      if (isVoxelVisible && !Color.equals(scene.backgroundColor, MANTEL_COLOR))
-        scene.backgroundColor = MANTEL_COLOR;
+      if (isVoxelVisible && !Color.equals(scene.backgroundColor, MANTEL_COLOR)) scene.backgroundColor = MANTEL_COLOR;
     }
   });
 }

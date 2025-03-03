@@ -15,7 +15,9 @@ export class CoreTabPanel<T> extends CoreElement {
     this.setAttribute('role', 'tabpanel');
   }
 
-  readonly render = () => html` <slot></slot> `;
+  readonly render = () => html`
+    <slot></slot>
+  `;
 
   static readonly styles = css`
     :host,

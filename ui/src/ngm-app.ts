@@ -142,8 +142,7 @@ export class NgmApp extends LitElementI18n {
   constructor() {
     super();
 
-    this.handleTrackingAllowedChanged =
-      this.handleTrackingAllowedChanged.bind(this);
+    this.handleTrackingAllowedChanged = this.handleTrackingAllowedChanged.bind(this);
 
     if (shouldShowDisclaimer) {
       this.openDisclaimer();
@@ -165,9 +164,7 @@ export class NgmApp extends LitElementI18n {
     this.disclaimer = CoreModal.open(
       { isPersistent: true, size: 'large', hasNoPadding: true },
       html`
-        <ngm-layout-consent-modal
-          @confirm="${this.handleTrackingAllowedChanged}"
-        ></ngm-layout-consent-modal>
+        <ngm-layout-consent-modal @confirm="${this.handleTrackingAllowedChanged}"></ngm-layout-consent-modal>
       `,
     );
   }
@@ -207,9 +204,7 @@ export class NgmApp extends LitElementI18n {
 
   onCloseLayerLegend(event) {
     const config = event.target.config;
-    const index = this.legendConfigs.findIndex(
-      (c) => c && c.layer === config.layer,
-    );
+    const index = this.legendConfigs.findIndex((c) => c && c.layer === config.layer);
     console.assert(index !== -1);
     this.legendConfigs.splice(index, 1);
     if (!this.legendConfigs.filter((c) => !!c).length) this.legendConfigs = [];
@@ -245,8 +240,7 @@ export class NgmApp extends LitElementI18n {
 
   removeLoading() {
     this.loading = false;
-    (<NgmSlowLoading>this.querySelector('ngm-slow-loading')).style.display =
-      'none';
+    (<NgmSlowLoading>this.querySelector('ngm-slow-loading')).style.display = 'none';
   }
 
   /**
@@ -259,31 +253,27 @@ export class NgmApp extends LitElementI18n {
 
     // Temporarily increasing the maximum screen space error to load low LOD tiles.
     const searchParams = new URLSearchParams(document.location.search);
-    globe.maximumScreenSpaceError = parseFloat(
-      searchParams.get('initialScreenSpaceError') ?? '2000',
-    );
+    globe.maximumScreenSpaceError = parseFloat(searchParams.get('initialScreenSpaceError') ?? '2000');
 
     let currentStep = 1;
-    const unlisten = globe.tileLoadProgressEvent.addEventListener(
-      (queueLength) => {
-        this.queueLength = queueLength;
-        if (currentStep === 1 && globe.tilesLoaded) {
-          currentStep = 2;
-          onStep1Finished(globe, searchParams);
-          setTimeout(() => {
-            if (currentStep === 2) {
-              currentStep = 3;
-              this.onStep2Finished(viewer);
-              unlisten();
-            }
-          }, SKIP_STEP2_TIMEOUT);
-        } else if (currentStep === 2 && globe.tilesLoaded) {
-          currentStep = 3;
-          this.onStep2Finished(viewer);
-          unlisten();
-        }
-      },
-    );
+    const unlisten = globe.tileLoadProgressEvent.addEventListener((queueLength) => {
+      this.queueLength = queueLength;
+      if (currentStep === 1 && globe.tilesLoaded) {
+        currentStep = 2;
+        onStep1Finished(globe, searchParams);
+        setTimeout(() => {
+          if (currentStep === 2) {
+            currentStep = 3;
+            this.onStep2Finished(viewer);
+            unlisten();
+          }
+        }, SKIP_STEP2_TIMEOUT);
+      } else if (currentStep === 2 && globe.tilesLoaded) {
+        currentStep = 3;
+        this.onStep2Finished(viewer);
+        unlisten();
+      }
+    });
   }
 
   async firstUpdated() {
@@ -302,8 +292,7 @@ export class NgmApp extends LitElementI18n {
     const topicOrProjectParam = getTopicOrProject();
     if (topicOrProjectParam) {
       this.waitForViewLoading = !!topicOrProjectParam.param.viewId;
-      !this.waitForViewLoading &&
-        (<SideBar>this.querySelector('ngm-side-bar')).togglePanel('dashboard');
+      !this.waitForViewLoading && (<SideBar>this.querySelector('ngm-side-bar')).togglePanel('dashboard');
       DashboardStore.setTopicOrProjectParam(topicOrProjectParam);
     } else {
       const storedView = LocalStorageController.storedView;
@@ -357,73 +346,51 @@ export class NgmApp extends LitElementI18n {
     });
 
     let activeLayers: ImageryLayer[] = [];
-    this.backgroundLayerService.background$
-      .pipe(distinctUntilKeyChanged('children'))
-      .subscribe((background) => {
-        activeLayers.forEach((layer) =>
-          this.viewer!.scene.imageryLayers.remove(layer),
+    this.backgroundLayerService.background$.pipe(distinctUntilKeyChanged('children')).subscribe((background) => {
+      activeLayers.forEach((layer) => this.viewer!.scene.imageryLayers.remove(layer));
+      activeLayers = [];
+      const readyPromises = [] as Array<Promise<void>>;
+      for (const sublayer of background.children) {
+        const layer = addSwisstopoLayer(this.viewer!, sublayer.id as string, sublayer.format, sublayer.maximumLevel);
+        layer.show = true;
+        readyPromises.push(
+          new Promise<void>((resolve) => {
+            layer.readyEvent.addEventListener(() => {
+              resolve();
+            });
+          }),
         );
-        activeLayers = [];
-        const readyPromises = [] as Array<Promise<void>>;
-        for (const sublayer of background.children) {
-          const layer = addSwisstopoLayer(
-            this.viewer!,
-            sublayer.id as string,
-            sublayer.format,
-            sublayer.maximumLevel,
-          );
-          layer.show = true;
-          readyPromises.push(
-            new Promise<void>((resolve) => {
-              layer.readyEvent.addEventListener(() => {
-                resolve();
-              });
-            }),
-          );
-          activeLayers.push(layer);
-        }
-        this.updateBaseMapTranslucency(
-          background.opacity,
-          background.hasAlphaChannel,
-        );
-        syncMapParam(background.id);
-        Promise.all(readyPromises).then(() => this.requestViewerRender());
-      });
+        activeLayers.push(layer);
+      }
+      this.updateBaseMapTranslucency(background.opacity, background.hasAlphaChannel);
+      syncMapParam(background.id);
+      Promise.all(readyPromises).then(() => this.requestViewerRender());
+    });
 
     let opacityTimeout: number | null = null;
-    this.backgroundLayerService.background$
-      .pipe(distinctUntilKeyChanged('opacity'))
-      .subscribe((background) => {
-        if (opacityTimeout !== null) {
-          clearTimeout(opacityTimeout);
-        }
-        opacityTimeout = setTimeout(() => {
-          opacityTimeout = null;
-          syncMapOpacityParam(background.opacity);
-        }, 50) as unknown as number;
+    this.backgroundLayerService.background$.pipe(distinctUntilKeyChanged('opacity')).subscribe((background) => {
+      if (opacityTimeout !== null) {
+        clearTimeout(opacityTimeout);
+      }
+      opacityTimeout = setTimeout(() => {
+        opacityTimeout = null;
+        syncMapOpacityParam(background.opacity);
+      }, 50) as unknown as number;
 
-        this.updateBaseMapTranslucency(
-          background.opacity,
-          background.hasAlphaChannel,
-        );
-        this.requestViewerRender();
-      });
+      this.updateBaseMapTranslucency(background.opacity, background.hasAlphaChannel);
+      this.requestViewerRender();
+    });
 
-    this.backgroundLayerService.background$
-      .pipe(distinctUntilKeyChanged('isVisible'))
-      .subscribe((background) => {
-        if (background.isVisible) {
-          this.updateBaseMapTranslucency(
-            background.opacity,
-            background.hasAlphaChannel,
-          );
-          syncMapParam(background.id);
-        } else {
-          this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
-          syncMapParam('empty_map');
-        }
-        this.requestViewerRender();
-      });
+    this.backgroundLayerService.background$.pipe(distinctUntilKeyChanged('isVisible')).subscribe((background) => {
+      if (background.isVisible) {
+        this.updateBaseMapTranslucency(background.opacity, background.hasAlphaChannel);
+        syncMapParam(background.id);
+      } else {
+        this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
+        syncMapParam('empty_map');
+      }
+      this.requestViewerRender();
+    });
   }
 
   private requestViewerRender(): void {
@@ -439,9 +406,7 @@ export class NgmApp extends LitElementI18n {
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has('showCamConfig')) {
       if (this.showCamConfig) {
-        (<HTMLElement>(
-          document.querySelector('.ngm-cam-lock-info')
-        ))?.parentElement?.remove();
+        (<HTMLElement>document.querySelector('.ngm-cam-lock-info'))?.parentElement?.remove();
       } else if (this.camConfigElement.lockType) {
         let message = '';
         switch (this.camConfigElement.lockType) {
@@ -469,13 +434,9 @@ export class NgmApp extends LitElementI18n {
           ],
         });
         // closeOnClick doesn't work with actions
-        document
-          .querySelector('.ngm-cam-lock-info .close.icon')
-          ?.addEventListener('click', () => {
-            (<HTMLElement>(
-              document.querySelector('.ngm-cam-lock-info')
-            ))?.parentElement?.remove();
-          });
+        document.querySelector('.ngm-cam-lock-info .close.icon')?.addEventListener('click', () => {
+          (<HTMLElement>document.querySelector('.ngm-cam-lock-info'))?.parentElement?.remove();
+        });
       }
     }
 
@@ -490,10 +451,7 @@ export class NgmApp extends LitElementI18n {
     super.updated(changedProperties);
   }
 
-  private updateBaseMapTranslucency(
-    opacity: number,
-    hasAlphaChannel: boolean,
-  ): void {
+  private updateBaseMapTranslucency(opacity: number, hasAlphaChannel: boolean): void {
     const { translucency } = this.viewer!.scene.globe;
     translucency.frontFaceAlpha = opacity;
     if (opacity === 1) {
@@ -508,14 +466,11 @@ export class NgmApp extends LitElementI18n {
   showSlowLoadingWindow() {
     const timeout = 10000;
     if (this.loading && performance.now() > timeout) {
-      (<NgmSlowLoading>this.querySelector('ngm-slow-loading'))!.style.display =
-        'block';
+      (<NgmSlowLoading>this.querySelector('ngm-slow-loading'))!.style.display = 'block';
     } else {
       setTimeout(() => {
         if (this.loading) {
-          (<NgmSlowLoading>(
-            this.querySelector('ngm-slow-loading')
-          ))!.style.display = 'block';
+          (<NgmSlowLoading>this.querySelector('ngm-slow-loading'))!.style.display = 'block';
         }
       }, timeout - performance.now());
     }
@@ -527,24 +482,13 @@ export class NgmApp extends LitElementI18n {
     const frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
     const scaleDownFps = 20;
     const scaleUpFps = 30;
-    this.resolutionScaleRemoveCallback =
-      viewer.scene.postRender.addEventListener(() => {
-        if (
-          frameRateMonitor.lastFramesPerSecond < scaleDownFps &&
-          viewer.resolutionScale > 0.45
-        ) {
-          viewer.resolutionScale = Number(
-            (viewer.resolutionScale - 0.05).toFixed(2),
-          );
-        } else if (
-          frameRateMonitor.lastFramesPerSecond > scaleUpFps &&
-          viewer.resolutionScale < 1
-        ) {
-          viewer.resolutionScale = Number(
-            (viewer.resolutionScale + 0.05).toFixed(2),
-          );
-        }
-      });
+    this.resolutionScaleRemoveCallback = viewer.scene.postRender.addEventListener(() => {
+      if (frameRateMonitor.lastFramesPerSecond < scaleDownFps && viewer.resolutionScale > 0.45) {
+        viewer.resolutionScale = Number((viewer.resolutionScale - 0.05).toFixed(2));
+      } else if (frameRateMonitor.lastFramesPerSecond > scaleUpFps && viewer.resolutionScale < 1) {
+        viewer.resolutionScale = Number((viewer.resolutionScale + 0.05).toFixed(2));
+      }
+    });
   }
 
   handleTrackingAllowedChanged(event: TrackingConsentModalEvent) {
@@ -573,27 +517,14 @@ export class NgmApp extends LitElementI18n {
       <header>
         <div class="left">
           <a id="ngm-home-link" href="">
-            <img
-              class="hidden-mobile"
-              src="/images/swissgeol_viewer.svg"
-              height="36"
-            />
-            <img
-              class="visible-mobile"
-              src="/images/swissgeol_favicon_viewer.svg"
-            />
+            <img class="hidden-mobile" src="/images/swissgeol_viewer.svg" height="36" />
+            <img class="visible-mobile" src="/images/swissgeol_favicon_viewer.svg" />
             <div class="logo-text visible-mobile">swissgeol</div>
           </a>
-          <ngm-navigation-search
-            .viewer="${this.viewer}"
-            .sidebar="${this.sidebar}"
-          ></ngm-navigation-search>
+          <ngm-navigation-search .viewer="${this.viewer}" .sidebar="${this.sidebar}"></ngm-navigation-search>
         </div>
         <div class="ngm-header-suffix">
-          <ngm-cursor-information
-            class="hidden-mobile"
-            .viewer="${this.viewer}"
-          ></ngm-cursor-information>
+          <ngm-cursor-information class="hidden-mobile" .viewer="${this.viewer}"></ngm-cursor-information>
           <ngm-layout-language-selector></ngm-layout-language-selector>
           <ngm-auth
             class="ngm-user"
@@ -615,9 +546,7 @@ export class NgmApp extends LitElementI18n {
                 determinate: this.determinateLoading,
               })}"
             ></div>
-            <span ?hidden=${!this.determinateLoading} class="ngm-load-counter"
-              >${this.queueLength}</span
-            >
+            <span ?hidden=${!this.determinateLoading} class="ngm-load-counter">${this.queueLength}</span>
           </div>
         </div>
         <ngm-side-bar
@@ -631,41 +560,32 @@ export class NgmApp extends LitElementI18n {
             this.showCesiumToolbar = evt.detail.active;
           }}
           @openIonModal=${() => (this.showIonModal = true)}
-        >
-        </ngm-side-bar>
+        ></ngm-side-bar>
         <div class="map" oncontextmenu="return false;">
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>
             <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
-            <ngm-object-information
-              class="ngm-floating-window"
-            ></ngm-object-information>
-            <ngm-topo-profile-modal
-              class="ngm-floating-window"
-            ></ngm-topo-profile-modal>
+            <ngm-object-information class="ngm-floating-window"></ngm-object-information>
+            <ngm-topo-profile-modal class="ngm-floating-window"></ngm-topo-profile-modal>
             <ngm-nav-tools
               class="ngm-floating-window"
               .showCamConfig=${this.showCamConfig}
-              @togglecamconfig=${() =>
-                (this.showCamConfig = !this.showCamConfig)}
+              @togglecamconfig=${() => (this.showCamConfig = !this.showCamConfig)}
               @axisstate=${(evt) => (this.showAxisOnMap = evt.detail.showAxis)}
-            >
-            </ngm-nav-tools>
+            ></ngm-nav-tools>
             <ngm-cam-configuration
               class="ngm-floating-window"
               .hidden=${!this.showCamConfig}
               .viewer=${this.viewer}
               @close=${() => (this.showCamConfig = false)}
-            >
-            </ngm-cam-configuration>
+            ></ngm-cam-configuration>
             <ngm-project-popup
               class="ngm-floating-window ${classMap({
                 compact: this.mobileView,
               })}"
               .hidden=${!this.showProjectPopup}
               @close=${() => (this.showProjectPopup = false)}
-            >
-            </ngm-project-popup>
+            ></ngm-project-popup>
             ${[...this.legendConfigs].map((config) =>
               config
                 ? html`
@@ -677,22 +597,14 @@ export class NgmApp extends LitElementI18n {
                   `
                 : '',
             )}
-            <ngm-voxel-filter
-              class="ngm-floating-window"
-              .viewer=${this.viewer}
-              hidden
-            ></ngm-voxel-filter>
+            <ngm-voxel-filter class="ngm-floating-window" .viewer=${this.viewer} hidden></ngm-voxel-filter>
             <ngm-voxel-simple-filter
               class="ngm-floating-window"
               .viewer=${this.viewer}
               hidden
             ></ngm-voxel-simple-filter>
-            <ngm-coordinate-popup
-              class="ngm-floating-window"
-            ></ngm-coordinate-popup>
-            <ngm-wmts-date-picker
-              class="ngm-floating-window"
-            ></ngm-wmts-date-picker>
+            <ngm-coordinate-popup class="ngm-floating-window"></ngm-coordinate-popup>
+            <ngm-wmts-date-picker class="ngm-floating-window"></ngm-wmts-date-picker>
             <div class="on-map-menu">
               <cesium-view-cube
                 ?hidden=${this.mobileView || this.showAxisOnMap}
@@ -707,14 +619,15 @@ export class NgmApp extends LitElementI18n {
             </div>
           </div>
           ${this.showCesiumToolbar
-            ? html` <cesium-toolbar></cesium-toolbar>`
+            ? html`
+                <cesium-toolbar></cesium-toolbar>
+              `
             : ''}
           <ngm-ion-modal
             class="ngm-floating-window"
             .hidden=${!this.showIonModal}
             @close=${() => (this.showIonModal = false)}
-          >
-          </ngm-ion-modal>
+          ></ngm-ion-modal>
         </div>
       </main>
     `;

@@ -48,12 +48,9 @@ export class NgmGstModal extends LitElementI18n {
             : html``}
         </div>
         <div class="actions">
-          <div class="ui cancel button ngm-cancel-btn">
-            ${i18next.t('tbx_gst_close_label')}
-          </div>
+          <div class="ui cancel button ngm-cancel-btn">${i18next.t('tbx_gst_close_label')}</div>
           <div class="ui ok button ngm-action-btn">
-            ${i18next.t('tbx_download_section_output_label')}
-            ${this.getOutputType}
+            ${i18next.t('tbx_download_section_output_label')} ${this.getOutputType}
           </div>
         </div>
       </div>

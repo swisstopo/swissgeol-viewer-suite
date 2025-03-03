@@ -33,7 +33,9 @@ export class CoreTab<T> extends CoreElement {
     });
   }
 
-  readonly render = () => html` <slot></slot> `;
+  readonly render = () => html`
+    <slot></slot>
+  `;
 
   static readonly styles = css`
     :host,

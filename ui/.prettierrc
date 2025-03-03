@@ -3,7 +3,8 @@
     {
       "files": ["*.js", "*.ts", "*.mjs", "*.cjs"],
       "options": {
-        "singleQuote": true
+        "singleQuote": true,
+        "htmlWhitespaceSensitivity": "ignore"
       }
     }
   ]

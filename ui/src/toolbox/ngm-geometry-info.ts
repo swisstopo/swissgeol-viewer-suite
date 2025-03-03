@@ -5,20 +5,12 @@ import draggable from '../elements/draggable';
 import type { CustomDataSource, Entity, Viewer } from 'cesium';
 import { Cartographic } from 'cesium';
 import MainStore from '../store/main';
-import {
-  GEOMETRY_DATASOURCE_NAME,
-  NO_EDIT_GEOMETRY_DATASOURCE_NAME,
-} from '../constants';
+import { GEOMETRY_DATASOURCE_NAME, NO_EDIT_GEOMETRY_DATASOURCE_NAME } from '../constants';
 import ToolboxStore from '../store/toolbox';
 import i18next from 'i18next';
 import type { NgmGeometry } from './interfaces';
 import { classMap } from 'lit-html/directives/class-map.js';
-import {
-  downloadGeometry,
-  hideVolume,
-  pauseGeometryCollectionEvents,
-  updateEntityVolume,
-} from './helpers';
+import { downloadGeometry, hideVolume, pauseGeometryCollectionEvents, updateEntityVolume } from './helpers';
 import './ngm-geometry-edit';
 import { styleMap } from 'lit/directives/style-map.js';
 import { showSnackbarInfo } from '../notifications';
@@ -46,9 +38,7 @@ export class NgmGeometryInfo extends LitElementI18n {
     MainStore.viewer.subscribe((viewer) => (this.viewer = viewer));
     ToolboxStore.openedGeometryOptions.subscribe((options) => {
       this.noEdit = false;
-      this.geometriesDataSource = this.viewer?.dataSources.getByName(
-        GEOMETRY_DATASOURCE_NAME,
-      )[0];
+      this.geometriesDataSource = this.viewer?.dataSources.getByName(GEOMETRY_DATASOURCE_NAME)[0];
       if (!options?.id) {
         this.editing = false;
         this.geomEntity = undefined;
@@ -56,9 +46,7 @@ export class NgmGeometryInfo extends LitElementI18n {
       }
       let entity = this.geometriesDataSource?.entities.getById(options.id);
       if (!entity) {
-        this.geometriesDataSource = this.viewer?.dataSources.getByName(
-          NO_EDIT_GEOMETRY_DATASOURCE_NAME,
-        )[0];
+        this.geometriesDataSource = this.viewer?.dataSources.getByName(NO_EDIT_GEOMETRY_DATASOURCE_NAME)[0];
         entity = this.geometriesDataSource?.entities.getById(options.id);
         if (!entity) return;
         this.noEdit = true;
@@ -71,12 +59,8 @@ export class NgmGeometryInfo extends LitElementI18n {
     ToolboxStore.sliceGeometry.subscribe(() => {
       this.sliceActive = ToolboxStore.sliceGeomId === this.geometry?.id;
     });
-    ToolboxStore.geometries.subscribe(
-      () => (this.geometry = ToolboxStore.openedGeometry),
-    );
-    ToolboxStore.noEditGeometries.subscribe(
-      () => (this.geometry = ToolboxStore.openedGeometry),
-    );
+    ToolboxStore.geometries.subscribe(() => (this.geometry = ToolboxStore.openedGeometry));
+    ToolboxStore.noEditGeometries.subscribe(() => (this.geometry = ToolboxStore.openedGeometry));
   }
 
   connectedCallback() {
@@ -125,9 +109,7 @@ export class NgmGeometryInfo extends LitElementI18n {
 
   getHeight(geom: NgmGeometry) {
     const height =
-      geom.type === 'point'
-        ? Cartographic.fromCartesian(geom.positions[0]).height
-        : geom.volumeHeightLimits?.height;
+      geom.type === 'point' ? Cartographic.fromCartesian(geom.positions[0]).height : geom.volumeHeightLimits?.height;
     return height || height === 0 ? height.toFixed(1) : '';
   }
 
@@ -146,17 +128,13 @@ export class NgmGeometryInfo extends LitElementI18n {
       <div>
         <button
           class="ui button ngm-download-obj-btn ngm-action-btn"
-          @click=${() =>
-            downloadGeometry(
-              this.geometriesDataSource?.entities.getById(geom.id!),
-            )}
+          @click=${() => downloadGeometry(this.geometriesDataSource?.entities.getById(geom.id!))}
         >
           ${i18next.t('tbx_download_kml_btn_label')}
           <div class="ngm-file-download-icon"></div>
         </button>
         <button
-          @click="${() =>
-            ToolboxStore.nextGeometryAction({ id: geom.id!, action: 'zoom' })}"
+          @click="${() => ToolboxStore.nextGeometryAction({ id: geom.id!, action: 'zoom' })}"
           class="ui button ngm-zoom-obj-btn ngm-action-btn"
         >
           ${i18next.t('obj_info_zoom_to_object_btn_label')}
@@ -166,97 +144,75 @@ export class NgmGeometryInfo extends LitElementI18n {
       <div class="ngm-divider"></div>
       <div class="ngm-geom-info-content">
         <div class="ngm-geom-description">
-          <div class="ngm-geom-info-label">
-            ${i18next.t('obj_info_description_label')}
-          </div>
+          <div class="ngm-geom-info-label">${i18next.t('obj_info_description_label')}</div>
           <div class="ngm-geom-info-value">${geom.description ?? ''}</div>
         </div>
         <div class="ngm-geom-img">
-          <div class="ngm-geom-info-label">
-            ${i18next.t('obj_info_image_label')}
-          </div>
+          <div class="ngm-geom-info-label">${i18next.t('obj_info_image_label')}</div>
           <div ?hidden=${!geom.image} class="ngm-geom-info-value">
             <img src="${geom.image}" alt="${geom.image}" />
           </div>
         </div>
         <div class="ngm-geom-website">
-          <div class="ngm-geom-info-label">
-            ${i18next.t('obj_info_website_label')}
-          </div>
+          <div class="ngm-geom-info-label">${i18next.t('obj_info_website_label')}</div>
           <div ?hidden=${!geom.website} class="ngm-geom-info-value">
             <a href=${geom.website} target="_blank">${geom.website}</a>
           </div>
         </div>
         <div ?hidden=${!geom.volumeShowed} class="ngm-geom-limits">
           <div ?hidden=${geom.type === 'point'}>
-            <div class="ngm-geom-info-label">
-              ${i18next.t('tbx_volume_lower_limit_label')}
-            </div>
-            <div class="ngm-geom-info-value">
-              ${geom.volumeHeightLimits?.lowerLimit.toFixed(1) ?? '-'} m
-            </div>
+            <div class="ngm-geom-info-label">${i18next.t('tbx_volume_lower_limit_label')}</div>
+            <div class="ngm-geom-info-value">${geom.volumeHeightLimits?.lowerLimit.toFixed(1) ?? '-'} m</div>
           </div>
           <div>
-            <div class="ngm-geom-info-label">
-              ${i18next.t('tbx_volume_height_label')}
-            </div>
+            <div class="ngm-geom-info-label">${i18next.t('tbx_volume_height_label')}</div>
             <div class="ngm-geom-info-value">${this.getHeight(geom)} m</div>
           </div>
           <div ?hidden=${geom.type !== 'point'}>
-            <div class="ngm-geom-info-label">
-              ${i18next.t('tbx_point_depth_label')}
-            </div>
-            <div class="ngm-geom-info-value">
-              ${geom.depth?.toFixed(1) ?? '-'} m
-            </div>
+            <div class="ngm-geom-info-label">${i18next.t('tbx_point_depth_label')}</div>
+            <div class="ngm-geom-info-value">${geom.depth?.toFixed(1) ?? '-'} m</div>
           </div>
         </div>
         <div ?hidden=${!geom.volumeShowed} class="ngm-geom-limits">
           <div ?hidden=${geom.type !== 'point'}>
-            <div class="ngm-geom-info-label">
-              ${i18next.t('tbx_point_diameter_label')}
-            </div>
-            <div class="ngm-geom-info-value">
-              ${geom.diameter?.toFixed(1) ?? '-'} m
-            </div>
+            <div class="ngm-geom-info-label">${i18next.t('tbx_point_diameter_label')}</div>
+            <div class="ngm-geom-info-value">${geom.diameter?.toFixed(1) ?? '-'} m</div>
           </div>
         </div>
         <div ?hidden=${geom.type === 'point' || geom.type === 'line'}>
-          <div class="ngm-geom-info-label">
-            ${i18next.t('obj_info_area_label')}
-          </div>
+          <div class="ngm-geom-info-label">${i18next.t('obj_info_area_label')}</div>
           <div class="ngm-geom-info-value">${geom.area ?? '-'} km²</div>
         </div>
         <div ?hidden=${geom.type === 'point'}>
           <div class="ngm-geom-info-label">
-            ${geom.type === 'line'
-              ? i18next.t('obj_info_length_label')
-              : i18next.t('obj_info_perimeter_label')}
+            ${geom.type === 'line' ? i18next.t('obj_info_length_label') : i18next.t('obj_info_perimeter_label')}
           </div>
           <div class="ngm-geom-info-value">${geom.perimeter ?? '-'} km</div>
         </div>
         <div ?hidden=${geom.type === 'point'}>
-          <div class="ngm-geom-info-label">
-            ${i18next.t('obj_info_number_segments_label')}
-          </div>
+          <div class="ngm-geom-info-label">${i18next.t('obj_info_number_segments_label')}</div>
           <div class="ngm-geom-info-value">${geom.numberOfSegments ?? ''}</div>
         </div>
         <div>
           ${geom.pointSymbol
-            ? html` <div
-                class="ngm-geom-symbol"
-                style=${styleMap({
-                  '-webkit-mask-image': `url('${geom.pointSymbol}')`,
-                  'mask-image': `url('${geom.pointSymbol}')`,
-                  backgroundColor: geom.color?.toCssColorString(),
-                })}
-              ></div>`
-            : html` <div
-                class="ngm-geom-color"
-                style=${styleMap({
-                  background: geom.color?.withAlpha(1).toCssColorString(),
-                })}
-              ></div>`}
+            ? html`
+                <div
+                  class="ngm-geom-symbol"
+                  style=${styleMap({
+                    '-webkit-mask-image': `url('${geom.pointSymbol}')`,
+                    'mask-image': `url('${geom.pointSymbol}')`,
+                    backgroundColor: geom.color?.toCssColorString(),
+                  })}
+                ></div>
+              `
+            : html`
+                <div
+                  class="ngm-geom-color"
+                  style=${styleMap({
+                    background: geom.color?.withAlpha(1).toCssColorString(),
+                  })}
+                ></div>
+              `}
         </div>
       </div>
     `;
@@ -274,8 +230,7 @@ export class NgmGeometryInfo extends LitElementI18n {
         ${`${this.geometry.name}`}
         <div class="ngm-geom-actions">
           <div
-            ?hidden=${this.geometry.type === 'point' ||
-            this.geometry.type === 'polygon'}
+            ?hidden=${this.geometry.type === 'point' || this.geometry.type === 'polygon'}
             title=${i18next.t('tbx_slicing')}
             class="ngm-slicing-icon ${classMap({ active: this.sliceActive })}"
             @click=${() => this.onSliceClick()}
@@ -289,21 +244,25 @@ export class NgmGeometryInfo extends LitElementI18n {
           ></div>
           ${this.noEdit
             ? ''
-            : html` <div
-                class="ngm-icon ngm-edit-icon ${classMap({
-                  active: this.editing,
-                  disabled: !this.geometry.editable,
-                })}"
-                title=${i18next.t('tbx_edit_btn')}
-                @click=${() => this.onEditClick()}
-              ></div>`}
+            : html`
+                <div
+                  class="ngm-icon ngm-edit-icon ${classMap({
+                    active: this.editing,
+                    disabled: !this.geometry.editable,
+                  })}"
+                  title=${i18next.t('tbx_edit_btn')}
+                  @click=${() => this.onEditClick()}
+                ></div>
+              `}
         </div>
         <div class="ngm-divider"></div>
         ${this.editing
-          ? html` <ngm-geometry-edit
-              .entity=${this.geomEntity}
-              .volumeShowed=${this.geometry.volumeShowed}
-            ></ngm-geometry-edit>`
+          ? html`
+              <ngm-geometry-edit
+                .entity=${this.geomEntity}
+                .volumeShowed=${this.geometry.volumeShowed}
+              ></ngm-geometry-edit>
+            `
           : this.infoTemplate}
       </div>
       ${dragArea}

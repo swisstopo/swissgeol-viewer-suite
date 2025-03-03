@@ -16,10 +16,7 @@ export function showSnackbarError(message: string): HTMLElement {
   return showSnackbarMessage(message, 'snackbar error');
 }
 
-export function showBannerError(
-  element: HTMLElement,
-  message: string,
-): HTMLElement {
+export function showBannerError(element: HTMLElement, message: string): HTMLElement {
   return showBanner(element, {
     showImage: '/images/i_error.svg',
     closeIcon: true,
@@ -28,10 +25,7 @@ export function showBannerError(
   });
 }
 
-export function showBannerWarning(
-  element: HTMLElement,
-  message: string,
-): HTMLElement {
+export function showBannerWarning(element: HTMLElement, message: string): HTMLElement {
   return showBanner(element, {
     showImage: '/images/I_warning.svg',
     closeIcon: true,
@@ -40,10 +34,7 @@ export function showBannerWarning(
   });
 }
 
-export function showBannerSuccess(
-  element: HTMLElement,
-  message: string,
-): HTMLElement {
+export function showBannerSuccess(element: HTMLElement, message: string): HTMLElement {
   return showBanner(element, {
     showImage: '/images/i_success.svg',
     closeIcon: true,
@@ -75,11 +66,7 @@ export function showSnackbarConfirmation(
   });
 }
 
-function showSnackbarMessage(
-  message: string,
-  className: string,
-  options = {},
-): HTMLElement {
+function showSnackbarMessage(message: string, className: string, options = {}): HTMLElement {
   return showMessage(message, {
     position: 'bottom center',
     className: {
@@ -91,10 +78,7 @@ function showSnackbarMessage(
 
 function showMessage(message: string, options: any = {}): HTMLElement {
   // hide same toasts
-  if (options.class)
-    (<HTMLElement>(
-      document.querySelector(`.${options.class}`)
-    ))?.parentElement?.remove();
+  if (options.class) (<HTMLElement>document.querySelector(`.${options.class}`))?.parentElement?.remove();
   return $('body').toast({
     ...options,
     message: message,

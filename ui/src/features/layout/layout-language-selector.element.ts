@@ -31,15 +31,11 @@ export class LayoutLanguageSelector extends LitElementI18n {
         <div class="menu">
           ${SUPPORTED_LANGUAGES.map(
             (lang) => html`
-              <div
-                class="item no-padding"
-                @click="${() => i18next.changeLanguage(lang)}"
-              >
+              <div class="item no-padding" @click="${() => i18next.changeLanguage(lang)}">
                 <div class="item">
                   <ngm-core-icon
                     class="${classMap({
-                      hidden:
-                        i18next.language?.toUpperCase() !== lang?.toUpperCase(),
+                      hidden: i18next.language?.toUpperCase() !== lang?.toUpperCase(),
                     })}"
                     icon="checkmark"
                   ></ngm-core-icon>

@@ -10,13 +10,7 @@ import { plotProfile } from '../graphs';
 import { pointer } from 'd3-selection';
 import MainStore from '../store/main';
 import type { Viewer } from 'cesium';
-import {
-  Color,
-  HeightReference,
-  CallbackProperty,
-  Cartesian3,
-  Entity,
-} from 'cesium';
+import { Color, HeightReference, CallbackProperty, Cartesian3, Entity } from 'cesium';
 import { getPointOnPolylineByRatio } from '../cesiumutils';
 import type { NgmGeometry } from './interfaces';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -63,9 +57,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
   private distInKM = false;
   private readonly highlightPointPosition: Cartesian3 = new Cartesian3();
   private readonly highlightPoint = new Entity({
-    position: <any>(
-      new CallbackProperty(() => this.highlightPointPosition, false)
-    ),
+    position: <any>new CallbackProperty(() => this.highlightPointPosition, false),
     point: {
       show: new CallbackProperty(() => this.showTooltip, false),
       color: Color.WHITE,
@@ -80,9 +72,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
   constructor() {
     super();
     super.hidden = this.hidden;
-    ToolboxStore.geometryAction.subscribe((options) =>
-      this.handleActions(options),
-    );
+    ToolboxStore.geometryAction.subscribe((options) => this.handleActions(options));
     MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       if (viewer) viewer.entities.add(this.highlightPoint);
@@ -107,9 +97,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
     if (options.action === 'profile') {
       this.hidden = true;
       if (!options.id) return;
-      const geom: NgmGeometry | undefined = ToolboxStore.geometries
-        .getValue()
-        .find((geom) => geom.id === options.id);
+      const geom: NgmGeometry | undefined = ToolboxStore.geometries.getValue().find((geom) => geom.id === options.id);
       if (!geom) return;
       this.linestring = geom.positions.map((c) => cartesianToLv95(c));
       this.name = geom.name;
@@ -126,21 +114,13 @@ export class NgmTopoProfileModal extends LitElementI18n {
       const denom = this.distInKM ? 1000 : 1;
       let totalDist = 0;
       const extremPoints = geom.positions.map((pos, indx) => {
-        totalDist +=
-          indx === 0
-            ? 0
-            : Cartesian3.distance(geom.positions[indx - 1], pos) / denom;
+        totalDist += indx === 0 ? 0 : Cartesian3.distance(geom.positions[indx - 1], pos) / denom;
         return { dist: totalDist, position: this.linestring![indx] };
       });
 
       this.hidden = false;
       await this.updateComplete;
-      this.profileInfo = plotProfile(
-        this.data,
-        extremPoints,
-        this.profilePlot,
-        this.distInKM,
-      );
+      this.profileInfo = plotProfile(this.data, extremPoints, this.profilePlot, this.distInKM);
       this.domain = this.profileInfo.domain;
 
       this.attachPathListeners(geom);
@@ -149,9 +129,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
   }
 
   profileServiceUrl(format: ProfileServiceFormat) {
-    const url = new URL(
-      `https://api3.geo.admin.ch/rest/services/profile.${format}`,
-    );
+    const url = new URL(`https://api3.geo.admin.ch/rest/services/profile.${format}`);
     url.searchParams.set(
       'geom',
       `{"type":"LineString","coordinates":[[${this.linestring!.map((c) => c.slice(0, 2).toString()).join('],[')}]]}`,
@@ -170,16 +148,10 @@ export class NgmTopoProfileModal extends LitElementI18n {
 
     // add name spaces
     if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
-      source = source.replace(
-        /^<svg/,
-        '<svg xmlns="http://www.w3.org/2000/svg"',
-      );
+      source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
     }
     if (!source.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
-      source = source.replace(
-        /^<svg/,
-        '<svg xmlns:xlink="http://www.w3.org/1999/xlink"',
-      );
+      source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
     }
 
     // add xml declaration
@@ -209,11 +181,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
       let ratio = xCoord / this.data[this.data.length - 1].domainDist;
       if (ratio < 0) ratio = 0;
       else if (ratio > 1) ratio = 1;
-      getPointOnPolylineByRatio(
-        geometry!.positions,
-        ratio,
-        this.highlightPointPosition,
-      );
+      getPointOnPolylineByRatio(geometry!.positions, ratio, this.highlightPointPosition);
       this.viewer?.scene.requestRender();
     });
     areaChartPath.on('mouseover', () => {
@@ -231,11 +199,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
       : html`
           <div class="ngm-floating-window-header drag-handle">
             ${i18next.t('topographic_profile_header')} (${this.name})
-            <div
-              class="ngm-close-icon"
-              @click=${() =>
-                ToolboxStore.nextGeometryAction({ action: 'profile' })}
-            ></div>
+            <div class="ngm-close-icon" @click=${() => ToolboxStore.nextGeometryAction({ action: 'profile' })}></div>
           </div>
           <div class="content-container">
             <p>
@@ -250,13 +214,9 @@ export class NgmTopoProfileModal extends LitElementI18n {
               style="${styleMap(this.tooltipData.position)}"
             >
               <div>
-                <div class="ngm-profile-distance">
-                  ${i18next.t('profile_distance')}
-                  ${this.tooltipData.values.dist}
-                </div>
+                <div class="ngm-profile-distance">${i18next.t('profile_distance')} ${this.tooltipData.values.dist}</div>
                 <div class="ngm-profile-elevation">
-                  ${i18next.t('profile_elevation')}
-                  ${this.tooltipData.values.elev}
+                  ${i18next.t('profile_elevation')} ${this.tooltipData.values.elev}
                 </div>
               </div>
               <div class="ngm-profile-tooltip-arrow"></div>

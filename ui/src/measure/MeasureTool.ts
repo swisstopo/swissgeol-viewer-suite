@@ -40,33 +40,15 @@ export default class MeasureTool {
     this.viewer = viewer;
     this.measureOptions = {
       pointSize: typeof options?.pointSize === 'number' ? options.pointSize : 9,
-      pointOutlineWidth:
-        typeof options?.pointOutlineWidth === 'number'
-          ? options.pointOutlineWidth
-          : 1,
-      highlightedPointSize:
-        typeof options?.highlightedPointSize === 'number'
-          ? options.highlightedPointSize
-          : 14,
+      pointOutlineWidth: typeof options?.pointOutlineWidth === 'number' ? options.pointOutlineWidth : 1,
+      highlightedPointSize: typeof options?.highlightedPointSize === 'number' ? options.highlightedPointSize : 14,
       lineWidth: typeof options?.lineWidth === 'number' ? options.lineWidth : 4,
       lineHighlightOutlineWidth:
-        typeof options?.lineHighlightOutlineWidth === 'number'
-          ? options.lineHighlightOutlineWidth
-          : 4,
-      lineColor:
-        options?.lineColor instanceof Color
-          ? options.lineColor
-          : Color.BLUE.withAlpha(0.8),
-      pointColor:
-        options?.pointColor instanceof Color ? options.pointColor : Color.WHITE,
-      pointOutlineColor:
-        options?.pointOutlineColor instanceof Color
-          ? options.pointOutlineColor
-          : Color.BLACK,
-      highlightColor:
-        options?.highlightColor instanceof Color
-          ? options.highlightColor
-          : Color.YELLOW,
+        typeof options?.lineHighlightOutlineWidth === 'number' ? options.lineHighlightOutlineWidth : 4,
+      lineColor: options?.lineColor instanceof Color ? options.lineColor : Color.BLUE.withAlpha(0.8),
+      pointColor: options?.pointColor instanceof Color ? options.pointColor : Color.WHITE,
+      pointOutlineColor: options?.pointOutlineColor instanceof Color ? options.pointOutlineColor : Color.BLACK,
+      highlightColor: options?.highlightColor instanceof Color ? options.highlightColor : Color.YELLOW,
     };
     this.draw = new CesiumDraw(viewer, {
       pointOptions: {
@@ -76,27 +58,18 @@ export default class MeasureTool {
       lineClampToGround: false,
     });
     this.draw.type = 'line';
-    this.draw.addEventListener('drawend', (evt) =>
-      this.endMeasuring((<CustomEvent>evt).detail),
-    );
+    this.draw.addEventListener('drawend', (evt) => this.endMeasuring((<CustomEvent>evt).detail));
     viewer.dataSources.add(this.measureDataSource);
-    this.screenSpaceEventHandler = new ScreenSpaceEventHandler(
-      this.viewer!.canvas,
-    );
-    this.screenSpaceEventHandler.setInputAction(
-      (click: { position: Cartesian2 }) => {
-        if (this.draw.active || !this.measureToolActive) return;
-        const position = Cartesian3.clone(
-          this.viewer!.scene.pickPosition(click.position),
-        );
-        if (position) {
-          this.clearMeasureGeometry();
-          this.draw.active = true;
-          this.draw.onLeftClick(click);
-        }
-      },
-      ScreenSpaceEventType.LEFT_CLICK,
-    );
+    this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
+    this.screenSpaceEventHandler.setInputAction((click: { position: Cartesian2 }) => {
+      if (this.draw.active || !this.measureToolActive) return;
+      const position = Cartesian3.clone(this.viewer!.scene.pickPosition(click.position));
+      if (position) {
+        this.clearMeasureGeometry();
+        this.draw.active = true;
+        this.draw.onLeftClick(click);
+      }
+    }, ScreenSpaceEventType.LEFT_CLICK);
   }
 
   get active() {
@@ -117,9 +90,7 @@ export default class MeasureTool {
       polyline: {
         positions: indexes.map((i) => this.measurePositions[i]),
         clampToGround: false,
-        width:
-          this.measureOptions.lineWidth +
-          this.measureOptions.lineHighlightOutlineWidth,
+        width: this.measureOptions.lineWidth + this.measureOptions.lineHighlightOutlineWidth,
         material: new PolylineOutlineMaterialProperty({
           color: Color.TRANSPARENT,
           outlineColor: this.measureOptions.highlightColor,
@@ -128,12 +99,8 @@ export default class MeasureTool {
       },
     });
     indexes.forEach((i) => {
-      this.points[i].point!.color = new ConstantProperty(
-        this.measureOptions.highlightColor,
-      );
-      this.points[i].point!.pixelSize = new ConstantProperty(
-        this.measureOptions.highlightedPointSize,
-      );
+      this.points[i].point!.color = new ConstantProperty(this.measureOptions.highlightColor);
+      this.points[i].point!.pixelSize = new ConstantProperty(this.measureOptions.highlightedPointSize);
     });
     this.viewer.scene.requestRender();
   }

@@ -108,9 +108,7 @@ export class SideBar extends LitElementI18n {
     auth.user.subscribe((user) => {
       if (!user && this.activeLayers) {
         // user logged out, remove restricted layers.
-        const restricted = this.activeLayers.filter(
-          (config) => config.restricted?.length,
-        );
+        const restricted = this.activeLayers.filter((config) => config.restricted?.length);
         restricted.forEach((config) => {
           const idx = this.activeLayers.indexOf(config);
           this.activeLayers.splice(idx, 1);
@@ -120,9 +118,7 @@ export class SideBar extends LitElementI18n {
     });
     MainStore.setUrlLayersSubject.subscribe(async () => {
       if (this.activeLayers) {
-        this.activeLayers.forEach((layer) =>
-          this.removeLayerWithoutSync(layer),
-        );
+        this.activeLayers.forEach((layer) => this.removeLayerWithoutSync(layer));
       }
       await this.syncActiveLayers();
       this.requestUpdate();
@@ -172,15 +168,10 @@ export class SideBar extends LitElementI18n {
     });
 
     const sliceOptions = getSliceParam();
-    if (sliceOptions?.type && sliceOptions.slicePoints)
-      this.activePanel = 'tools';
+    if (sliceOptions?.type && sliceOptions.slicePoints) this.activePanel = 'tools';
   }
 
-  private readonly renderMenuItem = (
-    icon: string,
-    title: string,
-    panel: string,
-  ) => html`
+  private readonly renderMenuItem = (icon: string, title: string, panel: string) => html`
     <ngm-menu-item
       .icon=${icon}
       .title=${title}
@@ -195,33 +186,22 @@ export class SideBar extends LitElementI18n {
       return '';
     }
 
-    this.queryManager.activeLayers = this.activeLayers.filter(
-      (config) => config.visible && !config.noQuery,
-    );
+    this.queryManager.activeLayers = this.activeLayers.filter((config) => config.visible && !config.noQuery);
 
     const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
     const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
-    const projectsBtn = this.renderMenuItem(
-      'projects',
-      'menu_projects',
-      'dashboard',
-    );
+    const projectsBtn = this.renderMenuItem('projects', 'menu_projects', 'dashboard');
     const shareBtn = this.renderMenuItem('share', 'menu_share', 'share');
-    const settingsBtn = this.renderMenuItem(
-      'config',
-      'menu_settings',
-      'settings',
-    );
-    const mobileExpandBtn = html` <ngm-menu-item
-      icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
-      @click=${() => (this.mobileShowAll = !this.mobileShowAll)}
-    ></ngm-menu-item>`;
+    const settingsBtn = this.renderMenuItem('config', 'menu_settings', 'settings');
+    const mobileExpandBtn = html`
+      <ngm-menu-item
+        icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
+        @click=${() => (this.mobileShowAll = !this.mobileShowAll)}
+      ></ngm-menu-item>
+    `;
 
     return html`
-      <div
-        .hidden=${!this.mobileView || !this.mobileShowAll}
-        class="ngm-menu-mobile"
-      >
+      <div .hidden=${!this.mobileView || !this.mobileShowAll} class="ngm-menu-mobile">
         ${shareBtn} ${settingsBtn}
         <!-- required for correct positioning -->
         <div></div>
@@ -229,27 +209,23 @@ export class SideBar extends LitElementI18n {
       </div>
       <div class="ngm-menu">
         <div class="ngm-menu-top">
-          ${layerBtn} ${toolsBtn} ${!this.mobileView ? shareBtn : ''}
-          ${projectsBtn} ${this.mobileView ? mobileExpandBtn : ''}
+          ${layerBtn} ${toolsBtn} ${!this.mobileView ? shareBtn : ''} ${projectsBtn}
+          ${this.mobileView ? mobileExpandBtn : ''}
         </div>
-        <div ?hidden="${this.mobileView}" class="ngm-menu-top">
-          ${settingsBtn}
-        </div>
+        <div ?hidden="${this.mobileView}" class="ngm-menu-top">${settingsBtn}</div>
       </div>
       <ngm-dashboard
         class="ngm-side-bar-panel ngm-large-panel"
         ?hidden=${this.activePanel !== 'dashboard'}
         @close=${() => (this.activePanel = null)}
-        @layerclick=${(e: LayerEvent) =>
-          this.onCatalogLayerClicked(e.detail.layer)}
+        @layerclick=${(e: LayerEvent) => this.onCatalogLayerClicked(e.detail.layer)}
       ></ngm-dashboard>
       <ngm-layer-panel
         ?hidden="${this.activePanel !== 'data'}"
         .layers="${this.catalogLayers}"
         .displayLayers="${this.activeLayers}"
         @close="${() => (this.activePanel = null)}"
-        @layer-click=${(e: LayerEvent) =>
-          this.onCatalogLayerClicked(e.detail.layer)}
+        @layer-click=${(e: LayerEvent) => this.onCatalogLayerClicked(e.detail.layer)}
         @display-layers-update="${this.handleDisplayLayersUpdate}"
         @display-layer-update="${this.handleDisplayLayerUpdate}"
         @display-layer-removal="${this.handleDisplayLayerRemoval}"
@@ -261,31 +237,21 @@ export class SideBar extends LitElementI18n {
           @close=${() => (this.activePanel = null)}
         ></ngm-tools>
       </div>
-      <div
-        .hidden=${this.activePanel !== 'share'}
-        class="ngm-side-bar-panel ngm-share-panel"
-      >
+      <div .hidden=${this.activePanel !== 'share'} class="ngm-side-bar-panel ngm-share-panel">
         <div class="ngm-panel-header">
           ${i18next.t('lsb_share')}
-          <div
-            class="ngm-close-icon"
-            @click=${() => (this.activePanel = null)}
-          ></div>
+          <div class="ngm-close-icon" @click=${() => (this.activePanel = null)}></div>
         </div>
         ${this.activePanel !== 'share'
           ? ''
-          : html` <ngm-share-link></ngm-share-link>`}
+          : html`
+              <ngm-share-link></ngm-share-link>
+            `}
       </div>
-      <div
-        .hidden=${this.activePanel !== 'settings'}
-        class="ngm-side-bar-panel"
-      >
+      <div .hidden=${this.activePanel !== 'settings'} class="ngm-side-bar-panel">
         <div class="ngm-panel-header">
           ${i18next.t('lsb_settings')}
-          <div
-            class="ngm-close-icon"
-            @click=${() => (this.activePanel = null)}
-          ></div>
+          <div class="ngm-close-icon" @click=${() => (this.activePanel = null)}></div>
         </div>
         <div class="toolbar-settings">
           <div class="inner-toolbar-settings">
@@ -294,31 +260,18 @@ export class SideBar extends LitElementI18n {
               class="ngm-checkbox ngm-debug-tools-toggle ${classMap({
                 active: this.debugToolsActive,
               })}"
-              @click=${() =>
-                (<HTMLInputElement>(
-                  this.querySelector('.ngm-debug-tools-toggle > input')
-                )).click()}
+              @click=${() => (<HTMLInputElement>this.querySelector('.ngm-debug-tools-toggle > input')).click()}
             >
-              <input
-                type="checkbox"
-                ?checked=${this.debugToolsActive}
-                @change="${this.toggleDebugTools}"
-              />
+              <input type="checkbox" ?checked=${this.debugToolsActive} @change="${this.toggleDebugTools}" />
               <span class="ngm-checkbox-icon"></span>
               <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
             </div>
-            <a
-              class="contact-mailto-link"
-              target="_blank"
-              href="mailto:swissgeol@swisstopo.ch"
-              >${i18next.t('contact_mailto_text')}</a
-            >
-            <a
-              class="disclaimer-link"
-              target="_blank"
-              href="${i18next.t('disclaimer_href')}"
-              >${i18next.t('disclaimer_text')}</a
-            >
+            <a class="contact-mailto-link" target="_blank" href="mailto:swissgeol@swisstopo.ch">
+              ${i18next.t('contact_mailto_text')}
+            </a>
+            <a class="disclaimer-link" target="_blank" href="${i18next.t('disclaimer_href')}">
+              ${i18next.t('disclaimer_text')}
+            </a>
           </div>
         </div>
       </div>
@@ -344,10 +297,7 @@ export class SideBar extends LitElementI18n {
   async syncActiveLayers() {
     const attributeParams = getAttribute();
     const callback = attributeParams
-      ? this.getTileLoadCallback(
-          attributeParams.attributeKey,
-          attributeParams.attributeValue,
-        )
+      ? this.getTileLoadCallback(attributeParams.attributeKey, attributeParams.attributeValue)
       : undefined;
     const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
     const urlLayers = getLayerParams();
@@ -393,9 +343,7 @@ export class SideBar extends LitElementI18n {
       const ionAssets = ionAssetsRes?.items || [];
 
       assetIds.forEach((assetId) => {
-        const ionAsset = ionAssets.find(
-          (asset) => asset.id === Number(assetId),
-        );
+        const ionAsset = ionAssets.find((asset) => asset.id === Number(assetId));
         const layer: LayerConfig = {
           type: LayerType.tiles3d,
           assetId: Number(assetId),
@@ -550,9 +498,7 @@ export class SideBar extends LitElementI18n {
   async addLayerFromSearch(searchLayer: SearchLayer) {
     let layer;
     if ('dataSourceName' in searchLayer) {
-      layer = this.activeLayers.find(
-        (l) => l.type === searchLayer.dataSourceName,
-      ); // check for layers like earthquakes
+      layer = this.activeLayers.find((l) => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
     } else {
       layer = this.activeLayers.find((l) => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
     }
@@ -586,8 +532,7 @@ export class SideBar extends LitElementI18n {
       config.visible = true;
       config.origin = 'layer';
       config.label = searchLayer.title ?? searchLayer.label;
-      config.legend =
-        config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
+      config.legend = config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
     } else {
       config = {
         type: LayerType.swisstopoWMTS,
@@ -618,17 +563,13 @@ export class SideBar extends LitElementI18n {
         cartesianPosition: Cartesian3 | undefined,
         windowPosition: Cartesian2 | undefined;
       const updateValues = () => {
-        altitude =
-          this.viewer!.scene.globe.getHeight(
-            this.viewer!.scene.camera.positionCartographic,
-          ) ?? 0;
+        altitude = this.viewer!.scene.globe.getHeight(this.viewer!.scene.camera.positionCartographic) ?? 0;
         cartesianPosition = Cartesian3.fromDegrees(
           zoomToPosition.longitude,
           zoomToPosition.latitude,
           zoomToPosition.height + altitude,
         );
-        windowPosition =
-          this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
+        windowPosition = this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
       };
       updateValues();
       const completeCallback = () => {
@@ -636,10 +577,7 @@ export class SideBar extends LitElementI18n {
           let maxTries = 25;
           let triesCounter = 0;
           const eventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
-          eventHandler.setInputAction(
-            () => (maxTries = 0),
-            ScreenSpaceEventType.LEFT_DOWN,
-          );
+          eventHandler.setInputAction(() => (maxTries = 0), ScreenSpaceEventType.LEFT_DOWN);
           // Waits while will be possible to select an object
           const tryToSelect = () =>
             setTimeout(() => {
@@ -647,17 +585,12 @@ export class SideBar extends LitElementI18n {
               this.zoomToObjectCoordinates(cartesianPosition);
               windowPosition && this.queryManager!.pickObject(windowPosition);
               triesCounter += 1;
-              if (
-                !this.queryManager!.objectSelector.selectedObj &&
-                triesCounter <= maxTries
-              ) {
+              if (!this.queryManager!.objectSelector.selectedObj && triesCounter <= maxTries) {
                 tryToSelect();
               } else {
                 eventHandler.destroy();
                 if (triesCounter > maxTries) {
-                  showSnackbarError(
-                    i18next.t('dtd_object_on_coordinates_not_found_warning'),
-                  );
+                  showSnackbarError(i18next.t('dtd_object_on_coordinates_not_found_warning'));
                 }
               }
             }, 500);
@@ -670,11 +603,7 @@ export class SideBar extends LitElementI18n {
 
   zoomToObjectCoordinates(center, complete?) {
     const boundingSphere = new BoundingSphere(center, 1000);
-    const zoomHeadingPitchRange = new HeadingPitchRange(
-      0,
-      -CMath.toRadians(45),
-      boundingSphere.radius,
-    );
+    const zoomHeadingPitchRange = new HeadingPitchRange(0, -CMath.toRadians(45), boundingSphere.radius);
     this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
       duration: 0,
       offset: zoomHeadingPitchRange,
@@ -734,9 +663,7 @@ export class SideBar extends LitElementI18n {
     const active = event.target.checked;
     this.debugToolsActive = active;
     setCesiumToolbarParam(active);
-    this.dispatchEvent(
-      new CustomEvent('toggleDebugTools', { detail: { active } }),
-    );
+    this.dispatchEvent(new CustomEvent('toggleDebugTools', { detail: { active } }));
   }
 
   createRenderRoot() {

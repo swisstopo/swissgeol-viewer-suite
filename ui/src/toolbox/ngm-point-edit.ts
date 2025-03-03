@@ -4,20 +4,11 @@ import { customElement, property, query, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { LitElementI18n } from '../i18n.js';
 import type { Entity, Viewer } from 'cesium';
-import {
-  Cartesian3,
-  ConstantProperty,
-  JulianDate,
-  Math as CesiumMath,
-} from 'cesium';
+import { Cartesian3, ConstantProperty, JulianDate, Math as CesiumMath } from 'cesium';
 import { getValueOrUndefined } from '../cesiumutils';
 import { updateBoreholeHeights } from './helpers';
 import MainStore from '../store/main';
-import {
-  cartesianToDegrees,
-  cartesianToLv95,
-  lv95ToDegrees,
-} from '../projection';
+import { cartesianToDegrees, cartesianToLv95, lv95ToDegrees } from '../projection';
 import 'fomantic-ui-css/components/transition.js';
 import 'fomantic-ui-css/components/dropdown.js';
 import $ from 'jquery';
@@ -69,44 +60,25 @@ export class NgmPointEdit extends LitElementI18n {
         this.heightValue = Number(coords[2].toFixed(1));
       }
     }
-    if (
-      !getValueOrUndefined(this.entity?.properties?.diameter) &&
-      this.entity?.ellipse?.semiMajorAxis
-    ) {
-      const diameter = this.entity.ellipse.semiMajorAxis.getValue(
-        this.julianDate,
-      );
+    if (!getValueOrUndefined(this.entity?.properties?.diameter) && this.entity?.ellipse?.semiMajorAxis) {
+      const diameter = this.entity.ellipse.semiMajorAxis.getValue(this.julianDate);
       this.entity.properties!.diameter = new ConstantProperty(diameter);
     }
   }
 
   onPositionChange() {
     if (!this.entity) return;
-    this.xValue = Number(
-      (<HTMLInputElement>this.querySelector('.ngm-coord-x-input'))!.value,
-    );
-    this.yValue = Number(
-      (<HTMLInputElement>this.querySelector('.ngm-coord-y-input'))!.value,
-    );
-    const heightValue = Number(
-      (<HTMLInputElement>this.querySelector('.ngm-height-input'))!.value,
-    );
-    this.heightValue = CesiumMath.clamp(
-      heightValue,
-      this.minHeight,
-      this.maxHeight,
-    );
+    this.xValue = Number((<HTMLInputElement>this.querySelector('.ngm-coord-x-input'))!.value);
+    this.yValue = Number((<HTMLInputElement>this.querySelector('.ngm-coord-y-input'))!.value);
+    const heightValue = Number((<HTMLInputElement>this.querySelector('.ngm-height-input'))!.value);
+    this.heightValue = CesiumMath.clamp(heightValue, this.minHeight, this.maxHeight);
     const lon = this.xValue;
     const lat = this.yValue;
     const height = this.heightValue;
     let cartesianPosition: Cartesian3;
     if (this.coordsType === 'lv95') {
       const degreesPosition = lv95ToDegrees([lon, lat]);
-      cartesianPosition = Cartesian3.fromDegrees(
-        degreesPosition[0],
-        degreesPosition[1],
-        height,
-      );
+      cartesianPosition = Cartesian3.fromDegrees(degreesPosition[0], degreesPosition[1], height);
     } else {
       cartesianPosition = Cartesian3.fromDegrees(lon, lat, height);
     }
@@ -144,12 +116,8 @@ export class NgmPointEdit extends LitElementI18n {
             <div class="ngm-coords text">LV95</div>
             <i class="dropdown icon"></i>
             <div class="menu">
-              <div class="item" @click=${() => (this.coordsType = 'lv95')}>
-                LV95
-              </div>
-              <div class="item" @click=${() => (this.coordsType = 'wgs84')}>
-                WGS84
-              </div>
+              <div class="item" @click=${() => (this.coordsType = 'lv95')}>LV95</div>
+              <div class="item" @click=${() => (this.coordsType = 'wgs84')}>WGS84</div>
             </div>
           </div>
         </div>
@@ -167,11 +135,7 @@ export class NgmPointEdit extends LitElementI18n {
             @change="${this.onPositionChange}"
             placeholder="required"
           />
-          <span class="ngm-floating-label"
-            >${this.coordsType === 'lv95'
-              ? 'E'
-              : i18next.t('tbx_lon_label')}</span
-          >
+          <span class="ngm-floating-label">${this.coordsType === 'lv95' ? 'E' : i18next.t('tbx_lon_label')}</span>
         </div>
         <div class="ngm-input">
           <input
@@ -185,11 +149,7 @@ export class NgmPointEdit extends LitElementI18n {
             @change="${this.onPositionChange}"
             placeholder="required"
           />
-          <span class="ngm-floating-label"
-            >${this.coordsType === 'lv95'
-              ? 'N'
-              : i18next.t('tbx_lat_label')}</span
-          >
+          <span class="ngm-floating-label">${this.coordsType === 'lv95' ? 'N' : i18next.t('tbx_lat_label')}</span>
         </div>
       </div>
       <div class="ngm-geom-edit-double-input">
@@ -202,37 +162,27 @@ export class NgmPointEdit extends LitElementI18n {
             @change="${this.onPositionChange}"
             placeholder="required"
           />
-          <span class="ngm-floating-label"
-            >${i18next.t('tbx_volume_height_label')}</span
-          >
+          <span class="ngm-floating-label">${i18next.t('tbx_volume_height_label')}</span>
         </div>
         <div class="ngm-input" ?hidden=${!this.volumeShowed}>
           <input
             type="number"
             step="0.1"
-            .value=${parseFloat(
-              getValueOrUndefined(this.entity?.properties!.depth),
-            ).toFixed(1)}
+            .value=${parseFloat(getValueOrUndefined(this.entity?.properties!.depth)).toFixed(1)}
             @change="${this.onDepthChange}"
             placeholder="required"
           />
-          <span class="ngm-floating-label"
-            >${i18next.t('tbx_point_depth_label')}</span
-          >
+          <span class="ngm-floating-label">${i18next.t('tbx_point_depth_label')}</span>
         </div>
         <div class="ngm-input" ?hidden=${!this.volumeShowed}>
           <input
             type="number"
             step="0.1"
-            .value=${parseFloat(
-              getValueOrUndefined(this.entity?.properties!.diameter),
-            ).toFixed(1)}
+            .value=${parseFloat(getValueOrUndefined(this.entity?.properties!.diameter)).toFixed(1)}
             @change="${this.onDiameterChange}"
             placeholder="required"
           />
-          <span class="ngm-floating-label"
-            >${i18next.t('tbx_point_diameter_label')}</span
-          >
+          <span class="ngm-floating-label">${i18next.t('tbx_point_diameter_label')}</span>
         </div>
       </div>
     `;

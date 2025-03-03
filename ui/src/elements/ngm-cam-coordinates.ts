@@ -7,10 +7,7 @@ import { customElement, property, query, state } from 'lit/decorators.js';
 import 'fomantic-ui-css/components/transition.js';
 import 'fomantic-ui-css/components/dropdown.js';
 import { showSnackbarError } from '../notifications';
-import {
-  SWITZERLAND_BOUNDS_LV95,
-  SWITZERLAND_BOUNDS_WGS84,
-} from '../constants';
+import { SWITZERLAND_BOUNDS_LV95, SWITZERLAND_BOUNDS_WGS84 } from '../constants';
 
 type CoordinateRange = {
   minValue: number;

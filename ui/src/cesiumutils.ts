@@ -33,10 +33,7 @@ const julianDate = new JulianDate();
 
 export function pickCenter(scene: Scene): Cartesian3 {
   const camera = scene.camera;
-  const windowPosition = new Cartesian2(
-    scene.canvas.clientWidth / 2,
-    scene.canvas.clientHeight / 2,
-  );
+  const windowPosition = new Cartesian2(scene.canvas.clientWidth / 2, scene.canvas.clientHeight / 2);
   const ray = camera.getPickRay(windowPosition);
   if (!ray) return camera.positionWC;
   const center = scene.globe.pick(ray, scene);
@@ -48,17 +45,11 @@ export function pickCenter(scene: Scene): Cartesian3 {
  */
 export function pickCenterOnEllipsoid(scene: Scene): Cartesian3 | undefined {
   const camera = scene.camera;
-  const windowPosition = new Cartesian2(
-    scene.canvas.clientWidth / 2,
-    scene.canvas.clientHeight / 2,
-  );
+  const windowPosition = new Cartesian2(scene.canvas.clientWidth / 2, scene.canvas.clientHeight / 2);
   return camera.pickEllipsoid(windowPosition);
 }
 
-export function pickPositionOrVoxel(
-  scene: Scene,
-  windowPosition: Cartesian2,
-): Cartesian3 {
+export function pickPositionOrVoxel(scene: Scene, windowPosition: Cartesian2): Cartesian3 {
   const voxel = scene.pickVoxel(windowPosition);
   if (voxel) {
     return voxel.orientedBoundingBox.center;
@@ -70,10 +61,7 @@ export function pickPositionOrVoxel(
  * Return the position of the point, on the map or object at the center of the Cesium viewport.
  */
 export function pickCenterOnMapOrObject(scene: Scene): Cartesian3 {
-  const windowPosition = new Cartesian2(
-    scene.canvas.clientWidth / 2,
-    scene.canvas.clientHeight / 2,
-  );
+  const windowPosition = new Cartesian2(scene.canvas.clientWidth / 2, scene.canvas.clientHeight / 2);
   return pickPositionOrVoxel(scene, windowPosition);
 }
 
@@ -121,10 +109,7 @@ export type Measurements = {
 /**
  * Returns measurements for geometry
  */
-export function getMeasurements(
-  positions: Cartesian3[],
-  type: GeometryTypes,
-): Measurements {
+export function getMeasurements(positions: Cartesian3[], type: GeometryTypes): Measurements {
   const segmentsLength: number[] = [];
   positions.forEach((p, key) => {
     if (key > 0) {
@@ -163,8 +148,7 @@ export function updateHeightForCartesianPositions(
 ): Cartesian3[] {
   return positions.map((p) => {
     const cartographicPosition = Cartographic.fromCartesian(p);
-    if (typeof height === 'number' && !isNaN(height))
-      cartographicPosition.height = height;
+    if (typeof height === 'number' && !isNaN(height)) cartographicPosition.height = height;
     if (scene) {
       const altitude = scene.globe.getHeight(cartographicPosition) || 0;
       cartographicPosition.height += altitude;
@@ -178,10 +162,7 @@ export function updateHeightForCartesianPositions(
 /**
  * Update exaggeration for each cartesian3 position in array
  */
-export function updateExaggerationForCartesianPositions(
-  positions: Cartesian3[],
-  exaggeration: number,
-): Cartesian3[] {
+export function updateExaggerationForCartesianPositions(positions: Cartesian3[], exaggeration: number): Cartesian3[] {
   return positions.map((p) => {
     const cartographicPosition = Cartographic.fromCartesian(p);
     cartographicPosition.height *= exaggeration;
@@ -195,11 +176,7 @@ export function updateExaggerationForCartesianPositions(
  * @param {Cartesian3} point2
  * @param {boolean} negate - if true changes direction from left on the right
  */
-export function planeFromTwoPoints(
-  point1: Cartesian3,
-  point2: Cartesian3,
-  negate: boolean = false,
-): Plane {
+export function planeFromTwoPoints(point1: Cartesian3, point2: Cartesian3, negate: boolean = false): Plane {
   const p1p2 = Cartesian3.subtract(point2, point1, new Cartesian3());
   const cross = Cartesian3.cross(point1, p1p2, new Cartesian3());
   const normal = Cartesian3.normalize(cross, new Cartesian3());
@@ -215,16 +192,11 @@ export function planeFromTwoPoints(
  * @param {EntityCollection} entities - list of entities for export
  * @return {string}
  */
-export function extendKmlWithProperties(
-  kml: string,
-  entities: EntityCollection,
-): string {
+export function extendKmlWithProperties(kml: string, entities: EntityCollection): string {
   entities.values.forEach((entity) => {
     let kmlProperties = '<ExtendedData>';
     entity.properties!.propertyNames.forEach((prop) => {
-      let value = entity.properties![prop]
-        ? entity.properties![prop].getValue()
-        : undefined;
+      let value = entity.properties![prop] ? entity.properties![prop].getValue() : undefined;
       if (value !== undefined && value !== null) {
         value = typeof value === 'object' ? JSON.stringify(value) : value;
         kmlProperties += `<Data name="${prop}"><value>${value}</value></Data>`;
@@ -252,11 +224,7 @@ export function projectPointOntoVector(
 ): Cartesian3 {
   Cartesian3.subtract(vectorPoint2, vectorPoint1, scratchVector1);
   Cartesian3.subtract(pointToProject, vectorPoint1, scratchVector2);
-  Cartesian3.projectVector(
-    scratchVector2,
-    scratchVector1,
-    scratchProjectionVector,
-  );
+  Cartesian3.projectVector(scratchVector2, scratchVector1, scratchProjectionVector);
   return Cartesian3.add(vectorPoint1, scratchProjectionVector, result);
 }
 
@@ -274,18 +242,10 @@ export function clampPosition(
   end: number,
 ) {
   let distanceScalar = start;
-  const minDifference = Cartesian3.subtract(
-    minPosition,
-    position,
-    minDifferenceScratch,
-  );
+  const minDifference = Cartesian3.subtract(minPosition, position, minDifferenceScratch);
   const min = minDifference.x + minDifference.y + minDifference.z;
   if (min > 0) {
-    const maxDifference = Cartesian3.subtract(
-      maxPosition,
-      position,
-      maxDifferenceScratch,
-    );
+    const maxDifference = Cartesian3.subtract(maxPosition, position, maxDifferenceScratch);
     const max = maxDifference.x + maxDifference.y + maxDifference.z;
     if (max < 0) {
       const maxDistance = Cartesian3.distance(minPosition, maxPosition);
@@ -319,11 +279,7 @@ export function projectPointOnSegment(
  * @param ratio - distance to point in percentage (value from 0 to 1 where 0 first point of the line and 1 is last)
  * @param result
  */
-export function getPointOnPolylineByRatio(
-  linePositions: Cartesian3[],
-  ratio: number,
-  result,
-) {
+export function getPointOnPolylineByRatio(linePositions: Cartesian3[], ratio: number, result) {
   let indx,
     segmentRatio = 0;
   const distances = linePositions.map((pos, indx) => {
@@ -348,14 +304,7 @@ export function getPointOnPolylineByRatio(
 
   return indx > 0
     ? Cartesian3.clone(
-        projectPointOnSegment(
-          result,
-          linePositions[indx - 1],
-          linePositions[indx],
-          segmentRatio,
-          segmentRatio,
-          0,
-        ),
+        projectPointOnSegment(result, linePositions[indx - 1], linePositions[indx], segmentRatio, segmentRatio, 0),
         result,
       )
     : linePositions[0];
@@ -382,9 +331,7 @@ const eastPointScratch = new Cartesian3();
  * Returns vector orthogonal to view vector (vector from camera position to position on map)
  * https://user-images.githubusercontent.com/51954170/108503213-abff8580-72bc-11eb-8b75-3385b5fd171e.png
  */
-export function getVectorOrthogonalToView(
-  viewer: Viewer,
-): Cartesian3 | undefined {
+export function getVectorOrthogonalToView(viewer: Viewer): Cartesian3 | undefined {
   const hpr = new HeadingPitchRoll(viewer.scene.camera.heading, 0.0, 0.0);
   const rotation = Matrix3.fromHeadingPitchRoll(hpr);
   const viewRect = viewer.scene.camera.computeViewRectangle();
@@ -397,11 +344,7 @@ export function getVectorOrthogonalToView(
 
   Cartesian3.midpoint(northwest, southwest, westPointScratch);
   Cartesian3.midpoint(northeast, southeast, eastPointScratch);
-  const viewVect = Cartesian3.subtract(
-    eastPointScratch,
-    westPointScratch,
-    new Cartesian3(),
-  );
+  const viewVect = Cartesian3.subtract(eastPointScratch, westPointScratch, new Cartesian3());
   return Matrix3.multiplyByVector(rotation, viewVect, viewVect);
 }
 
@@ -434,11 +377,7 @@ export function getValueOrUndefined(prop) {
  */
 export function lookAtPoint(position: Cartesian3, camera: Camera) {
   const cameraPosition = camera.position.clone();
-  let direction = Cartesian3.subtract(
-    position,
-    cameraPosition,
-    new Cartesian3(),
-  );
+  let direction = Cartesian3.subtract(position, cameraPosition, new Cartesian3());
   direction = Cartesian3.normalize(direction, direction);
   camera.direction = direction;
 
@@ -475,16 +414,9 @@ export function getEntityColor(entity) {
  * @param point
  * @param polygonPositions
  */
-export function pointInPolygon(
-  point: Cartographic,
-  polygonPositions: Cartographic[],
-): boolean {
+export function pointInPolygon(point: Cartographic, polygonPositions: Cartographic[]): boolean {
   let isInside = false;
-  for (
-    let i = 0, j = polygonPositions.length - 1;
-    i < polygonPositions.length;
-    j = i++
-  ) {
+  for (let i = 0, j = polygonPositions.length - 1; i < polygonPositions.length; j = i++) {
     const xi = polygonPositions[i].longitude,
       yi = polygonPositions[i].latitude;
     const xj = polygonPositions[j].longitude,
@@ -552,51 +484,25 @@ export function positionFromPxDistance(
       Cartographic.toCartesian(Rectangle.northeast(mapRect)),
     ];
   } else {
-    corners = [
-      firstPoint,
-      updateHeightForCartesianPositions([firstPoint], distance)[0],
-    ];
+    corners = [firstPoint, updateHeightForCartesianPositions([firstPoint], distance)[0]];
   }
   Cartesian3.midpoint(corners[0], corners[1], scratchPosition);
-  const pos = projectPointOnSegment(
-    firstPoint,
-    corners[0],
-    corners[1],
-    0,
-    1,
-    0,
-  );
+  const pos = projectPointOnSegment(firstPoint, corners[0], corners[1], 0, 1, 0);
   Cartesian3.subtract(pos, scratchPosition, axisVector3dScratch);
-  const scalar3d =
-    (distance / Cartesian3.distance(pos, scratchPosition)) * side;
-  Cartesian3.multiplyByScalar(
-    axisVector3dScratch,
-    scalar3d,
-    moveVector3dScratch,
-  );
+  const scalar3d = (distance / Cartesian3.distance(pos, scratchPosition)) * side;
+  Cartesian3.multiplyByScalar(axisVector3dScratch, scalar3d, moveVector3dScratch);
   return Cartesian3.add(firstPoint, moveVector3dScratch, new Cartesian3());
 }
 
 /**
  * Checks is geometry of part of geometry inside viewport
  */
-export function isGeometryInViewport(
-  viewer: Viewer,
-  positions: Cartesian3[],
-): boolean {
+export function isGeometryInViewport(viewer: Viewer, positions: Cartesian3[]): boolean {
   const camera = viewer.camera;
   const frustum = camera.frustum;
-  const cullingVolume = frustum.computeCullingVolume(
-    camera.position,
-    camera.direction,
-    camera.up,
-  );
+  const cullingVolume = frustum.computeCullingVolume(camera.position, camera.direction, camera.up);
 
-  return (
-    cullingVolume.computeVisibility(
-      OrientedBoundingBox.fromPoints(positions),
-    ) !== -1
-  );
+  return cullingVolume.computeVisibility(OrientedBoundingBox.fromPoints(positions)) !== -1;
 }
 
 /**
@@ -623,8 +529,7 @@ export async function parseKml(
     }
     if (ent['point']) {
       const point = ent['point'];
-      const color: Color =
-        point.color?.getValue(julianDate)?.color || DEFAULT_UPLOADED_KML_COLOR;
+      const color: Color = point.color?.getValue(julianDate)?.color || DEFAULT_UPLOADED_KML_COLOR;
       if (color.alpha === 0) {
         color.alpha = 1;
       }
@@ -636,9 +541,7 @@ export async function parseKml(
     }
     if (ent['polygon']) {
       const polygon = ent['polygon'];
-      const color: Color =
-        polygon.material?.getValue(julianDate)?.color ||
-        DEFAULT_UPLOADED_KML_COLOR;
+      const color: Color = polygon.material?.getValue(julianDate)?.color || DEFAULT_UPLOADED_KML_COLOR;
       if (color.alpha === 0) {
         color.alpha = 1;
       }
@@ -649,9 +552,7 @@ export async function parseKml(
     }
     if (ent['polyline']) {
       const line = ent['polyline'];
-      const color: Color =
-        line.material?.getValue(julianDate)?.color ||
-        DEFAULT_UPLOADED_KML_COLOR;
+      const color: Color = line.material?.getValue(julianDate)?.color || DEFAULT_UPLOADED_KML_COLOR;
       if (color.alpha === 0) {
         color.alpha = 1;
       }
@@ -689,21 +590,14 @@ export function updateExaggerationForKmlDataSource(
     dataSource.entities.values.forEach((ent) => {
       if (ent.position) {
         const position = ent.position.getValue(julianDate);
-        position &&
-          updateExaggerationForCartesianPositions(
-            [position],
-            exaggerationScale,
-          );
+        position && updateExaggerationForCartesianPositions([position], exaggerationScale);
         ent.position = new ConstantPositionProperty(position);
       }
       if (ent['polygon']) {
         const polygon = ent['polygon'];
         const hierarchy = polygon?.hierarchy?.getValue(julianDate);
         if (hierarchy?.positions) {
-          const positions = updateExaggerationForCartesianPositions(
-            hierarchy.positions,
-            exaggerationScale,
-          );
+          const positions = updateExaggerationForCartesianPositions(hierarchy.positions, exaggerationScale);
           polygon.hierarchy = new ConstantProperty({
             holes: [],
             positions,
@@ -714,12 +608,7 @@ export function updateExaggerationForKmlDataSource(
         const line = ent['polyline'];
         const positions = line.positions?.getValue(julianDate);
         if (positions) {
-          line.positions = new ConstantProperty(
-            updateExaggerationForCartesianPositions(
-              positions,
-              exaggerationScale,
-            ),
-          );
+          line.positions = new ConstantProperty(updateExaggerationForCartesianPositions(positions, exaggerationScale));
         }
       }
     });

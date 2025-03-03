@@ -1,9 +1,4 @@
-import {
-  CustomDataSource,
-  GeoJsonDataSource,
-  ImageryLayer,
-  VoxelPrimitive,
-} from 'cesium';
+import { CustomDataSource, GeoJsonDataSource, ImageryLayer, VoxelPrimitive } from 'cesium';
 import { PickableCesium3DTileset } from './layers/helpers';
 import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer';
 
@@ -157,40 +152,16 @@ const SWISSTOPO_LABEL_STYLE = {
 };
 
 // Property orders
-const DOWNLOAD_PROP_ORDER = [
-  'Download Move',
-  'Download GoCad',
-  'Download DXF',
-  'Download ASCII',
-  'Download All data',
-];
+const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
 const DOWNLOAD_ROOT_GEOMOL = 'https://download.swissgeol.ch/geomol/';
 const DOWNLOAD_ROOT_VOXEL = 'https://download.swissgeol.ch/voxel/';
 const CENOZOIC_BEDROCK_ORDER = ['Name', 'Horizon', ...DOWNLOAD_PROP_ORDER];
 CENOZOIC_BEDROCK_ORDER.splice(6, 0, 'Download ESRI-GRID');
-const CONSOLIDATED_ORDER = [
-  'Name',
-  'Horizon',
-  'HARMOS-ORIGINAL',
-  ...DOWNLOAD_PROP_ORDER,
-];
-const FAULTS_ORDER = [
-  'Name',
-  'Source',
-  'Status',
-  'Type',
-  'Version',
-  ...DOWNLOAD_PROP_ORDER,
-];
+const CONSOLIDATED_ORDER = ['Name', 'Horizon', 'HARMOS-ORIGINAL', ...DOWNLOAD_PROP_ORDER];
+const FAULTS_ORDER = ['Name', 'Source', 'Status', 'Type', 'Version', ...DOWNLOAD_PROP_ORDER];
 const TEMPERATURE_HORIZON_ORDER = ['name', 'temp_c'];
 const TEMPERATURE_HORIZON_BGL_ORDER = ['name', 'temp_c', 'depth_bgl'];
-const EARTHQUAKES_PROP_ORDER = [
-  'Time',
-  'Magnitude',
-  'Depthkm',
-  'EventLocationName',
-  'Details',
-];
+const EARTHQUAKES_PROP_ORDER = ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'];
 
 const voxelNoData = -99999;
 const voxelUndefinedData = -9999;
@@ -432,42 +403,36 @@ const aaretalVoxelFilter: IndexVoxelFilter = {
     { index: 3, label: 'Verlandungssedimente, Sumpf, Ried' },
     {
       index: 4,
-      label:
-        'Subrezente bis rezente Alluvionen (Fluss- und Bachschotter, Überschwemmungssediment, undifferenziert)',
+      label: 'Subrezente bis rezente Alluvionen (Fluss- und Bachschotter, Überschwemmungssediment, undifferenziert)',
     },
     { index: 5, label: 'Hangschutt / Hanglehm (undifferenziert)' },
     { index: 6, label: 'Bachschutt / Bachschuttkegel (undifferenziert)' },
     { index: 7, label: 'Spät- bis postglaziale Schotter' },
     {
       index: 8,
-      label:
-        'Spät- bis postglaziale Stausedimente und Seeablagerungen (undifferenziert)',
+      label: 'Spät- bis postglaziale Stausedimente und Seeablagerungen (undifferenziert)',
     },
     { index: 9, label: 'Spätglaziale Moräne (undifferenziert)' },
     {
       index: 10,
-      label:
-        'Rückzugsschotter der Letzten Vergletscherung ("Felderschotter" und Äquivalente)',
+      label: 'Rückzugsschotter der Letzten Vergletscherung ("Felderschotter" und Äquivalente)',
     },
     { index: 11, label: 'Stauschotter (undifferenziert)' },
     { index: 12, label: 'Rinnenschotter' },
     { index: 13, label: 'Moräne der Letzten Vergletscherung' },
     {
       index: 14,
-      label:
-        'Vorstossschotter der Letzten Vergletscherung (vorwiegend Münsingen- u. Karlsruhe-Schotter)',
+      label: 'Vorstossschotter der Letzten Vergletscherung (vorwiegend Münsingen- u. Karlsruhe-Schotter)',
     },
     { index: 15, label: 'Interglaziale Seetone (Eemzeitliche Seetone)' },
     {
       index: 16,
-      label:
-        'Rückzugsschotter der Vorletzten Vergletscherung, Kies-Sand-Komplex von Kleinhöchstetten',
+      label: 'Rückzugsschotter der Vorletzten Vergletscherung, Kies-Sand-Komplex von Kleinhöchstetten',
     },
     { index: 17, label: 'Moräne der Vorletzten Vergletscherung ("Altmoräne")' },
     {
       index: 18,
-      label:
-        'Vorletzteiszeitliche glaziolakustrische Ablagerungen und Schlammmoräne',
+      label: 'Vorletzteiszeitliche glaziolakustrische Ablagerungen und Schlammmoräne',
     },
     { index: 19, label: 'Alte Deltaschotter im Belpmoos' },
     { index: 20, label: 'Uttigen-Bümberg-Steghalde-Schotter' },
@@ -502,8 +467,7 @@ const genevaIndexVoxelFilter: IndexVoxelFilter = {
     { index: voxelUndefinedData, label: t('vox_filter_undefined_lithology') },
     {
       index: 3000,
-      label:
-        'Eboulis, Formations de pente, Colluvions, Limons de ruissellement',
+      label: 'Eboulis, Formations de pente, Colluvions, Limons de ruissellement',
     },
     { index: 4000, label: 'Alluvions de terrasses' },
     { index: 5000, label: 'Dépôts ou vases lacustres, tourbe, craie lacustre' },
@@ -669,11 +633,7 @@ const geo_base: LayerTreeNode = {
           pickable: true,
           visible: false,
           displayed: false, // private until they have been re-integrated
-          restricted: [
-            'ngm-dev-privileged',
-            'ngm-int-privileged',
-            'ngm-prod-privileged',
-          ], // private until they have been re-integrated
+          restricted: ['ngm-dev-privileged', 'ngm-int-privileged', 'ngm-prod-privileged'], // private until they have been re-integrated
           // Temporarily disable the boreholes download, see https://jira.camptocamp.com/browse/GSNGM-936
           // downloadDataType: 'csv',
           // downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
@@ -711,11 +671,7 @@ const geo_base: LayerTreeNode = {
           pickable: true,
           visible: false,
           displayed: false,
-          restricted: [
-            'ngm-dev-privileged',
-            'ngm-int-privileged',
-            'ngm-prod-privileged',
-          ], // the group required to see this layer
+          restricted: ['ngm-dev-privileged', 'ngm-int-privileged', 'ngm-prod-privileged'], // the group required to see this layer
           aws_s3_bucket: 'ngm-protected-prod',
           aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
         },
@@ -948,10 +904,8 @@ const natural_hazard: LayerTreeNode = {
       displayed: false,
       opacity: DEFAULT_LAYER_OPACITY,
       propsOrder: EARTHQUAKES_PROP_ORDER,
-      downloadUrl:
-        'https://download.swissgeol.ch/earthquakes/earthquakes_last_90d.txt',
-      detailsUrl:
-        'http://www.seismo.ethz.ch/en/earthquakes/switzerland/last-90-days',
+      downloadUrl: 'https://download.swissgeol.ch/earthquakes/earthquakes_last_90d.txt',
+      detailsUrl: 'http://www.seismo.ethz.ch/en/earthquakes/switzerland/last-90-days',
       geocatId: 'f44ee7fc-efd0-47ad-8a8c-db74dcc20610',
     },
     {
@@ -962,8 +916,7 @@ const natural_hazard: LayerTreeNode = {
       displayed: false,
       opacity: DEFAULT_LAYER_OPACITY,
       propsOrder: EARTHQUAKES_PROP_ORDER,
-      downloadUrl:
-        'https://download.swissgeol.ch/earthquakes/earthquakes_magnitude_gt_3.txt',
+      downloadUrl: 'https://download.swissgeol.ch/earthquakes/earthquakes_magnitude_gt_3.txt',
       detailsUrl: 'http://www.seismo.ethz.ch',
       geocatId: 'fab0e70e-6e33-4ba9-8c42-2b8ac1578384',
     },
@@ -1110,8 +1063,7 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl:
-            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip',
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip',
           geocatId: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
           previewColor: '#cad0c3',
         },
@@ -1123,8 +1075,7 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl:
-            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerFreshwaterMolasse.zip',
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerFreshwaterMolasse.zip',
           geocatId: '2d7a0729-dd29-40fa-ad4f-b09f94b7fb00',
           previewColor: '#cdd0d0',
         },
@@ -1136,8 +1087,7 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl:
-            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMarineMolasse.zip',
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMarineMolasse.zip',
           geocatId: 'fedb8d24-a000-4b78-9e6e-fb90305ad3ea',
           previewColor: '#d3cfc0',
         },
@@ -1257,8 +1207,7 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl:
-            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous.zip',
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous.zip',
           geocatId: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
           previewColor: '#bb9f8a',
         },
@@ -1270,8 +1219,7 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl:
-            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous-inferred.zip',
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous-inferred.zip',
           geocatId: '0f1acc23-bdfc-40bf-94b7-7be10f0f78ed',
           previewColor: '#c9b19e',
         },
@@ -1290,8 +1238,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: FAULTS_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Faults.zip',
           downloadDataType: 'indexed_download',
-          downloadDataPath:
-            'https://download.swissgeol.ch/Faults/footprints_boxed.geojson',
+          downloadDataPath: 'https://download.swissgeol.ch/Faults/footprints_boxed.geojson',
           geocatId: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
           previewColor: '#c40001',
         },

@@ -13,8 +13,7 @@ export class HideOverflow extends LitElement {
     };
     const callback = (entries) => {
       entries.forEach((entry) => {
-        entry.target.style.visibility =
-          entry.intersectionRatio < 1 ? 'hidden' : 'visible';
+        entry.target.style.visibility = entry.intersectionRatio < 1 ? 'hidden' : 'visible';
       });
     };
     this.observer = new IntersectionObserver(callback, options);
@@ -30,6 +29,8 @@ export class HideOverflow extends LitElement {
   }
 
   override render() {
-    return html` <slot @slotchange="${this.slotReady}"></slot> `;
+    return html`
+      <slot @slotchange="${this.slotReady}"></slot>
+    `;
   }
 }

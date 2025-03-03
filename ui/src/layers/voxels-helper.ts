@@ -12,10 +12,7 @@ function createCustomShader(config): CustomShader {
   const colors = config.voxelColors;
 
   console.assert(config.noData === undefined, 'No data value must be defined');
-  console.assert(
-    config.undefinedData === undefined,
-    'Undefined data value must be defined',
-  );
+  console.assert(config.undefinedData === undefined, 'Undefined data value must be defined');
 
   const fragmentShaderText = `
     void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material)
@@ -96,9 +93,7 @@ function createCustomShader(config): CustomShader {
       'Color index mode requires the same number of colors as lithology types',
     );
   }
-  const colorRamp = useColorIndex
-    ? createColorIndex(colors.colors)
-    : createColorGradient(colors.colors);
+  const colorRamp = useColorIndex ? createColorIndex(colors.colors) : createColorGradient(colors.colors);
 
   return new CustomShader({
     fragmentShaderText: fragmentShaderText,
@@ -282,9 +277,7 @@ const shaders: Record<string, CustomShader> = {};
 export function getVoxelShader(config): CustomShader {
   let shader = shaders[config.layer];
   if (!shader) {
-    shader = shaders[config.layer] = config.voxelFilter
-      ? createCustomShader(config)
-      : createSimpleCustomShader(config);
+    shader = shaders[config.layer] = config.voxelFilter ? createCustomShader(config) : createSimpleCustomShader(config);
   }
   return shader;
 }

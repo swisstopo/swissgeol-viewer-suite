@@ -4,7 +4,9 @@ import { customElement } from 'lit/decorators.js';
 
 @customElement('ngm-navigation-panel')
 export class NavigationPanel extends LitElementI18n {
-  readonly render = () => html`<slot></slot>`;
+  readonly render = () => html`
+    <slot></slot>
+  `;
 
   static readonly styles = css`
     :host {

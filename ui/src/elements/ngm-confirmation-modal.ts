@@ -22,15 +22,10 @@ export class NgmConfirmationModal extends LitElementI18n {
   element: JQuery<Element> | undefined;
 
   firstUpdated(_changedProperties: PropertyValues) {
-    this.element = $(
-      this.querySelector('.ngm-confirmation-modal.ui.modal')!,
-    ).modal({
+    this.element = $(this.querySelector('.ngm-confirmation-modal.ui.modal')!).modal({
       centered: true,
       onHidden: () => (this.show = false),
-      onApprove: () =>
-        this.dispatchEvent(
-          new CustomEvent('onModalConfirmation', { bubbles: true }),
-        ),
+      onApprove: () => this.dispatchEvent(new CustomEvent('onModalConfirmation', { bubbles: true })),
     });
     super.firstUpdated(_changedProperties);
   }
@@ -58,9 +53,7 @@ export class NgmConfirmationModal extends LitElementI18n {
           <p>${this.text.description}</p>
         </div>
         <div class="actions">
-          <div class="ui cancel button ngm-cancel-btn">
-            ${this.text.cancelBtn}
-          </div>
+          <div class="ui cancel button ngm-cancel-btn">${this.text.cancelBtn}</div>
           <div class="ui ok button ngm-action-btn">${this.text.confirmBtn}</div>
         </div>
       </div>

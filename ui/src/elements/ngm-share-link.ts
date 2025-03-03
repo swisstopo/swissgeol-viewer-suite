@@ -31,9 +31,7 @@ export class NgmShareLink extends LitElementI18n {
         }),
       });
       if (!response.ok) {
-        throw new Error(
-          `Service response status ${response.status}: ${await response.text()}`,
-        );
+        throw new Error(`Service response status ${response.status}: ${await response.text()}`);
       } else if (response.headers.has('location')) {
         return response.headers.get('location')!;
       } else {
@@ -41,10 +39,7 @@ export class NgmShareLink extends LitElementI18n {
       }
     } catch (e) {
       console.error(e);
-      showBannerWarning(
-        this.toastPlaceholder,
-        i18next.t('welcome_get_shortlink_error'),
-      );
+      showBannerWarning(this.toastPlaceholder, i18next.t('welcome_get_shortlink_error'));
       return url;
     }
   }
@@ -71,16 +66,9 @@ export class NgmShareLink extends LitElementI18n {
   render() {
     return html`
       <div class="ngm-toast-placeholder"></div>
-      <div class="ngm-share-label">
-        ${i18next.t('shortlink_copy_btn_label')}
-      </div>
+      <div class="ngm-share-label">${i18next.t('shortlink_copy_btn_label')}</div>
       <div class="ngm-input ${classMap({ disabled: this.displayLoader })}">
-        <input
-          type="text"
-          placeholder="required"
-          readonly
-          .value=${this.shortlink}
-        />
+        <input type="text" placeholder="required" readonly .value=${this.shortlink} />
         <button
           class="ngm-copy-icon-btn ${classMap({
             disabled: this.displayLoader,
@@ -89,9 +77,7 @@ export class NgmShareLink extends LitElementI18n {
         >
           <div class="ngm-copy-icon icon"></div>
         </button>
-        <span class="ngm-floating-label"
-          >${i18next.t('shortlink_link_label')}</span
-        >
+        <span class="ngm-floating-label">${i18next.t('shortlink_link_label')}</span>
       </div>
       <a
         class="ui button ngm-action-btn ${classMap({

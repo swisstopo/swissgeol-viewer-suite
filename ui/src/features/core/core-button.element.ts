@@ -1,10 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import {
-  applyEffect,
-  applyTransition,
-  applyTypography,
-} from 'src/styles/theme';
+import { applyEffect, applyTransition, applyTypography } from 'src/styles/theme';
 
 @customElement('ngm-core-button')
 export class CoreButton extends LitElement {

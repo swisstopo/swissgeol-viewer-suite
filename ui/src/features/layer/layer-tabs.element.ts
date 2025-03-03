@@ -11,10 +11,7 @@ export class LayerTabs extends LitElementI18n {
   public accessor layers: LayerConfig[] | null = null;
 
   @property({ type: Function })
-  accessor onKmlUpload!: (
-    file: File,
-    clampToGround: boolean,
-  ) => Promise<void> | void;
+  accessor onKmlUpload!: (file: File, clampToGround: boolean) => Promise<void> | void;
 
   @state()
   private accessor activeTab: Tab = Tab.Catalog;
@@ -37,13 +34,15 @@ export class LayerTabs extends LitElementI18n {
       onValueChange: this.handleTabChange,
       tab: this.translateTabName,
       panels: {
-        [Tab.Catalog]: html`<ngm-layer-catalog
-          .layers=${this.layers}
-        ></ngm-layer-catalog>`,
-        [Tab.Upload]: html`<ngm-layer-upload
-          .toastPlaceholder=${this.toastPlaceholder}
-        ></ngm-layer-upload>`,
-        [Tab.Options]: html`<ngm-layer-options></ngm-layer-options>`,
+        [Tab.Catalog]: html`
+          <ngm-layer-catalog .layers=${this.layers}></ngm-layer-catalog>
+        `,
+        [Tab.Upload]: html`
+          <ngm-layer-upload .toastPlaceholder=${this.toastPlaceholder}></ngm-layer-upload>
+        `,
+        [Tab.Options]: html`
+          <ngm-layer-options></ngm-layer-options>
+        `,
       },
     })}
   `;

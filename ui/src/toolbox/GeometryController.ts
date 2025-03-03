@@ -1,9 +1,5 @@
 import MainStore from '../store/main';
-import ToolboxStore, {
-  GeometryAction,
-  GeometryCreateOptions,
-  OpenedGeometryOptions,
-} from '../store/toolbox';
+import ToolboxStore, { GeometryAction, GeometryCreateOptions, OpenedGeometryOptions } from '../store/toolbox';
 import DrawStore from '../store/draw';
 import { showBannerError, showSnackbarInfo } from '../notifications';
 import i18next from 'i18next';
@@ -31,11 +27,7 @@ import {
   Viewer,
 } from 'cesium';
 import type { AreasCounter, GeometryTypes, NgmGeometry } from './interfaces';
-import {
-  extendKmlWithProperties,
-  getValueOrUndefined,
-  renderWithDelay,
-} from '../cesiumutils';
+import { extendKmlWithProperties, getValueOrUndefined, renderWithDelay } from '../cesiumutils';
 import NavToolsStore from '../store/navTools';
 import {
   flyToGeom,
@@ -72,11 +64,7 @@ export class GeometryController {
   };
   private readonly noEdit: boolean;
 
-  constructor(
-    geometriesDataSource: CustomDataSource,
-    toastPlaceholder: HTMLElement,
-    noEdit = false,
-  ) {
+  constructor(geometriesDataSource: CustomDataSource, toastPlaceholder: HTMLElement, noEdit = false) {
     this.geometriesDataSource = geometriesDataSource;
     this.toastPlaceholder = toastPlaceholder;
     this.noEdit = noEdit;
@@ -84,52 +72,36 @@ export class GeometryController {
     MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       if (viewer) {
-        this.screenSpaceEventHandler = new ScreenSpaceEventHandler(
-          this.viewer!.canvas,
-        );
-        this.screenSpaceEventHandler.setInputAction(
-          this.onClick_.bind(this),
-          ScreenSpaceEventType.LEFT_CLICK,
-        );
+        this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
+        this.screenSpaceEventHandler.setInputAction(this.onClick_.bind(this), ScreenSpaceEventType.LEFT_CLICK);
       } else if (this.screenSpaceEventHandler) {
         this.screenSpaceEventHandler.destroy();
       }
     });
     if (!this.noEdit) {
-      ToolboxStore.geometryToCreate.subscribe(
-        (options: GeometryCreateOptions) => {
-          const geometry = options.geometry;
-          this.increaseGeometriesCounter(geometry.type);
-          const entity = this.addGeometry(geometry);
-          geometry.id = entity.id;
-          if (options.slice) {
-            ToolboxStore.setSliceGeometry(geometry);
-          }
-        },
-      );
+      ToolboxStore.geometryToCreate.subscribe((options: GeometryCreateOptions) => {
+        const geometry = options.geometry;
+        this.increaseGeometriesCounter(geometry.type);
+        const entity = this.addGeometry(geometry);
+        geometry.id = entity.id;
+        if (options.slice) {
+          ToolboxStore.setSliceGeometry(geometry);
+        }
+      });
       DrawStore.draw.subscribe((draw) => {
         if (draw) {
           this.draw = draw;
-          this.draw.addEventListener('drawend', (evt) =>
-            this.endDrawing_((<CustomEvent>evt).detail),
-          );
+          this.draw.addEventListener('drawend', (evt) => this.endDrawing_((<CustomEvent>evt).detail));
           this.draw.addEventListener('drawerror', (evt) => {
-            if (
-              this.draw!.ERROR_TYPES.needMorePoints ===
-              (<CustomEvent>evt).detail.error
-            ) {
+            if (this.draw!.ERROR_TYPES.needMorePoints === (<CustomEvent>evt).detail.error) {
               showSnackbarInfo(i18next.t('tbx_error_need_more_points_warning'));
             }
           });
         }
       });
     }
-    ToolboxStore.geometryAction.subscribe((options) =>
-      this.handleActions(options),
-    );
-    ToolboxStore.openedGeometryOptions.subscribe((options) =>
-      this.selectGeometry(options),
-    );
+    ToolboxStore.geometryAction.subscribe((options) => this.handleActions(options));
+    ToolboxStore.openedGeometryOptions.subscribe((options) => this.selectGeometry(options));
   }
 
   onClick_(click) {
@@ -210,22 +182,16 @@ export class GeometryController {
     if (entity) entity.show = show;
   }
   @pauseGeometryCollectionEvents
-  private showHideGeometryByType(
-    show: boolean,
-    noEditGeometries: boolean,
-    type?: GeometryTypes,
-  ) {
+  private showHideGeometryByType(show: boolean, noEditGeometries: boolean, type?: GeometryTypes) {
     if (noEditGeometries !== this.noEdit) return;
     this.geometriesDataSource!.entities.values.forEach((entity) => {
-      if (!type || getValueOrUndefined(entity.properties!.type) === type)
-        entity.show = show;
+      if (!type || getValueOrUndefined(entity.properties!.type) === type) entity.show = show;
     });
   }
 
   private removeGeometry(id) {
     if (this.noEdit) return;
-    if (this.selectedArea && id === this.selectedArea.id)
-      this.deselectGeometry();
+    if (this.selectedArea && id === this.selectedArea.id) this.deselectGeometry();
     this.geometriesDataSource!.entities.removeById(id);
   }
 
@@ -240,10 +206,7 @@ export class GeometryController {
     });
   }
 
-  private onAddGeometry(
-    type: GeometryTypes,
-    clickEvent?: { position: Cartesian2 },
-  ) {
+  private onAddGeometry(type: GeometryTypes, clickEvent?: { position: Cartesian2 }) {
     if (this.noEdit) return;
     const currentType = this.draw!.type;
     if (this.draw!.active) {
@@ -280,10 +243,7 @@ export class GeometryController {
     } else if (lowercaseName.endsWith('.gpx')) {
       return this.uploadGpx(file);
     } else {
-      showBannerError(
-        this.toastPlaceholder,
-        i18next.t('tbx_unsupported_file_warning'),
-      );
+      showBannerError(this.toastPlaceholder, i18next.t('tbx_unsupported_file_warning'));
       return;
     }
   }
@@ -297,10 +257,7 @@ export class GeometryController {
 
     let entities = kmlDataSource.entities.values;
     if (entities.length > 10) {
-      showBannerError(
-        this.toastPlaceholder,
-        i18next.t('tbx_kml_large_warning'),
-      );
+      showBannerError(this.toastPlaceholder, i18next.t('tbx_kml_large_warning'));
       entities = entities.slice(0, 10);
     }
     let isAtLeastOneValid = false;
@@ -311,34 +268,24 @@ export class GeometryController {
         isAtLeastOneValid = this.addUploadedGeometry(ent, kmlDataSource.name);
       } else {
         isAtLeastOneValid = true;
-        showBannerError(
-          this.toastPlaceholder,
-          i18next.t('tbx_kml_area_existing_warning'),
-        );
+        showBannerError(this.toastPlaceholder, i18next.t('tbx_kml_area_existing_warning'));
       }
-      const newEnt =
-        exists || this.geometriesDataSource!.entities.getById(ent.id);
+      const newEnt = exists || this.geometriesDataSource!.entities.getById(ent.id);
       if (newEnt) addedEntities.push(newEnt);
     });
     await renderWithDelay(this.viewer!);
 
     if (!isAtLeastOneValid) {
-      showBannerError(
-        this.toastPlaceholder,
-        i18next.t('tbx_unsupported_kml_warning'),
-      );
+      showBannerError(this.toastPlaceholder, i18next.t('tbx_unsupported_kml_warning'));
     } else {
       this.viewer!.zoomTo(addedEntities);
     }
   }
 
   async uploadGpx(file) {
-    const gpxDataSource: CustomDataSource = <any>await GpxDataSource.load(
-      file,
-      {
-        clampToGround: true,
-      },
-    );
+    const gpxDataSource: CustomDataSource = <any>await GpxDataSource.load(file, {
+      clampToGround: true,
+    });
     const entities = gpxDataSource.entities.values;
     entities.forEach((entity) => {
       if (!this.geometriesDataSource!.entities.getById(entity.id)) {
@@ -355,19 +302,14 @@ export class GeometryController {
    */
   addUploadedGeometry(entity, dataSourceName) {
     let type = getUploadedEntityType(entity);
-    const extendedData =
-      entity.kml && entity.kml.extendedData ? entity.kml.extendedData : {};
+    const extendedData = entity.kml && entity.kml.extendedData ? entity.kml.extendedData : {};
     Object.getOwnPropertyNames(extendedData).forEach((prop) => {
-      extendedData[prop] =
-        parseJson(extendedData[prop].value) || extendedData[prop].value;
+      extendedData[prop] = parseJson(extendedData[prop].value) || extendedData[prop].value;
       if (extendedData[prop] === 'false' || extendedData[prop] === 'true') {
         extendedData[prop] = extendedData[prop] === 'true';
       }
     });
-    if (
-      extendedData.type &&
-      AVAILABLE_GEOMETRY_TYPES.includes(extendedData.type)
-    ) {
+    if (extendedData.type && AVAILABLE_GEOMETRY_TYPES.includes(extendedData.type)) {
       type = extendedData.type;
     }
     if (type) {
@@ -379,26 +321,17 @@ export class GeometryController {
       if (entity.name) {
         attributes.name = entity.name;
       } else {
-        attributes.name =
-          entity.parent && entity.parent.name
-            ? entity.parent.name
-            : dataSourceName;
+        attributes.name = entity.parent && entity.parent.name ? entity.parent.name : dataSourceName;
       }
       if (type === 'point') {
         // getValue doesn't work with julianDate for some reason
-        const position = entity.position.getValue
-          ? entity.position.getValue(new Date())
-          : entity.position;
+        const position = entity.position.getValue ? entity.position.getValue(new Date()) : entity.position;
         attributes.positions = [position];
         attributes.clampPoint = true;
         const billboard = entity.billboard;
         if (billboard) {
-          attributes.color = billboard.color
-            ? billboard.color.getValue(this.julianDate)
-            : undefined;
-          attributes.pointSymbol = billboard.image
-            ? billboard.image.getValue(this.julianDate).url
-            : undefined;
+          attributes.color = billboard.color ? billboard.color.getValue(this.julianDate) : undefined;
+          attributes.pointSymbol = billboard.image ? billboard.image.getValue(this.julianDate).url : undefined;
         }
       } else if (type === 'line') {
         attributes.positions = entity.polyline.positions;
@@ -422,8 +355,7 @@ export class GeometryController {
     if (!entity) return;
     if (entity.billboard) {
       if (selected) {
-        entity.properties.colorBeforeHighlight =
-          entity.billboard.color.getValue(this.julianDate);
+        entity.properties.colorBeforeHighlight = entity.billboard.color.getValue(this.julianDate);
         entity.billboard.color = HIGHLIGHTED_GEOMETRY_COLOR;
       } else {
         entity.billboard.color = entity.properties.colorBeforeHighlight;
@@ -435,16 +367,12 @@ export class GeometryController {
     if (entity.polylineVolume && entity.polylineVolume.show) {
       const color = selected
         ? HIGHLIGHTED_GEOMETRY_COLOR.withAlpha(GEOMETRY_POLYGON_ALPHA)
-        : entity.properties.colorBeforeHighlight.withAlpha(
-            GEOMETRY_POLYGON_ALPHA,
-          );
+        : entity.properties.colorBeforeHighlight.withAlpha(GEOMETRY_POLYGON_ALPHA);
       entity.polylineVolume.material = color;
       entity.polylineVolume.outlineColor = color;
     }
     if (selected) {
-      entity.properties.colorBeforeHighlight = entity[
-        entityType
-      ].material.getValue(this.julianDate).color;
+      entity.properties.colorBeforeHighlight = entity[entityType].material.getValue(this.julianDate).color;
       entity[entityType].material = entity.polygon
         ? HIGHLIGHTED_GEOMETRY_COLOR.withAlpha(GEOMETRY_POLYGON_ALPHA)
         : HIGHLIGHTED_GEOMETRY_COLOR.withAlpha(GEOMETRY_LINE_ALPHA);
@@ -475,20 +403,13 @@ export class GeometryController {
         break;
       case 'hideAll':
       case 'showAll':
-        this.showHideGeometryByType(
-          options.action === 'showAll',
-          !!options.noEditGeometries,
-          options.type,
-        );
+        this.showHideGeometryByType(options.action === 'showAll', !!options.noEditGeometries, options.type);
         break;
       case 'pick':
         this.pickGeometry(options.id);
         break;
       case 'downloadAll':
-        this.downloadVisibleGeometries(
-          !!options.noEditGeometries,
-          options.type,
-        );
+        this.downloadVisibleGeometries(!!options.noEditGeometries, options.type);
         break;
       case 'add':
         this.onAddGeometry(options.type!);
@@ -518,34 +439,24 @@ export class GeometryController {
     if (!entityToCopy) return;
     const properties = new PropertyBag();
     properties.merge(entityToCopy.properties);
-    const newEntity = this.geometriesDataSource!.entities.add(
-      new Entity({ properties }),
-    );
+    const newEntity = this.geometriesDataSource!.entities.add(new Entity({ properties }));
     newEntity.merge(entityToCopy);
     newEntity.name = `${i18next.t('tbx_copy_of_label')}  ${entityToCopy.name}`;
     this.viewer!.scene.requestRender();
   }
 
-  async downloadVisibleGeometries(
-    noEditGeometries: boolean,
-    type?: GeometryTypes,
-  ) {
+  async downloadVisibleGeometries(noEditGeometries: boolean, type?: GeometryTypes) {
     if (noEditGeometries !== this.noEdit) return;
     const visibleGeometries = new EntityCollection();
     this.geometriesDataSource!.entities.values.forEach((ent) => {
-      if (
-        ent.isShowing &&
-        (!type || type === getValueOrUndefined(ent.properties!.type))
-      ) {
+      if (ent.isShowing && (!type || type === getValueOrUndefined(ent.properties!.type))) {
         visibleGeometries.add(ent);
       }
     });
-    const exportResult: exportKmlResultKml = <exportKmlResultKml>(
-      await exportKml({
-        entities: visibleGeometries,
-        time: this.julianDate,
-      })
-    );
+    const exportResult: exportKmlResultKml = <exportKmlResultKml>await exportKml({
+      entities: visibleGeometries,
+      time: this.julianDate,
+    });
     let kml: string = exportResult.kml;
     kml = extendKmlWithProperties(kml, visibleGeometries);
     const blob = new Blob([kml], {
@@ -586,9 +497,7 @@ export class GeometryController {
       }
       entityAttrs.billboard = {
         image: attributes.pointSymbol ?? `/images/${POINT_SYMBOLS[0]}`,
-        color: color
-          ? new Color(color.red, color.green, color.blue)
-          : DEFAULT_AOI_COLOR,
+        color: color ? new Color(color.red, color.green, color.blue) : DEFAULT_AOI_COLOR,
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
         disableDepthTestDistance: 0,
@@ -656,11 +565,7 @@ export class GeometryController {
       if (geom.name) {
         const splittedName = geom.name.split(' ');
         const areaNumber = Number(splittedName[1]);
-        if (
-          splittedName[0] !== 'Area' &&
-          !isNaN(areaNumber) &&
-          areaNumber > this.geometriesCounter[geom.type]
-        ) {
+        if (splittedName[0] !== 'Area' && !isNaN(areaNumber) && areaNumber > this.geometriesCounter[geom.type]) {
           this.geometriesCounter[geom.type] = areaNumber;
         }
       }

@@ -55,11 +55,7 @@ export function getCameraView(): {
   const lat = params.get('lat');
   const elevation = params.get('elevation');
   if (lon !== null && lat !== null && elevation !== null) {
-    destination = Cartesian3.fromDegrees(
-      parseFloat(lon),
-      parseFloat(lat),
-      parseFloat(elevation),
-    );
+    destination = Cartesian3.fromDegrees(parseFloat(lon), parseFloat(lat), parseFloat(elevation));
   }
   const heading = params.get('heading');
   const pitch = params.get('pitch');
@@ -93,9 +89,7 @@ function safeSplit(str): string[] {
  */
 export function getLayerParams(): LayerFromParam[] {
   const params = getURLSearchParams();
-  const layersTransparency = safeSplit(
-    params.get(LAYERS_TRANSPARENCY_URL_PARAM),
-  );
+  const layersTransparency = safeSplit(params.get(LAYERS_TRANSPARENCY_URL_PARAM));
   const layersVisibility = safeSplit(params.get(LAYERS_VISIBILITY_URL_PARAM));
   const layersTimestamp = safeSplit(params.get(LAYERS_TIMESTAMP_URL_PARAM));
   const layers = safeSplit(params.get(LAYERS_URL_PARAM));
@@ -171,9 +165,7 @@ export function syncLayersParam(activeLayers: LayerConfig[]) {
   const assetParams = getAssetIds();
 
   if (assetParams.length) {
-    const assetIds = assetParams.filter((id) =>
-      activeLayers.find((l) => l.assetId === Number(id) && l.displayed),
-    );
+    const assetIds = assetParams.filter((id) => activeLayers.find((l) => l.assetId === Number(id) && l.displayed));
     if (assetIds.length) {
       params.set(ASSET_IDS_URL_PARAM, assetIds.join(','));
     } else {
@@ -249,9 +241,7 @@ export function getSliceParam() {
   const params = getURLSearchParams();
   const sliceOptions = parseJson(params.get(SLICE_PARAM));
   if (sliceOptions && sliceOptions.slicePoints) {
-    sliceOptions.slicePoints = sliceOptions.slicePoints.map(
-      (coord) => new Cartesian3(coord.x, coord.y, coord.z),
-    );
+    sliceOptions.slicePoints = sliceOptions.slicePoints.map((coord) => new Cartesian3(coord.x, coord.y, coord.z));
   }
   return sliceOptions;
 }
@@ -276,14 +266,7 @@ export function syncTargetParam(position: Cartographic | undefined) {
 export function getTargetParam(): Cartesian3 | undefined {
   const params = getURLSearchParams();
   const position = parseJson(params.get(TARGET_PARAM));
-  return (
-    position &&
-    Cartesian3.fromDegrees(
-      Number(position.lon),
-      Number(position.lat),
-      Number(position.height),
-    )
-  );
+  return position && Cartesian3.fromDegrees(Number(position.lon), Number(position.lat), Number(position.height));
 }
 
 export function getCesiumToolbarParam(): boolean {
@@ -302,14 +285,7 @@ export function setCesiumToolbarParam(value: boolean) {
 
 export function syncStoredView(
   stored: string,
-  skipParams: string[] = [
-    TARGET_PARAM,
-    'lon',
-    'lat',
-    'elevation',
-    'heading',
-    'pitch',
-  ],
+  skipParams: string[] = [TARGET_PARAM, 'lon', 'lat', 'elevation', 'heading', 'pitch'],
 ) {
   const params = getURLSearchParams();
   const syncedParams = new URLSearchParams(params);
@@ -328,10 +304,7 @@ export function setPermalink(permalink: string) {
   setURLSearchParams(params);
 }
 
-export function getTopicOrProject():
-  | TopicParamSubject
-  | ProjectParamSubject
-  | undefined {
+export function getTopicOrProject(): TopicParamSubject | ProjectParamSubject | undefined {
   const params = getURLSearchParams();
   const topicId = params.get(TOPIC_PARAM);
   const projectId = params.get(PROJECT_PARAM);

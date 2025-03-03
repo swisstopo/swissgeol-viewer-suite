@@ -3,10 +3,7 @@ import { consume } from '@lit/context';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { css, html, PropertyValues } from 'lit';
 import { BackgroundLayer } from 'src/features/layer/layer.model';
-import {
-  OpacityChangeEvent,
-  VisibilityChangeEvent,
-} from 'src/features/layer/display/layer-display-list-item.element';
+import { OpacityChangeEvent, VisibilityChangeEvent } from 'src/features/layer/display/layer-display-list-item.element';
 import i18next from 'i18next';
 import { CoreElement } from 'src/features/core';
 import { LayerConfig, LayerTreeNode } from 'src/layertree';
@@ -14,11 +11,7 @@ import DashboardStore from 'src/store/dashboard';
 import Sortable from 'sortablejs';
 import { repeat } from 'lit/directives/repeat.js';
 import MainStore from 'src/store/main';
-import {
-  LayerEvent,
-  LayerEventDetail,
-  LayersEventDetail,
-} from 'src/features/layer';
+import { LayerEvent, LayerEventDetail, LayersEventDetail } from 'src/features/layer';
 import LayersActions from 'src/layers/LayersActions';
 
 @customElement('ngm-layer-display-list')
@@ -159,10 +152,7 @@ export class LayerDisplayList extends CoreElement {
     this.backgroundLayerService.update({ opacity });
   }
 
-  private async updateLayerVisibility(
-    layer: LayerConfig,
-    isVisible: boolean,
-  ): Promise<void> {
+  private async updateLayerVisibility(layer: LayerConfig, isVisible: boolean): Promise<void> {
     if ((layer.opacity == null || layer.opacity === 0) && isVisible) {
       // If the opacity is set to zero, we force the layer to remain hidden.
       return;
@@ -176,10 +166,7 @@ export class LayerDisplayList extends CoreElement {
     this.requestUpdate();
   }
 
-  private async updateLayerOpacity(
-    layer: LayerConfig,
-    opacity: number,
-  ): Promise<void> {
+  private async updateLayerOpacity(layer: LayerConfig, opacity: number): Promise<void> {
     layer.opacity = opacity;
     this.actions.changeOpacity(layer, opacity);
     await this.updateLayerVisibility(layer, opacity > 0);
@@ -254,10 +241,8 @@ export class LayerDisplayList extends CoreElement {
             draggable
             data-id="${layer.label}"
             @layer-removed="${this.handleLayerRemoval}"
-            @visibility-changed="${(e: VisibilityChangeEvent) =>
-              this.updateLayerVisibility(layer, e.detail.isVisible)}"
-            @opacity-changed="${(e: OpacityChangeEvent) =>
-              this.updateLayerOpacity(layer, e.detail.opacity)}"
+            @visibility-changed="${(e: VisibilityChangeEvent) => this.updateLayerVisibility(layer, e.detail.isVisible)}"
+            @opacity-changed="${(e: OpacityChangeEvent) => this.updateLayerOpacity(layer, e.detail.opacity)}"
           ></ngm-layer-display-list-item>
         `,
       )}

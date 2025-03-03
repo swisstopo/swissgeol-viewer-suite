@@ -1,10 +1,7 @@
 import { CoreElement } from 'src/features/core/core-element.element';
 import { customElement, property, query } from 'lit/decorators.js';
 import { css, html, PropertyValues, TemplateResult } from 'lit';
-import {
-  CoreTab,
-  TabValueChangeEvent,
-} from 'src/features/core/core-tab.element';
+import { CoreTab, TabValueChangeEvent } from 'src/features/core/core-tab.element';
 import { CoreTabPanel } from 'src/features/core/core-tab-panel.element';
 import { repeat } from 'lit/directives/repeat.js';
 import { identity } from 'rxjs';
@@ -51,9 +48,7 @@ export class CoreTabList<T> extends CoreElement {
         this.panelsElement.appendChild(node);
         continue;
       }
-      console.error(
-        'ngm-core-tab-list should only contain ngm-core-tab elements',
-      );
+      console.error('ngm-core-tab-list should only contain ngm-core-tab elements');
     }
     for (const panel of this.panels) {
       panel.isHidden = panel.value !== this.value;
@@ -100,10 +95,7 @@ export const renderTabs = <T extends Record<never, V>, V extends string>(
     panels: { [P in V]: unknown };
   },
 ): TemplateResult => html`
-  <ngm-core-tab-list
-    .value="${config.value}"
-    @value-change="${config.onValueChange}"
-  >
+  <ngm-core-tab-list .value="${config.value}" @value-change="${config.onValueChange}">
     ${repeat(
       Object.values(tabs) as V[],
       identity,

@@ -10,7 +10,9 @@ class NgmI18nDiv extends LitElementI18n {
   }
 
   render() {
-    return html`${i18next.t(this.key)}`;
+    return html`
+      ${i18next.t(this.key)}
+    `;
   }
 }
 

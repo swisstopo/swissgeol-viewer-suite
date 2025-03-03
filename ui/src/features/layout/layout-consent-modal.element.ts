@@ -30,21 +30,15 @@ export class LayoutConsentModal extends LitElementI18n {
       </div>
       <div class="main">
         <h3>${i18next.t('tracking_limitations_of_liability_header')}</h3>
-        <p>
-          ${unsafeHTML(i18next.t('tracking_limitations_of_liability_text'))}
-        </p>
+        <p>${unsafeHTML(i18next.t('tracking_limitations_of_liability_text'))}</p>
         <h3>${i18next.t('tracking_data_acquisition_header')}</h3>
         <p>${unsafeHTML(i18next.t('tracking_data_acquisition_text'))}</p>
-        <ngm-core-checkbox
-          .isActive="${this.isAllowed}"
-          @update="${() => (this.isAllowed = !this.isAllowed)}"
-          >${i18next.t('tracking_agree_label')}</ngm-core-checkbox
-        >
+        <ngm-core-checkbox .isActive="${this.isAllowed}" @update="${() => (this.isAllowed = !this.isAllowed)}">
+          ${i18next.t('tracking_agree_label')}
+        </ngm-core-checkbox>
       </div>
       <div class="footer">
-        <ngm-core-button autofocus @click="${() => this.accept()}">
-          ${i18next.t('accept')}
-        </ngm-core-button>
+        <ngm-core-button autofocus @click="${() => this.accept()}">${i18next.t('accept')}</ngm-core-button>
       </div>
     `;
   }
@@ -90,8 +84,7 @@ export class LayoutConsentModal extends LitElementI18n {
   `;
 }
 
-export type TrackingConsentModalEvent =
-  CustomEvent<TrackingConsentModalEventDetail>;
+export type TrackingConsentModalEvent = CustomEvent<TrackingConsentModalEventDetail>;
 
 export interface TrackingConsentModalEventDetail {
   isAllowed: boolean;

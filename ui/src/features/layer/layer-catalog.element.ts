@@ -37,10 +37,7 @@ export class LayerCatalog extends CoreElement {
     });
   }
 
-  getCategoryOrLayerTemplate(
-    node: LayerTreeNode,
-    level: string,
-  ): TemplateResult {
+  getCategoryOrLayerTemplate(node: LayerTreeNode, level: string): TemplateResult {
     if (node.children) {
       return this.getCategoryTemplate(node, level);
     }
@@ -50,11 +47,7 @@ export class LayerCatalog extends CoreElement {
   getCategoryTemplate(category: LayerTreeNode, level: string): TemplateResult {
     // if it is a restricted layer, the user must be logged in to see it
     const children = category.children?.filter(
-      (node) =>
-        !(
-          node.restricted &&
-          !node.restricted.some((g) => this.userGroups.includes(g))
-        ),
+      (node) => !(node.restricted && !node.restricted.some((g) => this.userGroups.includes(g))),
     );
     if (children == null || children.length === 0) {
       return html``;
@@ -91,27 +84,24 @@ export class LayerCatalog extends CoreElement {
 
   getLayerTemplate(layer: LayerConfig): TemplateResult {
     return html`
-      <div
-        class="ngm-checkbox ${layer.displayed ? 'active' : ''}"
-        @click=${() => this.toggleLayer(layer)}
-      >
+      <div class="ngm-checkbox ${layer.displayed ? 'active' : ''}" @click=${() => this.toggleLayer(layer)}>
         <input type="checkbox" ?checked=${!!layer.displayed} />
         <span class="ngm-checkbox-icon"></span>
         <label class=${layer.displayed ? 'displayed' : ''}>
-          <i class=${layer.restricted ? 'lock icon' : ''}></i>${i18next.t(
-            layer.label,
-          )}
+          <i class=${layer.restricted ? 'lock icon' : ''}></i>
+          ${i18next.t(layer.label)}
         </label>
       </div>
     `;
   }
 
-  readonly render = () =>
-    html`${repeat(
+  readonly render = () => html`
+    ${repeat(
       this.layers,
       (node) => node,
       (node) => this.getCategoryOrLayerTemplate(node, 'first-level'),
-    )}`;
+    )}
+  `;
 
   static readonly styles = css`
     ${unsafeCSS(fomanticTransitionCss)}

@@ -5,13 +5,7 @@ import i18next from 'i18next';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import DashboardStore from '../../store/dashboard';
-import {
-  CreateProject,
-  Project,
-  TabTypes,
-  Topic,
-  type View,
-} from './ngm-dashboard';
+import { CreateProject, Project, TabTypes, Topic, type View } from './ngm-dashboard';
 import { ApiClient } from '../../api/api-client';
 import { showBannerSuccess } from '../../notifications';
 import $ from 'jquery';
@@ -55,21 +49,13 @@ export class NgmProjectTopicOverview extends LitElementI18n {
 
   render() {
     if (!this.topicOrProject) return '';
-    const project = isProject(this.topicOrProject)
-      ? this.topicOrProject
-      : undefined;
+    const project = isProject(this.topicOrProject) ? this.topicOrProject : undefined;
     const ownerEmail = project?.owner?.email;
     const owner = ownerEmail ?? i18next.t('swisstopo');
-    const date = this.topicOrProject?.modified
-      ? this.topicOrProject?.modified
-      : this.topicOrProject?.created;
-    const backgroundImage = this.topicOrProject.image?.length
-      ? `url('${this.topicOrProject.image}')`
-      : 'none';
+    const date = this.topicOrProject?.modified ? this.topicOrProject?.modified : this.topicOrProject?.created;
+    const backgroundImage = this.topicOrProject.image?.length ? `url('${this.topicOrProject.image}')` : 'none';
     const editorEmails = project?.editors?.map((m) => m.email) || [];
-    const isProjectModerator = [ownerEmail, ...editorEmails].includes(
-      this.userEmail,
-    );
+    const isProjectModerator = [ownerEmail, ...editorEmails].includes(this.userEmail);
 
     return html`
       <ngm-confirmation-modal
@@ -104,23 +90,13 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         </div>
         <div class="ngm-proj-information">
           <div>
-            <div
-              class="ngm-proj-preview-img"
-              style=${styleMap({ backgroundImage })}
-            ></div>
-            <div
-              class="ngm-proj-preview-title"
-              style=${styleMap({ backgroundColor: this.topicOrProject.color })}
-            ></div>
+            <div class="ngm-proj-preview-img" style=${styleMap({ backgroundImage })}></div>
+            <div class="ngm-proj-preview-title" style=${styleMap({ backgroundColor: this.topicOrProject.color })}></div>
           </div>
           <div class="ngm-proj-description">
-            <div class="ngm-proj-description-title">
-              ${i18next.t('dashboard_description')}
-            </div>
+            <div class="ngm-proj-description-title">${i18next.t('dashboard_description')}</div>
             <div class="ngm-proj-description-content">
-              ${this.topicOrProject.description
-                ? translated(this.topicOrProject.description)
-                : ''}
+              ${this.topicOrProject.description ? translated(this.topicOrProject.description) : ''}
             </div>
           </div>
         </div>
@@ -149,12 +125,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
               })}"
             >
               <div class="ngm-action-list-item-header">
-                <div
-                  @click=${() =>
-                    DashboardStore.setViewIndex(
-                      this.selectedViewIndx === index ? undefined : index,
-                    )}
-                >
+                <div @click=${() => DashboardStore.setViewIndex(this.selectedViewIndx === index ? undefined : index)}>
                   ${translated(view.title)}
                 </div>
                 <div
@@ -183,15 +154,10 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         ? ''
         : html`
             <div class="ngm-divider"></div>
-            <ngm-project-members-section
-              .project=${project}
-            ></ngm-project-members-section>
+            <ngm-project-members-section .project=${project}></ngm-project-members-section>
           `}
       <div class="ngm-divider"></div>
-      <div
-        class="ngm-label-btn"
-        @click=${() => this.dispatchEvent(new CustomEvent('onDeselect'))}
-      >
+      <div class="ngm-label-btn" @click=${() => this.dispatchEvent(new CustomEvent('onDeselect'))}>
         <div class="ngm-back-icon"></div>
         ${i18next.t('dashboard_back_to_topics')}
       </div>
@@ -201,32 +167,24 @@ export class NgmProjectTopicOverview extends LitElementI18n {
   contextMenu() {
     return html`
       <div class="menu">
-        <div class="item" @click=${() => this.copyLink()}>
-          ${i18next.t('dashboard_share_topic')}
-        </div>
-        <div
-          class="item ${this.apiClient.token ? '' : 'disabled'}"
-          @click=${() => this.duplicateToProject()}
-        >
+        <div class="item" @click=${() => this.copyLink()}>${i18next.t('dashboard_share_topic')}</div>
+        <div class="item ${this.apiClient.token ? '' : 'disabled'}" @click=${() => this.duplicateToProject()}>
           ${i18next.t('duplicate_to_project')}
         </div>
-        <a
-          class="item"
-          target="_blank"
-          href="mailto:?body=${encodeURIComponent(this.getLink() ?? '')}"
-        >
+        <a class="item" target="_blank" href="mailto:?body=${encodeURIComponent(this.getLink() ?? '')}">
           ${i18next.t('dashboard_share_topic_email')}
         </a>
-        ${isProject(this.topicOrProject) &&
-        this.topicOrProject.owner.email !== this.userEmail
+        ${isProject(this.topicOrProject) && this.topicOrProject.owner.email !== this.userEmail
           ? ''
-          : html` <div
-              class="item"
-              ?hidden=${this.activeTab === 'topics'}
-              @click=${() => (this.deleteWarningModal.show = true)}
-            >
-              ${i18next.t('delete')}
-            </div>`}
+          : html`
+              <div
+                class="item"
+                ?hidden=${this.activeTab === 'topics'}
+                @click=${() => (this.deleteWarningModal.show = true)}
+              >
+                ${i18next.t('delete')}
+              </div>
+            `}
       </div>
     `;
   }
@@ -236,9 +194,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     const response = await this.apiClient.duplicateProject(createProject);
     const id = await response.json();
     const project = await this.apiClient.getProject(id);
-    this.dispatchEvent(
-      new CustomEvent('onProjectDuplicated', { detail: { project } }),
-    );
+    this.dispatchEvent(new CustomEvent('onProjectDuplicated', { detail: { project } }));
   }
 
   async deleteProject() {
@@ -277,9 +233,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     return {
       title,
       description,
-      color: isProject(topicOrProject)
-        ? topicOrProject.color
-        : DEFAULT_PROJECT_COLOR,
+      color: isProject(topicOrProject) ? topicOrProject.color : DEFAULT_PROJECT_COLOR,
       geometries: isProject(topicOrProject) ? topicOrProject.geometries : [], // not a copy for topic
       assets: isProject(topicOrProject) ? topicOrProject.assets : [], // not a copy for topic
       views: topicOrProject.views.map((view) => ({
@@ -298,15 +252,9 @@ export class NgmProjectTopicOverview extends LitElementI18n {
   }
 
   async saveViewToProject() {
-    const project: Project | undefined = isProject(this.topicOrProject)
-      ? this.topicOrProject
-      : undefined;
+    const project: Project | undefined = isProject(this.topicOrProject) ? this.topicOrProject : undefined;
     const editorEmails = project?.editors.map((e) => e.email) || [];
-    if (
-      !project ||
-      ![project.owner.email, ...editorEmails].includes(this.userEmail)
-    )
-      return;
+    if (!project || ![project.owner.email, ...editorEmails].includes(this.userEmail)) return;
     const view: View = {
       id: crypto.randomUUID(),
       title: `${i18next.t('view')} ${project?.views.length + 1}`,

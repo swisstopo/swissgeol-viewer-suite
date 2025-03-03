@@ -1,13 +1,7 @@
 import { html } from 'lit';
 
 export const grabIcon = html`
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M7.50008 10.833C7.96032 10.833 8.33341 10.4599 8.33341 9.99967C8.33341 9.53944 7.96032 9.16634 7.50008 9.16634C7.03984 9.16634 6.66675 9.53944 6.66675 9.99967C6.66675 10.4599 7.03984 10.833 7.50008 10.833Z"
       stroke="#337083"

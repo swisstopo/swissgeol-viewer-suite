@@ -1,18 +1,8 @@
-import {
-  Cartesian2,
-  Cartesian3,
-  HeightReference,
-  HorizontalOrigin,
-  LabelStyle,
-  VerticalOrigin,
-} from 'cesium';
+import { Cartesian2, Cartesian3, HeightReference, HorizontalOrigin, LabelStyle, VerticalOrigin } from 'cesium';
 import i18next from 'i18next';
 import type { GeometryTypes } from '../toolbox/interfaces';
 
-export function getDimensionLabelText(
-  type: GeometryTypes,
-  distances: number[],
-) {
+export function getDimensionLabelText(type: GeometryTypes, distances: number[]) {
   let text;
   if (type === 'rectangle') {
     text = `${Number(distances[0]).toFixed(3)}km x ${Number(distances[1]).toFixed(3)}km`;

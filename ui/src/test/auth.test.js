@@ -6,9 +6,7 @@ import jsdom from 'jsdom-global';
 // initialize some constants
 const url = 'http://localhost/';
 const user = { name: 'John Doe' };
-const payload = Buffer.from(JSON.stringify(user))
-  .toString('base64')
-  .replace(/=/g, '');
+const payload = Buffer.from(JSON.stringify(user)).toString('base64').replace(/=/g, '');
 const jwt = `header.${payload}.signature`;
 const token = `#access_token=${jwt}`;
 const idToken = '&id_token=bidon';

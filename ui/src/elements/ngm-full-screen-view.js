@@ -11,9 +11,7 @@ class NgmFullScreenView extends LitElementI18n {
       this.fullScreenActive = !this.fullScreenActive;
       this.classList.toggle('full-active');
       document.querySelector('#cesium').classList.toggle('full-active');
-      document
-        .querySelectorAll('[data-fs="no"]')
-        .forEach((n) => (n.hidden = this.fullScreenActive));
+      document.querySelectorAll('[data-fs="no"]').forEach((n) => (n.hidden = this.fullScreenActive));
     };
   }
   static get properties() {

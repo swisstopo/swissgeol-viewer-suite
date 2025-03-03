@@ -33,21 +33,12 @@ export interface GeometryAction {
 export type GeometryCreateOptions = { geometry: NgmGeometry; slice?: boolean };
 
 export default class ToolboxStore {
-  private static readonly slicerSubject = new BehaviorSubject<Slicer | null>(
-    null,
-  );
+  private static readonly slicerSubject = new BehaviorSubject<Slicer | null>(null);
   private static readonly rtcSubject = new Subject<GeometryCreateOptions>();
-  private static readonly geometriesSubject = new BehaviorSubject<
-    NgmGeometry[]
-  >([]);
-  private static readonly noEditGeometriesSubject = new BehaviorSubject<
-    NgmGeometry[]
-  >([]);
-  private static readonly openedGeometryOptionsSubject =
-    new BehaviorSubject<OpenedGeometryOptions | null>(null);
-  private static readonly sliceGeometrySubject = new BehaviorSubject<
-    NgmGeometry | null | undefined
-  >(null);
+  private static readonly geometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
+  private static readonly noEditGeometriesSubject = new BehaviorSubject<NgmGeometry[]>([]);
+  private static readonly openedGeometryOptionsSubject = new BehaviorSubject<OpenedGeometryOptions | null>(null);
+  private static readonly sliceGeometrySubject = new BehaviorSubject<NgmGeometry | null | undefined>(null);
   private static readonly geomActionSubject = new Subject<GeometryAction>();
   private static readonly syncSliceSubject = new Subject<void>();
 
@@ -104,13 +95,9 @@ export default class ToolboxStore {
   }
 
   static get openedGeometry(): NgmGeometry | undefined {
-    let geom = this.geometriesSubject
-      .getValue()
-      .find((geom) => geom.id === this.openedGeometryOptionsValue?.id);
+    let geom = this.geometriesSubject.getValue().find((geom) => geom.id === this.openedGeometryOptionsValue?.id);
     if (!geom) {
-      geom = this.noEditGeometriesSubject
-        .getValue()
-        .find((geom) => geom.id === this.openedGeometryOptionsValue?.id);
+      geom = this.noEditGeometriesSubject.getValue().find((geom) => geom.id === this.openedGeometryOptionsValue?.id);
     }
     return geom;
   }

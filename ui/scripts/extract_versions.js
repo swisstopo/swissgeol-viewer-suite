@@ -7,10 +7,7 @@ import { mkdirSync } from 'fs';
 import { dirname } from 'path';
 const exec = util.promisify(execSync);
 
-const cesiumPackagePath = path.resolve(
-  import.meta.dirname,
-  '../node_modules/cesium/package.json',
-);
+const cesiumPackagePath = path.resolve(import.meta.dirname, '../node_modules/cesium/package.json');
 const cesiumPackageString = readFileSync(cesiumPackagePath, 'utf-8');
 const cesiumVersion = JSON.parse(cesiumPackageString).version;
 
@@ -30,10 +27,7 @@ const date = new Intl.DateTimeFormat('en-CA', {
   .replace(', ', 'T')
   .replace(' GMT', '');
 
-const versionsFilePath = path.resolve(
-  import.meta.dirname,
-  '../dist/versions.json',
-);
+const versionsFilePath = path.resolve(import.meta.dirname, '../dist/versions.json');
 mkdirSync(dirname(versionsFilePath), { recursive: true });
 writeFileSync(
   versionsFilePath,

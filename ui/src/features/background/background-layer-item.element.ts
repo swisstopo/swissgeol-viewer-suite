@@ -21,11 +21,7 @@ export class BackgroundLayerItem extends CoreElement {
       return;
     }
     return html`
-      <img
-        src="${this.layer.imagePath}"
-        alt="${i18next.t(this.layer.label)}"
-        loading="eager"
-      />
+      <img src="${this.layer.imagePath}" alt="${i18next.t(this.layer.label)}" loading="eager" />
     `;
   }
 

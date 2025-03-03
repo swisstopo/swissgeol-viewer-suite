@@ -13,10 +13,7 @@ import {
   Viewer,
 } from 'cesium';
 import i18next from 'i18next';
-import {
-  OBJECT_HIGHLIGHT_COLOR,
-  SWISSTOPO_IT_HIGHLIGHT_COLOR,
-} from '../constants';
+import { OBJECT_HIGHLIGHT_COLOR, SWISSTOPO_IT_HIGHLIGHT_COLOR } from '../constants';
 import { lv95ToDegrees } from '../projection';
 import DrawStore from '../store/draw';
 import QueryStore from '../store/query';
@@ -31,19 +28,14 @@ export default class QueryManager {
   scene: Scene;
   enabled = true;
   highlightedEntity: Entity | undefined;
-  highlightedGroup: CustomDataSource = new CustomDataSource(
-    'highlightedLayerAreas',
-  );
+  highlightedGroup: CustomDataSource = new CustomDataSource('highlightedLayerAreas');
   searchableLayers: any[] = []; // todo type
 
   constructor(viewer) {
     this.objectSelector = new ObjectSelector(viewer);
     this.viewer = viewer;
     this.scene = viewer.scene;
-    viewer.screenSpaceEventHandler.setInputAction(
-      (click) => this.onclick(click),
-      ScreenSpaceEventType.LEFT_CLICK,
-    );
+    viewer.screenSpaceEventHandler.setInputAction((click) => this.onclick(click), ScreenSpaceEventType.LEFT_CLICK);
     this.viewer.dataSources.add(this.highlightedGroup);
   }
 
@@ -51,15 +43,9 @@ export default class QueryManager {
     this.searchableLayers = layers;
   }
 
-  async querySwisstopo(
-    pickedPosition,
-    layers,
-  ): Promise<QueryResult | undefined> {
+  async querySwisstopo(pickedPosition, layers): Promise<QueryResult | undefined> {
     const lang = i18next.language;
-    const distance = Cartesian3.distance(
-      this.scene.camera.positionWC,
-      pickedPosition,
-    );
+    const distance = Cartesian3.distance(this.scene.camera.positionWC, pickedPosition);
     // layer list is reversed to match the display order on map
     const identifyResults = await this.swisstopoIdentify.identify(
       pickedPosition,
@@ -70,21 +56,14 @@ export default class QueryManager {
     if (!identifyResults.length) return undefined;
     const results: PopupItem[] = await Promise.all(
       identifyResults.map(async (r) => {
-        const popupContent = await this.swisstopoIdentify.getPopupForFeature(
-          r.layerBodId,
-          r.featureId,
-          lang,
-        );
+        const popupContent = await this.swisstopoIdentify.getPopupForFeature(r.layerBodId, r.featureId, lang);
         return {
           content:
             popupContent &&
             popupContent
               .replace(/cell-left/g, 'key')
               .replace(/<td>/g, '<td class="value">')
-              .replace(
-                /<table>/g,
-                '<table class="ui compact small very basic table">',
-              ),
+              .replace(/<table>/g, '<table class="ui compact small very basic table">'),
           mouseEnter: () => {
             this.highlightSelectedArea(r.geometry);
           },
@@ -116,11 +95,7 @@ export default class QueryManager {
 
   async onclick(click) {
     this.unhighlightGroup();
-    if (
-      !this.enabled ||
-      DrawStore.drawStateValue ||
-      DrawStore.measureState.value
-    ) {
+    if (!this.enabled || DrawStore.drawStateValue || DrawStore.measureState.value) {
       this.hideObjectInformation();
       return;
     }
@@ -130,13 +105,8 @@ export default class QueryManager {
   async pickObject(position: Cartesian2) {
     const pickedPosition = this.scene.pickPosition(position);
     const object = this.objectSelector.getObjectAtPosition(position);
-    let attributes = this.objectSelector.pickAttributes(
-      position,
-      pickedPosition,
-      object,
-    );
-    const isAttributesEmpty =
-      !attributes || !Object.getOwnPropertyNames(attributes).length;
+    let attributes = this.objectSelector.pickAttributes(position, pickedPosition, object);
+    const isAttributesEmpty = !attributes || !Object.getOwnPropertyNames(attributes).length;
 
     // we only search the remote Swisstopo service when there was no result for the local search.
     if (isAttributesEmpty && pickedPosition) {
@@ -203,9 +173,7 @@ export default class QueryManager {
       return new Entity({
         polygon: {
           hierarchy: convertedCoords,
-          material: group
-            ? OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7)
-            : SWISSTOPO_IT_HIGHLIGHT_COLOR,
+          material: group ? OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7) : SWISSTOPO_IT_HIGHLIGHT_COLOR,
         },
       });
     };
@@ -248,9 +216,7 @@ export default class QueryManager {
     const entity = new Entity({
       position: convertedCoords,
       point: {
-        color: group
-          ? OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7)
-          : SWISSTOPO_IT_HIGHLIGHT_COLOR,
+        color: group ? OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7) : SWISSTOPO_IT_HIGHLIGHT_COLOR,
         pixelSize: 10,
         heightReference: HeightReference.CLAMP_TO_GROUND,
         outlineWidth: group ? 1 : 2,
@@ -280,17 +246,9 @@ export default class QueryManager {
     const z = getProperty(feature, /\w*ZCOORDB/);
     if (!x || !y || !z) return; // boreholes only solution for now
     const coords = lv95ToDegrees([x, y]);
-    const cartographicCoords = Cartographic.fromDegrees(
-      coords[0],
-      coords[1],
-      z,
-    );
+    const cartographicCoords = Cartographic.fromDegrees(coords[0], coords[1], z);
     const position = Cartographic.toCartesian(cartographicCoords);
-    const attributes = this.objectSelector.pickAttributes(
-      Cartesian2.ZERO,
-      position,
-      feature,
-    );
+    const attributes = this.objectSelector.pickAttributes(Cartesian2.ZERO, position, feature);
 
     this.showObjectInformation(attributes);
     if (attributes?.zoom) attributes.zoom();

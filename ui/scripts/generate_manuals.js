@@ -8,24 +8,17 @@ const languages = ['en', 'de'];
 const tagPrefix = 'localetag_'; // update html if changed
 
 try {
-  const buffer = await readFileSync(
-    resolve(__dirname, '../manuals/manual_base.html'),
-  );
+  const buffer = await readFileSync(resolve(__dirname, '../manuals/manual_base.html'));
   await Promise.all(
     languages.map(async (lang) => {
       console.log(`Generating manual html for ${lang}`);
 
       let html = buffer.toString('utf8');
-      const manualLocaleBuffer = await readFileSync(
-        resolve(__dirname, `../manuals/locales/${lang}.json`),
-      );
+      const manualLocaleBuffer = await readFileSync(resolve(__dirname, `../manuals/locales/${lang}.json`));
       const manualLocale = JSON.parse(manualLocaleBuffer.toString('utf8'));
       manualLocale.forEach((t) => {
         if (html.includes(`${tagPrefix}${t.tag}`)) {
-          html = html.replace(
-            new RegExp(`${tagPrefix}${t.tag}(?!(_|[a-zA-Z]))`, 'gi'),
-            t.text,
-          );
+          html = html.replace(new RegExp(`${tagPrefix}${t.tag}(?!(_|[a-zA-Z]))`, 'gi'), t.text);
           t.used = true;
         }
       });
@@ -34,9 +27,7 @@ try {
       if (notUsedLocales.length) {
         const notUsedTags = notUsedLocales.map((l) => l.tag);
         console.error('HTML not generated. Reason:');
-        console.error(
-          `Not used tags: ${notUsedTags.join(', ')}. Language: ${lang}`,
-        );
+        console.error(`Not used tags: ${notUsedTags.join(', ')}. Language: ${lang}`);
         process.exit(1);
       }
 
@@ -51,10 +42,7 @@ try {
         mkdirSync(dir);
       }
 
-      return await writeFileSync(
-        resolve(__dirname, `${dir}/manual_${lang}.html`),
-        html,
-      );
+      return await writeFileSync(resolve(__dirname, `${dir}/manual_${lang}.html`), html);
     }),
   );
   process.exit(0);

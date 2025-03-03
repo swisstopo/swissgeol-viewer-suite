@@ -45,9 +45,7 @@ export class SwissforagesService {
     const response = await fetchResult.json();
 
     if (response && response.success) {
-      const workgroups = response.data.workgroups.filter((group) =>
-        group.roles.includes('EDIT'),
-      );
+      const workgroups = response.data.workgroups.filter((group) => group.roles.includes('EDIT'));
       if (workgroups.length) {
         this.userToken = token;
         return workgroups;
@@ -61,10 +59,7 @@ export class SwissforagesService {
 
   async createBorehole(cartographicPosition, depth, name) {
     if (!this.workGroupId) return;
-    const lv95Position = radiansToLv95([
-      cartographicPosition.longitude,
-      cartographicPosition.latitude,
-    ]);
+    const lv95Position = radiansToLv95([cartographicPosition.longitude, cartographicPosition.latitude]);
     const location = await this.getLocation(lv95Position);
     location[4] = cartographicPosition.height;
 
@@ -137,17 +132,14 @@ export class SwissforagesService {
   async getLocation(position) {
     let response: SwissforagesResponse | undefined;
     try {
-      const fetchResult = await fetch(
-        `${SWISSFORAGES_API_URL}/geoapi/location`,
-        {
-          ...this.requestOptions,
-          body: JSON.stringify({
-            action: 'LOCATION',
-            easting: position[0],
-            northing: position[1],
-          }),
-        },
-      );
+      const fetchResult = await fetch(`${SWISSFORAGES_API_URL}/geoapi/location`, {
+        ...this.requestOptions,
+        body: JSON.stringify({
+          action: 'LOCATION',
+          easting: position[0],
+          northing: position[1],
+        }),
+      });
       response = await fetchResult.json();
     } catch (e) {
       console.error(e);

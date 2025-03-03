@@ -165,15 +165,8 @@ export class LayerDisplayListItem extends CoreElement {
     ${this.isDraggable ? this.renderDragHandle() : ''}
 
     <div class="main">
-      <ngm-core-button
-        transparent
-        variant="tertiary"
-        shape="icon"
-        @click="${this.toggleVisibility}"
-      >
-        <ngm-core-icon
-          icon="${this.isVisible ? 'visible' : 'hidden'}"
-        ></ngm-core-icon>
+      <ngm-core-button transparent variant="tertiary" shape="icon" @click="${this.toggleVisibility}">
+        <ngm-core-icon icon="${this.isVisible ? 'visible' : 'hidden'}"></ngm-core-icon>
       </ngm-core-button>
 
       <span class="title">${this.title}</span>
@@ -188,8 +181,9 @@ export class LayerDisplayListItem extends CoreElement {
                 })}"
                 role="button"
                 @click="${this.toggleBackgroundActive}"
-                >${this.label}</span
               >
+                ${this.label}
+              </span>
             `}
 
         <ngm-core-button
@@ -207,8 +201,7 @@ export class LayerDisplayListItem extends CoreElement {
         ${this.layer == null ? '' : this.renderActions()}
       </div>
     </div>
-    ${this.isOpacityActive ? this.renderOpacity() : ''}
-    ${this.isBackgroundActive ? this.renderBackground() : ''}
+    ${this.isOpacityActive ? this.renderOpacity() : ''} ${this.isBackgroundActive ? this.renderBackground() : ''}
   `;
 
   readonly renderDragHandle = () => html`
@@ -220,13 +213,7 @@ export class LayerDisplayListItem extends CoreElement {
   `;
 
   private readonly renderActions = () => html`
-    <ngm-core-button
-      transparent
-      variant="tertiary"
-      shape="icon"
-      class="actions"
-      ?disabled="${!this.isVisible}"
-    >
+    <ngm-core-button transparent variant="tertiary" shape="icon" class="actions" ?disabled="${!this.isVisible}">
       <ngm-core-icon icon="menu"></ngm-core-icon>
     </ngm-core-button>
     <ngm-core-dropdown>
@@ -256,11 +243,7 @@ export class LayerDisplayListItem extends CoreElement {
         ? ''
         : html`
             <ngm-core-dropdown-item role="link">
-              <a
-                href="${this.layer.downloadUrl}"
-                target="_blank"
-                rel="external noopener"
-              >
+              <a href="${this.layer.downloadUrl}" target="_blank" rel="external noopener">
                 <ngm-core-icon icon="download"></ngm-core-icon>
                 ${i18next.t('dtd_download_hint')}
               </a>
@@ -268,10 +251,7 @@ export class LayerDisplayListItem extends CoreElement {
           `}
       ${this.layer?.type === LayerType.voxels3dtiles
         ? html`
-            <ngm-core-dropdown-item
-              role="button"
-              @click="${this.openVoxelFilter}"
-            >
+            <ngm-core-dropdown-item role="button" @click="${this.openVoxelFilter}">
               <ngm-core-icon icon="filter"></ngm-core-icon>
               ${i18next.t('dtd_voxel_filter')}
             </ngm-core-dropdown-item>
@@ -280,10 +260,7 @@ export class LayerDisplayListItem extends CoreElement {
       ${this.layer?.wmtsTimes == null || this.layer.wmtsTimes.length === 0
         ? ''
         : html`
-            <ngm-core-dropdown-item
-              role="button"
-              @click="${this.openWmtsDatePicker}"
-            >
+            <ngm-core-dropdown-item role="button" @click="${this.openWmtsDatePicker}">
               <ngm-core-icon icon="turnPage"></ngm-core-icon>
               ${i18next.t('dtd_time_journey')}
             </ngm-core-dropdown-item>

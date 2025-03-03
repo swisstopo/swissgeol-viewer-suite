@@ -6,12 +6,8 @@ export default class NavToolsStore {
   private static readonly syncTargetPointSubject = new Subject<void>();
   private static readonly cameraHeightSubject = new Subject<number>();
   private static readonly hideTargetPointSubject = new Subject<void>();
-  private static readonly navLockTypeSubject = new BehaviorSubject<LockType>(
-    '',
-  );
-  private static readonly targetPointPositionSubject = new BehaviorSubject<
-    Cartesian3 | undefined
-  >(undefined);
+  private static readonly navLockTypeSubject = new BehaviorSubject<LockType>('');
+  private static readonly targetPointPositionSubject = new BehaviorSubject<Cartesian3 | undefined>(undefined);
   static readonly exaggerationChanged = new Subject<number>();
 
   static get syncTargetPoint() {

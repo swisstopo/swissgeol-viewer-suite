@@ -1,11 +1,6 @@
 import { customElement, state } from 'lit/decorators.js';
 import { LitElementI18n } from 'src/i18n';
-import {
-  CustomDataSource,
-  DataSource,
-  DataSourceCollection,
-  Viewer,
-} from 'cesium';
+import { CustomDataSource, DataSource, DataSourceCollection, Viewer } from 'cesium';
 import MainStore from '../../store/main';
 import { css, html } from 'lit';
 import i18next from 'i18next';
@@ -36,10 +31,7 @@ export class LayerOptions extends LitElementI18n {
       this.exaggeration = this.viewer?.scene.verticalExaggeration ?? 1;
       this.prevExaggeration = this.exaggeration;
       this.viewer?.dataSources.dataSourceAdded.addEventListener(
-        (
-          _collection: DataSourceCollection,
-          dataSource: DataSource | CustomDataSource,
-        ) => {
+        (_collection: DataSourceCollection, dataSource: DataSource | CustomDataSource) => {
           if (MainStore.uploadedKmlNames.includes(dataSource.name)) {
             const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
             updateExaggerationForKmlDataSource(dataSource, exaggeration, 1);
@@ -65,11 +57,7 @@ export class LayerOptions extends LitElementI18n {
     const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
     MainStore.uploadedKmlNames.forEach((name) => {
       const dataSource = this.viewer?.dataSources.getByName(name)[0];
-      updateExaggerationForKmlDataSource(
-        dataSource,
-        exaggeration,
-        this.prevExaggeration,
-      );
+      updateExaggerationForKmlDataSource(dataSource, exaggeration, this.prevExaggeration);
     });
     this.prevExaggeration = exaggeration;
     this.viewer?.scene.requestRender();
@@ -92,9 +80,7 @@ export class LayerOptions extends LitElementI18n {
     <div class="group">
       <ngm-core-icon
         icon="${this.hideExaggeration ? 'hidden' : 'visible'}"
-        title=${this.hideExaggeration
-          ? i18next.t('dtd_show_exaggeration')
-          : i18next.t('dtd_hide_exaggeration')}
+        title=${this.hideExaggeration ? i18next.t('dtd_show_exaggeration') : i18next.t('dtd_hide_exaggeration')}
         @click=${this.toggleExaggerationVisibility}
       ></ngm-core-icon>
       <label>${i18next.t('dtd_exaggeration_map')}</label>

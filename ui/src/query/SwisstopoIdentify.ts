@@ -3,12 +3,7 @@ import { Cartographic } from 'cesium';
 import { radiansToLv95 } from '../projection';
 import type { IdentifyResult } from './types';
 
-const getIdentifyUrl = (
-  geom2056: number[],
-  lang: string,
-  layer: string,
-  tolerance: number,
-): string =>
+const getIdentifyUrl = (geom2056: number[], lang: string, layer: string, tolerance: number): string =>
   `https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=${geom2056}&geometryFormat=geojson&geometryType=esriGeometryPoint&mapExtent=0,0,100,100&imageDisplay=100,100,100&lang=${lang}&layers=all:${layer}&returnGeometry=true&sr=2056&tolerance=${tolerance}`;
 const getPopupUrl = ({ layerBodId, featureId, lang }) =>
   `https://api3.geo.admin.ch/rest/services/api/MapServer/${layerBodId}/${featureId}/htmlPopup?lang=${lang}`;
@@ -36,9 +31,7 @@ export default class SwisstopoIdentify {
     const tolerance = getTolerance(distance);
     const results: IdentifyResult[][] = await Promise.all(
       layers.map(async (layer) => {
-        const response = await fetch(
-          getIdentifyUrl(geom2056, lang, layer, tolerance),
-        );
+        const response = await fetch(getIdentifyUrl(geom2056, lang, layer, tolerance));
         const data = await response.json();
         return data.results?.length > 0 ? data.results : [];
       }),
@@ -48,11 +41,7 @@ export default class SwisstopoIdentify {
     return mergedResults;
   }
 
-  async getPopupForFeature(
-    layerBodId: string,
-    featureId: string,
-    lang: string,
-  ): Promise<string> {
+  async getPopupForFeature(layerBodId: string, featureId: string, lang: string): Promise<string> {
     const url = getPopupUrl({ layerBodId, featureId, lang });
     return fetch(url).then((response) => response.text());
   }

@@ -1,9 +1,5 @@
 import { syncLayersParam } from '../permalink';
-import {
-  calculateBox,
-  calculateRectangle,
-  getBoxFromRectangle,
-} from './helpers';
+import { calculateBox, calculateRectangle, getBoxFromRectangle } from './helpers';
 import { LayerType, MAP_RECTANGLE } from '../constants';
 import {
   Cartesian3,
@@ -48,10 +44,7 @@ export default class LayersAction {
       config.setVisibility(checked);
     } else {
       const layer = await config.promise;
-      if (
-        layer instanceof CustomDataSource ||
-        layer instanceof GeoJsonDataSource
-      ) {
+      if (layer instanceof CustomDataSource || layer instanceof GeoJsonDataSource) {
         this.viewer.dataSources.getByName(layer.name)[0].show = checked;
       }
     }
@@ -91,52 +84,24 @@ export default class LayersAction {
         this.boundingBoxEntity.show = true;
         this.viewer.scene.requestRender();
       } else {
-        const boxSize = calculateBox(
-          boundingVolume.halfAxes,
-          p.root.boundingSphere.radius,
-        );
-        const boundingRectangle = calculateRectangle(
-          boxSize.x,
-          boxSize.y,
-          boundingVolume.center,
-        );
+        const boxSize = calculateBox(boundingVolume.halfAxes, p.root.boundingSphere.radius);
+        const boundingRectangle = calculateRectangle(boxSize.x, boxSize.y, boundingVolume.center);
         this.showBbox(boundingRectangle, boxSize.z);
       }
     } else if (p instanceof ImageryLayer) {
       this.showBbox(p.imageryProvider.rectangle, 20000);
     } else if (p instanceof VoxelPrimitive) {
-      const boxSize = calculateBox(
-        p.orientedBoundingBox.halfAxes,
-        p.boundingSphere.radius,
-      );
-      const boundingRectangle = calculateRectangle(
-        boxSize.x,
-        boxSize.y,
-        p.orientedBoundingBox.center,
-      );
+      const boxSize = calculateBox(p.orientedBoundingBox.halfAxes, p.boundingSphere.radius);
+      const boundingRectangle = calculateRectangle(boxSize.x, boxSize.y, p.orientedBoundingBox.center);
       this.showBbox(boundingRectangle, boxSize.z);
     }
   }
 
-  private showBbox(
-    boundingRectangle: Rectangle,
-    height: number = 0,
-    skipIntersectionCheck: boolean = false,
-  ) {
+  private showBbox(boundingRectangle: Rectangle, height: number = 0, skipIntersectionCheck: boolean = false) {
     if (!boundingRectangle) return;
-    if (!skipIntersectionCheck)
-      Rectangle.intersection(
-        MAP_RECTANGLE,
-        boundingRectangle,
-        boundingRectangle,
-      );
-    this.boundingBoxEntity.position = Cartographic.toCartesian(
-      Rectangle.center(boundingRectangle),
-    );
-    this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(
-      boundingRectangle,
-      height,
-    );
+    if (!skipIntersectionCheck) Rectangle.intersection(MAP_RECTANGLE, boundingRectangle, boundingRectangle);
+    this.boundingBoxEntity.position = Cartographic.toCartesian(Rectangle.center(boundingRectangle));
+    this.boundingBoxEntity.box.dimensions = getBoxFromRectangle(boundingRectangle, height);
     this.boundingBoxEntity.rectangle.coordinates = boundingRectangle;
     this.boundingBoxEntity.show = true;
     this.viewer.scene.requestRender();
@@ -154,15 +119,9 @@ export default class LayersAction {
     const dataSources = this.viewer.dataSources;
     for (const config of newLayers) {
       const layer = await config.promise;
-      if (
-        config.type === LayerType.swisstopoWMTS &&
-        layer instanceof ImageryLayer
-      ) {
+      if (config.type === LayerType.swisstopoWMTS && layer instanceof ImageryLayer) {
         imageries.raiseToTop(layer);
-      } else if (
-        layer instanceof CustomDataSource &&
-        dataSources.contains(layer)
-      ) {
+      } else if (layer instanceof CustomDataSource && dataSources.contains(layer)) {
         dataSources.raiseToTop(layer);
       }
     }
