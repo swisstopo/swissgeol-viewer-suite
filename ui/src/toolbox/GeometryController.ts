@@ -466,7 +466,6 @@ export class GeometryController {
   }
 
   addGeometry(attributes: NgmGeometry) {
-    debugger;
     const type = attributes.type;
     const name = type.charAt(0).toUpperCase() + type.slice(1);
     const entityAttrs: Entity.ConstructorOptions = {

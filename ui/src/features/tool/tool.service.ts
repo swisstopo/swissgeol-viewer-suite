@@ -1,43 +1,29 @@
 import {
-  CallbackProperty,
   Cartesian2,
   Cartesian3,
-  ClassificationType,
-  Color,
-  ConstantPositionProperty,
-  ConstantProperty,
-  CornerType,
+  Cartographic,
   CustomDataSource,
   Entity,
-  HeightReference,
-  JulianDate,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-  VerticalOrigin,
   Viewer,
 } from 'cesium';
 import MainStore from 'src/store/main';
-import {
-  Drawing,
-  DrawTool,
-  LineDrawing,
-  PointDrawing,
-  RectangleDrawing,
-  Tool,
-  ToolShape,
-  ToolType,
-} from 'src/features/tool/tool.model';
+import { Drawing, DrawTool, DrawToolVariant, Tool, ToolType } from 'src/features/tool/tool.model';
 import { BaseService } from 'src/utils/base.service';
-import { DrawPointToolController } from 'src/features/tool/draw/draw-point-tool.controller';
-import { DrawController } from 'src/features/tool/draw/draw-tool.controller';
-import { Subscription } from 'rxjs';
+import { DrawPointToolController } from 'src/features/tool/draw-tool/draw-point-tool.controller';
+import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
+import { BehaviorSubject, filter, Observable, Subscription } from 'rxjs';
 import { Id } from 'src/models/id.model';
-import { DEFAULT_AOI_COLOR, POINT_SYMBOLS } from 'src/constants';
-import { DrawRectangleToolController } from 'src/features/tool/draw/draw-rectangle-tool.controller';
-import { DrawLineToolController } from 'src/features/tool/draw/draw-line-tool.controller';
+import { DrawRectangleToolController } from 'src/features/tool/draw-tool/draw-rectangle-tool.controller';
+import { DrawLineToolController } from 'src/features/tool/draw-tool/draw-line-tool.controller';
+import { DrawPolygonToolController } from 'src/features/tool/draw-tool/draw-polygon-tool.controller';
+import { DrawStyleController } from 'src/features/tool/draw-style/draw-style.controller';
+import { SketchDrawStyleController } from 'src/features/tool/draw-style/sketch-draw-style.controller';
+import { DefaultDrawStyleController } from 'src/features/tool/draw-style/default-draw-style.controller';
 
 export class ToolService extends BaseService {
-  private dataSource = new CustomDataSource('tool-drawings');
+  private readonly dataSource = new CustomDataSource('tool-drawings');
 
   /**
    * All current drawings, mapped by their ids.
@@ -61,7 +47,14 @@ export class ToolService extends BaseService {
 
   private _viewer: Viewer | null = null;
 
+  private readonly _activeTool$ = new BehaviorSubject<DrawTool | null>(null);
+
   private activeToolSubscription: Subscription | null = null;
+
+  private readonly styles = {
+    default: new DefaultDrawStyleController(),
+    sketch: new SketchDrawStyleController(),
+  };
 
   constructor() {
     super();
@@ -82,8 +75,17 @@ export class ToolService extends BaseService {
     }
   }
 
+  public get activeTool$(): Observable<Tool | null> {
+    return this._activeTool$.asObservable();
+  }
+
+  public selectToolByType$<T extends ToolType>(type: ToolType): Observable<(Tool & { type: T }) | null> {
+    return this.activeTool$.pipe(filter((it): it is (Tool & { type: T }) | null => it === null || it.type === type));
+  }
+
   public deactivate(): void {
     this.activeToolSubscription?.unsubscribe();
+    this.activeToolSubscription = null;
   }
 
   private get viewer(): Viewer {
@@ -94,7 +96,7 @@ export class ToolService extends BaseService {
   }
 
   private activateDrawTool(tool: DrawTool): void {
-    const controller = this.makeDrawController(tool.shape);
+    const controller = this.makeDrawController(tool.variant);
     const screen = new ScreenSpaceEventHandler(this.viewer.canvas);
 
     let shouldBeSaved = false;
@@ -123,57 +125,69 @@ export class ToolService extends BaseService {
       controller.handleMouseMove(position);
     }, ScreenSpaceEventType.MOUSE_MOVE);
 
-    let id: Id<Drawing> | null = null;
+    let drawing: Drawing | null = null;
     controller.drawing$.subscribe({
-      next: (drawing) => {
-        id = drawing.id;
-        const entity = this.drawingsToEntities.get(drawing.id);
-        if (entity == null) {
-          // It's a new drawing.
-          const newEntity = makeEntityFromDrawing(drawing);
-          this.dataSource.entities.add(newEntity);
-          this.drawingsToEntities.set(drawing.id, newEntity);
-        } else {
-          // The drawing exists already, but it has probably changed in some way.
-          const updatedEntity = updateEntityByDrawing(entity, drawing);
-          if (updatedEntity !== entity) {
-            this.dataSource.entities.remove(entity);
-            this.dataSource.entities.add(updatedEntity);
-            this.drawingsToEntities.set(drawing.id, updatedEntity);
-          }
-        }
-        this.drawings.set(drawing.id, drawing);
-        this.viewer!.scene.requestRender();
+      next: (newDrawing) => {
+        drawing = newDrawing;
+        this.draw(drawing, this.styles.sketch);
       },
       complete: () => {
-        controller.destroy();
-        if (!shouldBeSaved && id !== null) {
+        if (drawing === null) {
+          return;
+        }
+        if (shouldBeSaved) {
+          this.draw(drawing, this.styles.default);
+        } else {
+          const { id } = drawing;
           this.drawings.delete(id);
           this.drawingsToEntities.delete(id);
           this.dataSource.entities.removeById(`${id}`);
+          this.viewer.scene.globe.material = undefined;
+          this.viewer.scene.requestRender();
         }
-        this.viewer!.scene.requestRender();
       },
     });
 
+    this._activeTool$.next(tool);
     this.activeToolSubscription = new Subscription();
     this.activeToolSubscription.add(() => {
       controller.destroy();
       screen.destroy();
+      this._activeTool$.next(null);
     });
   }
 
-  private makeDrawController(shape: ToolShape): DrawController {
-    switch (shape) {
-      case ToolShape.Point:
+  private makeDrawController(variant: DrawToolVariant): DrawController {
+    switch (variant) {
+      case DrawToolVariant.Point:
         return new DrawPointToolController();
-      case ToolShape.Line:
+      case DrawToolVariant.Line:
         return new DrawLineToolController();
-      case ToolShape.Polygon:
-        throw new Error('not yet implemented');
-      case ToolShape.Rectangle:
+      case DrawToolVariant.Polygon:
+        return new DrawPolygonToolController();
+      case DrawToolVariant.Rectangle:
         return new DrawRectangleToolController();
     }
+  }
+
+  private draw(drawing: Drawing, style: DrawStyleController): void {
+    const entity = this.drawingsToEntities.get(drawing.id);
+    if (entity == null) {
+      // It's a new drawing.
+      const newEntity = style.makeEntity(drawing);
+      this.dataSource.entities.add(newEntity);
+      this.drawingsToEntities.set(drawing.id, newEntity);
+    } else {
+      // The drawing exists already, but it has probably changed in some way.
+      const updatedEntity = style.updateEntity(entity, drawing);
+      if (updatedEntity !== entity) {
+        this.dataSource.entities.remove(entity);
+        this.dataSource.entities.add(updatedEntity);
+        this.drawingsToEntities.set(drawing.id, updatedEntity);
+      }
+    }
+    this.drawings.set(drawing.id, drawing);
+    this.viewer.scene.requestRender();
   }
 
   private pick(position: Cartesian2 | null | undefined): Cartesian3 | null {
@@ -187,106 +201,3 @@ export class ToolService extends BaseService {
     return Cartesian3.clone(pickedPosition);
   }
 }
-
-const makeEntityFromDrawing = (drawing: Drawing): Entity => {
-  const entity = new Entity({
-    id: `${drawing.id}`,
-  });
-  return updateEntityByDrawing(entity, drawing);
-};
-
-const updateEntityByDrawing = (entity: Entity, drawing: Drawing): Entity => {
-  switch (drawing.shape) {
-    case ToolShape.Point:
-      return updateEntityByPointDrawing(entity, drawing);
-    case ToolShape.Line:
-      return updateEntityByLineDrawing(entity, drawing);
-    case ToolShape.Polygon:
-      throw new Error('not yet implemented');
-    case ToolShape.Rectangle:
-      return updateEntityByRectangleDrawing(entity, drawing);
-  }
-};
-
-const updateEntityByPointDrawing = (entity: Entity, drawing: PointDrawing): Entity => {
-  if (entity.properties?.type != null && entity.properties.type.getValue(JulianDate.now()) === ToolShape.Point) {
-    (entity.position as ConstantPositionProperty).setValue(drawing.coordinate);
-    return entity;
-  }
-  return new Entity({
-    id: entity.id,
-    position: drawing.coordinate,
-    show: true,
-    properties: {
-      type: ToolShape.Point,
-    },
-    billboard: {
-      show: true,
-      image: `/images/${POINT_SYMBOLS[0]}`,
-      color: DEFAULT_AOI_COLOR,
-      scale: 0.5,
-      verticalOrigin: VerticalOrigin.BOTTOM,
-      disableDepthTestDistance: 0,
-      heightReference: HeightReference.RELATIVE_TO_TERRAIN,
-    },
-  });
-};
-
-const updateEntityByLineDrawing = (entity: Entity, drawing: LineDrawing): Entity => {
-  if (entity.properties?.type != null && entity.properties.type.getValue(JulianDate.now()) === ToolShape.Line) {
-    (entity.properties.coordinates as ConstantProperty).setValue(drawing.coordinates);
-    return entity;
-  }
-  const material = Color.BLUE;
-  const newEntity = new Entity({
-    id: entity.id,
-    properties: {
-      type: ToolShape.Line,
-      coordinates: drawing.coordinates,
-    },
-    polyline: {
-      positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),
-      material,
-      clampToGround: true,
-      width: 4,
-      classificationType: ClassificationType.TERRAIN,
-    },
-    polylineVolume: {
-      cornerType: CornerType.MITERED,
-      outline: true,
-      outlineColor: material,
-      material: material,
-    },
-  });
-  return newEntity;
-};
-
-const updateEntityByRectangleDrawing = (entity: Entity, drawing: RectangleDrawing): Entity => {
-  if (entity.properties?.type != null && entity.properties.type.getValue(JulianDate.now()) === ToolShape.Rectangle) {
-    (entity.properties.coordinates as ConstantProperty).setValue([...drawing.coordinates, drawing.coordinates[0]]);
-
-    return entity;
-  }
-  const material = Color.BLUE;
-  const newEntity = new Entity({
-    id: entity.id,
-    properties: {
-      type: ToolShape.Rectangle,
-      coordinates: drawing.coordinates,
-    },
-    polyline: {
-      positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),
-      material,
-      clampToGround: true,
-      width: 4,
-      classificationType: ClassificationType.TERRAIN,
-    },
-    polylineVolume: {
-      cornerType: CornerType.MITERED,
-      outline: true,
-      outlineColor: material,
-      material: material,
-    },
-  });
-  return newEntity;
-};

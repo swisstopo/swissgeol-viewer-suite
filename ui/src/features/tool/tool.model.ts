@@ -1,15 +1,19 @@
 import { Cartesian3 } from 'cesium';
 import { Id } from 'src/models/id.model';
 
-export enum ToolShape {
+export enum ToolType {
+  Draw = 'Draw',
+}
+
+/**
+ * The possible shapes that {@link BaseDrawing drawings} can take.
+ */
+export enum Shape {
+  Pin = 'pin',
   Point = 'point',
   Line = 'line',
   Polygon = 'polygon',
   Rectangle = 'rectangle',
-}
-
-export enum ToolType {
-  Draw = 'Draw',
 }
 
 interface BaseTool {
@@ -18,23 +22,43 @@ interface BaseTool {
 
 export interface DrawTool extends BaseTool {
   type: ToolType.Draw;
-  shape: ToolShape;
+  variant: DrawToolVariant;
+}
+
+/**
+ * The shapes that can be created and edited via the draw tool.
+ *
+ * Note that these loosely correspond to {@link Shape}.
+ * However, not every shape can be drawn via tool.
+ * Also, the representation of a {@link DrawToolVariant} is not strictly defined,
+ * i.e. which shape is used to represent a tool may change depending on the context it is used in.
+ */
+export enum DrawToolVariant {
+  Point = 'point',
+  Line = 'line',
+  Polygon = 'polygon',
+  Rectangle = 'rectangle',
 }
 
 export type Tool = DrawTool;
 
 interface BaseDrawing {
   id: Id<this>;
-  shape: ToolShape;
+  shape: Shape;
 }
 
 export interface PointDrawing extends BaseDrawing {
-  shape: ToolShape.Point;
+  shape: Shape.Point;
+  coordinate: Cartesian3;
+}
+
+export interface PinDrawing extends BaseDrawing {
+  shape: Shape.Pin;
   coordinate: Cartesian3;
 }
 
 export interface LineDrawing extends BaseDrawing {
-  shape: ToolShape.Line;
+  shape: Shape.Line;
 
   /**
    * The line's point, with a minimal count of two.
@@ -43,7 +67,7 @@ export interface LineDrawing extends BaseDrawing {
 }
 
 export interface PolygonDrawing extends BaseDrawing {
-  shape: ToolShape.Polygon;
+  shape: Shape.Polygon;
 
   /**
    * The polygon's corner coordinates, in counter-clockwise rotation.
@@ -53,7 +77,7 @@ export interface PolygonDrawing extends BaseDrawing {
 }
 
 export interface RectangleDrawing extends BaseDrawing {
-  shape: ToolShape.Rectangle;
+  shape: Shape.Rectangle;
 
   /**
    * The rectangle's corner coordinates, in counter-clockwise rotation.
@@ -63,4 +87,4 @@ export interface RectangleDrawing extends BaseDrawing {
 
 export type RectangleCoordinates = [Cartesian3, Cartesian3, Cartesian3, Cartesian3];
 
-export type Drawing = PointDrawing | LineDrawing | PolygonDrawing | RectangleDrawing;
+export type Drawing = PointDrawing | PinDrawing | LineDrawing | PolygonDrawing | RectangleDrawing;

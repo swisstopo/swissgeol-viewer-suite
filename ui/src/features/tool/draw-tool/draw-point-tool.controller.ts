@@ -1,16 +1,16 @@
-import { Cartesian3, Cartographic } from 'cesium';
-import { DrawController } from 'src/features/tool/draw/draw-tool.controller';
-import { PointDrawing, ToolShape } from 'src/features/tool/tool.model';
+import { Cartesian3 } from 'cesium';
+import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
+import { PinDrawing, Shape } from 'src/features/tool/tool.model';
 import { Observable, Subject } from 'rxjs';
 import { asId } from 'src/models/id.model';
 
 export class DrawPointToolController implements DrawController {
   private readonly id = asId(crypto.randomUUID());
-  private readonly _drawing$ = new Subject<PointDrawing>();
+  private readonly _drawing$ = new Subject<PinDrawing>();
 
   readonly isComplete = true;
 
-  get drawing$(): Observable<PointDrawing> {
+  get drawing$(): Observable<PinDrawing> {
     return this._drawing$.asObservable();
   }
 
@@ -27,12 +27,9 @@ export class DrawPointToolController implements DrawController {
   }
 
   private draw(position: Cartesian3): void {
-    const cartographic = Cartographic.fromCartesian(position);
-    cartographic.height = 10_000; // Some high value, so the point is above the map.
-    position = Cartographic.toCartesian(cartographic);
     this._drawing$.next({
       id: this.id,
-      shape: ToolShape.Point,
+      shape: Shape.Pin,
       coordinate: position,
     });
   }

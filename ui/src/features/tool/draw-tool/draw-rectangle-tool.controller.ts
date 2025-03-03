@@ -1,6 +1,6 @@
-import { Cartesian3, Cartographic } from 'cesium';
-import { DrawController } from 'src/features/tool/draw/draw-tool.controller';
-import { Drawing, RectangleCoordinates, ToolShape } from 'src/features/tool/tool.model';
+import { Cartesian3 } from 'cesium';
+import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
+import { Drawing, RectangleCoordinates, Shape } from 'src/features/tool/tool.model';
 import { Observable, Subject } from 'rxjs';
 import { asId } from 'src/models/id.model';
 import { rectanglify } from 'src/draw/helpers';
@@ -22,7 +22,6 @@ export class DrawRectangleToolController implements DrawController {
   }
 
   handleClick(position: Cartesian3): void {
-    position = this.mapPosition(position);
     this.coordinates[this.coordinates.length - 1] = position;
     switch (this.coordinates.length) {
       case 2:
@@ -44,7 +43,6 @@ export class DrawRectangleToolController implements DrawController {
   }
 
   handleMouseMove(position: Cartesian3) {
-    position = this.mapPosition(position);
     this.coordinates[this.coordinates.length - 1] = position;
     this.draw();
   }
@@ -53,32 +51,26 @@ export class DrawRectangleToolController implements DrawController {
     this._drawing$.complete();
   }
 
-  private mapPosition(position: Cartesian3): Cartesian3 {
-    const cartographic = Cartographic.fromCartesian(position);
-    cartographic.height = 10_000; // Some high value, so the point is above the map.
-    return Cartographic.toCartesian(cartographic);
-  }
-
   private draw(): void {
     switch (this.coordinates.length) {
       case 1:
         this._drawing$.next({
           id: this.id,
-          shape: ToolShape.Point,
+          shape: Shape.Point,
           coordinate: this.coordinates[0],
         });
         break;
       case 2:
         this._drawing$.next({
           id: this.id,
-          shape: ToolShape.Line,
+          shape: Shape.Line,
           coordinates: this.coordinates,
         });
         break;
       case 3:
         this._drawing$.next({
           id: this.id,
-          shape: ToolShape.Rectangle,
+          shape: Shape.Rectangle,
           coordinates: rectanglify(this.coordinates) as RectangleCoordinates,
         });
         break;

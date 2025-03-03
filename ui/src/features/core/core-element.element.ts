@@ -17,7 +17,7 @@ export class CoreElement extends LitElement {
     bindMethods(this);
   }
 
-  connectedCallback() {
+  public connectedCallback() {
     const handleLanguageChanged = (language) => {
       this.language = language;
     };
@@ -27,18 +27,18 @@ export class CoreElement extends LitElement {
     super.connectedCallback();
   }
 
-  disconnectedCallback() {
+  public disconnectedCallback() {
     super.disconnectedCallback();
     this._subscription.unsubscribe();
   }
 
-  willUpdate(_changedProperties: PropertyValues): void {
+  public willUpdate(_changedProperties: PropertyValues): void {
     if (!this.hasUpdated) {
       this.willFirstUpdate();
     }
   }
 
-  willFirstUpdate(): void {
+  public willFirstUpdate(): void {
     /* Empty method to be implemented by child classes. */
   }
 
