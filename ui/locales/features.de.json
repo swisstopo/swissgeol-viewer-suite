@@ -1,0 +1,10 @@
+{
+  "tool": {
+    "heading": "Geometrie",
+    "tabs": {
+      "draw": "Zeichnen",
+      "measure": "Messen",
+      "upload": "Upload"
+    }
+  }
+}
