@@ -11,14 +11,14 @@ export class CoreTab<T> extends CoreElement {
   @property({ type: Boolean, reflect: true, attribute: 'aria-selected' })
   accessor isSelected = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'next' })
-  accessor isPreviousSelected = false;
+  @property({ type: Boolean, reflect: true, attribute: 'standalone' })
+  accessor isStandalone = false;
 
   connectedCallback() {
     super.connectedCallback();
     this.setAttribute('role', 'tab');
     this.addEventListener('click', () => {
-      if (this.value === null) {
+      if (this.isStandalone) {
         return;
       }
       this.dispatchEvent(
@@ -26,7 +26,7 @@ export class CoreTab<T> extends CoreElement {
           bubbles: true,
           composed: true,
           detail: {
-            value: this.value,
+            value: this.value as T,
           },
         }),
       );
@@ -34,7 +34,9 @@ export class CoreTab<T> extends CoreElement {
   }
 
   readonly render = () => html`
-    <slot></slot>
+    <div class="container">
+      <slot></slot>
+    </div>
   `;
 
   static readonly styles = css`
@@ -46,38 +48,59 @@ export class CoreTab<T> extends CoreElement {
     :host {
       position: relative;
       display: flex;
+      justify-content: stretch;
+      align-items: stretch;
+      flex: 1;
+
+      margin-left: calc(-1px);
+    }
+
+    :host([aria-selected]) {
+      z-index: 3;
+    }
+
+    /* container */
+    .container {
+      flex: 1;
+      display: flex;
       justify-content: center;
       align-items: center;
       color: var(--color-primary);
       background-color: transparent;
       border: none;
       padding: 8px;
-      cursor: pointer;
       border-radius: 4px;
-      flex: 1;
+      cursor: pointer;
+      z-index: 2;
     }
 
+    :host([aria-selected]) .container {
+      color: var(--color-text--emphasis-medium);
+      background-color: var(--color-rest-active);
+    }
+
+    :host(:not([aria-selected]):hover) .container {
+      color: var(--color-text--emphasis-medium);
+      background-color: var(--color-secondary--hovered);
+    }
+
+    /* slot */
     ::slotted(*) {
       ${applyTypography('button')};
     }
 
-    :host([aria-selected]) {
-      background-color: var(--color-rest-active);
-      color: var(--color-text--emphasis-medium);
-    }
-
-    :host(:not(:first-child))::before {
+    /* separator */
+    :host(:not(:first-of-type))::before {
       content: ' ';
       position: absolute;
+      margin-block: auto;
       left: 0;
+      top: 0;
+      bottom: 0;
       width: 1px;
       height: 18px;
       background-color: #e0e1e4;
-    }
-
-    :host([aria-selected])::before,
-    :host([next])::before {
-      display: none;
+      z-index: 1;
     }
   `;
 }

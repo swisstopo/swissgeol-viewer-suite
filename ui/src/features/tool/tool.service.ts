@@ -1,7 +1,6 @@
 import {
   Cartesian2,
   Cartesian3,
-  Cartographic,
   CustomDataSource,
   Entity,
   ScreenSpaceEventHandler,
@@ -13,7 +12,7 @@ import { Drawing, DrawTool, DrawToolVariant, Tool, ToolType } from 'src/features
 import { BaseService } from 'src/utils/base.service';
 import { DrawPointToolController } from 'src/features/tool/draw-tool/draw-point-tool.controller';
 import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
-import { BehaviorSubject, filter, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, startWith, Subject, Subscription } from 'rxjs';
 import { Id } from 'src/models/id.model';
 import { DrawRectangleToolController } from 'src/features/tool/draw-tool/draw-rectangle-tool.controller';
 import { DrawLineToolController } from 'src/features/tool/draw-tool/draw-line-tool.controller';
@@ -49,6 +48,8 @@ export class ToolService extends BaseService {
 
   private readonly _activeTool$ = new BehaviorSubject<DrawTool | null>(null);
 
+  private readonly drawingChanged$ = new Subject<Id<Drawing>>();
+
   private activeToolSubscription: Subscription | null = null;
 
   private readonly styles = {
@@ -66,6 +67,23 @@ export class ToolService extends BaseService {
     });
   }
 
+  public get drawings$(): Observable<Drawing[]> {
+    return this.drawingChanged$.pipe(
+      startWith(null),
+      map(() => {
+        const drawings = [...this.drawings.values()];
+
+        // During drawing, the latest drawing is a sketch,
+        // which we don't want to expose.
+        if (this._activeTool$.value?.type === ToolType.Draw) {
+          drawings.pop();
+        }
+
+        return drawings;
+      }),
+    );
+  }
+
   public activate(tool: Tool): void {
     this.deactivate();
     switch (tool.type) {
@@ -75,17 +93,17 @@ export class ToolService extends BaseService {
     }
   }
 
+  public deactivate(): void {
+    this.activeToolSubscription?.unsubscribe();
+    this.activeToolSubscription = null;
+  }
+
   public get activeTool$(): Observable<Tool | null> {
     return this._activeTool$.asObservable();
   }
 
   public selectToolByType$<T extends ToolType>(type: ToolType): Observable<(Tool & { type: T }) | null> {
     return this.activeTool$.pipe(filter((it): it is (Tool & { type: T }) | null => it === null || it.type === type));
-  }
-
-  public deactivate(): void {
-    this.activeToolSubscription?.unsubscribe();
-    this.activeToolSubscription = null;
   }
 
   private get viewer(): Viewer {
@@ -142,7 +160,7 @@ export class ToolService extends BaseService {
           this.drawings.delete(id);
           this.drawingsToEntities.delete(id);
           this.dataSource.entities.removeById(`${id}`);
-          this.viewer.scene.globe.material = undefined;
+          this.drawingChanged$.next(id);
           this.viewer.scene.requestRender();
         }
       },
@@ -151,9 +169,9 @@ export class ToolService extends BaseService {
     this._activeTool$.next(tool);
     this.activeToolSubscription = new Subscription();
     this.activeToolSubscription.add(() => {
+      this._activeTool$.next(null);
       controller.destroy();
       screen.destroy();
-      this._activeTool$.next(null);
     });
   }
 
@@ -187,6 +205,7 @@ export class ToolService extends BaseService {
       }
     }
     this.drawings.set(drawing.id, drawing);
+    this.drawingChanged$.next(drawing.id);
     this.viewer.scene.requestRender();
   }
 

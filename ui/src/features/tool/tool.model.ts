@@ -36,8 +36,8 @@ export interface DrawTool extends BaseTool {
 export enum DrawToolVariant {
   Point = 'point',
   Line = 'line',
-  Polygon = 'polygon',
   Rectangle = 'rectangle',
+  Polygon = 'polygon',
 }
 
 export type Tool = DrawTool;

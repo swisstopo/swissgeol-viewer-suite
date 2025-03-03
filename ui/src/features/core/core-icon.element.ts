@@ -7,8 +7,11 @@ export class CoreIcon extends LitElement {
   @property()
   accessor icon: IconKey = 'config';
 
-  @property({ type: Boolean, attribute: 'interactive' })
+  @property({ type: Boolean, reflect: true, attribute: 'interactive' })
   accessor isInteractive: boolean = false;
+
+  @property({ type: String, reflect: true, attribute: 'size' })
+  accessor size: Size = 'normal';
 
   readonly render = () => {
     return html`
@@ -24,6 +27,11 @@ export class CoreIcon extends LitElement {
       height: 24px;
     }
 
+    :host([size='small']) {
+      width: 20px;
+      height: 20px;
+    }
+
     :host([interactive]:hover) {
       cursor: pointer;
       color: var(--color-action);
@@ -36,3 +44,5 @@ export class CoreIcon extends LitElement {
     }
   `;
 }
+
+type Size = 'small' | 'normal';

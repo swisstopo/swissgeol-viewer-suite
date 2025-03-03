@@ -7,7 +7,7 @@ import { bindMethods } from 'src/utils/bind';
 
 export class CoreElement extends LitElement {
   @state()
-  private accessor language!: string;
+  protected accessor language!: string;
 
   private readonly _subscription = new Subscription();
 

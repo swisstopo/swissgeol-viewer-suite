@@ -35,20 +35,20 @@ export class CoreTabList<T> extends CoreElement {
     if (content == null || this.panelsElement == null) {
       return;
     }
-    let wasPreviousSelected = false;
+    let i = 0;
     for (const node of content) {
       if (node instanceof CoreTab) {
-        node.isSelected = node.value === this.value;
-        node.isPreviousSelected = wasPreviousSelected;
-        wasPreviousSelected = node.isSelected;
+        if (!node.isStandalone) {
+          node.isSelected = node.value === this.value;
+        }
+        node.style.setProperty('--tab-index', `${i}`);
+        i += 1;
         continue;
       }
       if (node instanceof CoreTabPanel) {
         this.panels.push(node);
         this.panelsElement.appendChild(node);
-        continue;
       }
-      console.error('ngm-core-tab-list should only contain ngm-core-tab elements');
     }
     for (const panel of this.panels) {
       panel.isHidden = panel.value !== this.value;

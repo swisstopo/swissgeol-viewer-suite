@@ -32,6 +32,9 @@ export class ToolPanel extends CoreElement {
       <ngm-navigation-panel-header slot="heading" closeable @close="${this.close}">
         ${i18next.t('tool.heading', { ns: 'features' })}
       </ngm-navigation-panel-header>
+
+      <ngm-tool-shape-list></ngm-tool-shape-list>
+
       ${renderTabs(Tab, {
         value: this.activeTab,
         onValueChange: this.handleTabChange,

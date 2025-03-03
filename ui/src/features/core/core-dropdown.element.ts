@@ -3,6 +3,7 @@ import { customElement } from 'lit/decorators.js';
 import { CoreBasePopup } from 'src/features/core/base/core-base-popup.element';
 import { CoreDropdownBox } from 'src/features/core/core-dropdown-box.element';
 import { CoreButton } from 'src/features/core/core-button.element';
+import { CoreTab } from 'src/features/core/core-tab.element';
 
 @customElement('ngm-core-dropdown')
 export class CoreDropdown extends CoreBasePopup<CoreDropdownBox> {
@@ -33,6 +34,8 @@ export class CoreDropdown extends CoreBasePopup<CoreDropdownBox> {
     super.show(event);
     if (this.target instanceof CoreButton) {
       this.target.isActive = true;
+    } else if (this.target instanceof CoreTab) {
+      this.target.isSelected = true;
     }
   }
 
@@ -40,6 +43,8 @@ export class CoreDropdown extends CoreBasePopup<CoreDropdownBox> {
     super.hide(event);
     if (this.target instanceof CoreButton) {
       this.target.isActive = false;
+    } else if (this.target instanceof CoreTab) {
+      this.target.isSelected = false;
     }
   }
 
