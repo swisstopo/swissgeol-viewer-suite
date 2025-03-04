@@ -1,7 +1,6 @@
 import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { cartesianToLv95, round } from '../projection';
-import { borehole, horizontalCrossSection, verticalCrossSection } from '../gst';
 import { showSnackbarError, showSnackbarInfo } from '../notifications';
 import i18next from 'i18next';
 import { LitElementI18n } from '../i18n.js';
@@ -15,7 +14,6 @@ import {
 } from 'cesium';
 import './ngm-gst-modal';
 import '../elements/ngm-i18n-content.js';
-import $ from 'jquery';
 import 'fomantic-ui-css/components/popup.js';
 import MainStore from '../store/main';
 import type { NgmToolbox } from './ngm-toolbox';
@@ -23,6 +21,10 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import ToolboxStore from '../store/toolbox';
 import type { NgmGeometry } from './interfaces';
 import { pointInPolygon } from '../cesiumutils';
+import { gstServiceContext } from '../context';
+import { consume } from '@lit/context';
+import { GstService } from '../gst.service';
+import $ from 'jquery';
 
 export type OutputFormat = 'pdf' | 'png' | 'svg';
 
@@ -36,6 +38,10 @@ export class NgmGstInteraction extends LitElementI18n {
   accessor depth = {};
   @state()
   accessor selectedId: string | undefined;
+
+  @consume({ context: gstServiceContext })
+  accessor gstService!: GstService;
+
   private viewer: Viewer | null = null;
   private readonly minDepth_ = -6000;
   private readonly maxDepth_ = 1000;
@@ -102,52 +108,56 @@ export class NgmGstInteraction extends LitElementI18n {
     }
   }
 
-  getGST(geom: NgmGeometry) {
-    if (this.hasValidParams(geom)) {
-      const coordinates = geom.positions
-        .map((position) => cartesianToLv95(position))
-        .map(round);
-      let promise;
-      if (geom.type === 'point') {
-        promise = borehole(
-          coordinates,
-          this.abortController.signal,
-          this.outputFormat,
-        );
-      } else if (geom.type === 'line') {
-        promise = verticalCrossSection(
-          coordinates,
-          this.abortController.signal,
-          this.outputFormat,
-        );
-      } else if (geom.type === 'rectangle') {
-        promise = horizontalCrossSection(
-          coordinates,
-          this.abortController.signal,
-          this.depth[geom.id!],
-          this.outputFormat,
-        );
+  async getGST(geom: NgmGeometry) {
+    if (!this.hasValidParams(geom)) {
+      throw new Error('invalid params');
+    }
+    this.loading = true;
+    try {
+      const json = await this.fetchGstGeometry(geom);
+      if (json.error) {
+        showSnackbarError(json.error);
+        return;
       }
-      this.loading = true;
-      promise
-        .then((json) => {
-          if (json.error) {
-            showSnackbarError(json.error);
-          } else {
-            (<NgmToolbox>this.parentElement).showSectionModal(json.imageUrl);
-          }
-        })
-        .catch((err) => {
-          if (err.name === 'AbortError') {
-            showSnackbarInfo(i18next.t('tbx_request_aborted_warning'));
-          } else {
-            console.error(err);
-            showSnackbarError(`${err.name}: ${err.message}`);
-          }
-        })
-        .finally(() => (this.loading = false));
-    } else {
-      console.error('invalid params');
+      (this.parentElement as NgmToolbox).showSectionModal(json.imageUrl);
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        showSnackbarInfo(i18next.t('tbx_request_aborted_warning'));
+        return;
+      }
+      console.error(err);
+      showSnackbarError(`${err.name}: ${err.message}`);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private fetchGstGeometry(geom: NgmGeometry): Promise<any> {
+    const coords = geom.positions
+      .map((position) => cartesianToLv95(position))
+      .map(round);
+    switch (geom.type) {
+      case 'point':
+        return this.gstService.borehole({
+          coords,
+          signal: this.abortController.signal,
+          outputType: this.outputFormat,
+        });
+      case 'line':
+        return this.gstService.verticalCrossSection({
+          coords,
+          signal: this.abortController.signal,
+          outputType: this.outputFormat,
+        });
+      case 'rectangle':
+        return this.gstService.horizontalCrossSection({
+          coords,
+          signal: this.abortController.signal,
+          outputType: this.outputFormat,
+          depth: this.depth[geom.id!],
+        });
+      case 'polygon':
+        throw new Error(`unsupported geometry type '${geom.type}'`);
     }
   }
 
@@ -244,9 +254,9 @@ export class NgmGstInteraction extends LitElementI18n {
             max="${this.maxDepth_}"
             step="100"
           />
-          <span class="ngm-floating-label"
-            >${i18next.t('tbx_cross_sections_depth_label')}</span
-          >
+          <span class="ngm-floating-label">
+            ${i18next.t('tbx_cross_sections_depth_label')}
+          </span>
         </div>
         <div class="ngm-section-format-container">
           <label>${i18next.t('tbx_cross_sections_format_label')}</label>
@@ -268,7 +278,8 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   render() {
-    return html` <ngm-draw-section
+    return html`
+      <ngm-draw-section
         ?hidden=${this.hidden}
         .enabledTypes=${['line', 'rectangle', 'point']}
       ></ngm-draw-section>
@@ -282,8 +293,8 @@ export class NgmGstInteraction extends LitElementI18n {
         @geomclick=${(evt) => this.onGeomClick(evt.detail)}
         @geometriesadded=${(evt) =>
           this.onGeometryAdded(evt.detail.newGeometries)}
-      >
-      </ngm-geometries-list>`;
+      ></ngm-geometries-list>
+    `;
   }
 
   createRenderRoot() {
