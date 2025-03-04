@@ -8,7 +8,7 @@ import {
   Viewer,
 } from 'cesium';
 import MainStore from 'src/store/main';
-import { Geometry, DrawTool, Shape, Tool, ToolType, Feature } from 'src/features/tool/tool.model';
+import { DrawTool, Feature, Geometry, Shape, Tool, ToolType } from 'src/features/tool/tool.model';
 import { BaseService } from 'src/utils/base.service';
 import { DrawPointToolController } from 'src/features/tool/draw-tool/draw-point-tool.controller';
 import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
@@ -17,9 +17,9 @@ import { Id } from 'src/models/id.model';
 import { DrawRectangleToolController } from 'src/features/tool/draw-tool/draw-rectangle-tool.controller';
 import { DrawLineToolController } from 'src/features/tool/draw-tool/draw-line-tool.controller';
 import { DrawPolygonToolController } from 'src/features/tool/draw-tool/draw-polygon-tool.controller';
-import { DrawStyleController } from 'src/features/tool/draw-style/draw-style.controller';
 import { SketchDrawStyleController } from 'src/features/tool/draw-style/sketch-draw-style.controller';
 import { DefaultDrawStyleController } from 'src/features/tool/draw-style/default-draw-style.controller';
+import { DrawStyleController } from 'src/features/tool/draw-style/draw-style.controller';
 
 export class ToolService extends BaseService {
   private readonly dataSource = new CustomDataSource('tool-drawings');
@@ -73,6 +73,24 @@ export class ToolService extends BaseService {
       startWith(null),
       map(() => [...this.features.values()]),
     );
+  }
+
+  public findFeature(id: Id<Feature>): Feature | null {
+    return this.features.get(id) ?? null;
+  }
+
+  public addFeature(feature: Feature): void {
+    if (this.features.has(feature.id)) {
+      throw new Error(`feature already exists: ${feature.id}`);
+    }
+    this.features.set(feature.id, feature);
+    this.draw(feature.geometry);
+  }
+
+  public addFeatures(features: Feature[]): void {
+    for (const feature of features) {
+      this.addFeature(feature);
+    }
   }
 
   public activate(tool: Tool): void {
@@ -147,8 +165,9 @@ export class ToolService extends BaseService {
         if (shouldBeSaved) {
           this.features.set(geometry.id, {
             id: geometry.id,
-            baseId: null,
-            numberPerShape: this.findNextFeatureNumber(geometry.shape),
+            name: {
+              number: this.findNextFeatureNumber(geometry.shape),
+            },
             geometry,
           });
           this.draw(geometry, this.styles.default);
@@ -184,7 +203,7 @@ export class ToolService extends BaseService {
     }
   }
 
-  private draw(geometry: Geometry, style: DrawStyleController): void {
+  private draw(geometry: Geometry, style: DrawStyleController = this.styles.default): void {
     const entity = this.geometriesToEntities.get(geometry.id);
     if (entity == null) {
       // It's a new geometry.
@@ -219,8 +238,13 @@ export class ToolService extends BaseService {
   private findNextFeatureNumber(shape: Shape): number {
     let max = 0;
     for (const feature of this.features.values()) {
-      if (feature.geometry.shape === shape && feature.numberPerShape > max) {
-        max = feature.numberPerShape;
+      if (
+        feature.geometry.shape === shape &&
+        typeof feature.name === 'object' &&
+        'number' in feature.name &&
+        feature.name.number > max
+      ) {
+        max = feature.name.number;
       }
     }
     return max + 1;

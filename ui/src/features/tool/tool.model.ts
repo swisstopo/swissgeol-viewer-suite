@@ -12,23 +12,29 @@ export interface Feature {
   id: Id<this>;
 
   /**
-   * The id of the feature that this one has been based on.
-   *
-   * This is mainly used for naming. There should be no functional connection to base features.
-   */
-  baseId: Id<this> | null;
-
-  /**
-   * The number of the feature, unique in combination with it geometry's shape.
-   *
-   * This is mainly used for naming.
-   */
-  numberPerShape: number;
+   * The feature's name.
+   * */
+  name: FeatureName;
 
   /**
    * The geometry that represents this feature.
    */
   geometry: Geometry;
+}
+
+export type FeatureName = string | CopiedFeatureName | GeneratedFeatureName;
+
+export interface CopiedFeatureName {
+  baseId: Id<Feature>;
+}
+
+export interface GeneratedFeatureName {
+  /**
+   * The number of the feature, unique in combination with it geometry's shape.
+   *
+   * This is only used for naming.
+   */
+  number: number;
 }
 
 /**

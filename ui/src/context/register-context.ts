@@ -7,6 +7,7 @@ import AuthService from '../authService';
 import { AnyBaseServiceType, BaseService, ServiceContext } from 'src/utils/base.service';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { ToolService } from 'src/features/tool/tool.service';
+import { ToolPersistenceService } from 'src/features/tool/tool-persistence.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (element: LitElement, clientConfig: ClientConfig): AppContext[] => {
@@ -38,7 +39,11 @@ export const registerAppContext = (element: LitElement, clientConfig: ClientConf
   );
 
   contexts.push(makeProvider(BackgroundLayerService));
-  contexts.push(makeProvider(ToolService));
+
+  const toolService = new ToolService();
+  const toolPersistenceService = new ToolPersistenceService(toolService);
+  contexts.push(makeProvider(toolService));
+  contexts.push(makeProvider(toolPersistenceService));
   return contexts;
 };
 

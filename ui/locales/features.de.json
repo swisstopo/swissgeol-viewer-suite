@@ -8,9 +8,10 @@
     },
     "shapes": {
       "point": "Punkt",
-      "line": "Line",
+      "line": "Linie",
       "polygon": "Polygon",
       "rectangle": "Rechteck"
-    }
+    },
+    "name_for_copied_geometry": "Kopie von {{base}}"
   }
 }

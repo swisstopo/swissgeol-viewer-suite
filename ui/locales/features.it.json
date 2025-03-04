@@ -11,6 +11,7 @@
       "line": "Linea",
       "polygon": "Poligono",
       "rectangle": "Rettanglo"
-    }
+    },
+    "name_for_copied_geometry": "Copia di {{base}}"
   }
 }

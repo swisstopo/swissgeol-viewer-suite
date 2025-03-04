@@ -3,6 +3,8 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { css, html } from 'lit';
 import { Feature } from 'src/features/tool/tool.model';
 import i18next from 'i18next';
+import { consume } from '@lit/context';
+import { ToolService } from 'src/features/tool/tool.service';
 
 @customElement('ngm-tool-feature-list-item')
 export class ToolFeatureListItem extends CoreElement {
@@ -11,6 +13,22 @@ export class ToolFeatureListItem extends CoreElement {
 
   @state()
   private accessor isVisible = true;
+
+  @consume({ context: ToolService.context() })
+  accessor toolService!: ToolService;
+
+  private makeNameOfFeature(feature: Feature): string {
+    const { name, geometry } = feature;
+    if (typeof name === 'string') {
+      return name;
+    }
+    if ('number' in name) {
+      const shapeName = i18next.t(`tool.shapes.${geometry.shape}`, { ns: 'features' });
+      return `${shapeName} ${name.number}`;
+    }
+    const base = this.toolService.findFeature(name.baseId)!;
+    return i18next.t('tool.name_for_copied_geometry', { ns: 'feature', base: this.makeNameOfFeature(base) });
+  }
 
   readonly render = () => {
     const { feature } = this;
@@ -22,9 +40,7 @@ export class ToolFeatureListItem extends CoreElement {
         <ngm-core-icon icon="${this.isVisible ? 'visible' : 'hidden'}"></ngm-core-icon>
       </ngm-core-button>
       <ngm-core-icon icon="${feature.geometry.shape}Shape" size="small" class="shape"></ngm-core-icon>
-      <span class="name">
-        ${i18next.t(`tool.shapes.${feature.geometry.shape}`, { ns: 'features' })} ${feature.numberPerShape}
-      </span>
+      <span class="name">${this.makeNameOfFeature(feature)}</span>
       <ngm-core-button transparent variant="tertiary" shape="icon" class="actions">
         <ngm-core-icon icon="menu"></ngm-core-icon>
       </ngm-core-button>
