@@ -8,7 +8,7 @@ import {
   Viewer,
 } from 'cesium';
 import MainStore from 'src/store/main';
-import { Drawing, DrawTool, DrawToolVariant, Tool, ToolType } from 'src/features/tool/tool.model';
+import { Geometry, DrawTool, Shape, Tool, ToolType, Feature } from 'src/features/tool/tool.model';
 import { BaseService } from 'src/utils/base.service';
 import { DrawPointToolController } from 'src/features/tool/draw-tool/draw-point-tool.controller';
 import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
@@ -25,30 +25,31 @@ export class ToolService extends BaseService {
   private readonly dataSource = new CustomDataSource('tool-drawings');
 
   /**
-   * All current drawings, mapped by their ids.
+   * All current features, mapped by their ids.
+   * Note that each feature is also present in {@link geometries}.
    *
-   * Note that the order of this `Map` matters,
-   * as it determines how the drawings are displayed.
-   * If a drawing changes, it must preserve its place,
-   * unless it should specifically be moved.
-   *
-   * @private
+   * * @private
    */
-  private readonly drawings = new Map<Id<Drawing>, Drawing>();
+  private readonly features = new Map<Id<Feature>, Feature>();
 
   /**
-   * A mapping from the ids of a drawing to the entity by which it is
-   * represented on the viewer.
+   * All current geometries, mapped by their ids.
+   * @private
+   */
+  private readonly geometries = new Map<Id<Geometry>, Geometry>();
+
+  /**
+   * A mapping from the ids of a geometry to the entity by which it is represented on the viewer.
    *
    * @private
    */
-  private readonly drawingsToEntities = new Map<Id<Drawing>, Entity>();
+  private readonly geometriesToEntities = new Map<Id<Geometry>, Entity>();
 
   private _viewer: Viewer | null = null;
 
   private readonly _activeTool$ = new BehaviorSubject<DrawTool | null>(null);
 
-  private readonly drawingChanged$ = new Subject<Id<Drawing>>();
+  private readonly featureChanged$ = new Subject<Id<Feature>>();
 
   private activeToolSubscription: Subscription | null = null;
 
@@ -67,20 +68,10 @@ export class ToolService extends BaseService {
     });
   }
 
-  public get drawings$(): Observable<Drawing[]> {
-    return this.drawingChanged$.pipe(
+  public get features$(): Observable<Feature[]> {
+    return this.featureChanged$.pipe(
       startWith(null),
-      map(() => {
-        const drawings = [...this.drawings.values()];
-
-        // During drawing, the latest drawing is a sketch,
-        // which we don't want to expose.
-        if (this._activeTool$.value?.type === ToolType.Draw) {
-          drawings.pop();
-        }
-
-        return drawings;
-      }),
+      map(() => [...this.features.values()]),
     );
   }
 
@@ -114,7 +105,7 @@ export class ToolService extends BaseService {
   }
 
   private activateDrawTool(tool: DrawTool): void {
-    const controller = this.makeDrawController(tool.variant);
+    const controller = this.makeDrawController(tool.shape);
     const screen = new ScreenSpaceEventHandler(this.viewer.canvas);
 
     let shouldBeSaved = false;
@@ -143,24 +134,29 @@ export class ToolService extends BaseService {
       controller.handleMouseMove(position);
     }, ScreenSpaceEventType.MOUSE_MOVE);
 
-    let drawing: Drawing | null = null;
-    controller.drawing$.subscribe({
-      next: (newDrawing) => {
-        drawing = newDrawing;
-        this.draw(drawing, this.styles.sketch);
+    let geometry: Geometry | null = null;
+    controller.geometry$.subscribe({
+      next: (nextGeometry) => {
+        geometry = nextGeometry;
+        this.draw(geometry, this.styles.sketch);
       },
       complete: () => {
-        if (drawing === null) {
+        if (geometry === null) {
           return;
         }
         if (shouldBeSaved) {
-          this.draw(drawing, this.styles.default);
+          this.features.set(geometry.id, {
+            id: geometry.id,
+            baseId: null,
+            numberPerShape: this.findNextFeatureNumber(geometry.shape),
+            geometry,
+          });
+          this.draw(geometry, this.styles.default);
         } else {
-          const { id } = drawing;
-          this.drawings.delete(id);
-          this.drawingsToEntities.delete(id);
+          const { id } = geometry;
+          this.geometries.delete(id);
+          this.geometriesToEntities.delete(id);
           this.dataSource.entities.removeById(`${id}`);
-          this.drawingChanged$.next(id);
           this.viewer.scene.requestRender();
         }
       },
@@ -175,37 +171,37 @@ export class ToolService extends BaseService {
     });
   }
 
-  private makeDrawController(variant: DrawToolVariant): DrawController {
-    switch (variant) {
-      case DrawToolVariant.Point:
+  private makeDrawController(shape: Shape): DrawController {
+    switch (shape) {
+      case Shape.Point:
         return new DrawPointToolController();
-      case DrawToolVariant.Line:
+      case Shape.Line:
         return new DrawLineToolController();
-      case DrawToolVariant.Polygon:
+      case Shape.Polygon:
         return new DrawPolygonToolController();
-      case DrawToolVariant.Rectangle:
+      case Shape.Rectangle:
         return new DrawRectangleToolController();
     }
   }
 
-  private draw(drawing: Drawing, style: DrawStyleController): void {
-    const entity = this.drawingsToEntities.get(drawing.id);
+  private draw(geometry: Geometry, style: DrawStyleController): void {
+    const entity = this.geometriesToEntities.get(geometry.id);
     if (entity == null) {
-      // It's a new drawing.
-      const newEntity = style.makeEntity(drawing);
+      // It's a new geometry.
+      const newEntity = style.makeEntity(geometry);
       this.dataSource.entities.add(newEntity);
-      this.drawingsToEntities.set(drawing.id, newEntity);
+      this.geometriesToEntities.set(geometry.id, newEntity);
     } else {
-      // The drawing exists already, but it has probably changed in some way.
-      const updatedEntity = style.updateEntity(entity, drawing);
+      // The geometry exists already, but it has probably changed in some way.
+      const updatedEntity = style.updateEntity(entity, geometry);
       if (updatedEntity !== entity) {
         this.dataSource.entities.remove(entity);
         this.dataSource.entities.add(updatedEntity);
-        this.drawingsToEntities.set(drawing.id, updatedEntity);
+        this.geometriesToEntities.set(geometry.id, updatedEntity);
       }
     }
-    this.drawings.set(drawing.id, drawing);
-    this.drawingChanged$.next(drawing.id);
+    this.geometries.set(geometry.id, geometry);
+    this.featureChanged$.next(geometry.id);
     this.viewer.scene.requestRender();
   }
 
@@ -218,5 +214,15 @@ export class ToolService extends BaseService {
       return null;
     }
     return Cartesian3.clone(pickedPosition);
+  }
+
+  private findNextFeatureNumber(shape: Shape): number {
+    let max = 0;
+    for (const feature of this.features.values()) {
+      if (feature.geometry.shape === shape && feature.numberPerShape > max) {
+        max = feature.numberPerShape;
+      }
+    }
+    return max + 1;
   }
 }

@@ -1,17 +1,17 @@
 import { Cartesian3 } from 'cesium';
 import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
-import { PinDrawing, Shape } from 'src/features/tool/tool.model';
+import { PointGeometry, Shape } from 'src/features/tool/tool.model';
 import { Observable, Subject } from 'rxjs';
 import { asId } from 'src/models/id.model';
 
 export class DrawPointToolController implements DrawController {
   private readonly id = asId(crypto.randomUUID());
-  private readonly _drawing$ = new Subject<PinDrawing>();
+  private readonly _geometry$ = new Subject<PointGeometry>();
 
   readonly isComplete = true;
 
-  get drawing$(): Observable<PinDrawing> {
-    return this._drawing$.asObservable();
+  get geometry$(): Observable<PointGeometry> {
+    return this._geometry$.asObservable();
   }
 
   handleClick(position: Cartesian3): void {
@@ -23,13 +23,13 @@ export class DrawPointToolController implements DrawController {
   }
 
   destroy(): void {
-    this._drawing$.complete();
+    this._geometry$.complete();
   }
 
   private draw(position: Cartesian3): void {
-    this._drawing$.next({
+    this._geometry$.next({
       id: this.id,
-      shape: Shape.Pin,
+      shape: Shape.Point,
       coordinate: position,
     });
   }

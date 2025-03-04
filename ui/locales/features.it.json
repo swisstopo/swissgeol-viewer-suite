@@ -7,10 +7,10 @@
       "upload": "Upload"
     },
     "shapes": {
-      "point": "",
-      "line": "",
-      "polygon": "",
-      "rectangle": ""
+      "point": "Punto",
+      "line": "Linea",
+      "polygon": "Poligono",
+      "rectangle": "Rettanglo"
     }
   }
 }

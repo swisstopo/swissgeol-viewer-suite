@@ -11,16 +11,10 @@ export class CoreTab<T> extends CoreElement {
   @property({ type: Boolean, reflect: true, attribute: 'aria-selected' })
   accessor isSelected = false;
 
-  @property({ type: Boolean, reflect: true, attribute: 'standalone' })
-  accessor isStandalone = false;
-
   connectedCallback() {
     super.connectedCallback();
     this.setAttribute('role', 'tab');
     this.addEventListener('click', () => {
-      if (this.isStandalone) {
-        return;
-      }
       this.dispatchEvent(
         new CustomEvent<TabValueChangeEventDetails<T>>('value-change', {
           bubbles: true,
@@ -79,28 +73,31 @@ export class CoreTab<T> extends CoreElement {
       background-color: var(--color-rest-active);
     }
 
-    :host(:not([aria-selected]):hover) .container {
-      color: var(--color-text--emphasis-medium);
-      background-color: var(--color-secondary--hovered);
-    }
-
     /* slot */
     ::slotted(*) {
       ${applyTypography('button')};
     }
 
     /* separator */
-    :host(:not(:first-of-type))::before {
+    :host(:not(:first-child))::before,
+    :host(:not(:last-child))::after {
       content: ' ';
       position: absolute;
       margin-block: auto;
-      left: 0;
       top: 0;
       bottom: 0;
       width: 1px;
       height: 18px;
       background-color: #e0e1e4;
       z-index: 1;
+    }
+
+    :host(:not(:first-child))::before {
+      left: 0;
+    }
+
+    :host(:not(:last-child))::after {
+      right: 0;
     }
   `;
 }

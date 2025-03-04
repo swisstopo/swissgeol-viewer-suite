@@ -5,11 +5,36 @@ export enum ToolType {
   Draw = 'Draw',
 }
 
+export interface Feature {
+  /**
+   * The feature's unique id.
+   * */
+  id: Id<this>;
+
+  /**
+   * The id of the feature that this one has been based on.
+   *
+   * This is mainly used for naming. There should be no functional connection to base features.
+   */
+  baseId: Id<this> | null;
+
+  /**
+   * The number of the feature, unique in combination with it geometry's shape.
+   *
+   * This is mainly used for naming.
+   */
+  numberPerShape: number;
+
+  /**
+   * The geometry that represents this feature.
+   */
+  geometry: Geometry;
+}
+
 /**
- * The possible shapes that {@link BaseDrawing drawings} can take.
+ * The possible shapes that {@link Geometry geometries} can take.
  */
 export enum Shape {
-  Pin = 'pin',
   Point = 'point',
   Line = 'line',
   Polygon = 'polygon',
@@ -22,42 +47,22 @@ interface BaseTool {
 
 export interface DrawTool extends BaseTool {
   type: ToolType.Draw;
-  variant: DrawToolVariant;
-}
-
-/**
- * The shapes that can be created and edited via the draw tool.
- *
- * Note that these loosely correspond to {@link Shape}.
- * However, not every shape can be drawn via tool.
- * Also, the representation of a {@link DrawToolVariant} is not strictly defined,
- * i.e. which shape is used to represent a tool may change depending on the context it is used in.
- */
-export enum DrawToolVariant {
-  Point = 'point',
-  Line = 'line',
-  Rectangle = 'rectangle',
-  Polygon = 'polygon',
+  shape: Shape;
 }
 
 export type Tool = DrawTool;
 
-interface BaseDrawing {
+interface BaseGeometry {
   id: Id<this>;
   shape: Shape;
 }
 
-export interface PointDrawing extends BaseDrawing {
+export interface PointGeometry extends BaseGeometry {
   shape: Shape.Point;
   coordinate: Cartesian3;
 }
 
-export interface PinDrawing extends BaseDrawing {
-  shape: Shape.Pin;
-  coordinate: Cartesian3;
-}
-
-export interface LineDrawing extends BaseDrawing {
+export interface LineGeometry extends BaseGeometry {
   shape: Shape.Line;
 
   /**
@@ -66,7 +71,7 @@ export interface LineDrawing extends BaseDrawing {
   coordinates: Cartesian3[];
 }
 
-export interface PolygonDrawing extends BaseDrawing {
+export interface PolygonGeometry extends BaseGeometry {
   shape: Shape.Polygon;
 
   /**
@@ -76,7 +81,7 @@ export interface PolygonDrawing extends BaseDrawing {
   coordinates: Cartesian3[];
 }
 
-export interface RectangleDrawing extends BaseDrawing {
+export interface RectangleGeometry extends BaseGeometry {
   shape: Shape.Rectangle;
 
   /**
@@ -87,4 +92,4 @@ export interface RectangleDrawing extends BaseDrawing {
 
 export type RectangleCoordinates = [Cartesian3, Cartesian3, Cartesian3, Cartesian3];
 
-export type Drawing = PointDrawing | PinDrawing | LineDrawing | PolygonDrawing | RectangleDrawing;
+export type Geometry = PointGeometry | LineGeometry | PolygonGeometry | RectangleGeometry;

@@ -1,38 +1,19 @@
 import { ClassificationType, Color, CornerType, Entity, HeightReference, VerticalOrigin } from 'cesium';
 import { BaseDrawStyleController } from 'src/features/tool/draw-style/base-draw-style.controller';
-import { LineDrawing, PinDrawing, PointDrawing, PolygonDrawing, RectangleDrawing, Shape } from '../tool.model';
+import { LineGeometry, PointGeometry, PolygonGeometry, RectangleGeometry, Shape } from '../tool.model';
 import { POINT_SYMBOLS } from 'src/constants';
 
 const COLOR = Color.BLUE;
 const AREA_COLOR = COLOR.withAlpha(0.3);
 
 export class DefaultDrawStyleController extends BaseDrawStyleController {
-  protected makePointEntity(drawing: PointDrawing): Entity {
+  protected makePointEntity(geometry: PointGeometry): Entity {
     return new Entity({
-      id: `${drawing.id}`,
-      position: drawing.coordinate,
+      id: `${geometry.id}`,
+      position: geometry.coordinate,
       show: true,
       properties: {
-        type: Shape.Pin,
-        drawStyle: this.constructor,
-      },
-      point: {
-        color: COLOR,
-        outlineWidth: 1,
-        outlineColor: Color.BLACK,
-        pixelSize: 5,
-        heightReference: HeightReference.RELATIVE_TO_TERRAIN,
-      },
-    });
-  }
-
-  protected makePinEntity(drawing: PinDrawing): Entity {
-    return new Entity({
-      id: `${drawing.id}`,
-      position: drawing.coordinate,
-      show: true,
-      properties: {
-        type: Shape.Pin,
+        type: Shape.Point,
         drawStyle: this.constructor,
       },
       billboard: {
@@ -47,14 +28,14 @@ export class DefaultDrawStyleController extends BaseDrawStyleController {
     });
   }
 
-  protected makeLineEntity(drawing: LineDrawing): Entity {
+  protected makeLineEntity(geometry: LineGeometry): Entity {
     const material = COLOR;
     const newEntity = new Entity({
-      id: `${drawing.id}`,
+      id: `${geometry.id}`,
       properties: {
         type: Shape.Line,
         drawStyle: this.constructor,
-        coordinates: drawing.coordinates,
+        coordinates: geometry.coordinates,
       },
       polyline: {
         positions: this.makePositionsProperty(() => newEntity),
@@ -73,14 +54,14 @@ export class DefaultDrawStyleController extends BaseDrawStyleController {
     return newEntity;
   }
 
-  protected makePolygonEntity(drawing: PolygonDrawing): Entity {
+  protected makePolygonEntity(geometry: PolygonGeometry): Entity {
     const material = AREA_COLOR;
     const newEntity = new Entity({
-      id: `${drawing.id}`,
+      id: `${geometry.id}`,
       properties: {
         type: Shape.Polygon,
         drawStyle: this.constructor,
-        coordinates: drawing.coordinates,
+        coordinates: geometry.coordinates,
       },
       polygon: {
         hierarchy: this.makeHierarchyProperty(() => newEntity),
@@ -97,14 +78,14 @@ export class DefaultDrawStyleController extends BaseDrawStyleController {
     return newEntity;
   }
 
-  protected makeRectangleEntity(drawing: RectangleDrawing): Entity {
+  protected makeRectangleEntity(geometry: RectangleGeometry): Entity {
     const material = AREA_COLOR;
     const newEntity = new Entity({
-      id: `${drawing.id}`,
+      id: `${geometry.id}`,
       properties: {
         type: Shape.Rectangle,
         drawStyle: this.constructor,
-        coordinates: drawing.coordinates,
+        coordinates: geometry.coordinates,
       },
       polygon: {
         hierarchy: this.makeHierarchyProperty(() => newEntity),

@@ -7,19 +7,17 @@ import {
   Entity,
   HeightReference,
   JulianDate,
-  VerticalOrigin,
 } from 'cesium';
 import { BaseDrawStyleController } from 'src/features/tool/draw-style/base-draw-style.controller';
-import { LineDrawing, PinDrawing, PointDrawing, PolygonDrawing, RectangleDrawing, Shape } from '../tool.model';
-import { POINT_SYMBOLS } from 'src/constants';
+import { LineGeometry, PointGeometry, PolygonGeometry, RectangleGeometry, Shape } from '../tool.model';
 
 const SKETCH_COLOR = Color.fromBytes(0, 153, 255, 191);
 
 export class SketchDrawStyleController extends BaseDrawStyleController {
-  protected makePointEntity(drawing: PointDrawing): Entity {
+  protected makePointEntity(geometry: PointGeometry): Entity {
     return new Entity({
-      id: `${drawing.id}`,
-      position: drawing.coordinate,
+      id: `${geometry.id}`,
+      position: geometry.coordinate,
       properties: {
         type: Shape.Point,
         drawStyle: this.constructor,
@@ -35,33 +33,14 @@ export class SketchDrawStyleController extends BaseDrawStyleController {
     });
   }
 
-  protected makePinEntity(drawing: PinDrawing): Entity {
-    return new Entity({
-      id: `${drawing.id}`,
-      position: drawing.coordinate,
-      properties: {
-        type: Shape.Pin,
-        drawStyle: this.constructor,
-      },
-      billboard: {
-        image: `/images/${POINT_SYMBOLS[0]}`,
-        color: SKETCH_COLOR,
-        scale: 0.5,
-        verticalOrigin: VerticalOrigin.BOTTOM,
-        disableDepthTestDistance: 0,
-        heightReference: HeightReference.CLAMP_TO_GROUND,
-      },
-    });
-  }
-
-  protected makeLineEntity(drawing: LineDrawing): Entity {
+  protected makeLineEntity(geometry: LineGeometry): Entity {
     const material = SKETCH_COLOR;
     const newEntity = new Entity({
-      id: `${drawing.id}`,
+      id: `${geometry.id}`,
       properties: {
         type: Shape.Line,
         drawStyle: this.constructor,
-        coordinates: drawing.coordinates,
+        coordinates: geometry.coordinates,
       },
       polyline: {
         positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),
@@ -80,14 +59,14 @@ export class SketchDrawStyleController extends BaseDrawStyleController {
     return newEntity;
   }
 
-  protected makePolygonEntity(drawing: PolygonDrawing): Entity {
+  protected makePolygonEntity(geometry: PolygonGeometry): Entity {
     const material = SKETCH_COLOR;
     const newEntity = new Entity({
-      id: `${drawing.id}`,
+      id: `${geometry.id}`,
       properties: {
         type: Shape.Polygon,
         drawStyle: this.constructor,
-        coordinates: drawing.coordinates,
+        coordinates: geometry.coordinates,
       },
       polyline: {
         positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),
@@ -106,14 +85,14 @@ export class SketchDrawStyleController extends BaseDrawStyleController {
     return newEntity;
   }
 
-  protected makeRectangleEntity(drawing: RectangleDrawing): Entity {
+  protected makeRectangleEntity(geometry: RectangleGeometry): Entity {
     const material = SKETCH_COLOR;
     const newEntity = new Entity({
-      id: `${drawing.id}`,
+      id: `${geometry.id}`,
       properties: {
         type: Shape.Rectangle,
         drawStyle: this.constructor,
-        coordinates: drawing.coordinates,
+        coordinates: geometry.coordinates,
       },
       polyline: {
         positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),

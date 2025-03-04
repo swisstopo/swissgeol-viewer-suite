@@ -1,7 +1,7 @@
 import { CoreElement } from 'src/features/core';
 import { customElement } from 'lit/decorators.js';
 import { css, html } from 'lit';
-import { DrawToolVariant } from 'src/features/tool/tool.model';
+import { Shape } from 'src/features/tool/tool.model';
 import { repeat } from 'lit/directives/repeat.js';
 import { identity } from 'rxjs';
 
@@ -14,10 +14,10 @@ export class ToolList extends CoreElement {
 
   readonly render = () => html`
     ${repeat(
-      Object.values(DrawToolVariant),
+      Object.values(Shape),
       identity,
-      (variant) => html`
-        <ngm-tool-list-item variant="${variant}"></ngm-tool-list-item>
+      (shape) => html`
+        <ngm-tool-list-item shape="${shape}"></ngm-tool-list-item>
       `,
     )}
   `;

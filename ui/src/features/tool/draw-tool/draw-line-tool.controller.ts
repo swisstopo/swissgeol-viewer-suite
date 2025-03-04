@@ -1,20 +1,20 @@
 import { Cartesian3 } from 'cesium';
 import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
-import { Drawing, Shape } from 'src/features/tool/tool.model';
+import { Geometry, Shape } from 'src/features/tool/tool.model';
 import { Observable, Subject } from 'rxjs';
 import { asId } from 'src/models/id.model';
 
 export class DrawLineToolController implements DrawController {
   private readonly id = asId(crypto.randomUUID());
-  private readonly _drawing$ = new Subject<Drawing>();
+  private readonly _geometry$ = new Subject<Geometry>();
 
   private isFixed = false;
   private readonly coordinates: Cartesian3[] = [Cartesian3.ZERO];
 
   readonly isComplete = false;
 
-  get drawing$(): Observable<Drawing> {
-    return this._drawing$.asObservable();
+  get geometry$(): Observable<Geometry> {
+    return this._geometry$.asObservable();
   }
 
   handleClick(position: Cartesian3): void {
@@ -27,7 +27,7 @@ export class DrawLineToolController implements DrawController {
   }
 
   destroy(): void {
-    this._drawing$.complete();
+    this._geometry$.complete();
   }
 
   private draw(position: Cartesian3): void {
@@ -38,13 +38,13 @@ export class DrawLineToolController implements DrawController {
     }
 
     if (this.coordinates.length === 1) {
-      this._drawing$.next({
+      this._geometry$.next({
         id: this.id,
         shape: Shape.Point,
         coordinate: this.coordinates[0],
       });
     } else {
-      this._drawing$.next({
+      this._geometry$.next({
         id: this.id,
         shape: Shape.Line,
         coordinates: this.coordinates,

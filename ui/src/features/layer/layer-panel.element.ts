@@ -71,7 +71,7 @@ export class LayerPanel extends CoreElement {
         ${i18next.t('dtd_displayed_data_label')}
       </ngm-navigation-panel-header>
       <section class="layers">${this.renderLayers()}</section>
-      <hr />
+      <ngm-navigation-panel-divider></ngm-navigation-panel-divider>
       <section class="tabs">
         <ngm-layer-tabs .layers=${this.layers}></ngm-layer-tabs>
       </section>
@@ -114,14 +114,6 @@ export class LayerPanel extends CoreElement {
 
     section > * {
       max-width: calc(100vw);
-    }
-
-    /* hr */
-    hr {
-      height: 1px;
-      margin: 0 12px;
-      border: 0;
-      background-color: var(--color-border--emphasis-high);
     }
   `;
 }

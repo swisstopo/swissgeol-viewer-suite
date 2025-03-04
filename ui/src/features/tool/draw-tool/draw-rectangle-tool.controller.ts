@@ -1,20 +1,20 @@
 import { Cartesian3 } from 'cesium';
 import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
-import { Drawing, RectangleCoordinates, Shape } from 'src/features/tool/tool.model';
+import { Geometry, RectangleCoordinates, Shape } from 'src/features/tool/tool.model';
 import { Observable, Subject } from 'rxjs';
 import { asId } from 'src/models/id.model';
 import { rectanglify } from 'src/draw/helpers';
 
 export class DrawRectangleToolController implements DrawController {
   private readonly id = asId(crypto.randomUUID());
-  private readonly _drawing$ = new Subject<Drawing>();
+  private readonly _geometry$ = new Subject<Geometry>();
 
   private coordinates: [Cartesian3] | [Cartesian3, Cartesian3] | [Cartesian3, Cartesian3, Cartesian3] = [
     Cartesian3.ZERO,
   ];
 
-  get drawing$(): Observable<Drawing> {
-    return this._drawing$.asObservable();
+  get geometry$(): Observable<Geometry> {
+    return this._geometry$.asObservable();
   }
 
   get isComplete(): boolean {
@@ -48,27 +48,27 @@ export class DrawRectangleToolController implements DrawController {
   }
 
   destroy(): void {
-    this._drawing$.complete();
+    this._geometry$.complete();
   }
 
   private draw(): void {
     switch (this.coordinates.length) {
       case 1:
-        this._drawing$.next({
+        this._geometry$.next({
           id: this.id,
           shape: Shape.Point,
           coordinate: this.coordinates[0],
         });
         break;
       case 2:
-        this._drawing$.next({
+        this._geometry$.next({
           id: this.id,
           shape: Shape.Line,
           coordinates: this.coordinates,
         });
         break;
       case 3:
-        this._drawing$.next({
+        this._geometry$.next({
           id: this.id,
           shape: Shape.Rectangle,
           coordinates: rectanglify(this.coordinates) as RectangleCoordinates,

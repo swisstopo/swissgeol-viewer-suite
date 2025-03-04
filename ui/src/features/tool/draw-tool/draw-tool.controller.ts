@@ -1,5 +1,5 @@
 import { Cartesian3 } from 'cesium';
-import { Drawing } from 'src/features/tool/tool.model';
+import { Geometry } from 'src/features/tool/tool.model';
 import { Observable } from 'rxjs';
 
 /**
@@ -8,23 +8,23 @@ import { Observable } from 'rxjs';
  */
 export interface DrawController {
   /**
-   * The drawing created by the controller's coordinates.
+   * The geometry created by the controller's coordinates.
    *
    * If no coordinates are known, then this observable should be empty.
    *
    * While drawing, the output of this observable may continuously change.
-   * However, the controller is responsible for ensuring that the drawing's `id` remains
+   * However, the controller is responsible for ensuring that the geometry's `id` remains
    * the same across all versions.
    *
    * After calling {@link DrawController.destroy}, this observable has to complete.
    */
-  readonly drawing$: Observable<Drawing>;
+  readonly geometry$: Observable<Geometry>;
 
   /**
    * Whether the shape is complete.
    *
    * If this is `false`, then the shape will not be extended anymore.
-   * A click with a complete shape will lead to drawing being saved.
+   * A click with a complete shape will lead to geometry being saved.
    */
   readonly isComplete: boolean;
 
@@ -49,7 +49,7 @@ export interface DrawController {
 
   /**
    * Frees any resources associated with this controller.
-   * Completes the {@link DrawController.drawing$ drawing's observable}.
+   * Completes the {@link DrawController.geometry$ geometry's observable}.
    */
   destroy(): void;
 }

@@ -1,11 +1,10 @@
 import { DrawStyleController } from 'src/features/tool/draw-style/draw-style.controller';
 import {
-  Drawing,
-  LineDrawing,
-  PinDrawing,
-  PointDrawing,
-  PolygonDrawing,
-  RectangleDrawing,
+  Geometry,
+  LineGeometry,
+  PointGeometry,
+  PolygonGeometry,
+  RectangleGeometry,
   Shape,
 } from 'src/features/tool/tool.model';
 import {
@@ -20,83 +19,76 @@ import {
 } from 'cesium';
 
 export abstract class BaseDrawStyleController implements DrawStyleController {
-  public makeEntity(drawing: Drawing): Entity {
-    switch (drawing.shape) {
+  public makeEntity(geometry: Geometry): Entity {
+    switch (geometry.shape) {
       case Shape.Point: {
-        const entity = this.makePointEntity(drawing);
-        this.updatePoint(entity, drawing);
-        return entity;
-      }
-      case Shape.Pin: {
-        const entity = this.makePinEntity(drawing);
-        this.updatePoint(entity, drawing);
+        const entity = this.makePointEntity(geometry);
+        this.updatePoint(entity, geometry);
         return entity;
       }
       case Shape.Line: {
-        const entity = this.makeLineEntity(drawing);
-        this.updateLine(entity, drawing);
+        const entity = this.makeLineEntity(geometry);
+        this.updateLine(entity, geometry);
         return entity;
       }
       case Shape.Polygon: {
-        const entity = this.makePolygonEntity(drawing);
-        this.updateArea(entity, drawing);
+        const entity = this.makePolygonEntity(geometry);
+        this.updateArea(entity, geometry);
         return entity;
       }
       case Shape.Rectangle: {
-        const entity = this.makeRectangleEntity(drawing);
-        this.updateArea(entity, drawing);
+        const entity = this.makeRectangleEntity(geometry);
+        this.updateArea(entity, geometry);
         return entity;
       }
     }
   }
 
-  public updateEntity(entity: Entity, drawing: Drawing): Entity {
+  public updateEntity(entity: Entity, geometry: Geometry): Entity {
     const properties = entity.properties;
     if (properties === undefined) {
-      return this.makeEntity(drawing);
+      return this.makeEntity(geometry);
     }
     const style = properties.drawStyle?.getValue(JulianDate.now()) ?? null;
     if (style !== this.constructor) {
-      return this.makeEntity(drawing);
+      return this.makeEntity(geometry);
     }
 
     const entityType = (properties.type?.getValue(JulianDate.now()) ?? null) as Shape | null;
-    if (entityType !== drawing.shape) {
-      return this.makeEntity(drawing);
+    if (entityType !== geometry.shape) {
+      return this.makeEntity(geometry);
     }
-    switch (drawing.shape) {
+    switch (geometry.shape) {
       case Shape.Point:
-      case Shape.Pin:
-        this.updatePoint(entity, drawing);
+        this.updatePoint(entity, geometry);
         break;
       case Shape.Line:
-        this.updateLine(entity, drawing);
+        this.updateLine(entity, geometry);
         break;
       case Shape.Polygon:
       case Shape.Rectangle:
-        this.updateArea(entity, drawing);
+        this.updateArea(entity, geometry);
         break;
     }
     return entity;
   }
 
-  protected updatePoint(entity: Entity, drawing: PointDrawing | PinDrawing): void {
-    (entity.position as ConstantPositionProperty).setValue(drawing.coordinate);
+  protected updatePoint(entity: Entity, geometry: PointGeometry): void {
+    (entity.position as ConstantPositionProperty).setValue(geometry.coordinate);
   }
 
-  protected updateLine(entity: Entity, drawing: LineDrawing): void {
-    (entity.properties!.coordinates as ConstantProperty).setValue(drawing.coordinates);
+  protected updateLine(entity: Entity, geometry: LineGeometry): void {
+    (entity.properties!.coordinates as ConstantProperty).setValue(geometry.coordinates);
   }
 
-  protected updateArea(entity: Entity, drawing: PolygonDrawing | RectangleDrawing): void {
-    (entity.properties!.coordinates as ConstantProperty).setValue(this.mapAreaCoordinates(drawing.coordinates));
+  protected updateArea(entity: Entity, geometry: PolygonGeometry | RectangleGeometry): void {
+    (entity.properties!.coordinates as ConstantProperty).setValue(this.mapAreaCoordinates(geometry.coordinates));
   }
 
-  protected abstract makePointEntity(drawing: PointDrawing): Entity;
-  protected abstract makePinEntity(drawing: PinDrawing): Entity;
-  protected abstract makeLineEntity(drawing: LineDrawing): Entity;
-  protected abstract makePolygonEntity(drawing: PolygonDrawing): Entity;
-  protected abstract makeRectangleEntity(drawing: RectangleDrawing): Entity;
+  protected abstract makePointEntity(geometry: PointGeometry): Entity;
+  protected abstract makeLineEntity(geometry: LineGeometry): Entity;
+  protected abstract makePolygonEntity(geometry: PolygonGeometry): Entity;
+  protected abstract makeRectangleEntity(geometry: RectangleGeometry): Entity;
 
   protected mapAreaCoordinates(coordinates: Cartesian3[]): Cartesian3[] {
     return coordinates;

@@ -50,6 +50,7 @@ export class CoreTabList<T> extends CoreElement {
         this.panelsElement.appendChild(node);
       }
     }
+    this.panelsElement.hidden = this.panels.length === 0;
     for (const panel of this.panels) {
       panel.isHidden = panel.value !== this.value;
     }
@@ -78,7 +79,7 @@ export class CoreTabList<T> extends CoreElement {
       display: flex;
       justify-content: space-evenly;
       align-items: center;
-      background-color: white;
+      background-color: var(--color-bg--white);
       min-height: 52px;
       border-radius: 4px;
       padding: 6px;
