@@ -77,5 +77,9 @@ spec:
           - name: ION_DEFAULT_ACCESS_TOKEN
             value: "{{ .Values.ion.default_access_token }}"
 
+          # GST
+          - name: GST_URL
+            value: "{{ .Values.gst_url }}"
+
       imagePullSecrets:
       - name: {{ .Release.Namespace }}-registry
