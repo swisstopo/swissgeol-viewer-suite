@@ -1,40 +1,46 @@
-import {html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {cartesianToLv95, round} from '../projection';
-import {showSnackbarError, showSnackbarInfo} from '../notifications';
+import { html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { cartesianToLv95, round } from '../projection';
+import { showSnackbarError, showSnackbarInfo } from '../notifications';
 import i18next from 'i18next';
-import {LitElementI18n} from '../i18n.js';
-import type {Viewer} from 'cesium';
-import {Cartographic, Color, IonResource, JulianDate, KmlDataSource} from 'cesium';
+import { LitElementI18n } from '../i18n.js';
+import type { Viewer } from 'cesium';
+import {
+  Cartographic,
+  Color,
+  IonResource,
+  JulianDate,
+  KmlDataSource,
+} from 'cesium';
 import './ngm-gst-modal';
 import '../elements/ngm-i18n-content.js';
 import 'fomantic-ui-css/components/popup.js';
 import MainStore from '../store/main';
-import type {NgmToolbox} from './ngm-toolbox';
-import {classMap} from 'lit-html/directives/class-map.js';
+import type { NgmToolbox } from './ngm-toolbox';
+import { classMap } from 'lit-html/directives/class-map.js';
 import ToolboxStore from '../store/toolbox';
-import type {NgmGeometry} from './interfaces';
-import {pointInPolygon} from '../cesiumutils';
-import {gstServiceContext} from '../context';
-import {consume} from '@lit/context';
-import {GstService} from '../gst.service';
+import type { NgmGeometry } from './interfaces';
+import { pointInPolygon } from '../cesiumutils';
+import { gstServiceContext } from '../context';
+import { consume } from '@lit/context';
+import { GstService } from '../gst.service';
 import $ from 'jquery';
 
 export type OutputFormat = 'pdf' | 'png' | 'svg';
 
 @customElement('ngm-gst-interaction')
 export class NgmGstInteraction extends LitElementI18n {
-  @property({type: Boolean})
-  accessor hidden = true
+  @property({ type: Boolean })
+  accessor hidden = true;
   @state()
-  accessor gstExtent: KmlDataSource | undefined
+  accessor gstExtent: KmlDataSource | undefined;
   @state()
-  accessor depth = {}
+  accessor depth = {};
   @state()
-  accessor selectedId: string | undefined
+  accessor selectedId: string | undefined;
 
-  @consume({context: gstServiceContext})
-  accessor gstService!: GstService
+  @consume({ context: gstServiceContext })
+  accessor gstService!: GstService;
 
   private viewer: Viewer | null = null;
   private readonly minDepth_ = -6000;
@@ -46,7 +52,7 @@ export class NgmGstInteraction extends LitElementI18n {
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(viewer => {
+    MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
       this.initExtent().then(() => {
         if (this.gstExtent?.show !== !this.hidden)
@@ -54,7 +60,7 @@ export class NgmGstInteraction extends LitElementI18n {
       });
     });
 
-    document.addEventListener('keydown', event => {
+    document.addEventListener('keydown', (event) => {
       if (event.code === 'Escape') {
         this.abortController.abort();
         this.abortController = new AbortController();
@@ -63,21 +69,22 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   update(changedProperties) {
-    if (this.gstExtent?.show !== !this.hidden)
-      this.switchExtent(!this.hidden);
+    if (this.gstExtent?.show !== !this.hidden) this.switchExtent(!this.hidden);
     if (changedProperties.has('selectedId')) this.initDropdowns();
     super.update(changedProperties);
   }
 
   initDropdowns() {
-    this.querySelectorAll('.ngm-section-format').forEach(el => $(el).dropdown({
-      onChange: value => this.outputFormat = value as OutputFormat,
-      values: [
-        {name: 'PDF', value: 'pdf', selected: this.outputFormat === 'pdf'},
-        {name: 'SVG', value: 'svg', selected: this.outputFormat === 'svg'},
-        {name: 'PNG', value: 'png', selected: this.outputFormat === 'png'},
-      ],
-    }));
+    this.querySelectorAll('.ngm-section-format').forEach((el) =>
+      $(el).dropdown({
+        onChange: (value) => (this.outputFormat = value as OutputFormat),
+        values: [
+          { name: 'PDF', value: 'pdf', selected: this.outputFormat === 'pdf' },
+          { name: 'SVG', value: 'svg', selected: this.outputFormat === 'svg' },
+          { name: 'PNG', value: 'png', selected: this.outputFormat === 'png' },
+        ],
+      }),
+    );
   }
 
   async initExtent() {
@@ -91,13 +98,13 @@ export class NgmGstInteraction extends LitElementI18n {
     });
     await this.viewer.dataSources.add(this.gstExtent);
     this.gstExtent.show = false;
-    const entity = this.gstExtent.entities.values.find(ent => !!ent.polygon);
+    const entity = this.gstExtent.entities.values.find((ent) => !!ent.polygon);
     if (entity && entity.polygon) {
       entity.polygon.fill = <any>true;
       entity.polygon.material = <any>Color.RED.withAlpha(0.25);
       this.extentPositions = entity.polygon.hierarchy
-        ?.getValue(new JulianDate()).positions
-        .map(p => Cartographic.fromCartesian(p));
+        ?.getValue(new JulianDate())
+        .positions.map((p) => Cartographic.fromCartesian(p));
     }
   }
 
@@ -126,7 +133,9 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   private fetchGstGeometry(geom: NgmGeometry): Promise<any> {
-    const coords = geom.positions.map(position => cartesianToLv95(position)).map(round);
+    const coords = geom.positions
+      .map((position) => cartesianToLv95(position))
+      .map(round);
     switch (geom.type) {
       case 'point':
         return this.gstService.borehole({
@@ -157,10 +166,10 @@ export class NgmGstInteraction extends LitElementI18n {
 
     if (loading) {
       this.viewer!.canvas.style.cursor = 'wait';
-      buttons.forEach(button => button.classList.add('disabled'));
+      buttons.forEach((button) => button.classList.add('disabled'));
     } else {
       this.viewer!.canvas.style.cursor = 'default';
-      buttons.forEach(button => button.classList.remove('disabled'));
+      buttons.forEach((button) => button.classList.remove('disabled'));
     }
   }
 
@@ -181,7 +190,7 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   onDepthChange(event, id) {
-    this.depth = {...this.depth, [id]: Number(event.target.value)};
+    this.depth = { ...this.depth, [id]: Number(event.target.value) };
   }
 
   switchExtent(show: boolean) {
@@ -192,32 +201,32 @@ export class NgmGstInteraction extends LitElementI18n {
 
   onGeomClick(geom: NgmGeometry) {
     this.selectedId = this.selectedId === geom.id ? undefined : geom.id;
-    ToolboxStore.nextGeometryAction({id: geom.id, action: 'pick'});
+    ToolboxStore.nextGeometryAction({ id: geom.id, action: 'pick' });
   }
 
   geometryOutsideExtent(geom) {
-    const points = geom.positions.map(p => Cartographic.fromCartesian(p));
-    let inside = false;
+    const points = geom.positions.map((p) => Cartographic.fromCartesian(p));
+    let isInside = false;
     for (let i = 0; i < points.length; i++) {
-      inside = pointInPolygon(points[i], this.extentPositions);
-      if (inside) break;
+      isInside = pointInPolygon(points[i], this.extentPositions);
+      if (isInside) break;
     }
-    return !inside;
+    return !isInside;
   }
 
   onGeometryAdded(newGeometries: NgmGeometry[]) {
     if (this.hidden) return;
-    let valid = false;
+    let isValid = false;
     for (const geom of newGeometries) {
       if (geom.type !== 'polygon') {
-        valid = !this.geometryOutsideExtent(geom);
-        if (valid) {
+        isValid = !this.geometryOutsideExtent(geom);
+        if (isValid) {
           this.onGeomClick(geom);
           break;
         }
       }
     }
-    if (!valid) {
+    if (!isValid) {
       showSnackbarError(i18next.t('tbx_gst_no_models_in_region_error'));
     }
   }
@@ -226,16 +235,28 @@ export class NgmGstInteraction extends LitElementI18n {
     if (!geom.id) return '';
     if (this.depth[geom.id] === undefined) this.depth[geom.id] = -1500;
     return html`
-      <div class="ngm-gst-container" ?hidden=${geom.id !== this.selectedId || !active}>
-        <div class="ngm-input ${classMap({'ngm-input-warning': !this.hasValidDepth(geom.id)})}"
-             ?hidden=${geom.type !== 'rectangle'}>
-          <input type="number" placeholder="required"
-                 .value=${parseFloat(this.depth[geom.id]).toFixed(1)}
-                 @input=${evt => this.onDepthChange(evt, geom.id)}
-                 min="${this.minDepth_}"
-                 max="${this.maxDepth_}"
-                 step="100"/>
-          <span class="ngm-floating-label">${i18next.t('tbx_cross_sections_depth_label')}</span>
+      <div
+        class="ngm-gst-container"
+        ?hidden=${geom.id !== this.selectedId || !active}
+      >
+        <div
+          class="ngm-input ${classMap({
+            'ngm-input-warning': !this.hasValidDepth(geom.id),
+          })}"
+          ?hidden=${geom.type !== 'rectangle'}
+        >
+          <input
+            type="number"
+            placeholder="required"
+            .value=${parseFloat(this.depth[geom.id]).toFixed(1)}
+            @input=${(evt) => this.onDepthChange(evt, geom.id)}
+            min="${this.minDepth_}"
+            max="${this.maxDepth_}"
+            step="100"
+          />
+          <span class="ngm-floating-label">
+            ${i18next.t('tbx_cross_sections_depth_label')}
+          </span>
         </div>
         <div class="ngm-section-format-container">
           <label>${i18next.t('tbx_cross_sections_format_label')}</label>
@@ -244,8 +265,12 @@ export class NgmGstInteraction extends LitElementI18n {
             <i class="dropdown icon"></i>
           </div>
         </div>
-        <button class="ui button ngm-action-btn ${classMap({disabled: !this.hasValidParams(geom)})}"
-                @click=${() => this.getGST(geom)}>
+        <button
+          class="ui button ngm-action-btn ${classMap({
+            disabled: !this.hasValidParams(geom),
+          })}"
+          @click=${() => this.getGST(geom)}
+        >
           ${i18next.t('tbx_create_section_label')}
         </button>
       </div>
@@ -254,16 +279,22 @@ export class NgmGstInteraction extends LitElementI18n {
 
   render() {
     return html`
-      <ngm-draw-section ?hidden=${this.hidden} .enabledTypes=${['line', 'rectangle', 'point']}></ngm-draw-section>
+      <ngm-draw-section
+        ?hidden=${this.hidden}
+        .enabledTypes=${['line', 'rectangle', 'point']}
+      ></ngm-draw-section>
       <div class="ngm-divider"></div>
       <ngm-geometries-list
         .selectedId=${this.selectedId}
         .disabledTypes=${['polygon']}
-        .disabledCallback=${geom => this.geometryOutsideExtent(geom)}
-        .optionsTemplate=${(geom, active) => this.interactionTemplate(geom, active)}
-        @geomclick=${evt => this.onGeomClick(evt.detail)}
-        @geometriesadded=${evt => this.onGeometryAdded(evt.detail.newGeometries)}>
-      </ngm-geometries-list>`;
+        .disabledCallback=${(geom) => this.geometryOutsideExtent(geom)}
+        .optionsTemplate=${(geom, active) =>
+          this.interactionTemplate(geom, active)}
+        @geomclick=${(evt) => this.onGeomClick(evt.detail)}
+        @geometriesadded=${(evt) =>
+          this.onGeometryAdded(evt.detail.newGeometries)}
+      ></ngm-geometries-list>
+    `;
   }
 
   createRenderRoot() {

@@ -1,14 +1,11 @@
-import {ClientConfig} from './api/client-config';
-import type {OutputFormat} from './toolbox/ngm-gst-interaction';
+import { ClientConfig } from './api/client-config';
+import type { OutputFormat } from './toolbox/ngm-gst-interaction';
 
 export class GstService {
-  constructor(
-    private readonly clientConfig: ClientConfig,
-  ) {
-  }
+  constructor(private readonly clientConfig: ClientConfig) {}
 
   borehole(options: GstRequestOptionsWithDepth): Promise<any> {
-    const {coords, signal, title, outputType, depth} = {
+    const { coords, signal, title, outputType, depth } = {
       ...options,
       depth: options.depth ?? 5000,
       outputType: options.outputType ?? DEFAULT_GST_OUTPUT_TYPE,
@@ -31,14 +28,14 @@ export class GstService {
       title: title,
       user: 'NGM',
       crs: 'EPSG:2056',
-      verticalExageration: '-1'
+      verticalExageration: '-1',
     });
     const url = `${this.clientConfig.gstUrl}/webgui/createBoreholeWithOverviewMap.php?${params}`;
-    return fetch(url, {signal}).then(response => response.json());
+    return fetch(url, { signal }).then((response) => response.json());
   }
 
   verticalCrossSection(options: GstRequestOptions): Promise<any> {
-    const {coords, signal, title, outputType} = {
+    const { coords, signal, title, outputType } = {
       ...options,
       outputType: options.outputType ?? DEFAULT_GST_OUTPUT_TYPE,
       title: options.title ?? DEFAULT_GST_TITLE,
@@ -64,14 +61,14 @@ export class GstService {
       title: title,
       user: 'NGM',
       crs: 'EPSG:2056',
-      verticalExageration: '-1'
+      verticalExageration: '-1',
     });
     const url = `${this.clientConfig.gstUrl}/webgui/createCrossSectionWithOverviewMap.php?${params}`;
-    return fetch(url, {signal}).then(response => response.json());
+    return fetch(url, { signal }).then((response) => response.json());
   }
 
   horizontalCrossSection(options: GstRequestOptionsWithDepth): Promise<any> {
-    const {coords, signal, title, outputType, depth} = {
+    const { coords, signal, title, outputType, depth } = {
       ...options,
       depth: options.depth ?? -2500,
       outputType: options.outputType ?? DEFAULT_GST_OUTPUT_TYPE,
@@ -91,7 +88,9 @@ export class GstService {
     const v30y = coords[0][1] - coords[3][1];
     const magnitude = Math.sqrt(v30x * v30x + v30y * v30y);
 
-    const direction = isLeft(coords[0], coords[1], coords[3]) ? 'left' : 'right';
+    const direction = isLeft(coords[0], coords[1], coords[3])
+      ? 'left'
+      : 'right';
 
     const side = [coords[0], coords[1]];
 
@@ -119,32 +118,29 @@ export class GstService {
       title: title,
       user: 'NGM',
       crs: 'EPSG:2056',
-      verticalExageration: '-1'
+      verticalExageration: '-1',
     });
     const url = `${this.clientConfig.gstUrl}/webgui/createHorizontalSectionWithOverviewMap.php?${params}`;
-    return fetch(url, {signal}).then(response => response.json());
+    return fetch(url, { signal }).then((response) => response.json());
   }
 }
 
-
 interface GstRequestOptions {
-  coords: number[][]
-  signal: AbortSignal
-  outputType?: OutputFormat
-  title?: string
+  coords: number[][];
+  signal: AbortSignal;
+  outputType?: OutputFormat;
+  title?: string;
 }
 
 interface GstRequestOptionsWithDepth extends GstRequestOptions {
-  depth?: number
+  depth?: number;
 }
 
 const DEFAULT_GST_OUTPUT_TYPE: OutputFormat = 'pdf';
 const DEFAULT_GST_TITLE: string = '';
 
-
-const joinCoordinates = (coords: number[][], delimiter: string = ','): string => (
-  coords.map(coordinate => coordinate.join(' ')).join(delimiter)
-);
+const joinCoordinates = (coords: number[][], delimiter: string = ','): string =>
+  coords.map((coordinate) => coordinate.join(' ')).join(delimiter);
 
 /**
  * @param a point on the line
@@ -152,6 +148,5 @@ const joinCoordinates = (coords: number[][], delimiter: string = ','): string =>
  * @param c point to test
  * @return point 'c' is on the left side of the line passing by 'a' and 'b'
  */
-const isLeft = (a: number[], b: number[], c: number[]): boolean => (
-  ((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])) > 0
-);
+const isLeft = (a: number[], b: number[], c: number[]): boolean =>
+  (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]) > 0;
