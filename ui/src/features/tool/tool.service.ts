@@ -12,7 +12,7 @@ import { DrawTool, Feature, Geometry, Shape, Tool, ToolType } from 'src/features
 import { BaseService } from 'src/utils/base.service';
 import { DrawPointToolController } from 'src/features/tool/draw-tool/draw-point-tool.controller';
 import { DrawToolController } from 'src/features/tool/draw-tool/draw-tool.controller';
-import { BehaviorSubject, filter, map, Observable, startWith, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, shareReplay, startWith, Subject, Subscription } from 'rxjs';
 import { Id } from 'src/models/id.model';
 import { DrawRectangleToolController } from 'src/features/tool/draw-tool/draw-rectangle-tool.controller';
 import { DrawLineToolController } from 'src/features/tool/draw-tool/draw-line-tool.controller';
@@ -32,6 +32,14 @@ export class ToolService extends BaseService {
    */
   private readonly features = new Map<Id<Feature>, Feature>();
 
+  private readonly featureChanged$ = new Subject<Id<Feature>>();
+
+  private readonly _features$ = this.featureChanged$.pipe(
+    startWith(null),
+    map(() => [...this.features.values()]),
+    shareReplay(1),
+  );
+
   /**
    * All current geometries, mapped by their ids.
    * @private
@@ -48,8 +56,6 @@ export class ToolService extends BaseService {
   private _viewer: Viewer | null = null;
 
   private readonly _activeTool$ = new BehaviorSubject<DrawTool | null>(null);
-
-  private readonly featureChanged$ = new Subject<Id<Feature>>();
 
   private activeToolSubscription: Subscription | null = null;
 
@@ -69,10 +75,11 @@ export class ToolService extends BaseService {
   }
 
   public get features$(): Observable<Feature[]> {
-    return this.featureChanged$.pipe(
-      startWith(null),
-      map(() => [...this.features.values()]),
-    );
+    return this._features$;
+  }
+
+  public get isEmpty(): boolean {
+    return this.features.size === 0;
   }
 
   public findFeature(id: Id<Feature>): Feature | null {
@@ -91,6 +98,16 @@ export class ToolService extends BaseService {
     for (const feature of features) {
       this.addFeature(feature);
     }
+  }
+
+  public removeFeature(id: Id<Feature>): void {
+    const feature = this.features.get(id);
+    if (feature === undefined) {
+      return;
+    }
+    this.features.delete(id);
+    this.removeGeometry(feature.geometry.id);
+    this.featureChanged$.next(id);
   }
 
   public activate(tool: Tool): void {
@@ -172,11 +189,7 @@ export class ToolService extends BaseService {
           });
           this.draw(geometry, this.styles.default);
         } else {
-          const { id } = geometry;
-          this.geometries.delete(id);
-          this.geometriesToEntities.delete(id);
-          this.dataSource.entities.removeById(`${id}`);
-          this.viewer.scene.requestRender();
+          this.removeGeometry(geometry.id);
         }
       },
     });
@@ -221,6 +234,13 @@ export class ToolService extends BaseService {
     }
     this.geometries.set(geometry.id, geometry);
     this.featureChanged$.next(geometry.id);
+    this.viewer.scene.requestRender();
+  }
+
+  private removeGeometry(id: Id<Geometry>): void {
+    this.geometries.delete(id);
+    this.geometriesToEntities.delete(id);
+    this.dataSource.entities.removeById(`${id}`);
     this.viewer.scene.requestRender();
   }
 

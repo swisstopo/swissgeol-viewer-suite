@@ -10,11 +10,19 @@ export class ToolPanel extends CoreElement {
   @state()
   private accessor activeTab = Tab.Draw;
 
+  @state()
+  private accessor hasFeatures = false;
+
   @consume({ context: ToolService.context() })
   private accessor toolService!: ToolService;
 
-  disconnectedCallback(): void {
-    this.toolService.deactivate();
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    this.toolService.features$.subscribe((features) => {
+      this.hasFeatures = features.length === 0;
+    });
+    this.register(() => this.toolService.deactivate());
   }
 
   private close(): void {
@@ -33,8 +41,12 @@ export class ToolPanel extends CoreElement {
         ${i18next.t('tool.heading', { ns: 'features' })}
       </ngm-navigation-panel-header>
 
-      <ngm-tool-feature-list></ngm-tool-feature-list>
-      <ngm-navigation-panel-divider></ngm-navigation-panel-divider>
+      ${this.toolService.isEmpty
+        ? undefined
+        : html`
+            <ngm-tool-feature-list></ngm-tool-feature-list>
+            <ngm-navigation-panel-divider></ngm-navigation-panel-divider>
+          `}
       ${renderTabs(Tab, {
         value: this.activeTab,
         onValueChange: this.handleTabChange,

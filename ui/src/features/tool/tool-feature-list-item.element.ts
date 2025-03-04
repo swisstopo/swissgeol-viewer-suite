@@ -17,6 +17,13 @@ export class ToolFeatureListItem extends CoreElement {
   @consume({ context: ToolService.context() })
   accessor toolService!: ToolService;
 
+  private handleRemoval(): void {
+    if (this.feature === null) {
+      return;
+    }
+    this.toolService.removeFeature(this.feature.id);
+  }
+
   private makeNameOfFeature(feature: Feature): string {
     const { name, geometry } = feature;
     if (typeof name === 'string') {
@@ -45,7 +52,7 @@ export class ToolFeatureListItem extends CoreElement {
         <ngm-core-icon icon="menu"></ngm-core-icon>
       </ngm-core-button>
       <ngm-core-dropdown>
-        <ngm-core-dropdown-item role="button">Hey!</ngm-core-dropdown-item>
+        <ngm-core-dropdown-item role="button" @click="${this.handleRemoval}">Remove</ngm-core-dropdown-item>
       </ngm-core-dropdown>
     `;
   };
