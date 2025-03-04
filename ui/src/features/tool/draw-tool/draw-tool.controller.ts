@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
  * A `DrawController` represents the state of a shape that is currently being drawn.
  * It is made up of a collection of coordinates, and determines how these coordinates are drawn.
  */
-export interface DrawController {
+export interface DrawToolController {
   /**
    * The geometry created by the controller's coordinates.
    *
@@ -16,7 +16,7 @@ export interface DrawController {
    * However, the controller is responsible for ensuring that the geometry's `id` remains
    * the same across all versions.
    *
-   * After calling {@link DrawController.destroy}, this observable has to complete.
+   * After calling {@link DrawToolController.destroy}, this observable has to complete.
    */
   readonly geometry$: Observable<Geometry>;
 
@@ -33,7 +33,7 @@ export interface DrawController {
    * This should add the coordinate to the controller's shape.
    *
    * If your shape is complete and should not be extended anymore,
-   * set {@link DrawController.isComplete} to `true`.
+   * set {@link DrawToolController.isComplete} to `true`.
    *
    * @param position The coordinate that has been clicked.
    */

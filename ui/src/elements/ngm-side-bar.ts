@@ -191,6 +191,8 @@ export class SideBar extends LitElementI18n {
 
     const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
     const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
+
+    // TODO remove this.
     const toolsOldBtn = this.renderMenuItem('tools', 'menu_tools', 'tools_old');
     const projectsBtn = this.renderMenuItem('projects', 'menu_projects', 'dashboard');
     const shareBtn = this.renderMenuItem('share', 'menu_share', 'share');

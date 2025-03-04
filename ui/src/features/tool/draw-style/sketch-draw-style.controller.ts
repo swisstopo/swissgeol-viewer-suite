@@ -1,13 +1,4 @@
-import {
-  CallbackProperty,
-  Cartesian3,
-  ClassificationType,
-  Color,
-  CornerType,
-  Entity,
-  HeightReference,
-  JulianDate,
-} from 'cesium';
+import { Cartesian3, ClassificationType, Color, CornerType, Entity, HeightReference } from 'cesium';
 import { BaseDrawStyleController } from 'src/features/tool/draw-style/base-draw-style.controller';
 import { LineGeometry, PointGeometry, PolygonGeometry, RectangleGeometry, Shape } from '../tool.model';
 
@@ -43,7 +34,7 @@ export class SketchDrawStyleController extends BaseDrawStyleController {
         coordinates: geometry.coordinates,
       },
       polyline: {
-        positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),
+        positions: this.makePositionsProperty(() => newEntity),
         material,
         clampToGround: true,
         width: 4,
@@ -69,7 +60,7 @@ export class SketchDrawStyleController extends BaseDrawStyleController {
         coordinates: geometry.coordinates,
       },
       polyline: {
-        positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),
+        positions: this.makePositionsProperty(() => newEntity),
         material,
         clampToGround: true,
         width: 4,
@@ -95,7 +86,7 @@ export class SketchDrawStyleController extends BaseDrawStyleController {
         coordinates: geometry.coordinates,
       },
       polyline: {
-        positions: new CallbackProperty(() => newEntity.properties!.coordinates!.getValue(JulianDate.now()), false),
+        positions: this.makePositionsProperty(() => newEntity),
         material,
         clampToGround: true,
         width: 4,

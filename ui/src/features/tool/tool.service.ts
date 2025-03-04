@@ -11,7 +11,7 @@ import MainStore from 'src/store/main';
 import { DrawTool, Feature, Geometry, Shape, Tool, ToolType } from 'src/features/tool/tool.model';
 import { BaseService } from 'src/utils/base.service';
 import { DrawPointToolController } from 'src/features/tool/draw-tool/draw-point-tool.controller';
-import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
+import { DrawToolController } from 'src/features/tool/draw-tool/draw-tool.controller';
 import { BehaviorSubject, filter, map, Observable, startWith, Subject, Subscription } from 'rxjs';
 import { Id } from 'src/models/id.model';
 import { DrawRectangleToolController } from 'src/features/tool/draw-tool/draw-rectangle-tool.controller';
@@ -190,7 +190,7 @@ export class ToolService extends BaseService {
     });
   }
 
-  private makeDrawController(shape: Shape): DrawController {
+  private makeDrawController(shape: Shape): DrawToolController {
     switch (shape) {
       case Shape.Point:
         return new DrawPointToolController();

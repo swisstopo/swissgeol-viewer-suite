@@ -1,10 +1,10 @@
 import { Cartesian3 } from 'cesium';
-import { DrawController } from 'src/features/tool/draw-tool/draw-tool.controller';
+import { DrawToolController } from 'src/features/tool/draw-tool/draw-tool.controller';
 import { PointGeometry, Shape } from 'src/features/tool/tool.model';
 import { Observable, Subject } from 'rxjs';
 import { asId } from 'src/models/id.model';
 
-export class DrawPointToolController implements DrawController {
+export class DrawPointToolController implements DrawToolController {
   private readonly id = asId(crypto.randomUUID());
   private readonly _geometry$ = new Subject<PointGeometry>();
 
