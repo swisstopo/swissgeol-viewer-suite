@@ -17,16 +17,22 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
 
   private isInitialized = false;
 
-  private isShown = false;
+  private _isShown = false;
 
   protected constructor() {
     super();
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
   }
+
   get target(): Element | null {
     return this._target ?? this.previousElementSibling;
   }
+
+  get isShown(): boolean {
+    return this._isShown;
+  }
+
   @property()
   set target(target: Element | null) {
     this.unregisterTarget();
@@ -137,22 +143,22 @@ export abstract class CoreBasePopup<TBox extends CoreBasePopupBox> extends LitEl
   }
 
   protected show(event?: Event): void {
-    if (this.isShown || this.box == null) {
+    if (this._isShown || this.box == null) {
       return;
     }
     event?.stopImmediatePropagation();
     this.box.show();
     this.updatePosition({ allowViewportCheck: true });
-    this.isShown = true;
+    this._isShown = true;
   }
 
   protected hide(event?: Event): void {
-    if (!this.isShown || this.box == null) {
+    if (!this._isShown || this.box == null) {
       return;
     }
     event?.stopImmediatePropagation();
     this.box.hide();
-    this.isShown = false;
+    this._isShown = false;
   }
 
   private updatePosition(options: { position?: PopupPosition; allowViewportCheck?: boolean } = {}): void {
