@@ -36,6 +36,8 @@ export class NgmGeometryInfo extends LitElementI18n {
   constructor() {
     super();
     MainStore.viewer.subscribe((viewer) => (this.viewer = viewer));
+
+    // This is the  main entry point for editing.
     ToolboxStore.openedGeometryOptions.subscribe((options) => {
       this.noEdit = false;
       this.geometriesDataSource = this.viewer?.dataSources.getByName(GEOMETRY_DATASOURCE_NAME)[0];

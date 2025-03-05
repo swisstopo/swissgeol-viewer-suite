@@ -3,6 +3,7 @@ import { Id } from 'src/models/id.model';
 
 export enum ToolType {
   Draw = 'Draw',
+  Edit = 'Edit',
 }
 
 export interface Feature {
@@ -56,7 +57,12 @@ export interface DrawTool extends BaseTool {
   shape: Shape;
 }
 
-export type Tool = DrawTool;
+export interface EditTool extends BaseTool {
+  type: ToolType.Edit;
+  featureId: Id<Feature>;
+}
+
+export type Tool = DrawTool | EditTool;
 
 interface BaseGeometry {
   id: Id<this>;

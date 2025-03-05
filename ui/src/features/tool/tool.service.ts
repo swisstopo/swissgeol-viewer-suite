@@ -116,6 +116,9 @@ export class ToolService extends BaseService {
       case ToolType.Draw:
         this.activateDrawTool(tool);
         break;
+      case ToolType.Edit:
+        this.activateEditTool(tool);
+        break;
     }
   }
 
@@ -140,7 +143,7 @@ export class ToolService extends BaseService {
   }
 
   private activateDrawTool(tool: DrawTool): void {
-    const controller = this.makeDrawController(tool.shape);
+    const controller = this.makeDrawToolController(tool.shape);
     const screen = new ScreenSpaceEventHandler(this.viewer.canvas);
 
     let shouldBeSaved = false;
@@ -203,7 +206,9 @@ export class ToolService extends BaseService {
     });
   }
 
-  private makeDrawController(shape: Shape): DrawToolController {
+  private activateDrawTool(tool: DrawTool): void {}
+
+  private makeDrawToolController(shape: Shape): DrawToolController {
     switch (shape) {
       case Shape.Point:
         return new DrawPointToolController();

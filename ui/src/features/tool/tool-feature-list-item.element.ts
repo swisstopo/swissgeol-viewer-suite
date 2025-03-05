@@ -1,7 +1,7 @@
 import { CoreElement } from 'src/features/core';
 import { customElement, property, state } from 'lit/decorators.js';
 import { css, html } from 'lit';
-import { Feature } from 'src/features/tool/tool.model';
+import { Feature, ToolType } from 'src/features/tool/tool.model';
 import i18next from 'i18next';
 import { consume } from '@lit/context';
 import { ToolService } from 'src/features/tool/tool.service';
@@ -17,7 +17,17 @@ export class ToolFeatureListItem extends CoreElement {
   @consume({ context: ToolService.context() })
   accessor toolService!: ToolService;
 
-  private handleRemoval(): void {
+  private handleEditInput(): void {
+    if (this.feature === null) {
+      return;
+    }
+    this.toolService.activate({
+      type: ToolType.Edit,
+      featureId: this.feature.id,
+    });
+  }
+
+  private handleRemoveInput(): void {
     if (this.feature === null) {
       return;
     }
@@ -52,7 +62,8 @@ export class ToolFeatureListItem extends CoreElement {
         <ngm-core-icon icon="menu"></ngm-core-icon>
       </ngm-core-button>
       <ngm-core-dropdown>
-        <ngm-core-dropdown-item role="button" @click="${this.handleRemoval}">Remove</ngm-core-dropdown-item>
+        <ngm-core-dropdown-item role="button" @click="${this.handleEditInput}">Edit</ngm-core-dropdown-item>
+        <ngm-core-dropdown-item role="button" @click="${this.handleRemoveInput}">Remove</ngm-core-dropdown-item>
       </ngm-core-dropdown>
     `;
   };
