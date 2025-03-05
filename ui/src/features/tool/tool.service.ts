@@ -27,6 +27,7 @@ import { DefaultDrawStyleController } from 'src/features/tool/draw-style/default
 import { DrawStyleController } from 'src/features/tool/draw-style/draw-style.controller';
 import { CoordinateListEditToolController } from 'src/features/tool/edit-tool/coordinate-list-edit-tool.controller';
 import { EditAnchor, EditAnchorType, EditToolController } from 'src/features/tool/edit-tool/edit-tool.controller';
+import { RectangleEditToolController } from 'src/features/tool/edit-tool/rectangle-edit-tool.controller';
 
 export class ToolService extends BaseService {
   private readonly dataSource = new CustomDataSource('tool.drawings');
@@ -236,16 +237,9 @@ export class ToolService extends BaseService {
     if (feature === undefined) {
       throw new Error(`no such feature: ${tool.featureId}`);
     }
-    switch (feature.geometry.shape) {
-      case Shape.Point:
-        throw new Error('nyi');
-      case Shape.Line:
-        break;
-      case Shape.Polygon:
-        break;
-      case Shape.Rectangle:
-        break;
-    }
+
+    const controller = this.makeEditToolController(feature.geometry);
+    const screen = new ScreenSpaceEventHandler(this.viewer.canvas);
 
     const featureEntity = this.geometriesToEntities.get(feature.geometry.id)!;
     featureEntity.properties!.coordinates = new CallbackProperty(
@@ -280,8 +274,6 @@ export class ToolService extends BaseService {
       entity.properties!.color = anchor.type === EditAnchorType.Node ? Color.WHITE : Color.GRAY;
     };
 
-    const controller = this.makeEditToolController(feature.geometry);
-    const screen = new ScreenSpaceEventHandler(this.viewer.canvas);
     for (const anchor of controller.anchors) {
       this.dataSourceForEdits.entities.add(makeAnchorEntity(anchor));
     }
@@ -346,7 +338,7 @@ export class ToolService extends BaseService {
       case Shape.Polygon:
         return new CoordinateListEditToolController(geometry.coordinates, { isArea: true });
       case Shape.Rectangle:
-        throw new Error('not yet implemented');
+        return new RectangleEditToolController(geometry);
     }
   }
 

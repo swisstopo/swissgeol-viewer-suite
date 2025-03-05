@@ -102,6 +102,7 @@ export interface RectangleGeometry extends BaseGeometry {
   coordinates: RectangleCoordinates;
 }
 
-export type RectangleCoordinates = [Cartesian3, Cartesian3, Cartesian3, Cartesian3];
+export type Array4<T> = [T, T, T, T];
+export type RectangleCoordinates = Array4<Cartesian3>;
 
 export type Geometry = PointGeometry | LineGeometry | PolygonGeometry | RectangleGeometry;
