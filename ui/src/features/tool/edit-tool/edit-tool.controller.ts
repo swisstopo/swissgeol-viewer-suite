@@ -3,7 +3,9 @@ import { Id } from 'src/models/id.model';
 import { Observable } from 'rxjs';
 
 export interface EditToolController {
-  readonly anchors$: Observable<EditAnchor[]>;
+  readonly anchors: EditAnchor[];
+
+  readonly anchorChanged$: Observable<EditAnchor>;
 
   handleAnchorDrag(id: Id<EditAnchor>, position: Cartesian3): void;
 }

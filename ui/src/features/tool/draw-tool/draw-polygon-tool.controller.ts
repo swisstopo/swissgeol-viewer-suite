@@ -18,8 +18,8 @@ export class DrawPolygonToolController implements DrawToolController {
   }
 
   handleClick(position: Cartesian3): void {
-    this.isFixed = true;
     this.draw(position);
+    this.isFixed = true;
   }
 
   handleMouseMove(position: Cartesian3): void {

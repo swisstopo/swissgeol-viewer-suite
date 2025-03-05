@@ -1,14 +1,19 @@
 import {
+  CallbackProperty,
   Cartesian2,
   Cartesian3,
+  Color,
+  ConstantPositionProperty,
   CustomDataSource,
   Entity,
+  HeightReference,
+  Property,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   Viewer,
 } from 'cesium';
 import MainStore from 'src/store/main';
-import { DrawTool, Feature, Geometry, Shape, Tool, ToolType } from 'src/features/tool/tool.model';
+import { DrawTool, EditTool, Feature, Geometry, Shape, Tool, ToolType } from 'src/features/tool/tool.model';
 import { BaseService } from 'src/utils/base.service';
 import { DrawPointToolController } from 'src/features/tool/draw-tool/draw-point-tool.controller';
 import { DrawToolController } from 'src/features/tool/draw-tool/draw-tool.controller';
@@ -20,9 +25,12 @@ import { DrawPolygonToolController } from 'src/features/tool/draw-tool/draw-poly
 import { SketchDrawStyleController } from 'src/features/tool/draw-style/sketch-draw-style.controller';
 import { DefaultDrawStyleController } from 'src/features/tool/draw-style/default-draw-style.controller';
 import { DrawStyleController } from 'src/features/tool/draw-style/draw-style.controller';
+import { CoordinateListEditToolController } from 'src/features/tool/edit-tool/coordinate-list-edit-tool.controller';
+import { EditAnchor, EditAnchorType, EditToolController } from 'src/features/tool/edit-tool/edit-tool.controller';
 
 export class ToolService extends BaseService {
-  private readonly dataSource = new CustomDataSource('tool-drawings');
+  private readonly dataSource = new CustomDataSource('tool.drawings');
+  private readonly dataSourceForEdits = new CustomDataSource('tool.edit');
 
   /**
    * All current features, mapped by their ids.
@@ -70,6 +78,7 @@ export class ToolService extends BaseService {
       this._viewer = viewer;
       if (viewer !== null) {
         viewer.dataSources.add(this.dataSource).then();
+        viewer.dataSources.add(this.dataSourceForEdits).then();
       }
     });
   }
@@ -183,6 +192,9 @@ export class ToolService extends BaseService {
           return;
         }
         if (shouldBeSaved) {
+          if (geometry.shape === Shape.Line) {
+            console.log(geometry.coordinates);
+          }
           this.features.set(geometry.id, {
             id: geometry.id,
             name: {
@@ -206,8 +218,6 @@ export class ToolService extends BaseService {
     });
   }
 
-  private activateDrawTool(tool: DrawTool): void {}
-
   private makeDrawToolController(shape: Shape): DrawToolController {
     switch (shape) {
       case Shape.Point:
@@ -218,6 +228,125 @@ export class ToolService extends BaseService {
         return new DrawPolygonToolController();
       case Shape.Rectangle:
         return new DrawRectangleToolController();
+    }
+  }
+
+  private activateEditTool(tool: EditTool): void {
+    const feature = this.features.get(tool.featureId);
+    if (feature === undefined) {
+      throw new Error(`no such feature: ${tool.featureId}`);
+    }
+    switch (feature.geometry.shape) {
+      case Shape.Point:
+        throw new Error('nyi');
+      case Shape.Line:
+        break;
+      case Shape.Polygon:
+        break;
+      case Shape.Rectangle:
+        break;
+    }
+
+    const featureEntity = this.geometriesToEntities.get(feature.geometry.id)!;
+    featureEntity.properties!.coordinates = new CallbackProperty(
+      () => controller.anchors.filter((it) => it.type === EditAnchorType.Node).map((it) => it.coordinate),
+      false,
+    );
+
+    const makeAnchorEntity = (anchor: EditAnchor): Entity => {
+      const entity = new Entity({
+        id: `${anchor.id}`,
+        position: anchor.coordinate,
+        properties: {
+          type: Shape.Point,
+          drawStyle: this.constructor,
+          color: Color.WHITE,
+        },
+        point: {
+          color: new CallbackProperty(() => (entity.properties!.color as Property).getValue(), false),
+          outlineWidth: 1,
+          outlineColor: Color.BLACK,
+          pixelSize: 9,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          heightReference: HeightReference.CLAMP_TO_GROUND,
+        },
+      });
+      updateAnchorEntity(entity, anchor);
+      return entity;
+    };
+
+    const updateAnchorEntity = (entity: Entity, anchor: EditAnchor): void => {
+      entity.position = new ConstantPositionProperty(anchor.coordinate);
+      entity.properties!.color = anchor.type === EditAnchorType.Node ? Color.WHITE : Color.GRAY;
+    };
+
+    const controller = this.makeEditToolController(feature.geometry);
+    const screen = new ScreenSpaceEventHandler(this.viewer.canvas);
+    for (const anchor of controller.anchors) {
+      this.dataSourceForEdits.entities.add(makeAnchorEntity(anchor));
+    }
+
+    let activeAnchorId: Id<EditAnchor> | null = null;
+    screen.setInputAction((event: ScreenSpaceEventHandler.PositionedEvent) => {
+      const objects = this.viewer.scene.drillPick(event.position, 5, 5, 5);
+      for (const object of objects) {
+        if (!('id' in object) || !(object.id instanceof Entity)) {
+          continue;
+        }
+        const { id: entity } = object;
+        const anchor = controller.anchors.find((it) => it.id === entity.id);
+        if (anchor === undefined) {
+          continue;
+        }
+        activeAnchorId = anchor.id;
+        this.viewer.scene.screenSpaceCameraController.enableInputs = false;
+        break;
+      }
+    }, ScreenSpaceEventType.LEFT_DOWN);
+
+    screen.setInputAction(() => {
+      activeAnchorId = null;
+      this.viewer.scene.screenSpaceCameraController.enableInputs = true;
+    }, ScreenSpaceEventType.LEFT_UP);
+
+    screen.setInputAction((event: ScreenSpaceEventHandler.MotionEvent) => {
+      if (activeAnchorId === null) {
+        return;
+      }
+      const position = this.pick(event.endPosition);
+      if (position === null) {
+        return;
+      }
+      controller.handleAnchorDrag(activeAnchorId, position);
+    }, ScreenSpaceEventType.MOUSE_MOVE);
+
+    controller.anchorChanged$.subscribe((anchor) => {
+      const entity = this.dataSourceForEdits.entities.getById(`${anchor.id}`);
+      if (entity === undefined) {
+        this.dataSourceForEdits.entities.add(makeAnchorEntity(anchor));
+      } else {
+        updateAnchorEntity(entity, anchor);
+      }
+
+      this.viewer.scene.requestRender();
+    });
+
+    this.activeToolSubscription = new Subscription(() => {
+      screen.destroy();
+      this.dataSourceForEdits.entities.removeAll();
+    });
+  }
+
+  private makeEditToolController(geometry: Geometry): EditToolController {
+    switch (geometry.shape) {
+      case Shape.Point:
+        throw new Error('not yet implemented');
+      case Shape.Line:
+        return new CoordinateListEditToolController(geometry.coordinates, { isArea: false });
+      case Shape.Polygon:
+        return new CoordinateListEditToolController(geometry.coordinates, { isArea: true });
+      case Shape.Rectangle:
+        throw new Error('not yet implemented');
     }
   }
 
