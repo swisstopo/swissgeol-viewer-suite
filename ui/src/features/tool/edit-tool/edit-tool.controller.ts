@@ -8,6 +8,8 @@ export interface EditToolController {
   readonly anchorChanged$: Observable<EditAnchor>;
 
   handleAnchorDrag(id: Id<EditAnchor>, position: Cartesian3): void;
+
+  handleGeometryDrag(position: Cartesian3): void;
 }
 
 export interface EditAnchor {
@@ -19,4 +21,5 @@ export interface EditAnchor {
 export enum EditAnchorType {
   Node,
   Edge,
+  Virtual,
 }

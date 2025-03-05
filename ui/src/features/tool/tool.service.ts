@@ -1,4 +1,5 @@
 import {
+  CallbackPositionProperty,
   CallbackProperty,
   Cartesian2,
   Cartesian3,
@@ -28,6 +29,7 @@ import { DrawStyleController } from 'src/features/tool/draw-style/draw-style.con
 import { CoordinateListEditToolController } from 'src/features/tool/edit-tool/coordinate-list-edit-tool.controller';
 import { EditAnchor, EditAnchorType, EditToolController } from 'src/features/tool/edit-tool/edit-tool.controller';
 import { RectangleEditToolController } from 'src/features/tool/edit-tool/rectangle-edit-tool.controller';
+import { PointEditToolController } from 'src/features/tool/edit-tool/point-edit-tool.controller';
 
 export class ToolService extends BaseService {
   private readonly dataSource = new CustomDataSource('tool.drawings');
@@ -242,10 +244,14 @@ export class ToolService extends BaseService {
     const screen = new ScreenSpaceEventHandler(this.viewer.canvas);
 
     const featureEntity = this.geometriesToEntities.get(feature.geometry.id)!;
-    featureEntity.properties!.coordinates = new CallbackProperty(
-      () => controller.anchors.filter((it) => it.type === EditAnchorType.Node).map((it) => it.coordinate),
-      false,
-    );
+    if (feature.geometry.shape === Shape.Point) {
+      featureEntity.position = new CallbackPositionProperty(() => controller.anchors[0].coordinate, false);
+    } else {
+      featureEntity.properties!.coordinates = new CallbackProperty(
+        () => controller.anchors.filter((it) => it.type === EditAnchorType.Node).map((it) => it.coordinate),
+        false,
+      );
+    }
 
     const makeAnchorEntity = (anchor: EditAnchor): Entity => {
       const entity = new Entity({
@@ -271,14 +277,29 @@ export class ToolService extends BaseService {
 
     const updateAnchorEntity = (entity: Entity, anchor: EditAnchor): void => {
       entity.position = new ConstantPositionProperty(anchor.coordinate);
-      entity.properties!.color = anchor.type === EditAnchorType.Node ? Color.WHITE : Color.GRAY;
+      let color: Color;
+      switch (anchor.type) {
+        case EditAnchorType.Node:
+          color = Color.WHITE;
+          break;
+        case EditAnchorType.Edge:
+          color = Color.GRAY;
+          break;
+        case EditAnchorType.Virtual:
+          throw new Error('Virtual anchors should not be displayed.');
+      }
+      entity.properties!.color = color;
     };
 
     for (const anchor of controller.anchors) {
+      if (anchor.type === EditAnchorType.Virtual) {
+        continue;
+      }
       this.dataSourceForEdits.entities.add(makeAnchorEntity(anchor));
     }
 
     let activeAnchorId: Id<EditAnchor> | null = null;
+    let isGeometryActive = false;
     screen.setInputAction((event: ScreenSpaceEventHandler.PositionedEvent) => {
       const objects = this.viewer.scene.drillPick(event.position, 5, 5, 5);
       for (const object of objects) {
@@ -286,38 +307,49 @@ export class ToolService extends BaseService {
           continue;
         }
         const { id: entity } = object;
+        if (entity === featureEntity) {
+          isGeometryActive = true;
+          continue;
+        }
+
         const anchor = controller.anchors.find((it) => it.id === entity.id);
         if (anchor === undefined) {
           continue;
         }
         activeAnchorId = anchor.id;
-        this.viewer.scene.screenSpaceCameraController.enableInputs = false;
         break;
+      }
+      if (activeAnchorId !== null || isGeometryActive) {
+        this.viewer.scene.screenSpaceCameraController.enableInputs = false;
       }
     }, ScreenSpaceEventType.LEFT_DOWN);
 
     screen.setInputAction(() => {
       activeAnchorId = null;
+      isGeometryActive = false;
       this.viewer.scene.screenSpaceCameraController.enableInputs = true;
     }, ScreenSpaceEventType.LEFT_UP);
 
     screen.setInputAction((event: ScreenSpaceEventHandler.MotionEvent) => {
-      if (activeAnchorId === null) {
-        return;
-      }
       const position = this.pick(event.endPosition);
       if (position === null) {
         return;
       }
-      controller.handleAnchorDrag(activeAnchorId, position);
+      if (activeAnchorId !== null) {
+        controller.handleAnchorDrag(activeAnchorId, position);
+      } else if (isGeometryActive) {
+        controller.handleGeometryDrag(position);
+      }
     }, ScreenSpaceEventType.MOUSE_MOVE);
 
     controller.anchorChanged$.subscribe((anchor) => {
-      const entity = this.dataSourceForEdits.entities.getById(`${anchor.id}`);
-      if (entity === undefined) {
-        this.dataSourceForEdits.entities.add(makeAnchorEntity(anchor));
-      } else {
-        updateAnchorEntity(entity, anchor);
+      if (anchor.type !== EditAnchorType.Virtual) {
+        const entity = this.dataSourceForEdits.entities.getById(`${anchor.id}`);
+        if (entity === undefined) {
+          this.dataSourceForEdits.entities.add(makeAnchorEntity(anchor));
+        } else {
+          updateAnchorEntity(entity, anchor);
+        }
       }
 
       this.viewer.scene.requestRender();
@@ -332,7 +364,7 @@ export class ToolService extends BaseService {
   private makeEditToolController(geometry: Geometry): EditToolController {
     switch (geometry.shape) {
       case Shape.Point:
-        throw new Error('not yet implemented');
+        return new PointEditToolController(geometry.coordinate);
       case Shape.Line:
         return new CoordinateListEditToolController(geometry.coordinates, { isArea: false });
       case Shape.Polygon:

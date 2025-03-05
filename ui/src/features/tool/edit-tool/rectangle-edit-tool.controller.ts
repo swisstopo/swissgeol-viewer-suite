@@ -75,4 +75,8 @@ export class RectangleEditToolController implements EditToolController {
     this._anchorChanged$.next(this.anchors[dIndex]);
     this._anchorChanged$.next(this.anchors[bIndex]);
   }
+
+  handleGeometryDrag(_position: Cartesian3): void {
+    // Not supported.
+  }
 }

@@ -99,7 +99,14 @@ export class CoordinateListEditToolController implements EditToolController {
         this._anchorChanged$.next(nextEdge);
         break;
       }
+
+      case EditAnchorType.Virtual:
+        throw new Error('unsupported anchor type.');
     }
+  }
+
+  handleGeometryDrag(_position: Cartesian3): void {
+    // Not supported.
   }
 
   private updateAnchor(index: number, anchor: EditAnchor): void {
