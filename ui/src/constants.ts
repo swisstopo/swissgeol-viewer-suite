@@ -2,12 +2,13 @@ import {
   Cartesian3,
   Color,
   ColorBlendMode,
+  Ellipsoid,
+  GeographicTilingScheme,
   Math as CMath,
   Rectangle,
   ShadowMode,
-  GeographicTilingScheme,
-  Ellipsoid,
 } from 'cesium';
+import { ArrowListItem } from 'src/slicer/SlicerArrows';
 
 export { LayerType, DEFAULT_LAYER_OPACITY } from './layertree';
 
@@ -147,17 +148,17 @@ export const POINT_SYMBOLS = [
   'triangle-icon-white.png',
 ];
 
-export const SLICE_BOX_ARROWS_INSIDE = [
-  { side: 'left', oppositeSide: 'right', uri: '/images/arrowV.glb' },
-  { side: 'right', oppositeSide: 'left', uri: '/images/arrowV.glb' },
-  { side: 'back', oppositeSide: 'front', uri: '/images/arrowH.glb' },
-  { side: 'front', oppositeSide: 'back', uri: '/images/arrowH.glb' },
+export const SLICE_BOX_ARROWS_INSIDE: ArrowListItem[] = [
+  { side: 'left', oppositeSide: 'right' },
+  { side: 'right', oppositeSide: 'left' },
+  { side: 'back', oppositeSide: 'front' },
+  { side: 'front', oppositeSide: 'back' },
 ];
 
-export const SLICE_BOX_ARROWS_OUTSIDE = [
+export const SLICE_BOX_ARROWS_OUTSIDE: ArrowListItem[] = [
   ...SLICE_BOX_ARROWS_INSIDE,
-  { side: 'down', oppositeSide: 'up', uri: '/images/arrowA.glb' },
-  { side: 'up', oppositeSide: 'down', uri: '/images/arrowA.glb' },
+  { side: 'down', oppositeSide: 'up' },
+  { side: 'up', oppositeSide: 'down' },
 ];
 
 export const SLICING_BOX_HEIGHT = DEFAULT_VOLUME_HEIGHT_LIMITS.height;
@@ -171,6 +172,19 @@ export const DEFAULT_CONFIG_FOR_SLICING_ARROW = {
   shadows: ShadowMode.DISABLED,
   colorBlendMode: ColorBlendMode.MIX,
   color: SLICING_GEOMETRY_COLOR,
+};
+
+export const ARROW_LENGTH = 1000;
+export const ARROW_RADIUS = 100;
+export const ARROW_TIP_RADIUS = 200;
+export const ARROW_TIP_LENGTH = 400;
+export const ARROW_TIP_OFFSET = 600;
+
+export const ARROW_CYLINDER = {
+  length: ARROW_LENGTH,
+  topRadius: ARROW_RADIUS,
+  bottomRadius: ARROW_RADIUS,
+  material: SLICING_GEOMETRY_COLOR,
 };
 
 export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/';

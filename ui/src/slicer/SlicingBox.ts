@@ -11,7 +11,7 @@ import {
   VoxelPrimitive,
 } from 'cesium';
 import { executeForAllPrimitives } from '../utils';
-import SlicerArrows from './SlicerArrows';
+import SlicerArrows, { BBoxSide } from './SlicerArrows';
 import type { BBox } from './helper';
 import {
   createClippingPlanes,
@@ -124,7 +124,7 @@ export default class SlicingBox extends SlicingToolBase {
     this.slicerArrows = new SlicerArrows(this.viewer, this.dataSource, {
       moveCallback: (side, moveAmount, moveVector) =>
         this.onPlaneMove(side, moveAmount, moveVector),
-      positionUpdateCallback: (side: string) =>
+      positionUpdateCallback: (side: BBoxSide) =>
         this.arrowPositionCallback(side),
       arrowsList: this.options.negate
         ? SLICE_BOX_ARROWS_INSIDE
@@ -368,7 +368,7 @@ export default class SlicingBox extends SlicingToolBase {
    * Positioning arrows according to view center
    * @param side
    */
-  arrowPositionCallback(side: string): Cartesian3 {
+  arrowPositionCallback(side: BBoxSide): Cartesian3 {
     const boxCenter = Cartographic.fromCartesian(this.boxCenter!);
     const boxHeight = this.bbox!.height;
     const corners = this.bbox!.corners;

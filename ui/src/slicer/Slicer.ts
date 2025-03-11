@@ -1,10 +1,4 @@
-import {
-  Cartesian3,
-  Cartographic,
-  CustomDataSource,
-  JulianDate,
-  Viewer,
-} from 'cesium';
+import { Cartesian3, Cartographic, CustomDataSource, Viewer } from 'cesium';
 import { executeForAllPrimitives } from '../utils';
 import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
@@ -103,7 +97,9 @@ export default class Slicer {
     });
 
     NavToolsStore.exaggerationChanged.subscribe((exaggeration) => {
-      if (!this.slicingBox || !this.slicingBox.bbox) return;
+      if (!this.slicingBox?.bbox) {
+        return;
+      }
       const bbox = this.slicingBox.bbox;
       const originalHeight = bbox.height / this.exaggeration;
       const newHeight = originalHeight * exaggeration;
@@ -117,16 +113,6 @@ export default class Slicer {
       if (this.slicingBox.downPlane) {
         this.slicingBox.downPlane.distance = Math.abs(bbox.lowerLimit);
       }
-      const arrows = this.slicingBox.slicerArrows?.arrows['up'];
-      if (arrows) {
-        console.log(arrows.position?.getValue(new JulianDate()));
-
-        // this.viewer.zoomTo(arrows, new HeadingPitchRange(0 - 30, 5000)).then();
-        // for (const arrow of arrows) {
-        //   console.log(arrow.position);
-        // }
-      }
-      this.slicingBox.slicerArrows?.show();
       this.slicingBox.syncPlanes();
       this.viewer.scene.requestRender();
     });

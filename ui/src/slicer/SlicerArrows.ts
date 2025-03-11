@@ -1,15 +1,28 @@
 import {
+  BoundingSphere,
+  CallbackProperty,
   Cartesian2,
   Cartesian3,
+  Cartographic,
   Color,
-  CallbackProperty,
+  ColorBlendMode,
+  DataSource,
   Entity,
-  BoundingSphere,
-  ScreenSpaceEventType,
   JulianDate,
+  Matrix4,
+  Quaternion,
   ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+  ShadowMode,
+  Transforms,
+  Viewer,
 } from 'cesium';
 import {
+  ARROW_CYLINDER,
+  ARROW_LENGTH,
+  ARROW_TIP_LENGTH,
+  ARROW_TIP_OFFSET,
+  ARROW_TIP_RADIUS,
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
   SLICING_GEOMETRY_COLOR,
 } from '../constants';
@@ -17,21 +30,14 @@ import {
   getDirectionFromPoints,
   updateHeightForCartesianPositions,
 } from '../cesiumutils';
-import type {
-  Viewer,
-  DataSource,
-  ColorBlendMode,
-  Quaternion,
-  ShadowMode,
-} from 'cesium';
 import type { BBox } from './helper';
 import { debounce } from '../utils';
 
-interface ArrowListItem {
+export type BBoxSide = 'up' | 'down' | 'left' | 'right' | 'front' | 'back';
+
+export interface ArrowListItem {
   // arrow position label
-  side: string;
-  // path to model
-  uri: string;
+  side: BBoxSide;
   // opposite arrow position label
   oppositeSide?: string;
   // arrow position. Required if 'positionUpdateCallback' is not provided
@@ -67,6 +73,12 @@ export interface SlicerArrowOptions {
   bbox: BBox;
 }
 
+interface ArrowGeometry {
+  shaft: Entity;
+  topCone: Entity;
+  bottomCone: Entity;
+}
+
 export default class SlicerArrows {
   viewer!: Viewer;
   dataSource!: DataSource;
@@ -93,8 +105,8 @@ export default class SlicerArrows {
   private readonly scratchBottom = new Cartesian3();
 
   private eventHandler: ScreenSpaceEventHandler | null = null;
-  highlightedArrow: Entity | undefined = undefined;
-  arrows: Record<string, Entity> = {};
+  highlightedArrow: ArrowGeometry | undefined = undefined;
+  arrows: Record<string, ArrowGeometry> = {};
   bbox: BBox | null = null;
 
   /**
@@ -144,14 +156,17 @@ export default class SlicerArrows {
 
   onLeftDown(event) {
     const pickedObject = this.viewer.scene.pick(event.position);
-    const isModelPicked =
-      pickedObject && pickedObject.id && pickedObject.id.model;
-    if (
-      isModelPicked &&
-      pickedObject.id.properties &&
-      pickedObject.id.properties.side
-    ) {
-      this.selectedArrow = pickedObject.id;
+    if (!pickedObject?.id) {
+      return;
+    }
+    const pickedArrow = Object.values(this.arrows).find(
+      (arrow) =>
+        arrow.shaft === pickedObject.id ||
+        arrow.topCone === pickedObject.id ||
+        arrow.bottomCone === pickedObject.id,
+    );
+    if (pickedArrow) {
+      this.selectedArrow = pickedArrow.shaft;
       this.enableInputs =
         this.viewer.scene.screenSpaceCameraController.enableInputs;
       this.viewer.scene.screenSpaceCameraController.enableInputs = false;
@@ -186,7 +201,9 @@ export default class SlicerArrows {
       if (properties.oppositeSide) {
         const oppositeSide: string = properties.oppositeSide.getValue();
         const oppositeArrow = this.arrows[oppositeSide];
-        oppositePosition3d = oppositeArrow.position!.getValue(this.julianDate)!;
+        oppositePosition3d = oppositeArrow.shaft.position!.getValue(
+          this.julianDate,
+        )!;
       } else if (properties.oppositePosition) {
         oppositePosition3d = properties.oppositePosition.getValue();
       } else {
@@ -288,18 +305,15 @@ export default class SlicerArrows {
 
   createMoveArrows() {
     const arrowEntityTemplate: Entity.ConstructorOptions = {
-      // @ts-ignore 2322
-      orientation: this.arrowConfiguration.orientation,
-      model: this.arrowConfiguration,
       properties: {},
     };
     this.arrows = {};
     this.arrowsList.forEach((arrow) => {
+      const isUpOrDown = arrow.side === 'up' || arrow.side === 'down';
       const arrowEntityOptions = arrowEntityTemplate;
       const properties = arrowEntityOptions.properties;
       if (!properties) return;
-      properties!.side = arrow.side;
-      arrowEntityOptions.model!.uri = arrow.uri;
+      properties.side = arrow.side;
       if (this.positionUpdateCallback) {
         // @ts-ignore 2322
         arrowEntityOptions.position = new CallbackProperty(
@@ -309,45 +323,194 @@ export default class SlicerArrows {
       } else {
         arrowEntityOptions.position = arrow.position;
       }
+      arrowEntityOptions.cylinder = ARROW_CYLINDER;
+
+      if (!this.bbox) {
+        return;
+      }
+
+      // Default values for up and down arrows
+      let orientation: Quaternion | undefined = undefined;
+      let directionVector: Cartesian3 = new Cartesian3(0, 0, ARROW_TIP_OFFSET);
+      if (!isUpOrDown) {
+        const pointA = this.bbox.corners.topLeft;
+        const pointB =
+          arrow.side === 'front' || arrow.side === 'back'
+            ? this.bbox.corners.topRight
+            : this.bbox.corners.bottomLeft;
+        directionVector = this.getHorizontalPerpendicularVectorFromTwoPoints(
+          pointA,
+          pointB,
+        );
+        const rotation = Quaternion.fromAxisAngle(
+          Cartesian3.cross(
+            Cartesian3.UNIT_Z,
+            directionVector,
+            new Cartesian3(),
+          ),
+          Cartesian3.angleBetween(Cartesian3.UNIT_Z, directionVector),
+        );
+        orientation = Quaternion.normalize(rotation, new Quaternion());
+      }
+      arrowEntityOptions.orientation = orientation;
+
       if (arrow.oppositeSide) {
         properties.oppositeSide = arrow.oppositeSide;
       } else if (arrow.oppositePosition) {
         properties.oppositePosition = arrow.oppositePosition;
       }
-      this.arrows[arrow.side] = new Entity(arrowEntityOptions);
-      this.dataSource.entities.add(this.arrows[arrow.side]);
+
+      const shaft = new Entity(arrowEntityOptions);
+      const topCone = new Entity({
+        position: this.computeRelativePosition(
+          shaft,
+          isUpOrDown,
+          directionVector,
+        ),
+        cylinder: {
+          length: ARROW_TIP_LENGTH,
+          topRadius: 0,
+          bottomRadius: ARROW_TIP_RADIUS,
+        },
+        orientation: orientation,
+      });
+
+      const bottomCone = new Entity({
+        position: this.computeRelativePosition(
+          shaft,
+          isUpOrDown,
+          Cartesian3.negate(directionVector, new Cartesian3()),
+        ),
+        cylinder: {
+          length: ARROW_TIP_LENGTH,
+          topRadius: ARROW_TIP_RADIUS,
+          bottomRadius: 0,
+        },
+        orientation: orientation,
+      });
+
+      this.arrows[arrow.side] = {
+        shaft,
+        topCone,
+        bottomCone,
+      };
+      this.dataSource.entities.add(shaft);
+      this.dataSource.entities.add(topCone);
+      this.dataSource.entities.add(bottomCone);
     });
+  }
+
+  /**
+   * Get a vector perpendicular to the side of the bbox and parallel to the ellipsoid which is defined by two of its corners (pointA and pointB)
+   * @param pointA one of the corners of the side of the bbox
+   * @param pointB the other corner of the side of the bbox
+   */
+  getHorizontalPerpendicularVectorFromTwoPoints(
+    pointA: Cartesian3,
+    pointB: Cartesian3,
+  ) {
+    const diff = Cartesian3.subtract(pointB, pointA, new Cartesian3());
+    const normalized = Cartesian3.normalize(diff, new Cartesian3());
+    const perpendicular = new Cartesian3(-normalized.y, normalized.x, 0);
+    const perpendicularEnd = Cartesian3.add(
+      pointA,
+      perpendicular,
+      new Cartesian3(),
+    );
+
+    // Convert the perpendicular point back to Cartographic to maintain the same height above the ellipsoid
+    const perpendicularCartographic =
+      Cartographic.fromCartesian(perpendicularEnd);
+    const pointACartographic = Cartographic.fromCartesian(pointA);
+    perpendicularCartographic.height = pointACartographic.height; // Keep original height
+
+    // Get the perpendicular point in Cartesian3
+    const referencePoint = Cartesian3.fromRadians(
+      perpendicularCartographic.longitude,
+      perpendicularCartographic.latitude,
+      perpendicularCartographic.height,
+    );
+    // Get a vector perpendicular to the side of the bbox and parallel to the ellipsoid
+    return Cartesian3.subtract(referencePoint, pointA, new Cartesian3());
+  }
+
+  /**
+   * Compute relative position of the arrow depending on the parent entity position
+   *
+   * @param parentEntity Entity to which the arrow is attached
+   * @param isUpOrDown Whether the arrow vertical in space
+   * @param directionVector The direction in which the arrow is pointing
+   */
+  computeRelativePosition(
+    parentEntity: Entity,
+    isUpOrDown: boolean,
+    directionVector: Cartesian3,
+  ) {
+    return new CallbackProperty((time, result) => {
+      const parentPosition = parentEntity.position!.getValue(time);
+      if (!parentPosition) return undefined;
+
+      if (isUpOrDown) {
+        const transform = Transforms.eastNorthUpToFixedFrame(parentPosition);
+        return Matrix4.multiplyByPoint(transform, directionVector, result);
+      }
+      return Cartesian3.add(
+        parentPosition,
+        Cartesian3.multiplyByScalar(
+          directionVector,
+          ARROW_LENGTH + ARROW_TIP_LENGTH - ARROW_TIP_OFFSET,
+          new Cartesian3(),
+        ),
+        new Cartesian3(),
+      );
+    }, false);
   }
 
   highlightArrow(position) {
     const pickedObject = this.viewer.scene.pick(position);
-    const isModelPicked =
-      pickedObject && pickedObject.id && pickedObject.id.model;
-    if (
-      isModelPicked &&
-      pickedObject.id.properties &&
-      pickedObject.id.properties.side
-    ) {
-      this.highlightedArrow = pickedObject.id;
-      this.viewer.canvas.style.cursor = 'pointer';
-      // @ts-ignore 2322
-      this.highlightedArrow.model.color = Color.YELLOW;
+    if (pickedObject?.id.cylinder) {
+      const entry = Object.values(this.arrows).find(
+        (entry) =>
+          entry.shaft === pickedObject.id ||
+          entry.topCone === pickedObject.id ||
+          entry.bottomCone === pickedObject.id,
+      );
+      if (entry) {
+        this.highlightedArrow = entry;
+        this.viewer.canvas.style.cursor = 'pointer';
+        // @ts-expect-error 2322
+        this.highlightedArrow.shaft.cylinder.material = Color.YELLOW;
+        // @ts-expect-error 2322
+        this.highlightedArrow.topCone.cylinder.material = Color.YELLOW;
+        // @ts-expect-error 2322
+        this.highlightedArrow.bottomCone.cylinder.material = Color.YELLOW;
+      }
     } else {
       this.unhighlightArrow();
     }
   }
 
   unhighlightArrow() {
-    if (this.highlightedArrow?.model) {
-      // @ts-ignore 2322
-      this.highlightedArrow.model.color = SLICING_GEOMETRY_COLOR;
+    if (this.highlightedArrow) {
+      // @ts-expect-error 2322
+      this.highlightedArrow.shaft.cylinder.material = SLICING_GEOMETRY_COLOR;
+      // @ts-expect-error 2322
+      this.highlightedArrow.topCone.cylinder.material = SLICING_GEOMETRY_COLOR;
+      // @ts-expect-error 2322
+      this.highlightedArrow.bottomCone.cylinder.material =
+        SLICING_GEOMETRY_COLOR;
+
       this.highlightedArrow = undefined;
       this.viewer.canvas.style.cursor = '';
     }
   }
 
   toggleArrowsVisibility(show) {
-    this.arrowsList.forEach((arrow) => (this.arrows[arrow.side].show = show));
+    this.arrowsList.forEach((arrow) => {
+      this.arrows[arrow.side].shaft.show = show;
+      this.arrows[arrow.side].topCone.show = show;
+      this.arrows[arrow.side].bottomCone.show = show;
+    });
   }
 
   updateAxisVector(arrowPosition3d, oppositePosition3d) {
