@@ -385,6 +385,9 @@ export class SideBar extends LitElementI18n {
       layer.setOpacity && layer.setOpacity(layer.opacity);
       layer.displayed = true;
       layer.setVisibility && layer.setVisibility(layer.visible);
+      if (layer.promise === undefined && layer.load !== undefined) {
+        layer.promise = layer.load();
+      }
       activeLayers.push(layer);
     }
 
@@ -548,7 +551,7 @@ export class SideBar extends LitElementI18n {
 
   // adds layer from search to 'Displayed Layers'
   async addLayerFromSearch(searchLayer: SearchLayer) {
-    let layer;
+    let layer: LayerConfig | undefined;
     if ('dataSourceName' in searchLayer) {
       layer = this.activeLayers.find(
         (l) => l.type === searchLayer.dataSourceName,
@@ -562,17 +565,21 @@ export class SideBar extends LitElementI18n {
       if (layer.type === LayerType.swisstopoWMTS) {
         const index = this.activeLayers.indexOf(layer);
         this.activeLayers.splice(index, 1);
-        layer.remove();
-        layer.add(0);
+        layer.remove?.();
+        layer.add?.(0);
         this.activeLayers.push(layer);
       }
-      layer.setVisibility(true);
+      layer.setVisibility?.(true);
       layer.visible = true;
       layer.displayed = true;
       this.viewer!.scene.requestRender();
     } else {
       // for new layers
-      this.activeLayers.push(this.createSearchLayer(searchLayer));
+      const newLayer = this.createSearchLayer(searchLayer);
+      this.activeLayers.push(newLayer);
+      if (newLayer.promise === undefined && newLayer.load !== undefined) {
+        newLayer.promise = newLayer.load();
+      }
     }
     this.activeLayers = [...this.activeLayers];
     syncLayersParam(this.activeLayers);
