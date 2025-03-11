@@ -4,6 +4,9 @@ import { css, html } from 'lit';
 import i18next from 'i18next';
 import { consume } from '@lit/context';
 import { ToolService } from 'src/features/tool/tool.service';
+import { Feature, ToolType } from 'src/features/tool/tool.model';
+import { of, switchMap, tap } from 'rxjs';
+import { MapService } from 'src/features/map/map.service';
 
 @customElement('ngm-tool-panel')
 export class ToolPanel extends CoreElement {
@@ -13,15 +16,38 @@ export class ToolPanel extends CoreElement {
   @state()
   private accessor hasFeatures = false;
 
+  @state()
+  private accessor selectedFeature: Feature | null = null;
+
   @consume({ context: ToolService.context() })
   private accessor toolService!: ToolService;
+
+  @consume({ context: MapService.elementContext, subscribe: true })
+  private accessor mapElement!: HTMLElement;
 
   connectedCallback(): void {
     super.connectedCallback();
 
-    this.toolService.features$.subscribe((features) => {
-      this.hasFeatures = features.length === 0;
-    });
+    this.register(
+      this.toolService.features$.subscribe((features) => {
+        this.hasFeatures = features.length === 0;
+      }),
+    );
+    this.register(
+      this.toolService.activeTool$.pipe(
+        switchMap((tool) => {
+          switch (tool?.type) {
+            case ToolType.Edit:
+            case ToolType.Info:
+              return this.toolService.findFeature$(tool.featureId);
+            default:
+              return of(null);
+          }
+        }),
+        tap((it) => (this.selectedFeature = it)),
+      ),
+    );
+
     this.register(() => this.toolService.deactivate());
   }
 
@@ -59,6 +85,13 @@ export class ToolPanel extends CoreElement {
           [Tab.Upload]: html``,
         },
       })}
+      ${this.selectedFeature === null
+        ? undefined
+        : html`
+            <ngm-core-portal .target="${this.mapElement}">
+              <ngm-tool-feature-info .feature="${this.selectedFeature}"></ngm-tool-feature-info>
+            </ngm-core-portal>
+          `}
     </ngm-navigation-panel>
   `;
 

@@ -69,6 +69,7 @@ import { distinctUntilKeyChanged } from 'rxjs';
 import { addSwisstopoLayer } from 'src/swisstopoImagery';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
+import { MapService } from 'src/features/map/map.service';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -130,6 +131,9 @@ export class NgmApp extends LitElementI18n {
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
 
+  @consume({ context: MapService.context() })
+  accessor mapService!: MapService;
+
   @consume({ context: BackgroundLayerService.context() })
   accessor backgroundLayerService!: BackgroundLayerService;
 
@@ -149,6 +153,10 @@ export class NgmApp extends LitElementI18n {
       this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
     });
   }
+
+  @provide({ context: MapService.elementContext })
+  accessor mapElement: HTMLElement = null as unknown as HTMLElement;
+
   @provide({ context: BackgroundLayerService.backgroundContext })
   accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
 
@@ -230,6 +238,11 @@ export class NgmApp extends LitElementI18n {
     this.queryManager = new QueryManager(viewer);
 
     this.sidebar = this.querySelector('ngm-side-bar') as SideBar | null;
+
+    this.mapService.setElement(this.querySelector('#cesium') as HTMLElement);
+    this.mapService.element$.subscribe((element) => {
+      this.mapElement = element;
+    });
   }
 
   removeLoading() {

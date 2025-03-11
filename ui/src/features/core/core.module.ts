@@ -7,6 +7,7 @@ import './core-dropdown-item.element';
 import './core-heading.element';
 import './core-icon.element';
 import './core-modal.element';
+import './core-portal.element';
 import './core-slider.element';
 import './core-tab.element';
 import './core-tab-list.element';

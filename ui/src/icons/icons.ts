@@ -27,6 +27,8 @@ import { pointShapeIcon } from 'src/icons/i_shape_point';
 import { lineShapeIcon } from 'src/icons/i_shape_line';
 import { polygonShapeIcon } from 'src/icons/i_shape_polygon';
 import { rectangleShapeIcon } from 'src/icons/i_shape_rectangle';
+import { sliceIcon } from 'src/icons/i_slice';
+import { editIcon } from 'src/icons/i_edit';
 
 export const icons = {
   cesium: cesiumIcon,
@@ -35,6 +37,7 @@ export const icons = {
   config: configIcon,
   download: downloadIcon,
   dropdown: dropdownIcon,
+  edit: editIcon,
   filter: filterIcon,
   geocat: geocatIcon,
   grab: grabIcon,
@@ -45,6 +48,7 @@ export const icons = {
   projects: projectsIcon,
   search: searchIcon,
   share: shareIcon,
+  slice: sliceIcon,
   tools: toolsIcon,
   trash: trashIcon,
   turnPage: turnPageIcon,

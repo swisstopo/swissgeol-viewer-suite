@@ -146,6 +146,7 @@ ngm-app-boot {
 }
 
 .map {
+  /*position: relative;*/
   display: flex;
   flex-direction: column;
   flex: auto;

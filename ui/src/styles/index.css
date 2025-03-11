@@ -203,7 +203,7 @@
   --typo-body-1--letter-spacing: 0.005em;
 
   --typo-body-1-bold--family: var(--font-family), var(--font-family--fallback);
-  --typo-body-1-bold--weight: 500;
+  --typo-body-1-bold--weight: 700;
   --typo-body-1-bold--size: 16px;
   --typo-body-1-bold--line-height: 24px;
   --typo-body-1-bold--letter-spacing: 0.001em;
@@ -214,8 +214,14 @@
   --typo-body-2--line-height: 20px;
   --typo-body-2--letter-spacing: 0.0025em;
 
+  --typo-body-2-medium--family: var(--font-family), var(--font-family--fallback);
+  --typo-body-2-medium--weight: 500;
+  --typo-body-2-medium--size: 14px;
+  --typo-body-2-medium--line-height: 20px;
+  --typo-body-2-medium--letter-spacing: 0.0025em;
+
   --typo-body-2-bold--family: var(--font-family), var(--font-family--fallback);
-  --typo-body-2-bold--weight: 500;
+  --typo-body-2-bold--weight: 700;
   --typo-body-2-bold--size: 14px;
   --typo-body-2-bold--line-height: 20px;
   --typo-body-2-bold--letter-spacing: 0.0025em;

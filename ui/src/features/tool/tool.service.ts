@@ -30,6 +30,7 @@ import { CoordinateListEditToolController } from 'src/features/tool/edit-tool/co
 import { EditAnchor, EditAnchorType, EditToolController } from 'src/features/tool/edit-tool/edit-tool.controller';
 import { RectangleEditToolController } from 'src/features/tool/edit-tool/rectangle-edit-tool.controller';
 import { PointEditToolController } from 'src/features/tool/edit-tool/point-edit-tool.controller';
+import i18next from 'i18next';
 
 export class ToolService extends BaseService {
   private readonly dataSource = new CustomDataSource('tool.drawings');
@@ -66,7 +67,7 @@ export class ToolService extends BaseService {
 
   private _viewer: Viewer | null = null;
 
-  private readonly _activeTool$ = new BehaviorSubject<DrawTool | null>(null);
+  private readonly _activeTool$ = new BehaviorSubject<Tool | null>(null);
 
   private activeToolSubscription: Subscription | null = null;
 
@@ -96,6 +97,13 @@ export class ToolService extends BaseService {
 
   public findFeature(id: Id<Feature>): Feature | null {
     return this.features.get(id) ?? null;
+  }
+
+  public findFeature$(id: Id<Feature>): Observable<Feature | null> {
+    return this.featureChanged$.pipe(
+      startWith(id),
+      map((id) => this.findFeature(id)),
+    );
   }
 
   public addFeature(feature: Feature): void {
@@ -132,6 +140,7 @@ export class ToolService extends BaseService {
         this.activateEditTool(tool);
         break;
     }
+    this._activeTool$.next(tool);
   }
 
   public deactivate(): void {
@@ -145,6 +154,19 @@ export class ToolService extends BaseService {
 
   public selectToolByType$<T extends ToolType>(type: ToolType): Observable<(Tool & { type: T }) | null> {
     return this.activeTool$.pipe(filter((it): it is (Tool & { type: T }) | null => it === null || it.type === type));
+  }
+
+  public getNameOfFeature(feature: Feature): string {
+    const { name, geometry } = feature;
+    if (typeof name === 'string') {
+      return name;
+    }
+    if ('number' in name) {
+      const shapeName = i18next.t(`tool.shapes.${geometry.shape}`, { ns: 'features' });
+      return `${shapeName} ${name.number}`;
+    }
+    const base = this.findFeature(name.baseId)!;
+    return i18next.t('tool.name_for_copied_geometry', { ns: 'feature', base: this.getNameOfFeature(base) });
   }
 
   private get viewer(): Viewer {
@@ -195,9 +217,6 @@ export class ToolService extends BaseService {
           return;
         }
         if (shouldBeSaved) {
-          if (geometry.shape === Shape.Line) {
-            console.log(geometry.coordinates);
-          }
           this.features.set(geometry.id, {
             id: geometry.id,
             name: {
@@ -212,7 +231,6 @@ export class ToolService extends BaseService {
       },
     });
 
-    this._activeTool$.next(tool);
     this.activeToolSubscription = new Subscription();
     this.activeToolSubscription.add(() => {
       this._activeTool$.next(null);

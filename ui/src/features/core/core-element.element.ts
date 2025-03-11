@@ -1,7 +1,7 @@
 import { LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 import i18next from 'i18next';
-import { Subscription, TeardownLogic } from 'rxjs';
+import { Observable, Subscription, TeardownLogic } from 'rxjs';
 import { PropertyValues } from '@lit/reactive-element';
 import { bindMethods } from 'src/utils/bind';
 
@@ -42,7 +42,8 @@ export class CoreElement extends LitElement {
     /* Empty method to be implemented by child classes. */
   }
 
-  protected register(teardown: TeardownLogic): void {
+  protected register(teardown: TeardownLogic | Observable<unknown>): void {
+    teardown = teardown instanceof Observable ? teardown.subscribe() : teardown;
     this._subscription.add(teardown);
   }
 }

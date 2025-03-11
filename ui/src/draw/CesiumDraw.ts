@@ -366,7 +366,6 @@ export class CesiumDraw extends EventTarget {
       entity.label = getDimensionLabel(this.type, this.activeDistances_);
       entity.label.heightReference = this.pointOptions.heightReference;
     }
-    console.log(entity);
     const pointEntity = this.drawingDataSource.entities.add(entity);
     pointEntity.properties!.virtual = options.virtual;
     return pointEntity;

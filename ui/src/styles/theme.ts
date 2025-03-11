@@ -19,6 +19,7 @@ type Typography =
   | 'body-1'
   | 'body-1-bold'
   | 'body-2'
+  | 'body-2-medium'
   | 'body-2-bold';
 
 export const applyTypography = (typo: Typography): CSSResult => {

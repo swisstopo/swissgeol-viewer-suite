@@ -12,6 +12,12 @@
       "polygon": "Polygone",
       "rectangle": "Rectangle"
     },
-    "name_for_copied_geometry": "Copie de {{base}}"
+    "name_for_copied_geometry": "Copie de {{base}}",
+    "feature": {
+      "attribute_names": {
+        "shape": "",
+        "description": "Description"
+      }
+    }
   }
 }

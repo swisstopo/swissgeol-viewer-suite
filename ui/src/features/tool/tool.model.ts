@@ -4,6 +4,7 @@ import { Id } from 'src/models/id.model';
 export enum ToolType {
   Draw = 'Draw',
   Edit = 'Edit',
+  Info = 'Info',
 }
 
 export interface Feature {
@@ -21,6 +22,8 @@ export interface Feature {
    * The geometry that represents this feature.
    */
   geometry: Geometry;
+
+  description?: string;
 }
 
 export type FeatureName = string | CopiedFeatureName | GeneratedFeatureName;
@@ -62,7 +65,12 @@ export interface EditTool extends BaseTool {
   featureId: Id<Feature>;
 }
 
-export type Tool = DrawTool | EditTool;
+export interface InfoTool extends BaseTool {
+  type: ToolType.Info;
+  featureId: Id<Feature>;
+}
+
+export type Tool = DrawTool | EditTool | InfoTool;
 
 interface BaseGeometry {
   id: Id<this>;
