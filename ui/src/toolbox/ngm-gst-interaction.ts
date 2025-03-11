@@ -119,7 +119,14 @@ export class NgmGstInteraction extends LitElementI18n {
         showSnackbarError(json.error);
         return;
       }
-      (this.parentElement as NgmToolbox).showSectionModal(json.imageUrl);
+
+      // Ensure that the url uses HTTPS.
+      // This is necessary as the GST Service returns HTTP urls even when accessing it over HTTPS (2025-03-11).
+      // TODO Remove this oncce the GST Service correctly supports HTTPS.
+      const url = json.imageUrl.startsWith('http://')
+        ? `https${json.imageUrl.slice(4)}`
+        : json.imageUrl;
+      (this.parentElement as NgmToolbox).showSectionModal(url);
     } catch (err: any) {
       if (err.name === 'AbortError') {
         showSnackbarInfo(i18next.t('tbx_request_aborted_warning'));
