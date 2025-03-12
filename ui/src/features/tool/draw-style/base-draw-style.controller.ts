@@ -9,13 +9,19 @@ import {
 } from 'src/features/tool/tool.model';
 import {
   CallbackProperty,
+  Cartesian2,
   Cartesian3,
   ConstantPositionProperty,
   ConstantProperty,
   Entity,
+  HeightReference,
+  HorizontalOrigin,
   JulianDate,
+  LabelGraphics,
+  LabelStyle,
   PolygonHierarchy,
   Property,
+  VerticalOrigin,
 } from 'cesium';
 
 export abstract class BaseDrawStyleController implements DrawStyleController {
@@ -23,25 +29,34 @@ export abstract class BaseDrawStyleController implements DrawStyleController {
     switch (geometry.shape) {
       case Shape.Point: {
         const entity = this.makePointEntity(geometry);
+        this.initializeEntity(entity);
         this.updatePoint(entity, geometry);
         return entity;
       }
       case Shape.Line: {
         const entity = this.makeLineEntity(geometry);
+        this.initializeEntity(entity);
         this.updateLine(entity, geometry);
         return entity;
       }
       case Shape.Polygon: {
         const entity = this.makePolygonEntity(geometry);
+        this.initializeEntity(entity);
         this.updateArea(entity, geometry);
         return entity;
       }
       case Shape.Rectangle: {
         const entity = this.makeRectangleEntity(geometry);
+        this.initializeEntity(entity);
         this.updateArea(entity, geometry);
         return entity;
       }
     }
+  }
+
+  private initializeEntity(entity: Entity) {
+    entity.position = new ConstantPositionProperty();
+    entity.properties!.coordinates = new ConstantProperty();
   }
 
   public updateEntity(entity: Entity, geometry: Geometry): Entity {
@@ -78,10 +93,12 @@ export abstract class BaseDrawStyleController implements DrawStyleController {
   }
 
   protected updateLine(entity: Entity, geometry: LineGeometry): void {
+    (entity.position as ConstantPositionProperty).setValue(geometry.coordinates[geometry.coordinates.length - 1]);
     (entity.properties!.coordinates as ConstantProperty).setValue(geometry.coordinates);
   }
 
   protected updateArea(entity: Entity, geometry: PolygonGeometry | RectangleGeometry): void {
+    (entity.position as ConstantPositionProperty).setValue(geometry.coordinates[geometry.coordinates.length - 1]);
     (entity.properties!.coordinates as ConstantProperty).setValue(this.mapAreaCoordinates(geometry.coordinates));
   }
 
@@ -103,5 +120,24 @@ export abstract class BaseDrawStyleController implements DrawStyleController {
       () => new PolygonHierarchy(getEntity().properties!.coordinates!.getValue(JulianDate.now())),
       false,
     );
+  }
+
+  protected getCoordinates<T extends Geometry & { coordinates: unknown }>(entity: Entity): T['coordinates'] {
+    return (entity.properties!.coordinates as ConstantProperty).getValue(JulianDate.now());
+  }
+
+  protected makeLabel(text: Property): LabelGraphics.ConstructorOptions {
+    return {
+      text,
+      show: new CallbackProperty(() => text.getValue(JulianDate.now()) !== null, false),
+      font: '8pt arial',
+      style: LabelStyle.FILL,
+      showBackground: true,
+      heightReference: HeightReference.CLAMP_TO_GROUND,
+      verticalOrigin: VerticalOrigin.BOTTOM,
+      horizontalOrigin: HorizontalOrigin.RIGHT,
+      pixelOffset: new Cartesian2(-5, -5),
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    };
   }
 }

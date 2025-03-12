@@ -10,7 +10,6 @@ export class DefaultDrawStyleController extends BaseDrawStyleController {
   protected makePointEntity(geometry: PointGeometry): Entity {
     return new Entity({
       id: `${geometry.id}`,
-      position: geometry.coordinate,
       show: true,
       properties: {
         type: Shape.Point,
@@ -35,7 +34,6 @@ export class DefaultDrawStyleController extends BaseDrawStyleController {
       properties: {
         type: Shape.Line,
         drawStyle: this.constructor,
-        coordinates: geometry.coordinates,
       },
       polyline: {
         positions: this.makePositionsProperty(() => newEntity),
@@ -61,7 +59,6 @@ export class DefaultDrawStyleController extends BaseDrawStyleController {
       properties: {
         type: Shape.Polygon,
         drawStyle: this.constructor,
-        coordinates: geometry.coordinates,
       },
       polygon: {
         hierarchy: this.makeHierarchyProperty(() => newEntity),
@@ -85,7 +82,6 @@ export class DefaultDrawStyleController extends BaseDrawStyleController {
       properties: {
         type: Shape.Rectangle,
         drawStyle: this.constructor,
-        coordinates: geometry.coordinates,
       },
       polygon: {
         hierarchy: this.makeHierarchyProperty(() => newEntity),

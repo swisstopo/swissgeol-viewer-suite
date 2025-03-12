@@ -1,6 +1,7 @@
 {
   "tool": {
     "heading": "Geometrie",
+    "name_for_copied_geometry": "Kopie von {{base}}",
     "tabs": {
       "draw": "Zeichnen",
       "measure": "Messen",
@@ -12,11 +13,11 @@
       "polygon": "Polygon",
       "rectangle": "Rechteck"
     },
-    "name_for_copied_geometry": "Kopie von {{base}}",
     "feature": {
       "attribute_names": {
         "shape": "Typ",
-        "description": "Beschreibung"
+        "description": "Beschreibung",
+        "length": "Länge"
       }
     }
   }

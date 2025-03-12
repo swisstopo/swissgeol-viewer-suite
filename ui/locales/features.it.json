@@ -16,7 +16,8 @@
     "feature": {
       "attribute_names": {
         "shape": "",
-        "description": "Descrizione"
+        "description": "Descrizione",
+        "length": "Lunghezza"
       }
     }
   }
