@@ -48,10 +48,12 @@ export class CoordinateListEditToolController implements EditToolController {
     }
     const anchor = anchors[i];
 
-    const prevIndex = (((i - 1) % anchors.length) + anchors.length) % anchors.length;
+    const prevIndex = (i - 1 + anchors.length) % anchors.length;
     const nextIndex = (i + 1) % anchors.length;
     const prevAnchor = anchors[prevIndex];
     const nextAnchor = anchors[nextIndex];
+
+    console.log(prevIndex, i, nextIndex);
 
     switch (anchor.type) {
       case EditAnchorType.Node: {
@@ -88,12 +90,12 @@ export class CoordinateListEditToolController implements EditToolController {
           coordinate: calculateEdge(position, nextAnchor.coordinate),
         };
 
-        // Add the next before the previous, so the previous index does not shift.
-        anchors.splice(nextIndex, 0, nextEdge);
-
         // Splice moves any existing element to the right,
         // so adding an element before the current anchor must use the current anchor's position.
         anchors.splice(i, 0, prevEdge);
+
+        const adjustedNextIndex = nextIndex > i ? nextIndex + 1 : nextIndex;
+        anchors.splice(adjustedNextIndex, 0, nextEdge);
 
         this._anchorChanged$.next(prevEdge);
         this._anchorChanged$.next(nextEdge);
