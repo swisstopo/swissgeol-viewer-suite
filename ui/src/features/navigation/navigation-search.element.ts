@@ -524,6 +524,7 @@ export class NavigationSearch extends LitElementI18n {
       width: 20px;
       vertical-align: middle;
       color: #868e96;
+      margin-right: 8px;
     }
 
     ul > li i {
