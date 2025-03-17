@@ -24,7 +24,6 @@ import './elements/ngm-map-chooser';
 import 'src/features/background/background.module';
 import 'src/features/core/core.module';
 import 'src/features/navigation/navigation.module';
-import 'src/features/layout/layout.module';
 
 import { COGNITO_VARIABLES, DEFAULT_VIEW } from './constants';
 

@@ -163,7 +163,11 @@ export class LayerDisplayList extends CoreElement {
     layer: LayerConfig,
     isVisible: boolean,
   ): Promise<void> {
-    if ((layer.opacity == null || layer.opacity === 0) && isVisible) {
+    if (
+      !layer.opacityDisabled &&
+      (layer.opacity == null || layer.opacity === 0) &&
+      isVisible
+    ) {
       // If the opacity is set to zero, we force the layer to remain hidden.
       return;
     }
