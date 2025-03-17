@@ -17,7 +17,10 @@
       "attribute_names": {
         "shape": "Typ",
         "description": "Beschreibung",
-        "length": "Länge"
+        "url": "Website Link",
+        "length": "Länge",
+        "lowerBound": "Untergrenze",
+        "distanceToTerrain": "Distanz zum Terrain"
       }
     }
   }

@@ -25,6 +25,9 @@ export class CoreButton extends LitElement {
   @property({ type: Boolean, attribute: 'transparent', reflect: true })
   accessor isTransparent: boolean = false;
 
+  @property({ type: Boolean, attribute: 'borderless', reflect: true })
+  accessor isBorderless: boolean = false;
+
   firstUpdated(): void {
     if (this.hasAutoFocus) {
       setTimeout(() => {
@@ -82,8 +85,7 @@ export class CoreButton extends LitElement {
       background-color: var(--button-bg);
       border-color: var(--button-border);
 
-      &:hover,
-      &:focus {
+      &:hover {
         color: var(--button-text--hovered);
         background-color: var(--button-bg--hovered);
         border-color: var(--button-border--hovered);
@@ -197,6 +199,11 @@ export class CoreButton extends LitElement {
     /* transparent */
     :host([transparent]) {
       --button-bg: transparent;
+    }
+
+    /* transparent */
+    :host([borderless]) button {
+      border: 1px solid transparent;
     }
 
     /* icon shape */

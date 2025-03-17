@@ -24,6 +24,9 @@ export interface Feature {
   geometry: Geometry;
 
   description?: string;
+  url?: string;
+  lowerBound?: number;
+  distanceToTerrain?: number;
 }
 
 export type FeatureName = string | CopiedFeatureName | GeneratedFeatureName;

@@ -17,7 +17,10 @@
       "attribute_names": {
         "shape": "",
         "description": "Descrizione",
-        "length": "Lunghezza"
+        "url": "",
+        "length": "Lunghezza",
+        "lowerBound": "Limite inferiore",
+        "distanceToTerrain": ""
       }
     }
   }

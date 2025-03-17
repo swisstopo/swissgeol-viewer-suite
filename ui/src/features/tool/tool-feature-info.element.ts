@@ -5,7 +5,7 @@ import { css, html, PropertyValues } from 'lit';
 import { consume } from '@lit/context';
 import { ToolService } from 'src/features/tool/tool.service';
 import interact from 'interactjs';
-import { applyEffect, applyTypography } from 'src/styles/theme';
+import { applyTypography } from 'src/styles/theme';
 import i18next from 'i18next';
 
 @customElement('ngm-tool-feature-info')
@@ -86,7 +86,7 @@ export class ToolFeatureInfo extends CoreElement {
     <div class="heading">
       <h4>${this.toolService.getNameOfFeature(this.feature)}</h4>
 
-      <ngm-core-button variant="tertiary" shape="icon" transparent>
+      <ngm-core-button variant="tertiary" shape="icon" transparent borderless>
         <ngm-core-icon icon="close"></ngm-core-icon>
       </ngm-core-button>
     </div>
@@ -114,14 +114,35 @@ export class ToolFeatureInfo extends CoreElement {
       <span class="value">${i18next.t(`tool.shapes.${this.feature.geometry.shape}`, { ns: 'features' })}</span>
     </div>
 
-    <div class="attribute">
-      <span class="title">${i18next.t('tool.feature.attribute_names.description', { ns: 'features' })}</span>
-      ${this.feature.description &&
-      html`
-        <span class="value">${this.feature.description}</span>
-      `}
+    ${this.renderAttribute('shape', this.feature.geometry.shape, (shape) =>
+      i18next.t(`tool.shapes.${shape}`, { ns: 'features' }),
+    )}
+    ${this.renderAttribute('description', this.feature.description)} ${this.renderAttribute('url', this.feature.url)}
+
+    <div class="attribute-row">
+      ${this.renderAttribute('lowerBound', this.feature.lowerBound)}
+      ${this.renderAttribute('distanceToTerrain', this.feature.distanceToTerrain)}
     </div>
   `;
+
+  private readonly renderAttribute = <T>(name: string, value: T | null | undefined, render?: (value: T) => unknown) => {
+    return html`
+      <div class="attribute">
+        <span class="title">${i18next.t(`tool.feature.attribute_names.${name}`, { ns: 'features' })}</span>
+        ${this.renderAttributeValue(value, render)}
+      </div>
+    `;
+  };
+
+  private readonly renderAttributeValue = <T>(value: T | null | undefined, render?: (value: T) => unknown) => {
+    if (value == null) {
+      return undefined;
+    }
+    const renderedValue = render === undefined ? value : render(value);
+    return html`
+      <span class="value">${renderedValue}</span>
+    `;
+  };
 
   static readonly styles = css`
     :host,
@@ -143,6 +164,7 @@ export class ToolFeatureInfo extends CoreElement {
     }
 
     /* heading */
+
     .heading {
       display: flex;
       justify-content: space-between;
@@ -158,6 +180,7 @@ export class ToolFeatureInfo extends CoreElement {
     }
 
     /* actions */
+
     .actions-container {
       display: flex;
       flex-direction: column;
@@ -175,6 +198,7 @@ export class ToolFeatureInfo extends CoreElement {
     }
 
     /* hr */
+
     hr {
       width: 273px;
       height: 1px;
@@ -203,6 +227,11 @@ export class ToolFeatureInfo extends CoreElement {
       padding: 9px 12px;
       border: 1px solid var(--color-border--default);
       border-radius: 3px;
+    }
+
+    .attribute-row {
+      display: flex;
+      gap: 24px;
     }
   `;
 }
