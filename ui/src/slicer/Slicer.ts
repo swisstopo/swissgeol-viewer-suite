@@ -1,5 +1,4 @@
-import type { Cartesian3, Viewer } from 'cesium';
-import { CustomDataSource } from 'cesium';
+import { Cartesian3, Cartographic, CustomDataSource, Viewer } from 'cesium';
 import { executeForAllPrimitives } from '../utils';
 import SlicingBox from './SlicingBox';
 import SlicingLine from './SlicingLine';
@@ -67,6 +66,7 @@ export default class Slicer {
   sliceActive = false;
   slicingTool: SlicingToolBase | null = null;
   draw: CesiumDraw;
+  exaggeration = 1;
 
   /**
    * @param {Viewer} viewer
@@ -84,6 +84,7 @@ export default class Slicer {
       fillColor: DEFAULT_AOI_COLOR,
       minPointsStop: true,
     });
+    this.exaggeration = this.viewer.scene.verticalExaggeration;
     this.draw.addEventListener('drawend', (evt) =>
       this.endDrawing(<DrawEndDetails>(<CustomEvent>evt).detail),
     );
@@ -96,21 +97,24 @@ export default class Slicer {
     });
 
     NavToolsStore.exaggerationChanged.subscribe((exaggeration) => {
-      const arrows = this.slicingBox.slicerArrows?.arrows;
-      if (arrows && this.slicingBox.options?.showBox) {
-        let showSnackbar = false;
-        Object.values(arrows).forEach((a) => {
-          if (exaggeration > 1 && a.isShowing) {
-            a.show = false;
-            showSnackbar = true;
-          } else if (exaggeration === 1 && !a.isShowing) {
-            a.show = true;
-          }
-        });
-        if (exaggeration > 1 && showSnackbar) {
-          showSnackbarInfo(i18next.t('dtd_slice_arrows_hidden'));
-        }
+      const bbox = this.slicingBox?.bbox;
+      if (!bbox) {
+        return;
       }
+      const originalHeight = bbox.height / this.exaggeration;
+      const newHeight = originalHeight * exaggeration;
+      this.exaggeration = exaggeration;
+      bbox.height = newHeight;
+      bbox.lowerLimit =
+        Cartographic.fromCartesian(bbox.center).height - newHeight / 2;
+      if (this.slicingBox.upPlane) {
+        this.slicingBox.upPlane.distance = bbox.lowerLimit + bbox.height;
+      }
+      if (this.slicingBox.downPlane) {
+        this.slicingBox.downPlane.distance = Math.abs(bbox.lowerLimit);
+      }
+      this.slicingBox.syncPlanes();
+      this.viewer.scene.requestRender();
     });
   }
 
