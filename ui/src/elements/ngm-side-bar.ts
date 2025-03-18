@@ -156,6 +156,9 @@ export class SideBar extends LitElementI18n {
       layer.load = () => this.addLayer(layer);
       this.activeLayers.push(layer);
 
+      if (layer.promise === undefined) {
+        layer.promise = layer.load();
+      }
       addAssetId(asset.id);
       this.activeLayers = [...this.activeLayers];
       syncLayersParam(this.activeLayers);
@@ -413,6 +416,9 @@ export class SideBar extends LitElementI18n {
         };
         layer.load = () => this.addLayer(layer);
         activeLayers.push(layer);
+        if (layer.promise === undefined) {
+          layer.promise = layer.load();
+        }
       });
     }
 
