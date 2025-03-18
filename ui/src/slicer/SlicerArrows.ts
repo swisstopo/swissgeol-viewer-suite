@@ -1,5 +1,6 @@
 import {
   BoundingSphere,
+  CallbackPositionProperty,
   CallbackProperty,
   Cartesian2,
   Cartesian3,
@@ -457,14 +458,18 @@ export default class SlicerArrows {
     parentEntity: Entity,
     isVertical: boolean,
     directionVector: Cartesian3,
-  ): CallbackProperty {
-    return new CallbackProperty((time, result) => {
+  ): CallbackPositionProperty {
+    return new CallbackPositionProperty((time, result) => {
       const parentPosition = parentEntity.position!.getValue(time);
       if (!parentPosition) return undefined;
 
       if (isVertical) {
         const transform = Transforms.eastNorthUpToFixedFrame(parentPosition);
-        return Matrix4.multiplyByPoint(transform, directionVector, result);
+        return Matrix4.multiplyByPoint(
+          transform,
+          directionVector,
+          result ?? new Cartesian3(),
+        );
       }
       return Cartesian3.add(
         parentPosition,

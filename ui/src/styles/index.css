@@ -154,13 +154,15 @@
   --typo-subtitle-2--line-height: 20px;
   --typo-subtitle-2--letter-spacing: 0.0015em;
 
-  --typo-modal-title-1--family: var(--font-family), var(--font-family--fallback);
+  --typo-modal-title-1--family:
+    var(--font-family), var(--font-family--fallback);
   --typo-modal-title-1--weight: 700;
   --typo-modal-title-1--size: 20px;
   --typo-modal-title-1--line-height: 24.2px;
   --typo-modal-title-1--letter-spacing: 0.001em;
 
-  --typo-modal-title-2--family: var(--font-family), var(--font-family--fallback);
+  --typo-modal-title-2--family:
+    var(--font-family), var(--font-family--fallback);
   --typo-modal-title-2--weight: 700;
   --typo-modal-title-2--size: 16px;
   --typo-modal-title-2--line-height: 24.2px;
@@ -244,11 +246,11 @@
 
   --effect-overlay-shadow: 4px 4px 2px 0px rgba(0, 0, 0, 0.12);
 
-  --effect-top-shadow: 0 -4px 4px 0 rgba(0, 0, 0, 0.05),
-    0 -2px 4px -1px rgba(0, 0, 0, 0.03);
+  --effect-top-shadow:
+    0 -4px 4px 0 rgba(0, 0, 0, 0.05), 0 -2px 4px -1px rgba(0, 0, 0, 0.03);
 
-  --effect-bottom-shadow: 0 4px 10px -1px rgba(0, 0, 0, 0.08),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --effect-bottom-shadow:
+    0 4px 10px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* ## Animations ## */
