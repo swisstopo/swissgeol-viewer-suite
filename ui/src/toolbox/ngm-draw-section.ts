@@ -84,6 +84,9 @@ export class NgmDrawSection extends LitElementI18n {
   }
 
   render() {
+    if (!this.draw) {
+      return;
+    }
     const isDisabled = !!(this.draw!.active && this.draw!.entityForEdit);
     return html`
       <div class="ngm-draw-list">

@@ -64,7 +64,7 @@ import { clientConfigContext } from './context';
 import { consume, provide } from '@lit/context';
 import { ClientConfig } from './api/client-config';
 import { CoreModal } from 'src/features/core';
-import { makeId } from 'src/models/id.model';
+import { asId } from 'src/models/id.model';
 import { BackgroundLayer } from 'src/features/layer/layer.model';
 import { distinctUntilKeyChanged } from 'rxjs';
 import { addSwisstopoLayer } from 'src/swisstopoImagery';
@@ -79,7 +79,7 @@ const shouldShowDisclaimer = !isLocalhost;
 const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
   let sse = 2;
   if (isLocalhost) {
-    sse = 20;
+    // sse = 20;
   }
   if (searchParams.has('maximumScreenSpaceError')) {
     sse = parseFloat(searchParams.get('maximumScreenSpaceError')!);
@@ -226,7 +226,7 @@ export class NgmApp extends LitElementI18n {
     ToolboxStore.setSlicer(this.slicer_);
 
     MainStore.syncMap.subscribe(() => {
-      const id = makeId<BackgroundLayer>(getMapParam());
+      const id = asId<BackgroundLayer>(getMapParam());
       if (id != null) {
         this.backgroundLayerService.setBackground(id);
       }

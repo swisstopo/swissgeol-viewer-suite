@@ -5,6 +5,12 @@
       "draw": "Disegnare",
       "measure": "Misurare",
       "upload": "Upload"
+    },
+    "shapes": {
+      "point": "",
+      "line": "",
+      "polygon": "",
+      "rectangle": ""
     }
   }
 }

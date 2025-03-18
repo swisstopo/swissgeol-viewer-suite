@@ -1,7 +1,7 @@
 import { BaseService } from 'src/utils/base.service';
 import { BackgroundLayer } from 'src/features/layer/layer.model';
 import { makeTranslationKey } from 'src/models/translation-key.model';
-import { Id, makeId } from 'src/models/id.model';
+import { Id, asId } from 'src/models/id.model';
 import { BehaviorSubject, map, Observable, shareReplay } from 'rxjs';
 import { makeModelMapping } from 'src/models/model.model';
 import { getMapOpacityParam, getMapParam } from 'src/permalink';
@@ -22,9 +22,10 @@ export class BackgroundLayerService extends BaseService {
     if (id === 'empty_map') {
       this.update({ isVisible: false });
     } else if (id != null) {
-      this.setBackground(makeId(id));
+      this.setBackground(asId(id));
     }
   }
+
   static get default(): BackgroundLayer {
     return GREY_BACKGROUND;
   }
@@ -32,6 +33,7 @@ export class BackgroundLayerService extends BaseService {
   private activeId: Id<BackgroundLayer> = GREY_BACKGROUND.id;
 
   private readonly layers$ = new BehaviorSubject(LAYER_MAPPING);
+
   private readonly activeLayer$ = this.layers$.pipe(
     map(() => this.background),
     shareReplay(1),
@@ -86,12 +88,12 @@ const BACKGROUND_BASE = {
 
 const SATELLITE_BACKGROUND: BackgroundLayer = {
   ...BACKGROUND_BASE,
-  id: makeId('ch.swisstopo.swissimage'),
+  id: asId('ch.swisstopo.swissimage'),
   label: makeTranslationKey('dtd_aerial_map_label'),
   imagePath: '/images/arealimage.png',
   children: [
     {
-      id: makeId('ch.swisstopo.swissimage'),
+      id: asId('ch.swisstopo.swissimage'),
       format: 'jpeg',
       credit: 'swisstopo',
       maximumLevel: 20,
@@ -101,12 +103,12 @@ const SATELLITE_BACKGROUND: BackgroundLayer = {
 
 const GREY_BACKGROUND: BackgroundLayer = {
   ...BACKGROUND_BASE,
-  id: makeId('ch.swisstopo.pixelkarte-grau'),
+  id: asId('ch.swisstopo.pixelkarte-grau'),
   label: makeTranslationKey('dtd_grey_map_label'),
   imagePath: '/images/grey.png',
   children: [
     {
-      id: makeId('ch.swisstopo.pixelkarte-grau'),
+      id: asId('ch.swisstopo.pixelkarte-grau'),
       format: 'jpeg',
       credit: 'swisstopo',
       maximumLevel: 18,
@@ -116,19 +118,19 @@ const GREY_BACKGROUND: BackgroundLayer = {
 
 const WATERS_BACKGROUND: BackgroundLayer = {
   ...BACKGROUND_BASE,
-  id: makeId('lakes_rivers_map'),
+  id: asId('lakes_rivers_map'),
   label: makeTranslationKey('dtd_lakes_rivers_map_label'),
   imagePath: '/images/lakes_rivers.png',
   hasAlphaChannel: true,
   children: [
     {
-      id: makeId('ch.bafu.vec25-seen'),
+      id: asId('ch.bafu.vec25-seen'),
       format: 'png',
       credit: 'swisstopo',
       maximumLevel: 18,
     },
     {
-      id: makeId('ch.bafu.vec25-gewaessernetz_2000'),
+      id: asId('ch.bafu.vec25-gewaessernetz_2000'),
       format: 'png',
       credit: 'swisstopo',
       maximumLevel: 18,

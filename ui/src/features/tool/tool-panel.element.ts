@@ -2,11 +2,20 @@ import { customElement, state } from 'lit/decorators.js';
 import { CoreElement, renderTabs, TabValueChangeEvent } from 'src/features/core';
 import { css, html } from 'lit';
 import i18next from 'i18next';
+import { consume } from '@lit/context';
+import { ToolService } from 'src/features/tool/tool.service';
 
 @customElement('ngm-tool-panel')
 export class ToolPanel extends CoreElement {
   @state()
   private accessor activeTab = Tab.Draw;
+
+  @consume({ context: ToolService.context() })
+  private accessor toolService!: ToolService;
+
+  disconnectedCallback(): void {
+    this.toolService.deactivate();
+  }
 
   private close(): void {
     this.dispatchEvent(new CustomEvent('close'));
@@ -28,7 +37,9 @@ export class ToolPanel extends CoreElement {
         onValueChange: this.handleTabChange,
         tab: this.translateTabName,
         panels: {
-          [Tab.Draw]: html``,
+          [Tab.Draw]: html`
+            <ngm-tool-list></ngm-tool-list>
+          `,
           [Tab.Measure]: html``,
           [Tab.Upload]: html``,
         },
