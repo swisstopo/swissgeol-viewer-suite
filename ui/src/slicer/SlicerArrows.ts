@@ -6,6 +6,7 @@ import {
   Cartographic,
   Color,
   ColorBlendMode,
+  ColorMaterialProperty,
   DataSource,
   Entity,
   JulianDate,
@@ -33,7 +34,14 @@ import {
 import type { BBox } from './helper';
 import { debounce } from '../utils';
 
-export type BBoxSide = 'up' | 'down' | 'left' | 'right' | 'front' | 'back';
+export enum BBoxSide {
+  UP = 'up',
+  DOWN = 'down',
+  LEFT = 'left',
+  RIGHT = 'right',
+  FRONT = 'front',
+  BACK = 'back',
+}
 
 export interface ArrowListItem {
   // arrow position label
@@ -82,10 +90,13 @@ interface ArrowGeometry {
 export default class SlicerArrows {
   viewer!: Viewer;
   dataSource!: DataSource;
-  moveCallback: (string, number, Cartesian3) => void;
+  moveCallback: (
+    side: BBoxSide,
+    moveAmount: number,
+    moveVector: Cartesian3,
+  ) => void;
   positionUpdateCallback: (string) => Cartesian3;
   arrowsList: ArrowListItem[];
-  julianDate = new JulianDate();
   selectedArrow: Entity | null = null;
   arrowConfiguration: ArrowConfiguration;
 
@@ -105,7 +116,7 @@ export default class SlicerArrows {
   private readonly scratchBottom = new Cartesian3();
 
   private eventHandler: ScreenSpaceEventHandler | null = null;
-  highlightedArrow: ArrowGeometry | undefined = undefined;
+  highlightedArrow: ArrowGeometry | null = null;
   arrows: Record<string, ArrowGeometry> = {};
   bbox: BBox | null = null;
 
@@ -195,14 +206,14 @@ export default class SlicerArrows {
     if (this.selectedArrow) {
       const scene = this.viewer.scene;
       const properties = this.selectedArrow.properties!;
-      const side: string = properties.side.getValue();
+      const side: BBoxSide = properties.side.getValue();
       // get second position to create move axis
       let oppositePosition3d: Cartesian3;
       if (properties.oppositeSide) {
-        const oppositeSide: string = properties.oppositeSide.getValue();
+        const oppositeSide: BBoxSide = properties.oppositeSide.getValue();
         const oppositeArrow = this.arrows[oppositeSide];
         oppositePosition3d = oppositeArrow.shaft.position!.getValue(
-          this.julianDate,
+          new JulianDate(),
         )!;
       } else if (properties.oppositePosition) {
         oppositePosition3d = properties.oppositePosition.getValue();
@@ -211,7 +222,7 @@ export default class SlicerArrows {
       }
 
       const arrowPosition3d = this.selectedArrow.position!.getValue(
-        this.julianDate,
+        new JulianDate(),
       )!;
       scene.cartesianToCanvasCoordinates(
         arrowPosition3d,
@@ -309,7 +320,8 @@ export default class SlicerArrows {
     };
     this.arrows = {};
     this.arrowsList.forEach((arrow) => {
-      const isUpOrDown = arrow.side === 'up' || arrow.side === 'down';
+      const isVertical =
+        arrow.side === BBoxSide.UP || arrow.side === BBoxSide.DOWN;
       const arrowEntityOptions = arrowEntityTemplate;
       const properties = arrowEntityOptions.properties;
       if (!properties) return;
@@ -332,10 +344,10 @@ export default class SlicerArrows {
       // Default values for up and down arrows
       let orientation: Quaternion | undefined = undefined;
       let directionVector: Cartesian3 = new Cartesian3(0, 0, ARROW_TIP_OFFSET);
-      if (!isUpOrDown) {
+      if (!isVertical) {
         const pointA = this.bbox.corners.topLeft;
         const pointB =
-          arrow.side === 'front' || arrow.side === 'back'
+          arrow.side === BBoxSide.FRONT || arrow.side === BBoxSide.BACK
             ? this.bbox.corners.topRight
             : this.bbox.corners.bottomLeft;
         directionVector = this.getHorizontalPerpendicularVectorFromTwoPoints(
@@ -364,7 +376,7 @@ export default class SlicerArrows {
       const topCone = new Entity({
         position: this.computeRelativePosition(
           shaft,
-          isUpOrDown,
+          isVertical,
           directionVector,
         ),
         cylinder: {
@@ -378,7 +390,7 @@ export default class SlicerArrows {
       const bottomCone = new Entity({
         position: this.computeRelativePosition(
           shaft,
-          isUpOrDown,
+          isVertical,
           Cartesian3.negate(directionVector, new Cartesian3()),
         ),
         cylinder: {
@@ -408,7 +420,7 @@ export default class SlicerArrows {
   getHorizontalPerpendicularVectorFromTwoPoints(
     pointA: Cartesian3,
     pointB: Cartesian3,
-  ) {
+  ): Cartesian3 {
     const diff = Cartesian3.subtract(pointB, pointA, new Cartesian3());
     const normalized = Cartesian3.normalize(diff, new Cartesian3());
     const perpendicular = new Cartesian3(-normalized.y, normalized.x, 0);
@@ -438,19 +450,19 @@ export default class SlicerArrows {
    * Compute relative position of the arrow depending on the parent entity position
    *
    * @param parentEntity Entity to which the arrow is attached
-   * @param isUpOrDown Whether the arrow vertical in space
+   * @param isVertical Whether the arrow vertical in space
    * @param directionVector The direction in which the arrow is pointing
    */
   computeRelativePosition(
     parentEntity: Entity,
-    isUpOrDown: boolean,
+    isVertical: boolean,
     directionVector: Cartesian3,
-  ) {
+  ): CallbackProperty {
     return new CallbackProperty((time, result) => {
       const parentPosition = parentEntity.position!.getValue(time);
       if (!parentPosition) return undefined;
 
-      if (isUpOrDown) {
+      if (isVertical) {
         const transform = Transforms.eastNorthUpToFixedFrame(parentPosition);
         return Matrix4.multiplyByPoint(transform, directionVector, result);
       }
@@ -492,15 +504,14 @@ export default class SlicerArrows {
 
   unhighlightArrow() {
     if (this.highlightedArrow) {
-      // @ts-expect-error 2322
-      this.highlightedArrow.shaft.cylinder.material = SLICING_GEOMETRY_COLOR;
-      // @ts-expect-error 2322
-      this.highlightedArrow.topCone.cylinder.material = SLICING_GEOMETRY_COLOR;
-      // @ts-expect-error 2322
-      this.highlightedArrow.bottomCone.cylinder.material =
-        SLICING_GEOMETRY_COLOR;
+      this.highlightedArrow.shaft.cylinder!.material =
+        new ColorMaterialProperty(SLICING_GEOMETRY_COLOR);
+      this.highlightedArrow.topCone.cylinder!.material =
+        new ColorMaterialProperty(SLICING_GEOMETRY_COLOR);
+      this.highlightedArrow.bottomCone.cylinder!.material =
+        new ColorMaterialProperty(SLICING_GEOMETRY_COLOR);
 
-      this.highlightedArrow = undefined;
+      this.highlightedArrow = null;
       this.viewer.canvas.style.cursor = '';
     }
   }
@@ -515,8 +526,8 @@ export default class SlicerArrows {
 
   updateAxisVector(arrowPosition3d, oppositePosition3d) {
     const corners = this.bbox!.corners;
-    const type = this.selectedArrow!.properties!.side.getValue();
-    if (type === 'left' || type === 'right') {
+    const type: BBoxSide = this.selectedArrow!.properties!.side.getValue();
+    if (type === BBoxSide.LEFT || type === BBoxSide.RIGHT) {
       Cartesian3.midpoint(
         corners.bottomLeft,
         corners.topLeft,
@@ -548,28 +559,28 @@ export default class SlicerArrows {
       );
     }
     switch (type) {
-      case 'right':
+      case BBoxSide.RIGHT:
         Cartesian3.subtract(
           this.scratchLeft,
           this.scratchRight,
           this.axisVector3d,
         );
         break;
-      case 'left':
+      case BBoxSide.LEFT:
         Cartesian3.subtract(
           this.scratchRight,
           this.scratchLeft,
           this.axisVector3d,
         );
         break;
-      case 'front':
+      case BBoxSide.FRONT:
         Cartesian3.subtract(
           this.scratchBottom,
           this.scratchTop,
           this.axisVector3d,
         );
         break;
-      case 'back':
+      case BBoxSide.BACK:
         Cartesian3.subtract(
           this.scratchTop,
           this.scratchBottom,

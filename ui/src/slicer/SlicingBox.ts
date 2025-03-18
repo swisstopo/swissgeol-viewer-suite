@@ -122,8 +122,11 @@ export default class SlicingBox extends SlicingToolBase {
     this.zPlanes = [this.downPlane, this.upPlane];
 
     this.slicerArrows = new SlicerArrows(this.viewer, this.dataSource, {
-      moveCallback: (side, moveAmount, moveVector) =>
-        this.onPlaneMove(side, moveAmount, moveVector),
+      moveCallback: (
+        side: BBoxSide,
+        moveAmount: number,
+        moveVector: Cartesian3,
+      ) => this.onPlaneMove(side, moveAmount, moveVector),
       positionUpdateCallback: (side: BBoxSide) =>
         this.arrowPositionCallback(side),
       arrowsList: this.options.negate
@@ -280,12 +283,12 @@ export default class SlicingBox extends SlicingToolBase {
     }
   }
 
-  onPlaneMove(side, moveAmount, moveVector) {
+  onPlaneMove(side: BBoxSide, moveAmount: number, moveVector: Cartesian3) {
     const bbox = this.bbox!;
     let shouldBothSidesMove = false;
     const corners = bbox!.corners;
     switch (side) {
-      case 'left': {
+      case BBoxSide.LEFT: {
         shouldBothSidesMove = moveSlicingBoxCorners(
           corners.topLeft,
           corners.bottomLeft,
@@ -296,7 +299,7 @@ export default class SlicingBox extends SlicingToolBase {
         );
         break;
       }
-      case 'right': {
+      case BBoxSide.RIGHT: {
         shouldBothSidesMove = moveSlicingBoxCorners(
           corners.topRight,
           corners.bottomRight,
@@ -307,7 +310,7 @@ export default class SlicingBox extends SlicingToolBase {
         );
         break;
       }
-      case 'front': {
+      case BBoxSide.FRONT: {
         shouldBothSidesMove = moveSlicingBoxCorners(
           corners.topLeft,
           corners.topRight,
@@ -318,7 +321,7 @@ export default class SlicingBox extends SlicingToolBase {
         );
         break;
       }
-      case 'back': {
+      case BBoxSide.BACK: {
         shouldBothSidesMove = moveSlicingBoxCorners(
           corners.bottomLeft,
           corners.bottomRight,
@@ -329,12 +332,14 @@ export default class SlicingBox extends SlicingToolBase {
         );
         break;
       }
-      case 'up':
-      case 'down': {
+      case BBoxSide.UP:
+      case BBoxSide.DOWN: {
         let boxHeight = bbox.height;
-        side === 'down' ? (boxHeight += moveAmount) : (boxHeight -= moveAmount);
+        side === BBoxSide.DOWN
+          ? (boxHeight += moveAmount)
+          : (boxHeight -= moveAmount);
         if (boxHeight < SLICING_BOX_MIN_SIZE) {
-          side === 'down'
+          side === BBoxSide.DOWN
             ? (this.upPlane!.distance -= moveAmount)
             : (this.downPlane!.distance += moveAmount);
           shouldBothSidesMove = true;
@@ -343,7 +348,7 @@ export default class SlicingBox extends SlicingToolBase {
           boxHeight < SLICING_BOX_MIN_SIZE ? SLICING_BOX_MIN_SIZE : boxHeight;
         bbox.lowerLimit =
           Cartographic.fromCartesian(bbox.center).height - bbox.height / 2;
-        side === 'down'
+        side === BBoxSide.DOWN
           ? (this.downPlane!.distance += moveAmount)
           : (this.upPlane!.distance -= moveAmount);
         break;
@@ -373,9 +378,10 @@ export default class SlicingBox extends SlicingToolBase {
     const boxHeight = this.bbox!.height;
     const corners = this.bbox!.corners;
 
-    if (side === 'up' || side === 'down') {
+    if (side === BBoxSide.UP || side === BBoxSide.DOWN) {
       const position = Cartographic.fromCartesian(corners.bottomLeft);
-      position.height = side === 'down' ? -(boxHeight / 2) : boxHeight / 2;
+      position.height =
+        side === BBoxSide.DOWN ? -(boxHeight / 2) : boxHeight / 2;
       position.height += boxCenter.height;
       return Cartographic.toCartesian(position);
     } else {
@@ -392,7 +398,7 @@ export default class SlicingBox extends SlicingToolBase {
       const start = 0.05;
       const end = 0.95;
       switch (side) {
-        case 'right':
+        case BBoxSide.RIGHT:
           return projectPointOnSegment(
             viewCenter,
             corners.bottomRight,
@@ -401,7 +407,7 @@ export default class SlicingBox extends SlicingToolBase {
             end,
             height,
           );
-        case 'left':
+        case BBoxSide.LEFT:
           return projectPointOnSegment(
             viewCenter,
             corners.bottomLeft,
@@ -410,7 +416,7 @@ export default class SlicingBox extends SlicingToolBase {
             end,
             height,
           );
-        case 'back':
+        case BBoxSide.BACK:
           return projectPointOnSegment(
             viewCenter,
             corners.bottomRight,
@@ -419,7 +425,7 @@ export default class SlicingBox extends SlicingToolBase {
             end,
             height,
           );
-        case 'front':
+        case BBoxSide.FRONT:
           return projectPointOnSegment(
             viewCenter,
             corners.topRight,

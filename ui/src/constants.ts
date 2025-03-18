@@ -8,7 +8,7 @@ import {
   Rectangle,
   ShadowMode,
 } from 'cesium';
-import { ArrowListItem } from 'src/slicer/SlicerArrows';
+import { ArrowListItem, BBoxSide } from './slicer/SlicerArrows';
 
 export { LayerType, DEFAULT_LAYER_OPACITY } from './layertree';
 
@@ -149,16 +149,16 @@ export const POINT_SYMBOLS = [
 ];
 
 export const SLICE_BOX_ARROWS_INSIDE: ArrowListItem[] = [
-  { side: 'left', oppositeSide: 'right' },
-  { side: 'right', oppositeSide: 'left' },
-  { side: 'back', oppositeSide: 'front' },
-  { side: 'front', oppositeSide: 'back' },
+  { side: BBoxSide.LEFT, oppositeSide: BBoxSide.RIGHT },
+  { side: BBoxSide.RIGHT, oppositeSide: BBoxSide.LEFT },
+  { side: BBoxSide.BACK, oppositeSide: BBoxSide.FRONT },
+  { side: BBoxSide.FRONT, oppositeSide: BBoxSide.BACK },
 ];
 
 export const SLICE_BOX_ARROWS_OUTSIDE: ArrowListItem[] = [
   ...SLICE_BOX_ARROWS_INSIDE,
-  { side: 'down', oppositeSide: 'up' },
-  { side: 'up', oppositeSide: 'down' },
+  { side: BBoxSide.DOWN, oppositeSide: BBoxSide.UP },
+  { side: BBoxSide.UP, oppositeSide: BBoxSide.DOWN },
 ];
 
 export const SLICING_BOX_HEIGHT = DEFAULT_VOLUME_HEIGHT_LIMITS.height;

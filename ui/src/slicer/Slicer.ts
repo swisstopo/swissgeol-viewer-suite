@@ -66,7 +66,7 @@ export default class Slicer {
   sliceActive = false;
   slicingTool: SlicingToolBase | null = null;
   draw: CesiumDraw;
-  exaggeration: number = 1;
+  exaggeration = 1;
 
   /**
    * @param {Viewer} viewer
@@ -97,10 +97,10 @@ export default class Slicer {
     });
 
     NavToolsStore.exaggerationChanged.subscribe((exaggeration) => {
-      if (!this.slicingBox?.bbox) {
+      const bbox = this.slicingBox?.bbox;
+      if (!bbox) {
         return;
       }
-      const bbox = this.slicingBox.bbox;
       const originalHeight = bbox.height / this.exaggeration;
       const newHeight = originalHeight * exaggeration;
       this.exaggeration = exaggeration;
