@@ -19,4 +19,4 @@ Feature: Select data from data catalog
 
     When the user clicks on a layer
     Then the checkbox is checked
-    And the layer is added to the data data dislayed section at the to of the section
+    And the layer is added one time at the top of the data dislayed section
