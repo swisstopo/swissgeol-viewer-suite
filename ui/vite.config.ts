@@ -6,6 +6,7 @@ import babel from '@rollup/plugin-babel';
 import inlinesvg from 'postcss-inline-svg';
 import cssimport from 'postcss-import';
 import postcssurl from 'postcss-url';
+import analyzer from 'vite-bundle-analyzer';
 
 // @ts-expect-error
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -111,6 +112,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    process.env.ANALYZE === 'true' ? analyzer({ analyzerPort: 8883 }) : null,
     viteStaticCopy({
       targets: [
         {
@@ -142,7 +144,7 @@ export default defineConfig({
       watch: { reloadPageOnChange: true },
       hook: 'buildStart',
     }),
-  ],
+  ].filter(Boolean),
   css: {
     postcss: {
       plugins: [
