@@ -5,6 +5,7 @@ import {
   apiClientContext,
   authServiceContext,
   clientConfigContext,
+  gstServiceContext,
 } from './client-config.context';
 import { ApiClient } from '../api/api-client';
 import AuthService from '../authService';
@@ -14,6 +15,7 @@ import {
   ServiceContext,
 } from 'src/utils/base.service';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
+import { GstService } from 'src/gst.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -47,6 +49,14 @@ export const registerAppContext = (
     }),
   );
 
+  const gstService = new GstService(clientConfig);
+  contexts.push(
+    new ContextProvider(element, {
+      context: gstServiceContext,
+      initialValue: gstService,
+    }),
+  );
+
   contexts.push(makeProvider(BackgroundLayerService));
   return contexts;
 };
@@ -55,6 +65,7 @@ interface MakeProvider {
   <T extends typeof BaseService & (new () => InstanceType<T>)>(
     serviceType: T,
   ): ContextProvider<ServiceContext<T>, LitElement>;
+
   <T extends typeof BaseService>(
     service: InstanceType<T>,
   ): ContextProvider<ServiceContext<T>, LitElement>;

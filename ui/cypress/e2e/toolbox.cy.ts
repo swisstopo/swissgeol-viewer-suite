@@ -1,7 +1,7 @@
 const testGstOutput = () => {
-  cy.intercept('https://viewer.geomol.ch/webgui/**', (req) => {
+  cy.intercept('https://gst-viewer.swissgeol.ch/webgui/**', (req) => {
     req.reply(200, {
-      imageUrl: `https://viewer.geomol.ch/webgui/tmp/test.${req.query.outputType}`,
+      imageUrl: `https://gst-viewer.swissgeol.ch/webgui/tmp/test.${req.query.outputType}`,
     });
   }).as('createSection');
   cy.get('ngm-gst-interaction .ngm-action-list-item.ngm-geom-item').should(

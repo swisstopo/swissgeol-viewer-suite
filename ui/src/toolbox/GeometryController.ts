@@ -24,6 +24,8 @@ import {
   HeightReference,
   JulianDate,
   KmlDataSource,
+  PolygonGraphics,
+  PolylineGraphics,
   PropertyBag,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
@@ -54,6 +56,7 @@ import {
   POINT_SYMBOLS,
 } from '../constants';
 import { saveAs } from 'file-saver';
+import * as Cesium from 'cesium';
 
 export class GeometryController {
   private draw: CesiumDraw | undefined;
@@ -514,15 +517,50 @@ export class GeometryController {
 
   @pauseGeometryCollectionEvents
   copyGeometry(id) {
-    const entityToCopy = this.geometriesDataSource!.entities.getById(id);
-    if (!entityToCopy) return;
+    const entity = this.geometriesDataSource!.entities.getById(id);
+    if (!entity) return;
     const properties = new PropertyBag();
-    properties.merge(entityToCopy.properties);
-    const newEntity = this.geometriesDataSource!.entities.add(
-      new Entity({ properties }),
-    );
-    newEntity.merge(entityToCopy);
-    newEntity.name = `${i18next.t('tbx_copy_of_label')}  ${entityToCopy.name}`;
+    properties.merge(entity.properties);
+    const newEntity = new Cesium.Entity({
+      properties,
+      position:
+        entity.position &&
+        new Cesium.ConstantPositionProperty(
+          entity.position.getValue(Cesium.JulianDate.now()),
+        ),
+      orientation:
+        entity.orientation &&
+        new Cesium.ConstantProperty(
+          entity.orientation.getValue(Cesium.JulianDate.now()),
+        ),
+      model: Cesium.clone(entity.model),
+      billboard: Cesium.clone(entity.billboard),
+      label: Cesium.clone(entity.label),
+      point: Cesium.clone(entity.point),
+      polyline:
+        entity.polyline &&
+        (() => {
+          const p: PolylineGraphics = Cesium.clone(entity.polyline);
+          p.positions = new Cesium.ConstantProperty(
+            entity.polyline.positions!.getValue(Cesium.JulianDate.now()),
+          );
+          return p;
+        })(),
+      polygon:
+        entity.polygon &&
+        (() => {
+          const p: PolygonGraphics = Cesium.clone(entity.polygon);
+          p.hierarchy = new Cesium.ConstantProperty(
+            entity.polygon.hierarchy!.getValue(Cesium.JulianDate.now()),
+          );
+          return p;
+        })(),
+      description: entity.description,
+      name: entity.name
+        ? `${i18next.t('tbx_copy_of_label')}  ${entity.name}`
+        : undefined,
+    });
+    this.geometriesDataSource!.entities.add(newEntity);
     this.viewer!.scene.requestRender();
   }
 

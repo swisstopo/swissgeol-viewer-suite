@@ -15,25 +15,29 @@ export abstract class CoreBasePopup<
 
   protected box: TBox | null = null;
 
-  private slotObserver: MutationObserver | null = null;
-
   private isInitialized = false;
 
-  private isShown = false;
+  private _isShown = false;
 
   protected constructor() {
     super();
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
   }
+
   get target(): Element | null {
     return this._target ?? this.previousElementSibling;
   }
+
   @property()
   set target(target: Element | null) {
     this.unregisterTarget();
     this._target = target;
     this.registerTarget();
+  }
+
+  get isShown(): boolean {
+    return this._isShown;
   }
 
   private registerTarget(): void {
@@ -82,7 +86,6 @@ export abstract class CoreBasePopup<
   }
 
   disconnectedCallback(): void {
-    this.slotObserver?.disconnect();
     this.unsyncSlot();
     this.hide();
     this.box?.remove();
@@ -97,7 +100,6 @@ export abstract class CoreBasePopup<
     this.box.hide();
     this.box.addEventListener('hide', this.hide);
 
-    this.slotObserver = new MutationObserver(() => this.syncSlot());
     this.syncSlot();
 
     if (this._target == null) {
@@ -156,22 +158,22 @@ export abstract class CoreBasePopup<
   }
 
   protected show(event?: Event): void {
-    if (this.isShown || this.box == null) {
+    if (this._isShown || this.box == null) {
       return;
     }
     event?.stopImmediatePropagation();
     this.box.show();
     this.updatePosition({ allowViewportCheck: true });
-    this.isShown = true;
+    this._isShown = true;
   }
 
   protected hide(event?: Event): void {
-    if (!this.isShown || this.box == null) {
+    if (!this._isShown || this.box == null) {
       return;
     }
     event?.stopImmediatePropagation();
     this.box.hide();
-    this.isShown = false;
+    this._isShown = false;
   }
 
   private updatePosition(
