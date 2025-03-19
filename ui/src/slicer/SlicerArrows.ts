@@ -20,9 +20,15 @@ import {
   Viewer,
 } from 'cesium';
 import {
-  ARROW_CYLINDER,
-  ARROW_TIP_OFFSET,
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
+  MAX_SCALE_FACTOR,
+  MIN_ARROW_LENGTH,
+  MIN_ARROW_RADIUS,
+  MIN_ARROW_TIP_LENGTH,
+  MIN_ARROW_TIP_RADIUS,
+  MIN_SIZE_DISTANCE,
+  SCALE_FACTOR_HORIZONTAL,
+  SCALE_FACTOR_VERTICAL,
   SLICING_GEOMETRY_COLOR,
 } from '../constants';
 import {
@@ -333,7 +339,6 @@ export default class SlicerArrows {
       } else {
         arrowEntityOptions.position = arrow.position;
       }
-      arrowEntityOptions.cylinder = ARROW_CYLINDER;
 
       if (!this.bbox) {
         return;
@@ -341,7 +346,7 @@ export default class SlicerArrows {
 
       // Default values for up and down arrows
       let orientation: Quaternion | undefined = undefined;
-      let directionVector: Cartesian3 = new Cartesian3(0, 0, ARROW_TIP_OFFSET);
+      let directionVector: Cartesian3 = new Cartesian3(0, 0, 1);
       if (!isVertical) {
         const pointA = this.bbox.corners.topLeft;
         const pointB =
@@ -370,29 +375,31 @@ export default class SlicerArrows {
         properties.oppositePosition = arrow.oppositePosition;
       }
 
-      const shaft = new Entity(arrowEntityOptions);
+      const shaft = new Entity({
+        ...arrowEntityOptions,
+        cylinder: {
+          length: new CallbackProperty(() => {
+            return this.scaleArrowElementsRelativeToCameraDistance(
+              MIN_ARROW_LENGTH,
+              shaft.position!.getValue(new JulianDate())!,
+            );
+          }, false),
 
-      shaft.cylinder!.length = new CallbackProperty(() => {
-        return this.scaling(
-          this.bbox?.height / 100,
-          1000,
-          shaft.position!.getValue(new JulianDate())!,
-        );
-      }, false);
-      shaft.cylinder!.topRadius = new CallbackProperty(() => {
-        return this.scaling(
-          this.bbox?.height / 1000,
-          100,
-          shaft.position!.getValue(new JulianDate())!,
-        );
-      }, false);
-      shaft.cylinder!.bottomRadius = new CallbackProperty(() => {
-        return this.scaling(
-          this.bbox?.height / 1000,
-          100,
-          shaft.position!.getValue(new JulianDate())!,
-        );
-      }, false);
+          bottomRadius: new CallbackProperty(() => {
+            return this.scaleArrowElementsRelativeToCameraDistance(
+              MIN_ARROW_RADIUS,
+              shaft.position!.getValue(new JulianDate())!,
+            );
+          }, false),
+          topRadius: new CallbackProperty(() => {
+            return this.scaleArrowElementsRelativeToCameraDistance(
+              MIN_ARROW_RADIUS,
+              shaft.position!.getValue(new JulianDate())!,
+            );
+          }, false),
+        },
+      });
+
       const topCone = new Entity({
         position: this.computeRelativePosition(
           shaft,
@@ -401,17 +408,15 @@ export default class SlicerArrows {
         ),
         cylinder: {
           length: new CallbackProperty(() => {
-            return this.scaling(
-              this.bbox?.height / 250,
-              400,
+            return this.scaleArrowElementsRelativeToCameraDistance(
+              MIN_ARROW_TIP_LENGTH,
               shaft.position!.getValue(new JulianDate())!,
             );
           }, false),
           topRadius: 0,
           bottomRadius: new CallbackProperty(() => {
-            return this.scaling(
-              this.bbox?.height / 500,
-              200,
+            return this.scaleArrowElementsRelativeToCameraDistance(
+              MIN_ARROW_TIP_RADIUS,
               shaft.position!.getValue(new JulianDate())!,
             );
           }, false),
@@ -427,16 +432,14 @@ export default class SlicerArrows {
         ),
         cylinder: {
           length: new CallbackProperty(() => {
-            return this.scaling(
-              this.bbox?.height / 250,
-              400,
+            return this.scaleArrowElementsRelativeToCameraDistance(
+              MIN_ARROW_TIP_LENGTH,
               shaft.position!.getValue(new JulianDate())!,
             );
           }, false),
           topRadius: new CallbackProperty(() => {
-            return this.scaling(
-              this.bbox?.height / 500,
-              200,
+            return this.scaleArrowElementsRelativeToCameraDistance(
+              MIN_ARROW_TIP_RADIUS,
               shaft.position!.getValue(new JulianDate())!,
             );
           }, false),
@@ -456,15 +459,16 @@ export default class SlicerArrows {
     });
   }
 
-  scaling(min: number, max: number, position: Cartesian3) {
+  scaleArrowElementsRelativeToCameraDistance(
+    minSize: number,
+    position: Cartesian3,
+  ): number {
     const cameraPosition = this.viewer.camera.position;
     const distance = Cartesian3.distance(cameraPosition, position);
-
-    const maxDistance = 50000;
-    const minDistance = 500;
-    const scale = (distance - minDistance) / (maxDistance - minDistance);
-
-    return Math.min(Math.max(max * scale, min), max);
+    return (
+      minSize *
+      Math.min(Math.max(1, distance / MIN_SIZE_DISTANCE), MAX_SCALE_FACTOR)
+    );
   }
 
   /**
@@ -517,15 +521,19 @@ export default class SlicerArrows {
       const parentPosition = parentEntity.position!.getValue(time);
       if (!parentPosition) return undefined;
 
-      const SCALE_FACTOR = 0.9;
       const cylinderLength: number = parentEntity.cylinder?.length?.getValue(
         new JulianDate(),
       );
       if (isVertical) {
         const transform = Transforms.eastNorthUpToFixedFrame(parentPosition);
+        const scaledDirectionVector = Cartesian3.multiplyByScalar(
+          directionVector,
+          cylinderLength * SCALE_FACTOR_VERTICAL,
+          new Cartesian3(),
+        );
         return Matrix4.multiplyByPoint(
           transform,
-          directionVector,
+          scaledDirectionVector,
           result ?? new Cartesian3(),
         );
       }
@@ -533,7 +541,7 @@ export default class SlicerArrows {
         parentPosition,
         Cartesian3.multiplyByScalar(
           directionVector,
-          cylinderLength * SCALE_FACTOR,
+          cylinderLength * SCALE_FACTOR_HORIZONTAL,
           new Cartesian3(),
         ),
         new Cartesian3(),
