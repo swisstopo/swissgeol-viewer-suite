@@ -277,7 +277,7 @@ export class LayerDisplayListItem extends CoreElement {
             </ngm-core-dropdown-item>
           `
         : ''}
-      ${this.layer?.wmtsTimes == null || this.layer.wmtsTimes.length === 0
+      ${this.layer?.wmtsTimes == null || this.layer.wmtsTimes.length > 1
         ? ''
         : html`
             <ngm-core-dropdown-item
