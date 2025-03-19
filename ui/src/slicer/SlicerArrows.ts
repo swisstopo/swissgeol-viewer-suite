@@ -21,10 +21,7 @@ import {
 } from 'cesium';
 import {
   ARROW_CYLINDER,
-  ARROW_LENGTH,
-  ARROW_TIP_LENGTH,
   ARROW_TIP_OFFSET,
-  ARROW_TIP_RADIUS,
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
   SLICING_GEOMETRY_COLOR,
 } from '../constants';
@@ -374,6 +371,28 @@ export default class SlicerArrows {
       }
 
       const shaft = new Entity(arrowEntityOptions);
+
+      shaft.cylinder!.length = new CallbackProperty(() => {
+        return this.scaling(
+          this.bbox?.height / 100,
+          1000,
+          shaft.position!.getValue(new JulianDate())!,
+        );
+      }, false);
+      shaft.cylinder!.topRadius = new CallbackProperty(() => {
+        return this.scaling(
+          this.bbox?.height / 1000,
+          100,
+          shaft.position!.getValue(new JulianDate())!,
+        );
+      }, false);
+      shaft.cylinder!.bottomRadius = new CallbackProperty(() => {
+        return this.scaling(
+          this.bbox?.height / 1000,
+          100,
+          shaft.position!.getValue(new JulianDate())!,
+        );
+      }, false);
       const topCone = new Entity({
         position: this.computeRelativePosition(
           shaft,
@@ -381,9 +400,21 @@ export default class SlicerArrows {
           directionVector,
         ),
         cylinder: {
-          length: ARROW_TIP_LENGTH,
+          length: new CallbackProperty(() => {
+            return this.scaling(
+              this.bbox?.height / 250,
+              400,
+              shaft.position!.getValue(new JulianDate())!,
+            );
+          }, false),
           topRadius: 0,
-          bottomRadius: ARROW_TIP_RADIUS,
+          bottomRadius: new CallbackProperty(() => {
+            return this.scaling(
+              this.bbox?.height / 500,
+              200,
+              shaft.position!.getValue(new JulianDate())!,
+            );
+          }, false),
         },
         orientation: orientation,
       });
@@ -395,8 +426,20 @@ export default class SlicerArrows {
           Cartesian3.negate(directionVector, new Cartesian3()),
         ),
         cylinder: {
-          length: ARROW_TIP_LENGTH,
-          topRadius: ARROW_TIP_RADIUS,
+          length: new CallbackProperty(() => {
+            return this.scaling(
+              this.bbox?.height / 250,
+              400,
+              shaft.position!.getValue(new JulianDate())!,
+            );
+          }, false),
+          topRadius: new CallbackProperty(() => {
+            return this.scaling(
+              this.bbox?.height / 500,
+              200,
+              shaft.position!.getValue(new JulianDate())!,
+            );
+          }, false),
           bottomRadius: 0,
         },
         orientation: orientation,
@@ -411,6 +454,17 @@ export default class SlicerArrows {
       this.dataSource.entities.add(topCone);
       this.dataSource.entities.add(bottomCone);
     });
+  }
+
+  scaling(min: number, max: number, position: Cartesian3) {
+    const cameraPosition = this.viewer.camera.position;
+    const distance = Cartesian3.distance(cameraPosition, position);
+
+    const maxDistance = 50000;
+    const minDistance = 500;
+    const scale = (distance - minDistance) / (maxDistance - minDistance);
+
+    return Math.min(Math.max(max * scale, min), max);
   }
 
   /**
@@ -463,6 +517,10 @@ export default class SlicerArrows {
       const parentPosition = parentEntity.position!.getValue(time);
       if (!parentPosition) return undefined;
 
+      const SCALE_FACTOR = 0.9;
+      const cylinderLength: number = parentEntity.cylinder?.length?.getValue(
+        new JulianDate(),
+      );
       if (isVertical) {
         const transform = Transforms.eastNorthUpToFixedFrame(parentPosition);
         return Matrix4.multiplyByPoint(
@@ -475,7 +533,7 @@ export default class SlicerArrows {
         parentPosition,
         Cartesian3.multiplyByScalar(
           directionVector,
-          ARROW_LENGTH + ARROW_TIP_LENGTH - ARROW_TIP_OFFSET,
+          cylinderLength * SCALE_FACTOR,
           new Cartesian3(),
         ),
         new Cartesian3(),
