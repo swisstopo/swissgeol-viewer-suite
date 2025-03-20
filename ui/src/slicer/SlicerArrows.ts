@@ -375,30 +375,44 @@ export default class SlicerArrows {
         properties.oppositePosition = arrow.oppositePosition;
       }
 
-      const shaft = new Entity({
-        ...arrowEntityOptions,
-        cylinder: {
-          length: new CallbackProperty(() => {
-            return this.scaleArrowElementsRelativeToCameraDistance(
-              MIN_ARROW_LENGTH,
-              shaft.position!.getValue(new JulianDate())!,
-            );
-          }, false),
+      const createCallBackProperty = (
+        min_size: number,
+        position: Cartesian3,
+      ) => {
+        return new CallbackProperty(() => {
+          return this.scaleArrowElementsRelativeToCameraDistance(
+            min_size,
+            position,
+          );
+        }, false);
+      };
 
-          bottomRadius: new CallbackProperty(() => {
-            return this.scaleArrowElementsRelativeToCameraDistance(
-              MIN_ARROW_RADIUS,
-              shaft.position!.getValue(new JulianDate())!,
-            );
-          }, false),
-          topRadius: new CallbackProperty(() => {
-            return this.scaleArrowElementsRelativeToCameraDistance(
-              MIN_ARROW_RADIUS,
-              shaft.position!.getValue(new JulianDate())!,
-            );
-          }, false),
-        },
-      });
+      const shaft = new Entity(arrowEntityOptions);
+      // @ts-expect-error
+      shaft.cylinder = {
+        length: createCallBackProperty(
+          MIN_ARROW_LENGTH,
+          shaft.position!.getValue(new JulianDate())!,
+        ),
+        bottomRadius: createCallBackProperty(
+          MIN_ARROW_RADIUS,
+          shaft.position!.getValue(new JulianDate())!,
+        ),
+        topRadius: createCallBackProperty(
+          MIN_ARROW_RADIUS,
+          shaft.position!.getValue(new JulianDate())!,
+        ),
+      };
+
+      const arrowTipLength = createCallBackProperty(
+        MIN_ARROW_TIP_LENGTH,
+        shaft.position!.getValue(new JulianDate())!,
+      );
+
+      const arrowTipRadius = createCallBackProperty(
+        MIN_ARROW_TIP_RADIUS,
+        shaft.position!.getValue(new JulianDate())!,
+      );
 
       const topCone = new Entity({
         position: this.computeRelativePosition(
@@ -407,19 +421,9 @@ export default class SlicerArrows {
           directionVector,
         ),
         cylinder: {
-          length: new CallbackProperty(() => {
-            return this.scaleArrowElementsRelativeToCameraDistance(
-              MIN_ARROW_TIP_LENGTH,
-              shaft.position!.getValue(new JulianDate())!,
-            );
-          }, false),
+          length: arrowTipLength,
           topRadius: 0,
-          bottomRadius: new CallbackProperty(() => {
-            return this.scaleArrowElementsRelativeToCameraDistance(
-              MIN_ARROW_TIP_RADIUS,
-              shaft.position!.getValue(new JulianDate())!,
-            );
-          }, false),
+          bottomRadius: arrowTipRadius,
         },
         orientation: orientation,
       });
@@ -431,18 +435,8 @@ export default class SlicerArrows {
           Cartesian3.negate(directionVector, new Cartesian3()),
         ),
         cylinder: {
-          length: new CallbackProperty(() => {
-            return this.scaleArrowElementsRelativeToCameraDistance(
-              MIN_ARROW_TIP_LENGTH,
-              shaft.position!.getValue(new JulianDate())!,
-            );
-          }, false),
-          topRadius: new CallbackProperty(() => {
-            return this.scaleArrowElementsRelativeToCameraDistance(
-              MIN_ARROW_TIP_RADIUS,
-              shaft.position!.getValue(new JulianDate())!,
-            );
-          }, false),
+          length: arrowTipLength,
+          topRadius: arrowTipRadius,
           bottomRadius: 0,
         },
         orientation: orientation,
