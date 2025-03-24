@@ -174,18 +174,15 @@ export const DEFAULT_CONFIG_FOR_SLICING_ARROW = {
   color: SLICING_GEOMETRY_COLOR,
 };
 
-export const ARROW_LENGTH = 1000;
-export const ARROW_RADIUS = 100;
-export const ARROW_TIP_RADIUS = 200;
-export const ARROW_TIP_LENGTH = 400;
-export const ARROW_TIP_OFFSET = 600;
-
-export const ARROW_CYLINDER = {
-  length: ARROW_LENGTH,
-  topRadius: ARROW_RADIUS,
-  bottomRadius: ARROW_RADIUS,
-  material: SLICING_GEOMETRY_COLOR,
-};
+// Constant for Sizing the SlicingArrows
+export const MIN_ARROW_LENGTH = 200;
+export const MIN_ARROW_RADIUS = 20;
+export const MIN_ARROW_TIP_RADIUS = 40;
+export const MIN_ARROW_TIP_LENGTH = 80;
+export const MIN_SIZE_DISTANCE = 10000;
+export const MAX_SCALE_FACTOR = 25;
+export const SCALE_FACTOR_HORIZONTAL = 0.9;
+export const SCALE_FACTOR_VERTICAL = 0.7;
 
 export const SWISSFORAGES_VIEWER_URL = 'https://swissforages.ch/';
 export const SWISSFORAGES_EDITOR_URL = `${SWISSFORAGES_VIEWER_URL}editor/`;

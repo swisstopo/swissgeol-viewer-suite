@@ -20,12 +20,15 @@ import {
   Viewer,
 } from 'cesium';
 import {
-  ARROW_CYLINDER,
-  ARROW_LENGTH,
-  ARROW_TIP_LENGTH,
-  ARROW_TIP_OFFSET,
-  ARROW_TIP_RADIUS,
   DEFAULT_CONFIG_FOR_SLICING_ARROW,
+  MAX_SCALE_FACTOR,
+  MIN_ARROW_LENGTH,
+  MIN_ARROW_RADIUS,
+  MIN_ARROW_TIP_LENGTH,
+  MIN_ARROW_TIP_RADIUS,
+  MIN_SIZE_DISTANCE,
+  SCALE_FACTOR_HORIZONTAL,
+  SCALE_FACTOR_VERTICAL,
   SLICING_GEOMETRY_COLOR,
 } from '../constants';
 import {
@@ -336,7 +339,6 @@ export default class SlicerArrows {
       } else {
         arrowEntityOptions.position = arrow.position;
       }
-      arrowEntityOptions.cylinder = ARROW_CYLINDER;
 
       if (!this.bbox) {
         return;
@@ -344,7 +346,7 @@ export default class SlicerArrows {
 
       // Default values for up and down arrows
       let orientation: Quaternion | undefined = undefined;
-      let directionVector: Cartesian3 = new Cartesian3(0, 0, ARROW_TIP_OFFSET);
+      let directionVector: Cartesian3 = new Cartesian3(0, 0, 1);
       if (!isVertical) {
         const pointA = this.bbox.corners.topLeft;
         const pointB =
@@ -373,7 +375,45 @@ export default class SlicerArrows {
         properties.oppositePosition = arrow.oppositePosition;
       }
 
+      const createCallBackProperty = (
+        min_size: number,
+        position: Cartesian3,
+      ) => {
+        return new CallbackProperty(() => {
+          return this.scaleArrowElementsRelativeToCameraDistance(
+            min_size,
+            position,
+          );
+        }, false);
+      };
+
       const shaft = new Entity(arrowEntityOptions);
+      // @ts-expect-error
+      shaft.cylinder = {
+        length: createCallBackProperty(
+          MIN_ARROW_LENGTH,
+          shaft.position!.getValue(new JulianDate())!,
+        ),
+        bottomRadius: createCallBackProperty(
+          MIN_ARROW_RADIUS,
+          shaft.position!.getValue(new JulianDate())!,
+        ),
+        topRadius: createCallBackProperty(
+          MIN_ARROW_RADIUS,
+          shaft.position!.getValue(new JulianDate())!,
+        ),
+      };
+
+      const arrowTipLength = createCallBackProperty(
+        MIN_ARROW_TIP_LENGTH,
+        shaft.position!.getValue(new JulianDate())!,
+      );
+
+      const arrowTipRadius = createCallBackProperty(
+        MIN_ARROW_TIP_RADIUS,
+        shaft.position!.getValue(new JulianDate())!,
+      );
+
       const topCone = new Entity({
         position: this.computeRelativePosition(
           shaft,
@@ -381,9 +421,9 @@ export default class SlicerArrows {
           directionVector,
         ),
         cylinder: {
-          length: ARROW_TIP_LENGTH,
+          length: arrowTipLength,
           topRadius: 0,
-          bottomRadius: ARROW_TIP_RADIUS,
+          bottomRadius: arrowTipRadius,
         },
         orientation: orientation,
       });
@@ -395,8 +435,8 @@ export default class SlicerArrows {
           Cartesian3.negate(directionVector, new Cartesian3()),
         ),
         cylinder: {
-          length: ARROW_TIP_LENGTH,
-          topRadius: ARROW_TIP_RADIUS,
+          length: arrowTipLength,
+          topRadius: arrowTipRadius,
           bottomRadius: 0,
         },
         orientation: orientation,
@@ -411,6 +451,18 @@ export default class SlicerArrows {
       this.dataSource.entities.add(topCone);
       this.dataSource.entities.add(bottomCone);
     });
+  }
+
+  scaleArrowElementsRelativeToCameraDistance(
+    minSize: number,
+    position: Cartesian3,
+  ): number {
+    const cameraPosition = this.viewer.camera.position;
+    const distance = Cartesian3.distance(cameraPosition, position);
+    return (
+      minSize *
+      Math.min(Math.max(1, distance / MIN_SIZE_DISTANCE), MAX_SCALE_FACTOR)
+    );
   }
 
   /**
@@ -463,11 +515,19 @@ export default class SlicerArrows {
       const parentPosition = parentEntity.position!.getValue(time);
       if (!parentPosition) return undefined;
 
+      const cylinderLength: number = parentEntity.cylinder?.length?.getValue(
+        new JulianDate(),
+      );
       if (isVertical) {
         const transform = Transforms.eastNorthUpToFixedFrame(parentPosition);
+        const scaledDirectionVector = Cartesian3.multiplyByScalar(
+          directionVector,
+          cylinderLength * SCALE_FACTOR_VERTICAL,
+          new Cartesian3(),
+        );
         return Matrix4.multiplyByPoint(
           transform,
-          directionVector,
+          scaledDirectionVector,
           result ?? new Cartesian3(),
         );
       }
@@ -475,7 +535,7 @@ export default class SlicerArrows {
         parentPosition,
         Cartesian3.multiplyByScalar(
           directionVector,
-          ARROW_LENGTH + ARROW_TIP_LENGTH - ARROW_TIP_OFFSET,
+          cylinderLength * SCALE_FACTOR_HORIZONTAL,
           new Cartesian3(),
         ),
         new Cartesian3(),
