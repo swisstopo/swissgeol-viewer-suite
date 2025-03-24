@@ -8,8 +8,8 @@ use axum::{
 };
 use clap::Parser;
 use hyper::header::{
-    ACCEPT, AUTHORIZATION, CONTENT_SECURITY_POLICY, CONTENT_TYPE, STRICT_TRANSPORT_SECURITY,
-    X_CONTENT_TYPE_OPTIONS, X_FRAME_OPTIONS,
+    ACCEPT, AUTHORIZATION, CONTENT_SECURITY_POLICY, CONTENT_TYPE, REFERRER_POLICY,
+    STRICT_TRANSPORT_SECURITY, X_CONTENT_TYPE_OPTIONS, X_FRAME_OPTIONS,
 };
 use sqlx::PgPool;
 use tower::ServiceBuilder;
@@ -58,6 +58,10 @@ pub async fn app(pool: PgPool) -> Router {
         .layer(SetResponseHeaderLayer::if_not_present(
             CONTENT_SECURITY_POLICY,
             HeaderValue::from_static("default-src 'self'"),
+        ))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            REFERRER_POLICY,
+            HeaderValue::from_static("no-referrer"),
         ));
 
     Router::new()
