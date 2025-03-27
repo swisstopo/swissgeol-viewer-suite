@@ -8,8 +8,8 @@ use axum::{
 };
 use clap::Parser;
 use hyper::header::{
-    ACCEPT, AUTHORIZATION, CONTENT_TYPE, STRICT_TRANSPORT_SECURITY, X_CONTENT_TYPE_OPTIONS,
-    X_FRAME_OPTIONS,
+    HeaderName, ACCEPT, AUTHORIZATION, CONTENT_SECURITY_POLICY, CONTENT_TYPE, REFERRER_POLICY,
+    STRICT_TRANSPORT_SECURITY, X_CONTENT_TYPE_OPTIONS, X_FRAME_OPTIONS,
 };
 use sqlx::PgPool;
 use tower::ServiceBuilder;
@@ -42,6 +42,7 @@ pub async fn app(pool: PgPool) -> Router {
     let aws_config = s3::S3::parse();
     let aws_client = aws_config.create_client().await;
 
+    let permissions_policy_header_name = HeaderName::from_static("permissions-policy");
     let security_headers = ServiceBuilder::new()
         .layer(SetResponseHeaderLayer::if_not_present(
             STRICT_TRANSPORT_SECURITY,
@@ -54,6 +55,18 @@ pub async fn app(pool: PgPool) -> Router {
         .layer(SetResponseHeaderLayer::if_not_present(
             X_FRAME_OPTIONS,
             HeaderValue::from_static("SAMEORIGIN"),
+        ))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            CONTENT_SECURITY_POLICY,
+            HeaderValue::from_static("default-src 'self'"),
+        ))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            REFERRER_POLICY,
+            HeaderValue::from_static("no-referrer"),
+        ))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            permissions_policy_header_name,
+            HeaderValue::from_static("geolocation=(), microphone=(), camera=()"),
         ));
 
     Router::new()
