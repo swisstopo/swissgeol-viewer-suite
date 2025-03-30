@@ -3,7 +3,7 @@ Feature: Hover layer
   I want to get a visual reaction when hovering over the different elements of a layer
   So that I get informed which features are available
 
-    Background: viewer.swissgeol.ch in up and running and accessible via the internet
+    Background: viewer.swissgeol.ch is up and running and accessible via the internet
       Given the user has at least one layer in the data displayed section
 
     Scenario: Hovering over the layer displayed in the data displayed section
@@ -17,6 +17,8 @@ Feature: Hover layer
       Then the the background of the chip will be highlited # What is the correct color description? See Figma?
       And a tooltip will be displayed showing the its meaning (opacity) above the chip
 
-      When hovering contect menu ...
+      When the user hovers over the contect menu (three dots)
+      Then the icon will be highlighted # What is the correct color description? See Figma
 
-      When clicking eye icon ...
+      When user hovers over the eye icon to the left of the layer name
+      Then the icon will be highlighted # What is the correct color description? See Figma

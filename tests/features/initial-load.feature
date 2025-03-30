@@ -1,9 +1,9 @@
 Feature: Inital Loading
   In order to use viewer-swisgeol.ch,
-  I want load the web application with its inital settings
+  I want load the web application with its initial settings
   So that I can start to use it without any presets
 
-  Background: viewer.swissgeol.ch in up and running and accessible via the internet
+  Background: viewer.swissgeol.ch is up and running and accessible via the internet
     Given the user has internet accessible
     And the user is loading https://viewer.swissgeol.ch in a web-browser
 
