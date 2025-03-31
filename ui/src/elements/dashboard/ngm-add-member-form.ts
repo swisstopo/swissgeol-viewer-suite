@@ -5,6 +5,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import i18next from 'i18next';
 import { isEmail } from '../../utils';
 import { DropdownChangedEvent, DropdownItem } from '../ngm-dropdown';
+import '../ngm-dropdown';
 
 export type EditableRole = 'editor' | 'viewer';
 
