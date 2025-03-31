@@ -130,6 +130,14 @@ export class ToolService extends BaseService {
     this.featureChanged$.next(id);
   }
 
+  public getEntityOfFeature(feature: Feature): Entity {
+    const entity = this.geometriesToEntities.get(feature.geometry.id);
+    if (entity === undefined) {
+      throw new Error(`Unknown feature: ${feature.id}`);
+    }
+    return entity;
+  }
+
   public activate(tool: Tool): void {
     this.deactivate();
     switch (tool.type) {
@@ -233,9 +241,9 @@ export class ToolService extends BaseService {
 
     this.activeToolSubscription = new Subscription();
     this.activeToolSubscription.add(() => {
-      this._activeTool$.next(null);
       controller.destroy();
       screen.destroy();
+      this._activeTool$.next(null);
     });
   }
 
@@ -376,6 +384,7 @@ export class ToolService extends BaseService {
     this.activeToolSubscription = new Subscription(() => {
       screen.destroy();
       this.dataSourceForEdits.entities.removeAll();
+      this._activeTool$.next(null);
     });
   }
 

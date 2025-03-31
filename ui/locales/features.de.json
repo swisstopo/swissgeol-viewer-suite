@@ -20,7 +20,10 @@
         "url": "Website Link",
         "length": "Länge",
         "lowerBound": "Untergrenze",
-        "distanceToTerrain": "Distanz zum Terrain"
+        "distanceToTerrain": "Distanz zum Terrain",
+        "area": "Fläche",
+        "perimeter": "Umfang",
+        "numberOfSegments": "Anzahl Segmente"
       }
     }
   }

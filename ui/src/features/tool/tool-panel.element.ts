@@ -59,6 +59,10 @@ export class ToolPanel extends CoreElement {
     this.activeTab = event.detail.value;
   }
 
+  private handleSelectionClosed(): void {
+    this.toolService.deactivate();
+  }
+
   private readonly translateTabName = (tab: Tab) => i18next.t(`tool.tabs.${tab}`, { ns: 'features' });
 
   readonly render = () => html`
@@ -89,7 +93,10 @@ export class ToolPanel extends CoreElement {
         ? undefined
         : html`
             <ngm-core-portal .target="${this.mapElement}">
-              <ngm-tool-feature-info .feature="${this.selectedFeature}"></ngm-tool-feature-info>
+              <ngm-tool-feature-info
+                .feature="${this.selectedFeature}"
+                @close="${this.handleSelectionClosed}"
+              ></ngm-tool-feature-info>
             </ngm-core-portal>
           `}
     </ngm-navigation-panel>

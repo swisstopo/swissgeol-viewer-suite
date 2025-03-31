@@ -9,6 +9,7 @@ import { BackgroundLayerService } from 'src/features/background/background-layer
 import { ToolService } from 'src/features/tool/tool.service';
 import { ToolPersistenceService } from 'src/features/tool/tool-persistence.service';
 import { MapService } from 'src/features/map/map.service';
+import { GeometryService } from 'src/features/tool/geometry.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (element: LitElement, clientConfig: ClientConfig): AppContext[] => {
@@ -46,6 +47,7 @@ export const registerAppContext = (element: LitElement, clientConfig: ClientConf
   const toolPersistenceService = new ToolPersistenceService(toolService);
   contexts.push(makeProvider(toolService));
   contexts.push(makeProvider(toolPersistenceService));
+  contexts.push(makeProvider(new GeometryService()));
   return contexts;
 };
 

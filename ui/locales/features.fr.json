@@ -20,7 +20,10 @@
         "url": "",
         "length": "Longueur",
         "lowerBound": "Limite inférieure",
-        "distanceToTerrain": "Distance au terrain"
+        "distanceToTerrain": "Distance au terrain",
+        "area": "Surface",
+        "perimeter": "site",
+        "numberOfSegments": "Nombre de segments"
       }
     }
   }

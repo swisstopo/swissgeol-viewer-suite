@@ -78,7 +78,7 @@ export function verticalDirectionRotate(camera: Camera, angle: number) {
   camera.rotate(tangent, angle);
 }
 
-function getPolygonArea(positions: Cartesian3[], holes: number[] = []): number {
+export function getPolygonArea(positions: Cartesian3[], holes: number[] = []): number {
   const indices = triangulate(positions, holes);
   let area = 0;
 

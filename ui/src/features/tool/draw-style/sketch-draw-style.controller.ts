@@ -2,10 +2,14 @@ import { CallbackProperty, Cartesian3, ClassificationType, Color, CornerType, En
 import { BaseDrawStyleController } from 'src/features/tool/draw-style/base-draw-style.controller';
 import { LineGeometry, PointGeometry, PolygonGeometry, RectangleGeometry, Shape } from '../tool.model';
 import i18next from 'i18next';
+import { GeometryService } from 'src/features/tool/geometry.service';
+import { asId } from 'src/models/id.model';
 
 const SKETCH_COLOR = Color.fromBytes(0, 153, 255, 191);
 
 export class SketchDrawStyleController extends BaseDrawStyleController {
+  private readonly geometryService: GeometryService = new GeometryService();
+
   protected makePointEntity(geometry: PointGeometry): Entity {
     return new Entity({
       id: `${geometry.id}`,
@@ -31,16 +35,14 @@ export class SketchDrawStyleController extends BaseDrawStyleController {
       label: this.makeLabel(
         new CallbackProperty(() => {
           const coordinates = this.getCoordinates<LineGeometry>(newEntity);
+          const length = this.geometryService.getLength({
+            id: asId('-'),
+            shape: Shape.Line,
+            coordinates,
+          } satisfies LineGeometry);
+          const lengthInKm = length / 1000;
           const label = i18next.t('tool.feature.attribute_names.length', { ns: 'features' });
-          let distance = 0;
-          for (let i = 1; i < coordinates.length; i++) {
-            const a = coordinates[i - 1];
-            const b = coordinates[i];
-            const lineDistance = Cartesian3.distance(a, b);
-            distance += isNaN(lineDistance) ? 0 : lineDistance;
-          }
-          const distanceInKm = distance / 1000;
-          return `${label}: ${distanceInKm.toFixed(3)}km`;
+          return `${label}: ${lengthInKm.toFixed(3)}km`;
         }, false),
       ),
       properties: {
