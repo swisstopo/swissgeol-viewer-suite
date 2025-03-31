@@ -144,7 +144,11 @@ export abstract class CoreBasePopup<
     }
     this.updatePosition({ allowViewportCheck: true });
     assignedNodes.forEach((node) => {
-      box.appendChild(node);
+      if (node instanceof Text) {
+        box.appendChild(node.cloneNode(true));
+      } else {
+        box.appendChild(node);
+      }
     });
     this.updatePosition({ allowViewportCheck: true });
   }
