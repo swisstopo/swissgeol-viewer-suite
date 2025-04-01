@@ -9,6 +9,7 @@ api:
 docker:
   api_image:
   ui_image:
+  titiler_image:
 
 database:
   host:

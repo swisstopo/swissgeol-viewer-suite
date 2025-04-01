@@ -14,7 +14,7 @@ import { CoreElement } from 'src/features/core';
 @customElement('ngm-layer-panel')
 export class LayerPanel extends CoreElement {
   @property()
-  public accessor layers: LayerConfig[] | null = null;
+  public accessor layers: LayerConfig[] = [];
 
   @property()
   public accessor displayLayers: LayerConfig[] | null = null;

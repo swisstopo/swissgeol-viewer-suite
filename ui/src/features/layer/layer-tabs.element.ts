@@ -12,7 +12,7 @@ import { applyTypography, hostStyles } from 'src/styles/theme';
 @customElement('ngm-layer-tabs')
 export class LayerTabs extends LitElementI18n {
   @property()
-  public accessor layers: LayerConfig[] | null = null;
+  public accessor layers: LayerConfig[] = [];
 
   @property({ type: Function })
   accessor onKmlUpload!: (

@@ -21,6 +21,22 @@ env:
   BASE: ${{ github.event.inputs.base || 'edge' }}
 
 jobs:
+  tag_rc_image_api:
+    name: tag rc image api
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Packages
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Pull docker image
+        run: docker pull ${{ vars.BASE_IMAGE_NAME }}-api:${{ env.BASE }}
+
+      - name: Tag docker image
+        run: docker tag ${{ vars.BASE_IMAGE_NAME }}-api:${{ env.BASE }} ${{ vars.BASE_IMAGE_NAME }}-api:release-candidate
+
+      - name: Push docker image
+        run: docker push ${{ vars.BASE_IMAGE_NAME }}-api:release-candidate
+
   tag_rc_image_ui:
     name: tag rc image ui
     runs-on: ubuntu-latest
@@ -37,21 +53,21 @@ jobs:
       - name: Push docker image
         run: docker push ${{ vars.BASE_IMAGE_NAME }}-ui:release-candidate
 
-  tag_rc_image_api:
-    name: tag rc image api
+  tag_rc_image_titiler:
+    name: tag rc image titiler
     runs-on: ubuntu-latest
     steps:
       - name: Login to GitHub Packages
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       - name: Pull docker image
-        run: docker pull ${{ vars.BASE_IMAGE_NAME }}-api:${{ env.BASE }}
+        run: docker pull ${{ vars.BASE_IMAGE_NAME }}-titiler:${{ env.BASE }}
 
       - name: Tag docker image
-        run: docker tag ${{ vars.BASE_IMAGE_NAME }}-api:${{ env.BASE }} ${{ vars.BASE_IMAGE_NAME }}-api:release-candidate
+        run: docker tag ${{ vars.BASE_IMAGE_NAME }}-titiler:${{ env.BASE }} ${{ vars.BASE_IMAGE_NAME }}-titiler:release-candidate
 
       - name: Push docker image
-        run: docker push ${{ vars.BASE_IMAGE_NAME }}-api:release-candidate
+        run: docker push ${{ vars.BASE_IMAGE_NAME }}-titiler:release-candidate
 
   tag_rc_commit:
     name: "tag rc commit"

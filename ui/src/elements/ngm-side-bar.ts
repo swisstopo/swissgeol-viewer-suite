@@ -201,9 +201,6 @@ export class SideBar extends LitElementI18n {
       return;
     }
     this.activePanel = panelName;
-    if (this.activePanel === 'data') {
-      await import('src/features/layer/layer.module');
-    }
   }
 
   async syncActiveLayers() {
@@ -687,7 +684,7 @@ export class SideBar extends LitElementI18n {
       ></ngm-dashboard>
       <ngm-layer-panel
         ?hidden="${this.activePanel !== 'data'}"
-        .layers="${this.catalogLayers}"
+        .layers="${this.catalogLayers ?? []}"
         .displayLayers="${this.activeLayers}"
         @close="${() => (this.activePanel = null)}"
         @layer-click=${(e: LayerEvent) =>

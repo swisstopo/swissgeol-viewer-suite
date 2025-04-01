@@ -1,6 +1,10 @@
 import './display/layer-display-list.element';
 import './display/layer-display-list-item.element';
 
+import './tiff/layer-tiff-bands.element';
+import './tiff/layer-tiff-info.element';
+import './tiff/layer-tiff-picker.element';
+
 import './upload/layer-upload.element';
 import './upload/layer-upload-kml.element';
 import './upload/layer-upload-kml-modal.element';

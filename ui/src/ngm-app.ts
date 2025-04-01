@@ -346,8 +346,9 @@ export class NgmApp extends LitElementI18n {
   }
 
   private initializeBackgroundLayers(): void {
-    this.backgroundLayerService.background$.subscribe((background) => {
+    this.backgroundLayerService.background$.subscribe(async (background) => {
       this.background = background;
+      await import('src/features/layer/layer.module');
     });
 
     let activeLayers: ImageryLayer[] = [];
@@ -676,6 +677,7 @@ export class NgmApp extends LitElementI18n {
               .viewer=${this.viewer}
               hidden
             ></ngm-voxel-simple-filter>
+            <ngm-layer-tiff-picker></ngm-layer-tiff-picker>
             <ngm-coordinate-popup
               class="ngm-floating-window"
             ></ngm-coordinate-popup>
