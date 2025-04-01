@@ -1,21 +1,28 @@
-import { css, html, LitElement } from 'lit';
+import { css, LitElement, render } from 'lit';
 import { property } from 'lit/decorators.js';
 import { CoreBasePopupBox } from 'src/features/core/base/core-base-popup-box.element';
+
+export interface PopupProps {
+  position?: PopupPosition;
+
+  align?: PopupAlign;
+}
 
 export abstract class CoreBasePopup<
   TBox extends CoreBasePopupBox,
 > extends LitElement {
-  @property()
+  @property({ type: String, reflect: true })
   accessor position: PopupPosition | null = null;
 
-  @property()
+  @property({ type: String, reflect: true })
   accessor align: PopupAlign | null = null;
+
+  @property({ type: Object })
+  accessor content: unknown = null;
 
   private _target: Element | null = null;
 
-  protected box: TBox | null = null;
-
-  private isInitialized = false;
+  protected box!: TBox;
 
   private _isShown = false;
 
@@ -23,6 +30,9 @@ export abstract class CoreBasePopup<
     super();
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
+
+    this.box = document.createElement(`${this.tagName}-box`) as TBox;
+    this.box.hide();
   }
 
   get target(): Element | null {
@@ -74,38 +84,22 @@ export abstract class CoreBasePopup<
 
   connectedCallback(): void {
     super.connectedCallback();
-    if (!this.isInitialized) {
-      this.requestUpdate();
-    }
-  }
-
-  async updated(): Promise<void> {
-    if (!this.isInitialized) {
-      this.initialize();
-    }
+    document.body.appendChild(this.box);
+    this.box.addEventListener('hide', this.hide);
+    this.registerTarget();
   }
 
   disconnectedCallback(): void {
-    this.unsyncSlot();
-    this.hide();
-    this.box?.remove();
     this.unregisterTarget();
-    this.isInitialized = false;
+    this.box.removeEventListener('hide', this.hide);
+    this.hide();
     super.disconnectedCallback();
   }
 
-  private initialize(): void {
-    this.box ??= this.findBoxElement();
-    document.body.appendChild(this.box);
-    this.box.hide();
-    this.box.addEventListener('hide', this.hide);
-
-    this.syncSlot();
-
-    if (this._target == null) {
-      this.registerTarget();
-    }
-    this.isInitialized = true;
+  willUpdate(): void {
+    render(this.content, this.box);
+    this.box.style.setProperty('--count', `${this.box.childElementCount}`);
+    this.updatePosition({ allowViewportCheck: true });
   }
 
   abstract get enterEvents(): string[];
@@ -119,47 +113,6 @@ export abstract class CoreBasePopup<
   abstract get defaultPosition(): PopupPosition;
 
   abstract get defaultAlign(): PopupAlign;
-
-  abstract findBoxElement(): TBox;
-
-  private syncSlot(): void {
-    if (this.box == null) {
-      throw new Error(
-        "can't sync slot as the box has not yet been initialized",
-      );
-    }
-    const slot = this.shadowRoot!.querySelector('slot')!;
-    const assignedNodes = slot.assignedNodes({ flatten: true });
-    const box = this.box.shadowRoot!;
-    while (box.lastChild != null) {
-      box.removeChild(box.lastChild);
-    }
-    this.box.style.setProperty(
-      '--count',
-      `${assignedNodes.filter((it) => it instanceof HTMLElement).length}`,
-    );
-    if (assignedNodes.length === 0) {
-      this.updatePosition();
-      return;
-    }
-    this.updatePosition({ allowViewportCheck: true });
-    assignedNodes.forEach((node) => {
-      if (node instanceof Text) {
-        box.appendChild(node.cloneNode(true));
-      } else {
-        box.appendChild(node);
-      }
-    });
-    this.updatePosition({ allowViewportCheck: true });
-  }
-
-  private unsyncSlot(): void {
-    if (this.box == null) {
-      return;
-    }
-    const slot = this.shadowRoot!.querySelector('slot')!;
-    slot.append(...this.box.shadowRoot!.childNodes);
-  }
 
   protected show(event?: Event): void {
     if (this._isShown || this.box == null) {
@@ -253,7 +206,7 @@ export abstract class CoreBasePopup<
   }
 
   private adjustPositionToViewport(position: PopupPosition): void {
-    const box = this.box!.getBoundingClientRect();
+    const box = this.box.getBoundingClientRect();
     switch (position) {
       case 'top':
         if (box.y < 0) {
@@ -278,13 +231,7 @@ export abstract class CoreBasePopup<
     }
   }
 
-  abstract renderBox(): unknown;
-  readonly render = () => {
-    return html`
-      <slot></slot>
-      ${this.renderBox()}
-    `;
-  };
+  readonly render = () => '';
 
   static readonly styles = css`
     :host {
