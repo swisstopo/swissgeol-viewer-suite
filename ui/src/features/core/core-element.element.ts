@@ -8,10 +8,11 @@ export class CoreElement extends LitElement {
   @state()
   private accessor language!: string;
 
-  private readonly _subscription = new Subscription();
+  private _subscription = new Subscription();
 
   connectedCallback() {
     const handleLanguageChanged = (language) => {
+      this.willChangeLanguage(language);
       this.language = language;
     };
     i18next.on('languageChanged', handleLanguageChanged);
@@ -25,6 +26,7 @@ export class CoreElement extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this._subscription.unsubscribe();
+    this._subscription = new Subscription();
   }
 
   willUpdate(_changedProperties: PropertyValues): void {
@@ -34,6 +36,10 @@ export class CoreElement extends LitElement {
   }
 
   willFirstUpdate(): void {
+    /* Empty method to be implemented by child classes. */
+  }
+
+  willChangeLanguage(_language: void) {
     /* Empty method to be implemented by child classes. */
   }
 

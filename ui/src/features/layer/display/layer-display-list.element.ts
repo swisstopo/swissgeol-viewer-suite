@@ -69,7 +69,12 @@ export class LayerDisplayList extends CoreElement {
     }
   }
 
+  willChangeLanguage(): void {
+    this.initializeDragging();
+  }
+
   disconnectedCallback(): void {
+    super.disconnectedCallback();
     this.sortable?.destroy();
   }
 

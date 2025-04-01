@@ -2,6 +2,8 @@ import { css, html, LitElement } from 'lit';
 import { applyTransition } from 'src/styles/theme';
 
 export abstract class CoreBasePopupBox extends LitElement {
+  private timeoutForToggle: unknown = null;
+
   protected constructor() {
     super();
     this.show = this.show.bind(this);
@@ -9,20 +11,28 @@ export abstract class CoreBasePopupBox extends LitElement {
   }
 
   show(): void {
+    this.clearToggle();
     this.classList.remove('is-hidden');
-    setTimeout(() => {
+    this.timeoutForToggle = setTimeout(() => {
       this.classList.add('is-visible');
     });
   }
 
   hide(): void {
+    this.clearToggle();
     this.classList.remove('is-visible');
-    setTimeout(() => {
+    this.timeoutForToggle = setTimeout(() => {
       this.classList.add('is-hidden');
     }, 250);
   }
 
-  readonly render = () => html``;
+  private clearToggle(): void {
+    if (this.timeoutForToggle !== null) {
+      clearTimeout(this.timeoutForToggle as number);
+    }
+  }
+
+  readonly render = () => html`<slot></slot>`;
 
   static readonly styles = css`
     :host,

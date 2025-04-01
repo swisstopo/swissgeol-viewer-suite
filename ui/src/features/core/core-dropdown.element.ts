@@ -1,6 +1,9 @@
 import { css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { CoreBasePopup } from 'src/features/core/base/core-base-popup.element';
+import {
+  CoreBasePopup,
+  PopupProps,
+} from 'src/features/core/base/core-base-popup.element';
 import { CoreDropdownBox } from 'src/features/core/core-dropdown-box.element';
 import { CoreButton } from 'src/features/core/core-button.element';
 import { Subject, Subscription } from 'rxjs';
@@ -57,6 +60,7 @@ export class CoreDropdown extends CoreBasePopup<CoreDropdownBox> {
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this.subscription?.unsubscribe();
+    this.subscription = null;
   }
 
   override show(event?: Event): void {
@@ -77,17 +81,23 @@ export class CoreDropdown extends CoreBasePopup<CoreDropdownBox> {
     }
   }
 
-  readonly findBoxElement = () => {
-    return this.shadowRoot!.querySelector(
-      'ngm-core-dropdown-box',
-    )! as CoreDropdownBox;
-  };
-
-  readonly renderBox = () => html`
-    <ngm-core-dropdown-box></ngm-core-dropdown-box>
-  `;
-
   static readonly styles = css`
     ${CoreBasePopup.styles}
   `;
+}
+
+export function dropdown(content: unknown): unknown;
+export function dropdown(props: PopupProps, content: unknown): unknown;
+export function dropdown(
+  propsOrContent: unknown,
+  contentOrNone?: unknown,
+): unknown {
+  const content = contentOrNone ?? propsOrContent;
+  const props =
+    contentOrNone === undefined ? {} : (propsOrContent as PopupProps);
+  return html` <ngm-core-dropdown
+    .position="${props.position}"
+    .align="${props.align}"
+    .content="${content}"
+  ></ngm-core-dropdown>`;
 }

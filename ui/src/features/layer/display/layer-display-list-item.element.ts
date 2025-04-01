@@ -3,7 +3,7 @@ import { css, html } from 'lit';
 import { applyTransition, applyTypography } from 'src/styles/theme';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
 import { classMap } from 'lit/directives/class-map.js';
-import { CoreElement } from 'src/features/core';
+import { CoreElement, dropdown, tooltip } from 'src/features/core';
 import { LayerConfig, LayerType } from 'src/layertree';
 import MainStore from 'src/store/main';
 import { Entity, Viewer } from 'cesium';
@@ -203,7 +203,7 @@ export class LayerDisplayListItem extends CoreElement {
         >
           ${Math.round(this.opacity * 100)}%
         </ngm-core-button>
-        <ngm-core-tooltip>${i18next.t('dtd_opacity')}</ngm-core-tooltip>
+        ${tooltip(i18next.t('dtd_opacity'))}
         ${this.layer == null ? '' : this.renderActions()}
       </div>
     </div>
@@ -229,7 +229,7 @@ export class LayerDisplayListItem extends CoreElement {
     >
       <ngm-core-icon icon="menu"></ngm-core-icon>
     </ngm-core-button>
-    <ngm-core-dropdown>
+    ${dropdown(html`
       <ngm-core-dropdown-item role="button" @click="${this.zoomToLayer}">
         <ngm-core-icon icon="zoomPlus"></ngm-core-icon>
         ${i18next.t('dtd_zoom_to')}
@@ -292,7 +292,7 @@ export class LayerDisplayListItem extends CoreElement {
         <ngm-core-icon icon="trash"></ngm-core-icon>
         ${i18next.t('dtd_remove')}
       </ngm-core-dropdown-item>
-    </ngm-core-dropdown>
+    `)}
   `;
 
   private readonly renderOpacity = () => html`
