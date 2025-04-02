@@ -593,6 +593,7 @@ export class NgmApp extends LitElementI18n {
             class="hidden-mobile"
             .viewer="${this.viewer}"
           ></ngm-cursor-information>
+          <ngm-layout-version-tag></ngm-layout-version-tag>
           <ngm-layout-language-selector></ngm-layout-language-selector>
           <ngm-auth
             class="ngm-user"
