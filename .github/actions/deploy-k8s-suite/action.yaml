@@ -1,0 +1,36 @@
+name: "Deploy K8s Suite"
+description: "Deploys an entire Viewer Suite to K8s"
+inputs:
+  TARGET_ENV:
+    description: "The environment to which the chart is deployed."
+    required: true
+  AWS_ROLE:
+    description: "The AWS role to assume."
+    required: true
+  AWS_REGION:
+    description: "The AWS region to deploy to."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup kubectl"
+      uses: azure/setup-kubectl@v4
+    - name: "Install helm"
+      uses: azure/setup-helm@v4
+    - name: "Configure AWS credentials from AWS account"
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.AWS_ROLE }}
+        aws-region: ${{ inputs.AWS_REGION }}
+        role-session-name: GitHub-OIDC
+        retry-max-attempts: 3
+
+    - name: "Deploy viewer"
+      uses: ./.github/actions/deploy-k8s-chart
+      with:
+        TARGET_ENV: ${{ inputs.TARGET_ENV }}
+        DEPLOYMENT_NAME: "swissgeol-viewer"
+        REPO_PATH: ./k8s
+        VAULT_PATH: "viewer"
+
