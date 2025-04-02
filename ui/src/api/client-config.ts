@@ -1,5 +1,6 @@
 export interface ClientConfig {
   env: 'dev' | 'int' | 'prod';
+  version: string;
   ionDefaultAccessToken: string;
   gstUrl: string;
   auth: {
