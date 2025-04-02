@@ -156,9 +156,11 @@ export class NgmProjectEdit extends LitElementI18n {
     project.views.push(view);
     this.project = project;
   }
+
   createRenderRoot() {
     return this;
   }
+
   render() {
     if (!this.project) return '';
     const project = this.project;

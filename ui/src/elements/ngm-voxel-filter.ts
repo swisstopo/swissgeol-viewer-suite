@@ -52,10 +52,12 @@ export class NgmVoxelFilter extends LitElementI18n {
     this.minConductivity = parseFloat(evt.target.value);
     this.maxConductivityInput.min = this.minConductivity.toString();
   }
+
   maxConductivityChanged(evt) {
     this.maxConductivity = parseFloat(evt.target.value);
     this.minConductivityInput.max = this.maxConductivity.toString();
   }
+
   close() {
     this.hidden = true;
     this.resetShader();
@@ -63,6 +65,7 @@ export class NgmVoxelFilter extends LitElementI18n {
 
     this.config = undefined;
   }
+
   applyFilter() {
     const shader = getVoxelShader(this.config);
     shader.setUniform('u_filter_conductivity_min', this.minConductivity);
@@ -89,6 +92,7 @@ export class NgmVoxelFilter extends LitElementI18n {
 
     this.viewer.scene.requestRender();
   }
+
   resetShader() {
     const shader = getVoxelShader(this.config);
     shader.setUniform('u_filter_conductivity_min', this.minConductivityValue);
@@ -103,21 +107,25 @@ export class NgmVoxelFilter extends LitElementI18n {
     shader.setUniform('u_filter_operator', 0);
     this.viewer.scene.requestRender();
   }
+
   resetForm() {
     this.querySelectorAll<HTMLFormElement>('.content-container form').forEach(
       (form) => form.reset(),
     );
     this.includeUndefinedConductivity.checked = true;
   }
+
   firstUpdated() {
     draggable(this, {
       allowFrom: '.drag-handle',
     });
   }
+
   createRenderRoot() {
     // no shadow dom
     return this;
   }
+
   render() {
     const hideCheckboxColor = this.config!.voxelDataName !== 'Index';
     return html`

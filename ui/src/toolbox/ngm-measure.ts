@@ -68,6 +68,7 @@ export class NgmMeasure extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     return html` <div>
       <div class="ngm-action-list-item ${classMap({ active: this.active })}">

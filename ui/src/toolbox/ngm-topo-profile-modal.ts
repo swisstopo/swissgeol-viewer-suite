@@ -229,6 +229,7 @@ export class NgmTopoProfileModal extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     return this.hidden
       ? html``

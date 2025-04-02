@@ -195,6 +195,19 @@ export default [
           },
         },
       ],
+      'lines-between-class-members': [
+        'error',
+        {
+          enforce: [
+            { blankLine: 'always', prev: '*', next: 'method' },
+            {
+              blankLine: 'always',
+              prev: 'method',
+              next: '*',
+            },
+          ],
+        },
+      ],
     },
   })),
   ...baseConfigs.map((config) => ({

@@ -43,6 +43,7 @@ export class NgmObjectInformation extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     this.hidden = !this.opened;
     if (

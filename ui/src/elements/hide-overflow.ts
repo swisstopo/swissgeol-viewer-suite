@@ -7,7 +7,6 @@ export class HideOverflow extends LitElement {
 
   constructor() {
     super();
-    console.log(this);
     const options = {
       root: this,
       threshold: [0.0, 1.0],

@@ -27,6 +27,7 @@ export class NgmAppBoot extends LitElement {
   createRenderRoot() {
     return this;
   }
+
   render() {
     return this.viewerInitialization.render({
       pending: () => html`<p>Loading</p>`,

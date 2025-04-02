@@ -150,6 +150,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     if (!this.item || this.item.type !== 'point') return '';
     return html`

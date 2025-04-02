@@ -40,6 +40,7 @@ export class NgmDropdown extends LitElement {
   createRenderRoot() {
     return this;
   }
+
   render() {
     const text = this.dropdownText;
     return html`

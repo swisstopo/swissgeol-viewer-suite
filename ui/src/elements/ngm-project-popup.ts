@@ -51,6 +51,7 @@ export class NgmProjectPopup extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     if (!this.selectedTopic || this.viewIndex === undefined) return '';
     return html` <div class="ngm-floating-window-header drag-handle">

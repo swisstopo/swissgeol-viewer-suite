@@ -85,6 +85,7 @@ class NgmKeyboardInfoPopup extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     return html` <button id=${btnId} class="ui compact mini icon button">
         <i class="keyboard icon"></i>

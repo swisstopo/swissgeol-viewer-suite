@@ -92,6 +92,7 @@ export class NgmDrawSection extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     const isDisabled = !!(this.draw!.active && this.draw!.entityForEdit);
     return html`

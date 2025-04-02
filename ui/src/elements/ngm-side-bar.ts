@@ -194,6 +194,7 @@ export class SideBar extends LitElementI18n {
       await import('src/features/layer/layer.module');
     }
   }
+
   async syncActiveLayers() {
     const attributeParams = getAttribute();
     const callback = attributeParams
@@ -275,6 +276,7 @@ export class SideBar extends LitElementI18n {
     this.activeLayers = activeLayers;
     syncLayersParam(this.activeLayers);
   }
+
   getTileLoadCallback(attributeKey, attributeValue) {
     return (tile, removeTileLoadListener) => {
       const content = tile.content;
@@ -289,6 +291,7 @@ export class SideBar extends LitElementI18n {
       }
     };
   }
+
   async update(changedProperties) {
     if (this.viewer && !this.layerActions) {
       this.layerActions = new LayersActions(this.viewer);
@@ -309,6 +312,7 @@ export class SideBar extends LitElementI18n {
     }
     super.update(changedProperties);
   }
+
   updated(changedProperties) {
     if (this.queryManager) {
       !this.zoomedToPosition && this.zoomToPermalinkObject();
@@ -333,11 +337,13 @@ export class SideBar extends LitElementI18n {
 
     super.updated(changedProperties);
   }
+
   async onCatalogLayerClicked(layer) {
     // toggle whether the layer is displayed or not (=listed in the side bar)
     layer.displayed = !layer.displayed;
     await this.applyLayerVisibility(layer);
   }
+
   private async applyLayerVisibility(layer: LayerConfig): Promise<void> {
     if (layer.displayed) {
       await (layer.promise || this.addLayer(layer));
@@ -364,6 +370,7 @@ export class SideBar extends LitElementI18n {
     this.activeLayers = [...this.activeLayers];
     this.viewer!.scene.requestRender();
   }
+
   maybeShowVisibilityHint(config: LayerConfig) {
     if (
       this.displayUndergroundHint &&
@@ -377,6 +384,7 @@ export class SideBar extends LitElementI18n {
       this.displayUndergroundHint = false;
     }
   }
+
   async removeLayer(config: LayerConfig) {
     await this.removeLayerWithoutSync(config);
     this.viewer!.scene.requestRender();
@@ -384,6 +392,7 @@ export class SideBar extends LitElementI18n {
     const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
     this.catalogLayers = [...catalogLayers];
   }
+
   getFlatLayers(tree, tileLoadCallback): any[] {
     const flat: any[] = [];
     for (const layer of tree) {
@@ -396,6 +405,7 @@ export class SideBar extends LitElementI18n {
     }
     return flat;
   }
+
   // adds layer from search to 'Displayed Layers'
   async addLayerFromSearch(searchLayer: SearchLayer) {
     let layer: LayerConfig | undefined;
@@ -432,6 +442,7 @@ export class SideBar extends LitElementI18n {
     syncLayersParam(this.activeLayers);
     this.requestUpdate();
   }
+
   createSearchLayer(searchLayer: SearchLayer) {
     let config: LayerConfig;
     if ('dataSourceName' in searchLayer) {
@@ -462,6 +473,7 @@ export class SideBar extends LitElementI18n {
 
     return config;
   }
+
   zoomToPermalinkObject() {
     this.zoomedToPosition = true;
     const zoomToPosition = getZoomToPosition();
@@ -519,6 +531,7 @@ export class SideBar extends LitElementI18n {
       this.zoomToObjectCoordinates(cartesianPosition, completeCallback);
     }
   }
+
   zoomToObjectCoordinates(center, complete?) {
     const boundingSphere = new BoundingSphere(center, 1000);
     const zoomHeadingPitchRange = new HeadingPitchRange(
@@ -532,6 +545,7 @@ export class SideBar extends LitElementI18n {
       complete: complete,
     });
   }
+
   addLayer(layer: LayerConfig) {
     layer.promise = createCesiumObject(this.viewer!, layer);
     this.dispatchEvent(
@@ -543,9 +557,11 @@ export class SideBar extends LitElementI18n {
     );
     return layer.promise;
   }
+
   private handleDisplayLayersUpdate(e: LayersEvent): void {
     this.activeLayers = e.detail.layers;
   }
+
   private handleDisplayLayerUpdate(e: LayerEvent): void {
     this.queryManager!.hideObjectInformation();
     const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
@@ -557,9 +573,11 @@ export class SideBar extends LitElementI18n {
     }
     this.requestUpdate();
   }
+
   private async handleDisplayLayerRemoval(e: LayerEvent): Promise<void> {
     await this.removeLayer(e.detail.layer);
   }
+
   private async removeLayerWithoutSync(layer: LayerConfig): Promise<void> {
     if (layer.setVisibility) {
       layer.setVisibility(false);
@@ -575,6 +593,7 @@ export class SideBar extends LitElementI18n {
       layer.remove();
     }
   }
+
   toggleDebugTools(event) {
     const active = event.target.checked;
     this.debugToolsActive = active;
@@ -583,9 +602,11 @@ export class SideBar extends LitElementI18n {
       new CustomEvent('toggleDebugTools', { detail: { active } }),
     );
   }
+
   createRenderRoot() {
     return this;
   }
+
   render() {
     if (!this.queryManager) {
       return '';

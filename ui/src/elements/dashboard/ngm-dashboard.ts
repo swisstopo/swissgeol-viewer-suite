@@ -583,6 +583,7 @@ export class NgmDashboard extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     // const topics = html` <!-- topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171 -->
     //   <div

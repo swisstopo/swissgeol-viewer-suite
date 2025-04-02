@@ -43,10 +43,12 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
     this.minValue = parseFloat(evt.target.value);
     this.maxValueInput.min = this.minValue.toString();
   }
+
   maxValueChanged(evt) {
     this.maxValue = parseFloat(evt.target.value);
     this.minValueInput.max = this.maxValue.toString();
   }
+
   close() {
     this.hidden = true;
     this.resetShader();
@@ -54,6 +56,7 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
 
     this.config = undefined;
   }
+
   applyFilter() {
     const shader = getVoxelShader(this.config);
     shader.setUniform('u_filter_min', this.minValue);
@@ -61,26 +64,31 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
 
     this.viewer.scene.requestRender();
   }
+
   resetShader() {
     const shader = getVoxelShader(this.config);
     shader.setUniform('u_filter_min', this.minInitialValue);
     shader.setUniform('u_filter_max', this.maxInitialValue);
     this.viewer.scene.requestRender();
   }
+
   resetForm() {
     this.querySelectorAll<HTMLFormElement>('.content-container form').forEach(
       (form) => form.reset(),
     );
   }
+
   firstUpdated() {
     draggable(this, {
       allowFrom: '.drag-handle',
     });
   }
+
   createRenderRoot() {
     // no shadow dom
     return this;
   }
+
   render() {
     if (!this.config) return;
     return html`

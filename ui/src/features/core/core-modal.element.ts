@@ -20,6 +20,7 @@ export class CoreModal extends LitElement {
   accessor isPersistent = true;
   @property({ type: Boolean, attribute: 'no-padding', reflect: true })
   accessor hasNoPadding = false;
+
   constructor() {
     super();
 

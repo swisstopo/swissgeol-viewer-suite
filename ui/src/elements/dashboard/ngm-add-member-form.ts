@@ -70,6 +70,7 @@ export class NgmAddMemberForm extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     return html` <div class="ngm-member-add-form">
       <div

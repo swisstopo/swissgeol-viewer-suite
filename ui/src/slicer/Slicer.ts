@@ -178,6 +178,7 @@ export default class Slicer {
   get options() {
     return this.sliceOptions;
   }
+
   set options(options) {
     this.sliceOptions = options;
   }

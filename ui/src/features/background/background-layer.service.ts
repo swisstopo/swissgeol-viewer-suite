@@ -27,6 +27,7 @@ export class BackgroundLayerService extends BaseService {
       this.setBackground(makeId(id));
     }
   }
+
   static get default(): BackgroundLayer {
     return GREY_BACKGROUND;
   }

@@ -50,6 +50,7 @@ export class NgmConfirmationModal extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     if (!this.text) {
       this.show = false;

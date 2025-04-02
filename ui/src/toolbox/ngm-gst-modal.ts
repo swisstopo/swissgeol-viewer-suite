@@ -42,6 +42,7 @@ export class NgmGstModal extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     return html`
       <div class="ngm-gst-modal ui large modal">

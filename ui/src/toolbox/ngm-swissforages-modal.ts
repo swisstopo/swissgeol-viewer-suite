@@ -120,6 +120,7 @@ export class NgmSwissforagesModal extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     if (this.element)
       this.element[0].querySelector(

@@ -134,6 +134,7 @@ export class NgmApp extends LitElementI18n {
   accessor viewer: Viewer | null = null;
   @provide({ context: BackgroundLayerService.backgroundContext })
   accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
+
   constructor() {
     super();
 
@@ -569,6 +570,7 @@ export class NgmApp extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     return html`
       ${this.clientConfig.env === 'prod'

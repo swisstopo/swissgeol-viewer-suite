@@ -256,6 +256,7 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     const geometries = this.selectedFilter
       ? this.geometries.filter((geom) => geom.type === this.selectedFilter)

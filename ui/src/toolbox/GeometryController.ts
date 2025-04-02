@@ -212,6 +212,7 @@ export class GeometryController {
     const entity = this.geometriesDataSource!.entities.getById(id);
     if (entity) entity.show = show;
   }
+
   @pauseGeometryCollectionEvents
   private showHideGeometryByType(
     show: boolean,

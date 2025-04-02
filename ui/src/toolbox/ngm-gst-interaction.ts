@@ -288,6 +288,7 @@ export class NgmGstInteraction extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     return html`
       <ngm-draw-section

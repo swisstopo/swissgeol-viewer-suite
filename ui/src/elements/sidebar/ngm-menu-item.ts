@@ -31,6 +31,7 @@ export class MenuItem extends LitElementI18n {
       </div>
     `;
   }
+
   static readonly styles = css`
     :host {
       position: relative;

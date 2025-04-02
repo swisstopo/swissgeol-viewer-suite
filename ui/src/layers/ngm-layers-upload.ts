@@ -67,6 +67,7 @@ export default class LayersUpload extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     return html`
       <button

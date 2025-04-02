@@ -417,6 +417,7 @@ export class NgmNavTools extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     if (!this.viewer) return '';
     return html`

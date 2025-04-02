@@ -136,6 +136,7 @@ export class NgmPointEdit extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     if (this.entity) {
       this.updateInputValues();

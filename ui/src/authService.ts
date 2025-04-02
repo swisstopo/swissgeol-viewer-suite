@@ -30,6 +30,7 @@ let authTimeout = 0;
 let _AWSCredentials: CognitoIdentityCredentialProvider | null = null;
 export default class AuthService {
   private _clientConfig?: ClientConfig;
+
   public set clientConfig(value: ClientConfig) {
     this._clientConfig = value;
   }

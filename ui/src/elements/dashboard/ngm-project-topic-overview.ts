@@ -85,6 +85,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       </div>
     `;
   }
+
   async duplicateToProject() {
     const createProject = this.toCreateProject(this.topicOrProject!);
     const response = await this.apiClient.duplicateProject(createProject);
@@ -94,9 +95,11 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       new CustomEvent('onProjectDuplicated', { detail: { project } }),
     );
   }
+
   async deleteProject() {
     await this.apiClient.deleteProject(this.topicOrProject!.id);
   }
+
   async copyLink(viewId?: string) {
     try {
       const link = this.getLink(viewId);
@@ -106,6 +109,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       console.error(e);
     }
   }
+
   getLink(viewId?: string): string | undefined {
     if (!this.topicOrProject) return;
     let link = `${location.protocol}//${location.host}${location.pathname}?`;
@@ -114,6 +118,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     if (viewId) link = `${link}&viewId=${viewId}`;
     return link;
   }
+
   toCreateProject(topicOrProject: Topic | Project): CreateProject {
     const title = isProject(topicOrProject)
       ? `${i18next.t('tbx_copy_of_label')} ${topicOrProject.title}`
@@ -146,6 +151,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       viewers: [],
     };
   }
+
   async saveViewToProject() {
     const project: Project | undefined = isProject(this.topicOrProject)
       ? this.topicOrProject
@@ -175,9 +181,11 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       }
     }
   }
+
   createRenderRoot() {
     return this;
   }
+
   render() {
     if (!this.topicOrProject) return '';
     const project = isProject(this.topicOrProject)

@@ -50,6 +50,7 @@ export class NgmLayerLegend extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     return html`
       <div class="ngm-floating-window-header drag-handle">

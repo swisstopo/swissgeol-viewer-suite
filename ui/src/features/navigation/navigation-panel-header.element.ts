@@ -19,9 +19,11 @@ export class NavigationPanelHeader extends LitElementI18n {
     super.connectedCallback();
     this.setAttribute('role', 'heading');
   }
+
   private close(): void {
     this.dispatchEvent(new CustomEvent('close'));
   }
+
   readonly render = () => html`
     <slot></slot>
     ${this.isCloseable

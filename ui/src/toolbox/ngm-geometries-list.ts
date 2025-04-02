@@ -81,6 +81,7 @@ export default class NgmGeometriesList extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     const projectMode = DashboardStore.projectMode.value;
     const isProjectEditMode =

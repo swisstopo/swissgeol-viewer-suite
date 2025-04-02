@@ -53,6 +53,7 @@ export class NavigationSearch extends LitElementI18n {
     this.searchAdditionalItems = this.searchAdditionalItems.bind(this);
     this.toggleActive = this.toggleActive.bind(this);
   }
+
   private accessor searchRef = createRef<HTMLElement>();
   private accessor inputRef = createRef<HTMLInputElement>();
   private accessor resultsRef = createRef<HTMLUListElement>();
@@ -127,6 +128,7 @@ export class NavigationSearch extends LitElementI18n {
       ...this.searchAdditionalItemsByCatalog(regexQuery),
     ]);
   }
+
   private searchAdditionalItemsByCoordinates(query: string): AdditionalItem[] {
     const COORDINATE_PATTERN = /(\d[\d.']*)[\s,/]+(\d[\d.']*)/;
     const coordinateMatches = COORDINATE_PATTERN.exec(query);
@@ -152,6 +154,7 @@ export class NavigationSearch extends LitElementI18n {
       },
     ];
   }
+
   private searchAdditionalItemsByRegex(query: RegExp): AdditionalItem[] {
     if (this.viewer == null) {
       return [];
@@ -173,9 +176,11 @@ export class NavigationSearch extends LitElementI18n {
     }
     return results;
   }
+
   private searchAdditionalItemsByCatalog(query: RegExp): AdditionalItem[] {
     return this.searchAdditionalItemsByLayerTree(query, defaultLayerTree);
   }
+
   private searchAdditionalItemsByLayerTree(
     query: RegExp,
     layerTree: LayerTreeNode[],
@@ -199,9 +204,11 @@ export class NavigationSearch extends LitElementI18n {
     }
     return results;
   }
+
   private handleItemSelected(event: SearchEvent): void {
     this.selectItem(event.detail.result, { allowLayerChanges: true });
   }
+
   private selectItem(
     item: SearchItem,
     options: { keepFocus?: boolean; allowLayerChanges?: boolean } = {},
@@ -224,15 +231,18 @@ export class NavigationSearch extends LitElementI18n {
       this.inputRef.value?.blur();
     }
   }
+
   private selectLocation(item: FeatureWithLocation | CoordinateItem): void {
     this.flyToBBox(item.bbox);
   }
+
   private selectGeoadminLayer(feature: Feature): void {
     if (this.sidebar == null) {
       return;
     }
     this.sidebar.addLayerFromSearch(feature.properties as SearchLayer).then();
   }
+
   private selectNgmLayer(item: EntityItem | LayerTreeNode): void {
     if (this.sidebar == null) {
       return;

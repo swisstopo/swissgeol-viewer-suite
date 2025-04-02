@@ -16,6 +16,7 @@ class NgmFullScreenView extends LitElementI18n {
         .forEach((n) => (n.hidden = this.fullScreenActive));
     };
   }
+
   static get properties() {
     return {
       fullScreenActive: { type: Boolean },
@@ -42,6 +43,7 @@ class NgmFullScreenView extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     return html`
       <button

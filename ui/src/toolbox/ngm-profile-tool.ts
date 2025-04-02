@@ -48,6 +48,7 @@ export class NgmProfileTool extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     return html` <ngm-draw-section
         ?hidden=${this.hidden}

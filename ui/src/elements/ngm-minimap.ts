@@ -170,6 +170,7 @@ export class NgmMinimap extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     return html`
       <div class="ngm-minimap-container">

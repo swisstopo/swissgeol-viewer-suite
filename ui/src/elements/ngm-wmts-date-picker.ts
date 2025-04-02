@@ -55,6 +55,7 @@ export class NgmWmtsDatePicker extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     if (!this.dates || !this.config?.setVisibility) return '';
     return html` <div class="ngm-floating-window-header drag-handle">

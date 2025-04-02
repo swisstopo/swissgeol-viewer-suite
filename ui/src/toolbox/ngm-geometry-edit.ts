@@ -299,6 +299,7 @@ export class NgmGeometryEdit extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
   render() {
     if (!this.editingEntity) return '';
     const type = getValueOrUndefined(this.editingEntity!.properties!.type);

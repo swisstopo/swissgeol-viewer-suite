@@ -338,6 +338,7 @@ export class NgmSlicer extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     if (!this.slicer) return '';
     return html`

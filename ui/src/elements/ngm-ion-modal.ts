@@ -29,6 +29,7 @@ export class NgmIonModal extends LitElementI18n {
     });
     super.connectedCallback();
   }
+
   async onLoadAssets(removeAssets = false) {
     if (!this.token) return;
     this.confirmationToast = undefined;
@@ -82,6 +83,7 @@ export class NgmIonModal extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
   render() {
     return html`
       <div class="ngm-floating-window-header drag-handle">
