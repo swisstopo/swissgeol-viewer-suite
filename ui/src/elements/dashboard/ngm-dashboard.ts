@@ -580,6 +580,9 @@ export class NgmDashboard extends LitElementI18n {
     super.updated(changed);
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     // const topics = html` <!-- topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171 -->
     //   <div
@@ -723,9 +726,5 @@ export class NgmDashboard extends LitElementI18n {
         </div>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

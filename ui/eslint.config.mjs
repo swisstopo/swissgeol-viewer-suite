@@ -68,8 +68,6 @@ const sharedConfig = {
 
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
-
-    // TODO enable this. It is disabled because we haven't gotten to fixing its issues.
     '@typescript-eslint/no-unused-expressions': 'off',
   },
 };
@@ -159,13 +157,14 @@ export default [
             'constructor',
             '[methods]',
             '[render]',
+            '[renders]',
             '[styles]',
           ],
           groups: {
             decoratedProperties: [
               {
                 type: 'method',
-                groupByDecorator: '/^(property|state|query|consume)$/',
+                groupByDecorator: '/^(property|state|query|consume|provide)$/',
               },
             ],
             render: [
@@ -174,6 +173,22 @@ export default [
                 propertyType: 'ArrowFunctionExpression',
                 name: 'render',
                 readonly: true,
+              },
+              {
+                type: 'method',
+                name: 'render',
+              },
+            ],
+            renders: [
+              {
+                type: 'property',
+                propertyType: 'ArrowFunctionExpression',
+                name: '/render.+/',
+                readonly: true,
+              },
+              {
+                type: 'method',
+                name: '/render.+/',
               },
             ],
             styles: [{ name: 'styles', static: true, readonly: true }],

@@ -119,18 +119,6 @@ export class NavigationSearch extends LitElementI18n {
     );
   }
 
-  /**
-   * Render a {@link SearchItem} as a search result.
-   * @param item The item to render.
-   * @param label The item's display text.
-   * @private
-   */
-  private renderItem(item: SearchItem, label: string): string {
-    const categorizedItem = categorizeSearchItem(item);
-    const icon = getIconForCategory(categorizedItem.category);
-    return `<img src='/images/${icon}.svg' alt=""/><b>${label}</b>`;
-  }
-
   private searchAdditionalItems(query: string): Promise<AdditionalItem[]> {
     const regexQuery = new RegExp(escapeRegExp(query), 'i');
     return Promise.resolve([
@@ -139,7 +127,6 @@ export class NavigationSearch extends LitElementI18n {
       ...this.searchAdditionalItemsByCatalog(regexQuery),
     ]);
   }
-
   private searchAdditionalItemsByCoordinates(query: string): AdditionalItem[] {
     const COORDINATE_PATTERN = /(\d[\d.']*)[\s,/]+(\d[\d.']*)/;
     const coordinateMatches = COORDINATE_PATTERN.exec(query);
@@ -165,7 +152,6 @@ export class NavigationSearch extends LitElementI18n {
       },
     ];
   }
-
   private searchAdditionalItemsByRegex(query: RegExp): AdditionalItem[] {
     if (this.viewer == null) {
       return [];
@@ -187,11 +173,9 @@ export class NavigationSearch extends LitElementI18n {
     }
     return results;
   }
-
   private searchAdditionalItemsByCatalog(query: RegExp): AdditionalItem[] {
     return this.searchAdditionalItemsByLayerTree(query, defaultLayerTree);
   }
-
   private searchAdditionalItemsByLayerTree(
     query: RegExp,
     layerTree: LayerTreeNode[],
@@ -215,11 +199,9 @@ export class NavigationSearch extends LitElementI18n {
     }
     return results;
   }
-
   private handleItemSelected(event: SearchEvent): void {
     this.selectItem(event.detail.result, { allowLayerChanges: true });
   }
-
   private selectItem(
     item: SearchItem,
     options: { keepFocus?: boolean; allowLayerChanges?: boolean } = {},
@@ -242,18 +224,15 @@ export class NavigationSearch extends LitElementI18n {
       this.inputRef.value?.blur();
     }
   }
-
   private selectLocation(item: FeatureWithLocation | CoordinateItem): void {
     this.flyToBBox(item.bbox);
   }
-
   private selectGeoadminLayer(feature: Feature): void {
     if (this.sidebar == null) {
       return;
     }
     this.sidebar.addLayerFromSearch(feature.properties as SearchLayer).then();
   }
-
   private selectNgmLayer(item: EntityItem | LayerTreeNode): void {
     if (this.sidebar == null) {
       return;
@@ -395,6 +374,18 @@ export class NavigationSearch extends LitElementI18n {
     <ngm-core-icon icon="search" @click="${this.toggleActive}"></ngm-core-icon>
     <ngm-core-icon icon="close" @click="${this.clear}"></ngm-core-icon>
   `;
+
+  /**
+   * Render a {@link SearchItem} as a search result.
+   * @param item The item to render.
+   * @param label The item's display text.
+   * @private
+   */
+  private renderItem(item: SearchItem, label: string): string {
+    const categorizedItem = categorizeSearchItem(item);
+    const icon = getIconForCategory(categorizedItem.category);
+    return `<img src='/images/${icon}.svg' alt=""/><b>${label}</b>`;
+  }
 
   static readonly styles = css`
     :host {

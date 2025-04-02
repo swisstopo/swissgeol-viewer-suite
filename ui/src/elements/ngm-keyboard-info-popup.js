@@ -82,6 +82,9 @@ class NgmKeyboardInfoPopup extends LitElementI18n {
     );
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     return html` <button id=${btnId} class="ui compact mini icon button">
         <i class="keyboard icon"></i>
@@ -94,10 +97,6 @@ class NgmKeyboardInfoPopup extends LitElementI18n {
         </div>
         <h4 class="ngm-keyboard-tip">${i18next.t('nav_info_tip')}</h4>
       </div>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }
 

@@ -46,6 +46,10 @@ export class NgmLayerLegend extends LitElementI18n {
     return html` <div class="ngm-legend-html">${unsafeHTML(legendHtml)}</div>`;
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     return html`
       <div class="ngm-floating-window-header drag-handle">
@@ -66,10 +70,5 @@ export class NgmLayerLegend extends LitElementI18n {
       </div>
       ${dragArea}
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

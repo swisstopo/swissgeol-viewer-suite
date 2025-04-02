@@ -150,70 +150,6 @@ export class CesiumDraw extends EventTarget {
     };
   }
 
-  renderSceneIfTranslucent() {
-    // because calling render decreases performance, only call it when needed.
-    // see https://cesium.com/docs/cesiumjs-ref-doc/Scene.html#pickTranslucentDepth
-    if (this.viewer_.scene.globe.translucency.enabled) {
-      this.viewer_.scene.render();
-    }
-  }
-
-  /**
-   *
-   */
-  get active() {
-    return this.eventHandler_ !== undefined;
-  }
-
-  /**
-   *
-   */
-  set active(value) {
-    // todo check for type
-    if (value && this.type) {
-      if (!this.eventHandler_) {
-        this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
-        if (this.entityForEdit) {
-          this.activateEditing();
-        } else {
-          this.eventHandler_.setInputAction(
-            this.onLeftClick.bind(this),
-            ScreenSpaceEventType.LEFT_CLICK,
-          );
-          this.eventHandler_.setInputAction(
-            this.onDoubleClick_.bind(this),
-            ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
-          );
-        }
-        this.eventHandler_.setInputAction(
-          this.onMouseMove_.bind(this),
-          ScreenSpaceEventType.MOUSE_MOVE,
-        );
-      }
-      this.dispatchEvent(
-        new CustomEvent<DrawInfo>('drawinfo', {
-          detail: {
-            length: 0,
-            numberOfSegments: 0,
-            segments: [],
-            type: this.type,
-            drawInProgress: true,
-          },
-        }),
-      );
-    } else {
-      if (this.eventHandler_) {
-        this.eventHandler_.destroy();
-      }
-      this.eventHandler_ = undefined;
-    }
-    this.dispatchEvent(
-      new CustomEvent('statechanged', {
-        detail: { active: value && this.type },
-      }),
-    );
-  }
-
   activateEditing() {
     if (!this.eventHandler_ || !this.entityForEdit) return;
     this.eventHandler_.setInputAction(
@@ -319,7 +255,6 @@ export class CesiumDraw extends EventTarget {
     }
     this.viewer_.scene.requestRender();
   }
-
   finishDrawing() {
     let positions = this.activePoints_;
     if (
@@ -378,7 +313,6 @@ export class CesiumDraw extends EventTarget {
 
     this.removeSketches();
   }
-
   removeSketches() {
     this.drawingDataSource.entities.removeAll();
 
@@ -393,14 +327,12 @@ export class CesiumDraw extends EventTarget {
     this.sketchPoints_ = [];
     this.segmentsInfo = [];
   }
-
   /**
    *
    */
   clear() {
     this.removeSketches();
   }
-
   createSketchPoint_(
     position,
     options: {
@@ -436,7 +368,6 @@ export class CesiumDraw extends EventTarget {
     pointEntity.properties!.virtual = options.virtual;
     return pointEntity;
   }
-
   createSketchLine_(positions: Cartesian3[] | CallbackProperty) {
     return this.drawingDataSource.entities.add({
       polyline: {
@@ -450,7 +381,6 @@ export class CesiumDraw extends EventTarget {
       },
     });
   }
-
   drawShape_(positions: Cartesian3 | Cartesian3[] | undefined) {
     if (!positions) return;
     if (this.type === 'point' && !Array.isArray(positions)) {
@@ -495,7 +425,6 @@ export class CesiumDraw extends EventTarget {
       });
     }
   }
-
   dynamicSketLinePositions() {
     return new CallbackProperty(() => {
       const activePoints: Cartesian3[] = [
@@ -517,7 +446,6 @@ export class CesiumDraw extends EventTarget {
       }
     }, false);
   }
-
   updateSketchPoint() {
     if (!this.sketchPoint_) return;
     const activePoints: Cartesian3[] = [
@@ -573,7 +501,6 @@ export class CesiumDraw extends EventTarget {
       }),
     );
   }
-
   onLeftClick(event) {
     this.renderSceneIfTranslucent();
     if (!event?.position) return;
@@ -625,7 +552,6 @@ export class CesiumDraw extends EventTarget {
       }
     }
   }
-
   updateRectCorner(
     corner,
     oppositePoint,
@@ -667,7 +593,6 @@ export class CesiumDraw extends EventTarget {
     }
     return newCornerPosition;
   }
-
   rotateRectangle(startPosition, endPosition) {
     const positions = [...this.activePoints_];
     const center = Cartesian3.midpoint(
@@ -716,7 +641,6 @@ export class CesiumDraw extends EventTarget {
     });
     this.viewer_.scene.requestRender();
   }
-
   onMouseMove_(event) {
     this.renderSceneIfTranslucent();
     if (!event?.endPosition) return;
@@ -881,7 +805,6 @@ export class CesiumDraw extends EventTarget {
     }
     this.viewer_.scene.requestRender();
   }
-
   onDoubleClick_() {
     this.isDoubleClick = true;
     if (this.singleClickTimer) {
@@ -896,7 +819,6 @@ export class CesiumDraw extends EventTarget {
     }
     this.finishDrawing();
   }
-
   /**
    * Enables moving of point geometry or one of the sketch points for other geometries if left mouse button pressed on it
    * @param event
@@ -931,7 +853,6 @@ export class CesiumDraw extends EventTarget {
       }
     }
   }
-
   /**
    *
    * @param {*} a
@@ -947,7 +868,6 @@ export class CesiumDraw extends EventTarget {
     Cartesian3.divideByScalar(position, 2, position);
     return position;
   }
-
   extendOrSplitLineOrPolygonPositions_() {
     // Add new line vertex
     // Create SPs, reuse the pressed virtual SP for first segment
@@ -980,11 +900,9 @@ export class CesiumDraw extends EventTarget {
     this.sketchPoint_ = realSP1;
     this.viewer_.scene.requestRender();
   }
-
   insertVertexToPolylineOrPolygon_(idx, coordinates) {
     this.activePoints_.splice(idx, 0, coordinates);
   }
-
   /**
    * @param event
    */
@@ -1004,7 +922,6 @@ export class CesiumDraw extends EventTarget {
     this.leftPressedPixel_ = undefined;
     this.sketchPoint_ = undefined;
   }
-
   onLeftDownThenUp_(_event) {
     const e = this.entityForEdit!;
     if (
@@ -1079,7 +996,6 @@ export class CesiumDraw extends EventTarget {
       this.viewer_.scene.requestRender();
     }
   }
-
   getCorrectRectCorner(corner, oppositePoint, checkPoint1, checkPoint2) {
     const distance = Cartesian3.distance(checkPoint1, oppositePoint);
     const newDistance = Cartesian3.distance(corner, checkPoint2);
@@ -1088,7 +1004,6 @@ export class CesiumDraw extends EventTarget {
     dDiff = Cartesian3.multiplyByScalar(dDiff, dScale, new Cartesian3());
     return Cartesian3.add(checkPoint2, dDiff, new Cartesian3());
   }
-
   checkForNegateMove(draggedPoint, oppositePoint, leftPoint, rightPoint) {
     const draggedPoint2D =
       this.viewer_.scene.cartesianToCanvasCoordinates(draggedPoint);
@@ -1127,7 +1042,6 @@ export class CesiumDraw extends EventTarget {
       ),
     };
   }
-
   getSegmentsInfo(): SegmentInfo[] {
     const positions = this.activePoints_;
     return this.activeDistances_.map((dist, indx) => {
@@ -1150,5 +1064,61 @@ export class CesiumDraw extends EventTarget {
         heightDiff: height,
       };
     });
+  }
+  get active() {
+    return this.eventHandler_ !== undefined;
+  }
+
+  set active(value) {
+    // todo check for type
+    if (value && this.type) {
+      if (!this.eventHandler_) {
+        this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
+        if (this.entityForEdit) {
+          this.activateEditing();
+        } else {
+          this.eventHandler_.setInputAction(
+            this.onLeftClick.bind(this),
+            ScreenSpaceEventType.LEFT_CLICK,
+          );
+          this.eventHandler_.setInputAction(
+            this.onDoubleClick_.bind(this),
+            ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
+          );
+        }
+        this.eventHandler_.setInputAction(
+          this.onMouseMove_.bind(this),
+          ScreenSpaceEventType.MOUSE_MOVE,
+        );
+      }
+      this.dispatchEvent(
+        new CustomEvent<DrawInfo>('drawinfo', {
+          detail: {
+            length: 0,
+            numberOfSegments: 0,
+            segments: [],
+            type: this.type,
+            drawInProgress: true,
+          },
+        }),
+      );
+    } else {
+      if (this.eventHandler_) {
+        this.eventHandler_.destroy();
+      }
+      this.eventHandler_ = undefined;
+    }
+    this.dispatchEvent(
+      new CustomEvent('statechanged', {
+        detail: { active: value && this.type },
+      }),
+    );
+  }
+  renderSceneIfTranslucent() {
+    // because calling render decreases performance, only call it when needed.
+    // see https://cesium.com/docs/cesiumjs-ref-doc/Scene.html#pickTranslucentDepth
+    if (this.viewer_.scene.globe.translucency.enabled) {
+      this.viewer_.scene.render();
+    }
   }
 }

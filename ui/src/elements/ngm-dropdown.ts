@@ -37,6 +37,9 @@ export class NgmDropdown extends LitElement {
     return this.defaultText;
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     const text = this.dropdownText;
     return html`
@@ -65,9 +68,5 @@ export class NgmDropdown extends LitElement {
         </div>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

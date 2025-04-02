@@ -46,6 +46,10 @@ export class NgmConfirmationModal extends LitElementI18n {
     super.updated(changedProperties);
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     if (!this.text) {
       this.show = false;
@@ -65,10 +69,5 @@ export class NgmConfirmationModal extends LitElementI18n {
         </div>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

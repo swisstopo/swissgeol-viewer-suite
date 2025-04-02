@@ -74,6 +74,9 @@ export class NgmCoordinatePopup extends LitElementI18n {
     super.updated(changedProperties);
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     this.hidden = !this.opened;
     return html` <div class="popup-arrow"></div>
@@ -107,9 +110,5 @@ export class NgmCoordinatePopup extends LitElementI18n {
           </tbody>
         </table>
       </div>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

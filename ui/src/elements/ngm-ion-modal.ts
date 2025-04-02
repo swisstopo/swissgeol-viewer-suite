@@ -78,6 +78,10 @@ export class NgmIonModal extends LitElementI18n {
     this.dispatchEvent(new CustomEvent('close'));
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     return html`
       <div class="ngm-floating-window-header drag-handle">
@@ -151,10 +155,5 @@ export class NgmIonModal extends LitElementI18n {
       </div>
       ${dragArea}
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

@@ -334,6 +334,10 @@ export class NgmSlicer extends LitElementI18n {
     `;
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     if (!this.slicer) return '';
     return html`
@@ -382,10 +386,5 @@ export class NgmSlicer extends LitElementI18n {
       >
       </ngm-geometries-list>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

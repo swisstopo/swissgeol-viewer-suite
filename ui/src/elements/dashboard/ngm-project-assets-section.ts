@@ -54,6 +54,9 @@ export class NgmProjectAssetsSection extends LitElementI18n {
     }
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     return html` <div>
       <div class="ngm-proj-title-icon">
@@ -108,9 +111,5 @@ export class NgmProjectAssetsSection extends LitElementI18n {
         </div>
       </div>
     </div>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

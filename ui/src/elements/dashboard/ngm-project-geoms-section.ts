@@ -12,6 +12,9 @@ export class NgmProjectGeomsSection extends LitElementI18n {
   @property({ type: Array })
   accessor geometries: NgmGeometry[] = [];
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     return html` <div>
       <div class="ngm-proj-title-icon">
@@ -30,9 +33,5 @@ export class NgmProjectGeomsSection extends LitElementI18n {
           : html` <div>${i18next.t('dashboard_no_geom_text')}</div>`}
       </div>
     </div>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

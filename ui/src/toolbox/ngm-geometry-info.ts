@@ -262,6 +262,9 @@ export class NgmGeometryInfo extends LitElementI18n {
     `;
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     this.hidden = !this.geometry;
     if (!this.geometry) return '';
@@ -308,9 +311,5 @@ export class NgmGeometryInfo extends LitElementI18n {
       </div>
       ${dragArea}
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

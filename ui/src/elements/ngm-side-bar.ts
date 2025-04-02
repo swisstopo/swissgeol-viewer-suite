@@ -179,20 +179,413 @@ export class SideBar extends LitElementI18n {
       this.activePanel = 'tools';
   }
 
-  private readonly renderMenuItem = (
-    icon: string,
-    title: string,
-    panel: string,
-  ) => html`
-    <ngm-menu-item
-      .icon=${icon}
-      .title=${title}
-      ?isActive=${this.activePanel === panel}
-      ?isMobile=${this.mobileView}
-      @click=${() => this.togglePanel(panel)}
-    ></ngm-menu-item>
-  `;
+  async togglePanel(panelName, showHeader = true) {
+    if (DashboardStore.projectMode.value === 'edit') {
+      DashboardStore.showSaveOrCancelWarning(true);
+      return;
+    }
+    this.showHeader = showHeader;
+    if (this.activePanel === panelName) {
+      this.activePanel = null;
+      return;
+    }
+    this.activePanel = panelName;
+    if (this.activePanel === 'data') {
+      await import('src/features/layer/layer.module');
+    }
+  }
+  async syncActiveLayers() {
+    const attributeParams = getAttribute();
+    const callback = attributeParams
+      ? this.getTileLoadCallback(
+          attributeParams.attributeKey,
+          attributeParams.attributeValue,
+        )
+      : undefined;
+    const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
+    const urlLayers = getLayerParams();
+    const assetIds = getAssetIds();
+    const ionToken = MainStore.ionToken.value;
 
+    if (!urlLayers.length && !assetIds.length) {
+      this.activeLayers = flatLayers.filter((l) => l.displayed);
+      syncLayersParam(this.activeLayers);
+      return;
+    }
+
+    // First - make everything hidden
+    flatLayers.forEach((l) => {
+      l.visible = false;
+      l.displayed = false;
+    });
+
+    const activeLayers: LayerConfig[] = [];
+    for (const urlLayer of urlLayers) {
+      let layer = flatLayers.find((fl) => fl.layer === urlLayer.layer);
+      if (!layer) {
+        // Layers from the search are not present in the flat layers.
+        layer = this.createSearchLayer({
+          layer: urlLayer.layer,
+          label: urlLayer.layer,
+        }); // the proper label will be taken from getCapabilities
+      } else {
+        await (layer.promise || this.addLayer(layer));
+        layer.add && layer.add();
+      }
+      layer.visible = urlLayer.visible;
+      layer.opacity = urlLayer.opacity;
+      layer.wmtsCurrentTime = urlLayer.timestamp ?? layer.wmtsCurrentTime;
+      layer.setOpacity && layer.setOpacity(layer.opacity);
+      layer.displayed = true;
+      layer.setVisibility && layer.setVisibility(layer.visible);
+      if (layer.promise === undefined && layer.load !== undefined) {
+        layer.promise = layer.load();
+      }
+      activeLayers.push(layer);
+    }
+
+    if (ionToken) {
+      const ionAssetsRes = await getAssets(ionToken);
+      const ionAssets = ionAssetsRes?.items || [];
+
+      assetIds.forEach((assetId) => {
+        const ionAsset = ionAssets.find(
+          (asset) => asset.id === Number(assetId),
+        );
+        const layer: LayerConfig = {
+          type: LayerType.tiles3d,
+          assetId: Number(assetId),
+          ionToken: ionToken,
+          label: ionAsset?.name ?? assetId,
+          layer: assetId,
+          visible: true,
+          displayed: true,
+          opacityDisabled: true,
+          pickable: true,
+          customAsset: true,
+        };
+        layer.load = () => this.addLayer(layer);
+        activeLayers.push(layer);
+        if (layer.promise === undefined) {
+          layer.promise = layer.load();
+        }
+      });
+    }
+
+    this.activeLayers = activeLayers;
+    syncLayersParam(this.activeLayers);
+  }
+  getTileLoadCallback(attributeKey, attributeValue) {
+    return (tile, removeTileLoadListener) => {
+      const content = tile.content;
+      const featuresLength = content.featuresLength;
+      for (let i = 0; i < featuresLength; i++) {
+        const feature = content.getFeature(i);
+        if (feature.getProperty(attributeKey) === attributeValue) {
+          removeTileLoadListener();
+          this.queryManager!.selectTile(feature);
+          return;
+        }
+      }
+    };
+  }
+  async update(changedProperties) {
+    if (this.viewer && !this.layerActions) {
+      this.layerActions = new LayersActions(this.viewer);
+      if (!this.catalogLayers) {
+        this.catalogLayers = [...defaultLayerTree];
+        await this.syncActiveLayers();
+      }
+    }
+    // hide share panel on any action outside side bar
+    if (!this.shareListenerAdded && this.activePanel === 'share') {
+      document.addEventListener('pointerdown', this.shareDownListener);
+      document.addEventListener('keydown', this.shareDownListener);
+      this.shareListenerAdded = true;
+    } else if (this.shareListenerAdded) {
+      this.shareListenerAdded = false;
+      document.removeEventListener('pointerdown', this.shareDownListener);
+      document.removeEventListener('keydown', this.shareDownListener);
+    }
+    super.update(changedProperties);
+  }
+  updated(changedProperties) {
+    if (this.queryManager) {
+      !this.zoomedToPosition && this.zoomToPermalinkObject();
+
+      if (!this.accordionInited && this.activePanel === 'data') {
+        const panelElement = this.querySelector('.ngm-layer-catalog');
+
+        if (panelElement) {
+          for (let i = 0; i < panelElement.childElementCount; i++) {
+            const element = panelElement.children.item(i);
+            if (element?.classList.contains('accordion')) {
+              $(element).accordion({ duration: 150 });
+            }
+          }
+          this.accordionInited = true;
+        }
+      }
+      if (changedProperties.has('activeLayers')) {
+        this.layerActions!.reorderLayers(this.activeLayers);
+      }
+    }
+
+    super.updated(changedProperties);
+  }
+  async onCatalogLayerClicked(layer) {
+    // toggle whether the layer is displayed or not (=listed in the side bar)
+    layer.displayed = !layer.displayed;
+    await this.applyLayerVisibility(layer);
+  }
+  private async applyLayerVisibility(layer: LayerConfig): Promise<void> {
+    if (layer.displayed) {
+      await (layer.promise || this.addLayer(layer));
+      layer.add && (layer.add as () => void)();
+      layer.visible = true;
+      layer.displayed = true;
+      this.activeLayers.push(layer);
+      this.maybeShowVisibilityHint(layer);
+    } else {
+      if (layer.visible) {
+        layer.displayed = false;
+        layer.visible = false;
+        layer.remove && layer.remove();
+        const idx = this.activeLayers.findIndex((l) => l.label === layer.label);
+        this.activeLayers.splice(idx, 1);
+      } else {
+        layer.visible = true;
+      }
+    }
+    layer.setVisibility && layer.setVisibility(layer.visible);
+    syncLayersParam(this.activeLayers);
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
+    this.activeLayers = [...this.activeLayers];
+    this.viewer!.scene.requestRender();
+  }
+  maybeShowVisibilityHint(config: LayerConfig) {
+    if (
+      this.displayUndergroundHint &&
+      config.visible &&
+      [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!) &&
+      !this.viewer?.scene.cameraUnderground
+    ) {
+      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {
+        displayTime: 20000,
+      });
+      this.displayUndergroundHint = false;
+    }
+  }
+  async removeLayer(config: LayerConfig) {
+    await this.removeLayerWithoutSync(config);
+    this.viewer!.scene.requestRender();
+    syncLayersParam(this.activeLayers);
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
+  }
+  getFlatLayers(tree, tileLoadCallback): any[] {
+    const flat: any[] = [];
+    for (const layer of tree) {
+      if (layer.children) {
+        flat.push(...this.getFlatLayers(layer.children, tileLoadCallback));
+      } else {
+        layer.load = () => this.addLayer(layer);
+        flat.push(layer);
+      }
+    }
+    return flat;
+  }
+  // adds layer from search to 'Displayed Layers'
+  async addLayerFromSearch(searchLayer: SearchLayer) {
+    let layer: LayerConfig | undefined;
+    if ('dataSourceName' in searchLayer) {
+      layer = this.activeLayers.find(
+        (l) => l.type === searchLayer.dataSourceName,
+      ); // check for layers like earthquakes
+    } else {
+      layer = this.activeLayers.find((l) => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
+    }
+
+    if (layer) {
+      // for layers added before
+      if (layer.type === LayerType.swisstopoWMTS) {
+        const index = this.activeLayers.indexOf(layer);
+        this.activeLayers.splice(index, 1);
+        layer.remove?.();
+        layer.add?.(0);
+        this.activeLayers.push(layer);
+      }
+      layer.setVisibility?.(true);
+      layer.visible = true;
+      layer.displayed = true;
+      this.viewer!.scene.requestRender();
+    } else {
+      // for new layers
+      const newLayer = this.createSearchLayer(searchLayer);
+      this.activeLayers.push(newLayer);
+      if (newLayer.promise === undefined && newLayer.load !== undefined) {
+        newLayer.promise = newLayer.load();
+      }
+    }
+    this.activeLayers = [...this.activeLayers];
+    syncLayersParam(this.activeLayers);
+    this.requestUpdate();
+  }
+  createSearchLayer(searchLayer: SearchLayer) {
+    let config: LayerConfig;
+    if ('dataSourceName' in searchLayer) {
+      config = searchLayer;
+      config.visible = true;
+      config.origin = 'layer';
+      config.label = searchLayer.title ?? searchLayer.label;
+      config.legend =
+        config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
+    } else {
+      config = {
+        type: LayerType.swisstopoWMTS,
+        label: searchLayer.title ?? searchLayer.label,
+        layer: searchLayer.layer,
+        visible: true,
+        displayed: true,
+        opacity: DEFAULT_LAYER_OPACITY,
+        queryType: 'geoadmin',
+        legend: searchLayer.layer,
+      };
+    }
+    config.load = async () => {
+      const layer = await this.addLayer(config);
+      this.activeLayers = [...this.activeLayers];
+      syncLayersParam(this.activeLayers);
+      return layer;
+    };
+
+    return config;
+  }
+  zoomToPermalinkObject() {
+    this.zoomedToPosition = true;
+    const zoomToPosition = getZoomToPosition();
+    if (zoomToPosition) {
+      let altitude = 0,
+        cartesianPosition: Cartesian3 | undefined,
+        windowPosition: Cartesian2 | undefined;
+      const updateValues = () => {
+        altitude =
+          this.viewer!.scene.globe.getHeight(
+            this.viewer!.scene.camera.positionCartographic,
+          ) ?? 0;
+        cartesianPosition = Cartesian3.fromDegrees(
+          zoomToPosition.longitude,
+          zoomToPosition.latitude,
+          zoomToPosition.height + altitude,
+        );
+        windowPosition =
+          this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
+      };
+      updateValues();
+      const completeCallback = () => {
+        if (windowPosition) {
+          let maxTries = 25;
+          let triesCounter = 0;
+          const eventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
+          eventHandler.setInputAction(
+            () => (maxTries = 0),
+            ScreenSpaceEventType.LEFT_DOWN,
+          );
+          // Waits while will be possible to select an object
+          const tryToSelect = () =>
+            setTimeout(() => {
+              updateValues();
+              this.zoomToObjectCoordinates(cartesianPosition);
+              windowPosition && this.queryManager!.pickObject(windowPosition);
+              triesCounter += 1;
+              if (
+                !this.queryManager!.objectSelector.selectedObj &&
+                triesCounter <= maxTries
+              ) {
+                tryToSelect();
+              } else {
+                eventHandler.destroy();
+                if (triesCounter > maxTries) {
+                  showSnackbarError(
+                    i18next.t('dtd_object_on_coordinates_not_found_warning'),
+                  );
+                }
+              }
+            }, 500);
+          tryToSelect();
+        }
+      };
+      this.zoomToObjectCoordinates(cartesianPosition, completeCallback);
+    }
+  }
+  zoomToObjectCoordinates(center, complete?) {
+    const boundingSphere = new BoundingSphere(center, 1000);
+    const zoomHeadingPitchRange = new HeadingPitchRange(
+      0,
+      -CMath.toRadians(45),
+      boundingSphere.radius,
+    );
+    this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
+      duration: 0,
+      offset: zoomHeadingPitchRange,
+      complete: complete,
+    });
+  }
+  addLayer(layer: LayerConfig) {
+    layer.promise = createCesiumObject(this.viewer!, layer);
+    this.dispatchEvent(
+      new CustomEvent('layeradded', {
+        detail: {
+          layer,
+        },
+      }),
+    );
+    return layer.promise;
+  }
+  private handleDisplayLayersUpdate(e: LayersEvent): void {
+    this.activeLayers = e.detail.layers;
+  }
+  private handleDisplayLayerUpdate(e: LayerEvent): void {
+    this.queryManager!.hideObjectInformation();
+    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
+    this.catalogLayers = [...catalogLayers];
+    this.activeLayers = [...this.activeLayers];
+    syncLayersParam(this.activeLayers);
+    if (e.detail) {
+      this.maybeShowVisibilityHint(e.detail.layer);
+    }
+    this.requestUpdate();
+  }
+  private async handleDisplayLayerRemoval(e: LayerEvent): Promise<void> {
+    await this.removeLayer(e.detail.layer);
+  }
+  private async removeLayerWithoutSync(layer: LayerConfig): Promise<void> {
+    if (layer.setVisibility) {
+      layer.setVisibility(false);
+    } else {
+      const c = await layer.promise;
+      if (c instanceof CustomDataSource || c instanceof GeoJsonDataSource) {
+        this.viewer!.dataSources.getByName(c.name)[0].show = false;
+      }
+    }
+    layer.visible = false;
+    layer.displayed = false;
+    if (layer.remove) {
+      layer.remove();
+    }
+  }
+  toggleDebugTools(event) {
+    const active = event.target.checked;
+    this.debugToolsActive = active;
+    setCesiumToolbarParam(active);
+    this.dispatchEvent(
+      new CustomEvent('toggleDebugTools', { detail: { active } }),
+    );
+  }
+  createRenderRoot() {
+    return this;
+  }
   render() {
     if (!this.queryManager) {
       return '';
@@ -328,431 +721,17 @@ export class SideBar extends LitElementI18n {
     `;
   }
 
-  async togglePanel(panelName, showHeader = true) {
-    if (DashboardStore.projectMode.value === 'edit') {
-      DashboardStore.showSaveOrCancelWarning(true);
-      return;
-    }
-    this.showHeader = showHeader;
-    if (this.activePanel === panelName) {
-      this.activePanel = null;
-      return;
-    }
-    this.activePanel = panelName;
-    if (this.activePanel === 'data') {
-      await import('src/features/layer/layer.module');
-    }
-  }
-
-  async syncActiveLayers() {
-    const attributeParams = getAttribute();
-    const callback = attributeParams
-      ? this.getTileLoadCallback(
-          attributeParams.attributeKey,
-          attributeParams.attributeValue,
-        )
-      : undefined;
-    const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
-    const urlLayers = getLayerParams();
-    const assetIds = getAssetIds();
-    const ionToken = MainStore.ionToken.value;
-
-    if (!urlLayers.length && !assetIds.length) {
-      this.activeLayers = flatLayers.filter((l) => l.displayed);
-      syncLayersParam(this.activeLayers);
-      return;
-    }
-
-    // First - make everything hidden
-    flatLayers.forEach((l) => {
-      l.visible = false;
-      l.displayed = false;
-    });
-
-    const activeLayers: LayerConfig[] = [];
-    for (const urlLayer of urlLayers) {
-      let layer = flatLayers.find((fl) => fl.layer === urlLayer.layer);
-      if (!layer) {
-        // Layers from the search are not present in the flat layers.
-        layer = this.createSearchLayer({
-          layer: urlLayer.layer,
-          label: urlLayer.layer,
-        }); // the proper label will be taken from getCapabilities
-      } else {
-        await (layer.promise || this.addLayer(layer));
-        layer.add && layer.add();
-      }
-      layer.visible = urlLayer.visible;
-      layer.opacity = urlLayer.opacity;
-      layer.wmtsCurrentTime = urlLayer.timestamp ?? layer.wmtsCurrentTime;
-      layer.setOpacity && layer.setOpacity(layer.opacity);
-      layer.displayed = true;
-      layer.setVisibility && layer.setVisibility(layer.visible);
-      if (layer.promise === undefined && layer.load !== undefined) {
-        layer.promise = layer.load();
-      }
-      activeLayers.push(layer);
-    }
-
-    if (ionToken) {
-      const ionAssetsRes = await getAssets(ionToken);
-      const ionAssets = ionAssetsRes?.items || [];
-
-      assetIds.forEach((assetId) => {
-        const ionAsset = ionAssets.find(
-          (asset) => asset.id === Number(assetId),
-        );
-        const layer: LayerConfig = {
-          type: LayerType.tiles3d,
-          assetId: Number(assetId),
-          ionToken: ionToken,
-          label: ionAsset?.name ?? assetId,
-          layer: assetId,
-          visible: true,
-          displayed: true,
-          opacityDisabled: true,
-          pickable: true,
-          customAsset: true,
-        };
-        layer.load = () => this.addLayer(layer);
-        activeLayers.push(layer);
-        if (layer.promise === undefined) {
-          layer.promise = layer.load();
-        }
-      });
-    }
-
-    this.activeLayers = activeLayers;
-    syncLayersParam(this.activeLayers);
-  }
-
-  getTileLoadCallback(attributeKey, attributeValue) {
-    return (tile, removeTileLoadListener) => {
-      const content = tile.content;
-      const featuresLength = content.featuresLength;
-      for (let i = 0; i < featuresLength; i++) {
-        const feature = content.getFeature(i);
-        if (feature.getProperty(attributeKey) === attributeValue) {
-          removeTileLoadListener();
-          this.queryManager!.selectTile(feature);
-          return;
-        }
-      }
-    };
-  }
-
-  async update(changedProperties) {
-    if (this.viewer && !this.layerActions) {
-      this.layerActions = new LayersActions(this.viewer);
-      if (!this.catalogLayers) {
-        this.catalogLayers = [...defaultLayerTree];
-        await this.syncActiveLayers();
-      }
-    }
-    // hide share panel on any action outside side bar
-    if (!this.shareListenerAdded && this.activePanel === 'share') {
-      document.addEventListener('pointerdown', this.shareDownListener);
-      document.addEventListener('keydown', this.shareDownListener);
-      this.shareListenerAdded = true;
-    } else if (this.shareListenerAdded) {
-      this.shareListenerAdded = false;
-      document.removeEventListener('pointerdown', this.shareDownListener);
-      document.removeEventListener('keydown', this.shareDownListener);
-    }
-    super.update(changedProperties);
-  }
-
-  updated(changedProperties) {
-    if (this.queryManager) {
-      !this.zoomedToPosition && this.zoomToPermalinkObject();
-
-      if (!this.accordionInited && this.activePanel === 'data') {
-        const panelElement = this.querySelector('.ngm-layer-catalog');
-
-        if (panelElement) {
-          for (let i = 0; i < panelElement.childElementCount; i++) {
-            const element = panelElement.children.item(i);
-            if (element?.classList.contains('accordion')) {
-              $(element).accordion({ duration: 150 });
-            }
-          }
-          this.accordionInited = true;
-        }
-      }
-      if (changedProperties.has('activeLayers')) {
-        this.layerActions!.reorderLayers(this.activeLayers);
-      }
-    }
-
-    super.updated(changedProperties);
-  }
-
-  async onCatalogLayerClicked(layer) {
-    // toggle whether the layer is displayed or not (=listed in the side bar)
-    layer.displayed = !layer.displayed;
-    await this.applyLayerVisibility(layer);
-  }
-
-  private async applyLayerVisibility(layer: LayerConfig): Promise<void> {
-    if (layer.displayed) {
-      await (layer.promise || this.addLayer(layer));
-      layer.add && (layer.add as () => void)();
-      layer.visible = true;
-      layer.displayed = true;
-      this.activeLayers.push(layer);
-      this.maybeShowVisibilityHint(layer);
-    } else {
-      if (layer.visible) {
-        layer.displayed = false;
-        layer.visible = false;
-        layer.remove && layer.remove();
-        const idx = this.activeLayers.findIndex((l) => l.label === layer.label);
-        this.activeLayers.splice(idx, 1);
-      } else {
-        layer.visible = true;
-      }
-    }
-    layer.setVisibility && layer.setVisibility(layer.visible);
-    syncLayersParam(this.activeLayers);
-    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
-    this.catalogLayers = [...catalogLayers];
-    this.activeLayers = [...this.activeLayers];
-    this.viewer!.scene.requestRender();
-  }
-
-  maybeShowVisibilityHint(config: LayerConfig) {
-    if (
-      this.displayUndergroundHint &&
-      config.visible &&
-      [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!) &&
-      !this.viewer?.scene.cameraUnderground
-    ) {
-      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {
-        displayTime: 20000,
-      });
-      this.displayUndergroundHint = false;
-    }
-  }
-
-  async removeLayer(config: LayerConfig) {
-    await this.removeLayerWithoutSync(config);
-    this.viewer!.scene.requestRender();
-    syncLayersParam(this.activeLayers);
-    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
-    this.catalogLayers = [...catalogLayers];
-  }
-
-  getFlatLayers(tree, tileLoadCallback): any[] {
-    const flat: any[] = [];
-    for (const layer of tree) {
-      if (layer.children) {
-        flat.push(...this.getFlatLayers(layer.children, tileLoadCallback));
-      } else {
-        layer.load = () => this.addLayer(layer);
-        flat.push(layer);
-      }
-    }
-    return flat;
-  }
-
-  // adds layer from search to 'Displayed Layers'
-  async addLayerFromSearch(searchLayer: SearchLayer) {
-    let layer: LayerConfig | undefined;
-    if ('dataSourceName' in searchLayer) {
-      layer = this.activeLayers.find(
-        (l) => l.type === searchLayer.dataSourceName,
-      ); // check for layers like earthquakes
-    } else {
-      layer = this.activeLayers.find((l) => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
-    }
-
-    if (layer) {
-      // for layers added before
-      if (layer.type === LayerType.swisstopoWMTS) {
-        const index = this.activeLayers.indexOf(layer);
-        this.activeLayers.splice(index, 1);
-        layer.remove?.();
-        layer.add?.(0);
-        this.activeLayers.push(layer);
-      }
-      layer.setVisibility?.(true);
-      layer.visible = true;
-      layer.displayed = true;
-      this.viewer!.scene.requestRender();
-    } else {
-      // for new layers
-      const newLayer = this.createSearchLayer(searchLayer);
-      this.activeLayers.push(newLayer);
-      if (newLayer.promise === undefined && newLayer.load !== undefined) {
-        newLayer.promise = newLayer.load();
-      }
-    }
-    this.activeLayers = [...this.activeLayers];
-    syncLayersParam(this.activeLayers);
-    this.requestUpdate();
-  }
-
-  createSearchLayer(searchLayer: SearchLayer) {
-    let config: LayerConfig;
-    if ('dataSourceName' in searchLayer) {
-      config = searchLayer;
-      config.visible = true;
-      config.origin = 'layer';
-      config.label = searchLayer.title ?? searchLayer.label;
-      config.legend =
-        config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
-    } else {
-      config = {
-        type: LayerType.swisstopoWMTS,
-        label: searchLayer.title ?? searchLayer.label,
-        layer: searchLayer.layer,
-        visible: true,
-        displayed: true,
-        opacity: DEFAULT_LAYER_OPACITY,
-        queryType: 'geoadmin',
-        legend: searchLayer.layer,
-      };
-    }
-    config.load = async () => {
-      const layer = await this.addLayer(config);
-      this.activeLayers = [...this.activeLayers];
-      syncLayersParam(this.activeLayers);
-      return layer;
-    };
-
-    return config;
-  }
-
-  zoomToPermalinkObject() {
-    this.zoomedToPosition = true;
-    const zoomToPosition = getZoomToPosition();
-    if (zoomToPosition) {
-      let altitude = 0,
-        cartesianPosition: Cartesian3 | undefined,
-        windowPosition: Cartesian2 | undefined;
-      const updateValues = () => {
-        altitude =
-          this.viewer!.scene.globe.getHeight(
-            this.viewer!.scene.camera.positionCartographic,
-          ) ?? 0;
-        cartesianPosition = Cartesian3.fromDegrees(
-          zoomToPosition.longitude,
-          zoomToPosition.latitude,
-          zoomToPosition.height + altitude,
-        );
-        windowPosition =
-          this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
-      };
-      updateValues();
-      const completeCallback = () => {
-        if (windowPosition) {
-          let maxTries = 25;
-          let triesCounter = 0;
-          const eventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
-          eventHandler.setInputAction(
-            () => (maxTries = 0),
-            ScreenSpaceEventType.LEFT_DOWN,
-          );
-          // Waits while will be possible to select an object
-          const tryToSelect = () =>
-            setTimeout(() => {
-              updateValues();
-              this.zoomToObjectCoordinates(cartesianPosition);
-              windowPosition && this.queryManager!.pickObject(windowPosition);
-              triesCounter += 1;
-              if (
-                !this.queryManager!.objectSelector.selectedObj &&
-                triesCounter <= maxTries
-              ) {
-                tryToSelect();
-              } else {
-                eventHandler.destroy();
-                if (triesCounter > maxTries) {
-                  showSnackbarError(
-                    i18next.t('dtd_object_on_coordinates_not_found_warning'),
-                  );
-                }
-              }
-            }, 500);
-          tryToSelect();
-        }
-      };
-      this.zoomToObjectCoordinates(cartesianPosition, completeCallback);
-    }
-  }
-
-  zoomToObjectCoordinates(center, complete?) {
-    const boundingSphere = new BoundingSphere(center, 1000);
-    const zoomHeadingPitchRange = new HeadingPitchRange(
-      0,
-      -CMath.toRadians(45),
-      boundingSphere.radius,
-    );
-    this.viewer!.scene.camera.flyToBoundingSphere(boundingSphere, {
-      duration: 0,
-      offset: zoomHeadingPitchRange,
-      complete: complete,
-    });
-  }
-
-  addLayer(layer: LayerConfig) {
-    layer.promise = createCesiumObject(this.viewer!, layer);
-    this.dispatchEvent(
-      new CustomEvent('layeradded', {
-        detail: {
-          layer,
-        },
-      }),
-    );
-    return layer.promise;
-  }
-
-  private handleDisplayLayersUpdate(e: LayersEvent): void {
-    this.activeLayers = e.detail.layers;
-  }
-
-  private handleDisplayLayerUpdate(e: LayerEvent): void {
-    this.queryManager!.hideObjectInformation();
-    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
-    this.catalogLayers = [...catalogLayers];
-    this.activeLayers = [...this.activeLayers];
-    syncLayersParam(this.activeLayers);
-    if (e.detail) {
-      this.maybeShowVisibilityHint(e.detail.layer);
-    }
-    this.requestUpdate();
-  }
-
-  private async handleDisplayLayerRemoval(e: LayerEvent): Promise<void> {
-    await this.removeLayer(e.detail.layer);
-  }
-
-  private async removeLayerWithoutSync(layer: LayerConfig): Promise<void> {
-    if (layer.setVisibility) {
-      layer.setVisibility(false);
-    } else {
-      const c = await layer.promise;
-      if (c instanceof CustomDataSource || c instanceof GeoJsonDataSource) {
-        this.viewer!.dataSources.getByName(c.name)[0].show = false;
-      }
-    }
-    layer.visible = false;
-    layer.displayed = false;
-    if (layer.remove) {
-      layer.remove();
-    }
-  }
-
-  toggleDebugTools(event) {
-    const active = event.target.checked;
-    this.debugToolsActive = active;
-    setCesiumToolbarParam(active);
-    this.dispatchEvent(
-      new CustomEvent('toggleDebugTools', { detail: { active } }),
-    );
-  }
-
-  createRenderRoot() {
-    return this;
-  }
+  private readonly renderMenuItem = (
+    icon: string,
+    title: string,
+    panel: string,
+  ) => html`
+    <ngm-menu-item
+      .icon=${icon}
+      .title=${title}
+      ?isActive=${this.activePanel === panel}
+      ?isMobile=${this.mobileView}
+      @click=${() => this.togglePanel(panel)}
+    ></ngm-menu-item>
+  `;
 }

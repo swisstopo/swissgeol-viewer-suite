@@ -413,6 +413,10 @@ export class NgmNavTools extends LitElementI18n {
     );
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     if (!this.viewer) return '';
     return html`
@@ -452,10 +456,5 @@ export class NgmNavTools extends LitElementI18n {
       </div>
       ${dragArea}
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

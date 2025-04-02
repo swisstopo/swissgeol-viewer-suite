@@ -145,6 +145,20 @@ export class NgmProjectEdit extends LitElementI18n {
     super.firstUpdated(_changedProperties);
   }
 
+  async saveViewToProject() {
+    if (!this.project) return;
+    const project = { ...this.project };
+    const view: View = {
+      id: crypto.randomUUID(),
+      title: `${i18next.t('view')} ${project.views.length + 1}`,
+      permalink: getPermalink(),
+    };
+    project.views.push(view);
+    this.project = project;
+  }
+  createRenderRoot() {
+    return this;
+  }
   render() {
     if (!this.project) return '';
     const project = this.project;
@@ -354,22 +368,6 @@ export class NgmProjectEdit extends LitElementI18n {
         </button>
       </div>
     `;
-  }
-
-  async saveViewToProject() {
-    if (!this.project) return;
-    const project = { ...this.project };
-    const view: View = {
-      id: crypto.randomUUID(),
-      title: `${i18next.t('view')} ${project.views.length + 1}`,
-      permalink: getPermalink(),
-    };
-    project.views.push(view);
-    this.project = project;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }
 

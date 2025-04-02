@@ -45,6 +45,9 @@ export class NgmProfileTool extends LitElementI18n {
     }
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     return html` <ngm-draw-section
         ?hidden=${this.hidden}
@@ -61,9 +64,5 @@ export class NgmProfileTool extends LitElementI18n {
           this.onGeometryAdded(evt.detail.newGeometries)}
       >
       </ngm-geometries-list>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

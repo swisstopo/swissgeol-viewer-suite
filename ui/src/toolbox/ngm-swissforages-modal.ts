@@ -116,6 +116,10 @@ export class NgmSwissforagesModal extends LitElementI18n {
     return this.options.swissforagesId ? 'large' : 'mini';
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     if (this.element)
       this.element[0].querySelector(
@@ -215,10 +219,5 @@ export class NgmSwissforagesModal extends LitElementI18n {
         </div>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

@@ -284,6 +284,10 @@ export class NgmGstInteraction extends LitElementI18n {
     `;
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     return html`
       <ngm-draw-section
@@ -302,10 +306,5 @@ export class NgmGstInteraction extends LitElementI18n {
           this.onGeometryAdded(evt.detail.newGeometries)}
       ></ngm-geometries-list>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

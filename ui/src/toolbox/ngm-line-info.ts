@@ -16,6 +16,9 @@ const DEFAULT_LINE_INFO: DrawInfo = {
 export class NgmLineInfo extends LitElementI18n {
   @property({ type: Object })
   accessor lineInfo: DrawInfo | undefined;
+  createRenderRoot() {
+    return this;
+  }
   render() {
     if (!this.lineInfo) this.lineInfo = DEFAULT_LINE_INFO;
     return html` <div class="ngm-geom-info-content">
@@ -36,9 +39,5 @@ export class NgmLineInfo extends LitElementI18n {
         <div class="ngm-geom-info-value">${this.lineInfo.numberOfSegments}</div>
       </div>
     </div>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

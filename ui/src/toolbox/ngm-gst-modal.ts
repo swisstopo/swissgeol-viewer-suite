@@ -38,6 +38,10 @@ export class NgmGstModal extends LitElementI18n {
     return extension.toUpperCase();
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     return html`
       <div class="ngm-gst-modal ui large modal">
@@ -58,10 +62,5 @@ export class NgmGstModal extends LitElementI18n {
         </div>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

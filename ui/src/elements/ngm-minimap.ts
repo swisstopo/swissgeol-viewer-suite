@@ -166,6 +166,10 @@ export class NgmMinimap extends LitElementI18n {
     this.moveMarker = true;
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     return html`
       <div class="ngm-minimap-container">
@@ -180,10 +184,5 @@ export class NgmMinimap extends LitElementI18n {
         ></div>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

@@ -130,6 +130,10 @@ export class NgmApp extends LitElementI18n {
   @consume({ context: BackgroundLayerService.context() })
   accessor backgroundLayerService!: BackgroundLayerService;
 
+  @provide({ context: viewerContext })
+  accessor viewer: Viewer | null = null;
+  @provide({ context: BackgroundLayerService.backgroundContext })
+  accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
   constructor() {
     super();
 
@@ -147,10 +151,7 @@ export class NgmApp extends LitElementI18n {
       this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
     });
   }
-  @provide({ context: viewerContext })
-  accessor viewer: Viewer | null = null;
-  @provide({ context: BackgroundLayerService.backgroundContext })
-  accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
+
   private sidebar: SideBar | null = null;
   private queryManager: QueryManager | undefined;
   private waitForViewLoading = false;
@@ -565,6 +566,9 @@ export class NgmApp extends LitElementI18n {
     document.addEventListener('keydown', ctrlHandler);
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     return html`
       ${this.clientConfig.env === 'prod'
@@ -707,9 +711,5 @@ export class NgmApp extends LitElementI18n {
         </div>
       </main>
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

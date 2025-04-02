@@ -39,6 +39,10 @@ export class NgmObjectInformation extends LitElementI18n {
     super.connectedCallback();
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
   render() {
     this.hidden = !this.opened;
     if (
@@ -124,10 +128,5 @@ export class NgmObjectInformation extends LitElementI18n {
     } else {
       return html``;
     }
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

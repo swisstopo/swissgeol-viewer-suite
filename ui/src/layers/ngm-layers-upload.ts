@@ -64,6 +64,9 @@ export default class LayersUpload extends LitElementI18n {
     }
   }
 
+  createRenderRoot() {
+    return this;
+  }
   render() {
     return html`
       <button
@@ -107,9 +110,5 @@ export default class LayersUpload extends LitElementI18n {
         <label>${i18next.t('dtd_clamp_to_ground')}</label>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }
