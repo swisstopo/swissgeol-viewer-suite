@@ -3,6 +3,7 @@ import { state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { Subscription, TeardownLogic } from 'rxjs';
 import { PropertyValues } from '@lit/reactive-element';
+import { ContextConsumer } from '@lit/context';
 
 export class CoreElement extends LitElement {
   @state()
@@ -43,7 +44,14 @@ export class CoreElement extends LitElement {
     /* Empty method to be implemented by child classes. */
   }
 
-  protected register(teardown: TeardownLogic): void {
-    this._subscription.add(teardown);
+  protected register(
+    teardown: TeardownLogic | ContextConsumer<any, this>,
+  ): void {
+    if (teardown instanceof ContextConsumer) {
+      teardown.hostConnected();
+      this._subscription.add(() => teardown.hostDisconnected());
+    } else {
+      this._subscription.add(teardown);
+    }
   }
 }
