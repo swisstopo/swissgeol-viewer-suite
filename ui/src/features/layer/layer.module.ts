@@ -9,3 +9,5 @@ import './layer-catalog.element';
 import './layer-options.element';
 import './layer-panel.element';
 import './layer-tabs.element';
+import './layer-catalog-category.element';
+import './layer-catalog-item.element';
