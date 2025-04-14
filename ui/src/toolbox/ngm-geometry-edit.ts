@@ -296,6 +296,10 @@ export class NgmGeometryEdit extends LitElementI18n {
     this.name = evt.target.value;
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     if (!this.editingEntity) return '';
     const type = getValueOrUndefined(this.editingEntity!.properties!.type);
@@ -445,9 +449,5 @@ export class NgmGeometryEdit extends LitElementI18n {
         </button>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

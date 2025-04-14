@@ -505,6 +505,7 @@ export class CesiumToolbar extends LitElement {
         </select>
       </div>`;
   }
+
   static readonly styles = css`
     :host {
       position: absolute;

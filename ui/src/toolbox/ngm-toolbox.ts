@@ -331,6 +331,10 @@ export class NgmToolbox extends LitElementI18n {
     this.dispatchEvent(new CustomEvent('close'));
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     return html`
       <div class="ngm-panel-header">
@@ -397,9 +401,5 @@ export class NgmToolbox extends LitElementI18n {
       ></ngm-profile-tool>
       ${this.activeTool === 'measure' ? html`<ngm-measure></ngm-measure>` : ''}
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

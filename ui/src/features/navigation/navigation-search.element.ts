@@ -53,6 +53,7 @@ export class NavigationSearch extends LitElementI18n {
     this.searchAdditionalItems = this.searchAdditionalItems.bind(this);
     this.toggleActive = this.toggleActive.bind(this);
   }
+
   private accessor searchRef = createRef<HTMLElement>();
   private accessor inputRef = createRef<HTMLInputElement>();
   private accessor resultsRef = createRef<HTMLUListElement>();
@@ -117,18 +118,6 @@ export class NavigationSearch extends LitElementI18n {
     return (
       layerConfig && (layerConfig.type === 'wmts' || layerConfig.type === 'wms')
     );
-  }
-
-  /**
-   * Render a {@link SearchItem} as a search result.
-   * @param item The item to render.
-   * @param label The item's display text.
-   * @private
-   */
-  private renderItem(item: SearchItem, label: string): string {
-    const categorizedItem = categorizeSearchItem(item);
-    const icon = getIconForCategory(categorizedItem.category);
-    return `<img src='/images/${icon}.svg' alt=""/><b>${label}</b>`;
   }
 
   private searchAdditionalItems(query: string): Promise<AdditionalItem[]> {
@@ -395,6 +384,18 @@ export class NavigationSearch extends LitElementI18n {
     <ngm-core-icon icon="search" @click="${this.toggleActive}"></ngm-core-icon>
     <ngm-core-icon icon="close" @click="${this.clear}"></ngm-core-icon>
   `;
+
+  /**
+   * Render a {@link SearchItem} as a search result.
+   * @param item The item to render.
+   * @param label The item's display text.
+   * @private
+   */
+  private renderItem(item: SearchItem, label: string): string {
+    const categorizedItem = categorizeSearchItem(item);
+    const icon = getIconForCategory(categorizedItem.category);
+    return `<img src='/images/${icon}.svg' alt=""/><b>${label}</b>`;
+  }
 
   static readonly styles = css`
     :host {

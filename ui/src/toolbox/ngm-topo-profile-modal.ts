@@ -225,6 +225,11 @@ export class NgmTopoProfileModal extends LitElementI18n {
     });
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
+
   render() {
     return this.hidden
       ? html``
@@ -263,10 +268,5 @@ export class NgmTopoProfileModal extends LitElementI18n {
             </div>
           </div>
         `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

@@ -11,6 +11,10 @@ export class NgmSlowLoading extends LitElementI18n {
     });
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     return html`
       <div class="ui inverted segment">
@@ -40,10 +44,6 @@ export class NgmSlowLoading extends LitElementI18n {
         </div>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }
 

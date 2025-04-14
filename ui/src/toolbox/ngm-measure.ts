@@ -65,6 +65,10 @@ export class NgmMeasure extends LitElementI18n {
     super.updated(changedProperties);
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     return html` <div>
       <div class="ngm-action-list-item ${classMap({ active: this.active })}">
@@ -131,9 +135,5 @@ export class NgmMeasure extends LitElementI18n {
         `,
       )}
     </div>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

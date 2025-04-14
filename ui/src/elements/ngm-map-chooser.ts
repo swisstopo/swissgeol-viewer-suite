@@ -26,6 +26,7 @@ export class NgmMapChooser extends LitElement {
     // no shadow dom
     return this;
   }
+
   readonly render = () => html`
     <div class="ngm-maps-container" ?hidden=${!this.open}>
       <ngm-background-layer-select></ngm-background-layer-select>

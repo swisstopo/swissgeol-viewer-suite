@@ -39,53 +39,6 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
     this.hidden = false;
   }
 
-  render() {
-    if (!this.config) return;
-    return html`
-      <div class="ngm-floating-window-header drag-handle">
-        ${i18next.t('vox_filter_filtering_on')} ${i18next.t(this.config.label)}
-        <div class="ngm-close-icon" @click=${() => this.close()}></div>
-      </div>
-      <div class="content-container">
-        <form class="ui form">
-          <div class="filter-label">${this.config.voxelColors!.label}</div>
-          <div class="two fields">
-            <div class="field">
-              <label>${i18next.t('vox_filter_min')}</label>
-              <input
-                required
-                class="min-conductivity"
-                type="number"
-                value="${this.minValue}"
-                min="${this.minInitialValue}"
-                max="${this.maxValue}"
-                @input="${(evt) => this.minValueChanged(evt)}"
-              />
-            </div>
-            <div class="field">
-              <label>${i18next.t('vox_filter_max')}</label>
-              <input
-                required
-                class="max-conductivity"
-                type="number"
-                value="${this.maxValue}"
-                min="${this.minValue}"
-                max="${this.maxInitialValue}"
-                @input="${(evt) => this.maxValueChanged(evt)}"
-              />
-            </div>
-          </div>
-        </form>
-        <div>
-          <button class="ui button" @click="${() => this.applyFilter()}">
-            ${i18next.t('vox_filter_apply')}
-          </button>
-        </div>
-      </div>
-      ${dragArea}
-    `;
-  }
-
   minValueChanged(evt) {
     this.minValue = parseFloat(evt.target.value);
     this.maxValueInput.min = this.minValue.toString();
@@ -134,5 +87,52 @@ export class NgmVoxelSimpleFilter extends LitElementI18n {
   createRenderRoot() {
     // no shadow dom
     return this;
+  }
+
+  render() {
+    if (!this.config) return;
+    return html`
+      <div class="ngm-floating-window-header drag-handle">
+        ${i18next.t('vox_filter_filtering_on')} ${i18next.t(this.config.label)}
+        <div class="ngm-close-icon" @click=${() => this.close()}></div>
+      </div>
+      <div class="content-container">
+        <form class="ui form">
+          <div class="filter-label">${this.config.voxelColors!.label}</div>
+          <div class="two fields">
+            <div class="field">
+              <label>${i18next.t('vox_filter_min')}</label>
+              <input
+                required
+                class="min-conductivity"
+                type="number"
+                value="${this.minValue}"
+                min="${this.minInitialValue}"
+                max="${this.maxValue}"
+                @input="${(evt) => this.minValueChanged(evt)}"
+              />
+            </div>
+            <div class="field">
+              <label>${i18next.t('vox_filter_max')}</label>
+              <input
+                required
+                class="max-conductivity"
+                type="number"
+                value="${this.maxValue}"
+                min="${this.minValue}"
+                max="${this.maxInitialValue}"
+                @input="${(evt) => this.maxValueChanged(evt)}"
+              />
+            </div>
+          </div>
+        </form>
+        <div>
+          <button class="ui button" @click="${() => this.applyFilter()}">
+            ${i18next.t('vox_filter_apply')}
+          </button>
+        </div>
+      </div>
+      ${dragArea}
+    `;
   }
 }

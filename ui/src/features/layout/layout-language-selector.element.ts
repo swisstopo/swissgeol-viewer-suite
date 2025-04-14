@@ -57,6 +57,11 @@ export class LayoutLanguageSelector extends LitElementI18n {
     ${unsafeCSS(fomanticTransitionCss)}
     ${unsafeCSS(fomanticDropdownCss)}
 
+    :host,
+    :host * {
+      box-sizing: border-box;
+    }
+
     .container {
       display: flex;
       justify-content: space-between;
@@ -64,7 +69,7 @@ export class LayoutLanguageSelector extends LitElementI18n {
       gap: 6px;
       width: 69px;
 
-      padding: 8px 0;
+      padding: 6px 0;
       border-radius: 4px;
       color: var(--color-primary);
     }

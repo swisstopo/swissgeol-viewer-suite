@@ -88,6 +88,7 @@ export class LayerUpload extends LitElementI18n {
     await this.viewer.zoomTo(dataSource);
     this.requestUpdate();
   }
+
   private emitIonModalOpening(): void {
     this.dispatchEvent(
       new CustomEvent('openIonModal', {

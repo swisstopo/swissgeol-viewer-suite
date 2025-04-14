@@ -4,7 +4,6 @@ import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-object-information';
 import './elements/ngm-auth';
-import './elements/ngm-cursor-information';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
 import './toolbox/ngm-topo-profile-modal';
@@ -25,7 +24,7 @@ import 'src/features/background/background.module';
 import 'src/features/core/core.module';
 import 'src/features/navigation/navigation.module';
 
-import { COGNITO_VARIABLES, DEFAULT_VIEW } from './constants';
+import { DEFAULT_VIEW } from './constants';
 
 import { addMantelEllipsoid, setupViewer } from './viewer';
 
@@ -59,7 +58,7 @@ import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type { SideBar } from './elements/ngm-side-bar';
 import { LayerConfig } from './layertree';
-import { clientConfigContext } from './context';
+import { clientConfigContext, viewerContext } from './context';
 import { consume, provide } from '@lit/context';
 import { ClientConfig } from './api/client-config';
 import { CoreModal } from 'src/features/core';
@@ -125,18 +124,16 @@ export class NgmApp extends LitElementI18n {
   accessor voxelSimpleFilterElement;
   @query('ngm-wmts-date-picker')
   accessor wmtsDatePickerElement;
-  private viewer: Viewer | undefined;
-  private sidebar: SideBar | null = null;
-  private queryManager: QueryManager | undefined;
-  private waitForViewLoading = false;
-  private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
-  private disclaimer: CoreModal | null = null;
 
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
-
   @consume({ context: BackgroundLayerService.context() })
   accessor backgroundLayerService!: BackgroundLayerService;
+
+  @provide({ context: viewerContext })
+  accessor viewer: Viewer | null = null;
+  @provide({ context: BackgroundLayerService.backgroundContext })
+  accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
 
   constructor() {
     super();
@@ -155,9 +152,12 @@ export class NgmApp extends LitElementI18n {
       this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
     });
   }
-  @provide({ context: BackgroundLayerService.backgroundContext })
-  accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
 
+  private sidebar: SideBar | null = null;
+  private queryManager: QueryManager | undefined;
+  private waitForViewLoading = false;
+  private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
+  private disclaimer: CoreModal | null = null;
   private viewerRenderTimeout: number | null = null;
 
   private openDisclaimer(): void {
@@ -567,6 +567,10 @@ export class NgmApp extends LitElementI18n {
     document.addEventListener('keydown', ctrlHandler);
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     return html`
       ${this.clientConfig.env === 'prod'
@@ -591,19 +595,7 @@ export class NgmApp extends LitElementI18n {
             .sidebar="${this.sidebar}"
           ></ngm-navigation-search>
         </div>
-        <div class="ngm-header-suffix">
-          <ngm-cursor-information
-            class="hidden-mobile"
-            .viewer="${this.viewer}"
-          ></ngm-cursor-information>
-          <ngm-layout-version-tag></ngm-layout-version-tag>
-          <ngm-layout-language-selector></ngm-layout-language-selector>
-          <ngm-auth
-            class="ngm-user"
-            endpoint="https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize"
-            clientId=${COGNITO_VARIABLES.clientId}
-          ></ngm-auth>
-        </div>
+        <ngm-layout-header-actions></ngm-layout-header-actions>
       </header>
       <main>
         <div
@@ -721,9 +713,5 @@ export class NgmApp extends LitElementI18n {
         </div>
       </main>
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

@@ -53,6 +53,139 @@ export class NgmProjectTopicOverview extends LitElementI18n {
     super.firstUpdated(_changedProperties);
   }
 
+  contextMenu() {
+    return html`
+      <div class="menu">
+        <div class="item" @click=${() => this.copyLink()}>
+          ${i18next.t('dashboard_share_topic')}
+        </div>
+        <div
+          class="item ${this.apiClient.token ? '' : 'disabled'}"
+          @click=${() => this.duplicateToProject()}
+        >
+          ${i18next.t('duplicate_to_project')}
+        </div>
+        <a
+          class="item"
+          target="_blank"
+          href="mailto:?body=${encodeURIComponent(this.getLink() ?? '')}"
+        >
+          ${i18next.t('dashboard_share_topic_email')}
+        </a>
+        ${isProject(this.topicOrProject) &&
+        this.topicOrProject.owner.email !== this.userEmail
+          ? ''
+          : html` <div
+              class="item"
+              ?hidden=${this.activeTab === 'topics'}
+              @click=${() => (this.deleteWarningModal.show = true)}
+            >
+              ${i18next.t('delete')}
+            </div>`}
+      </div>
+    `;
+  }
+
+  async duplicateToProject() {
+    const createProject = this.toCreateProject(this.topicOrProject!);
+    const response = await this.apiClient.duplicateProject(createProject);
+    const id = await response.json();
+    const project = await this.apiClient.getProject(id);
+    this.dispatchEvent(
+      new CustomEvent('onProjectDuplicated', { detail: { project } }),
+    );
+  }
+
+  async deleteProject() {
+    await this.apiClient.deleteProject(this.topicOrProject!.id);
+  }
+
+  async copyLink(viewId?: string) {
+    try {
+      const link = this.getLink(viewId);
+      if (link) await navigator.clipboard.writeText(link);
+      showBannerSuccess(this.toastPlaceholder!, i18next.t('shortlink_copied'));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  getLink(viewId?: string): string | undefined {
+    if (!this.topicOrProject) return;
+    let link = `${location.protocol}//${location.host}${location.pathname}?`;
+    const idKey = isProject(this.topicOrProject) ? 'projectId' : 'topicId';
+    link = `${link}${idKey}=${this.topicOrProject.id}`;
+    if (viewId) link = `${link}&viewId=${viewId}`;
+    return link;
+  }
+
+  toCreateProject(topicOrProject: Topic | Project): CreateProject {
+    const title = isProject(topicOrProject)
+      ? `${i18next.t('tbx_copy_of_label')} ${topicOrProject.title}`
+      : translated(topicOrProject.title);
+    let description: string | undefined;
+    if (isProject(topicOrProject)) {
+      description = topicOrProject.description;
+    } else if (topicOrProject.description) {
+      description = translated(topicOrProject.description);
+    }
+    return {
+      title,
+      description,
+      color: isProject(topicOrProject)
+        ? topicOrProject.color
+        : DEFAULT_PROJECT_COLOR,
+      geometries: isProject(topicOrProject) ? topicOrProject.geometries : [], // not a copy for topic
+      assets: isProject(topicOrProject) ? topicOrProject.assets : [], // not a copy for topic
+      views: topicOrProject.views.map((view) => ({
+        id: crypto.randomUUID(),
+        title: translated(view.title),
+        permalink: view.permalink,
+      })),
+      owner: {
+        email: this.userEmail,
+        name: this.userEmail.split('@')[0],
+        surname: '',
+      },
+      editors: [],
+      viewers: [],
+    };
+  }
+
+  async saveViewToProject() {
+    const project: Project | undefined = isProject(this.topicOrProject)
+      ? this.topicOrProject
+      : undefined;
+    const editorEmails = project?.editors.map((e) => e.email) || [];
+    if (
+      !project ||
+      ![project.owner.email, ...editorEmails].includes(this.userEmail)
+    )
+      return;
+    const view: View = {
+      id: crypto.randomUUID(),
+      title: `${i18next.t('view')} ${project?.views.length + 1}`,
+      permalink: getPermalink(),
+    };
+    if (typeof this.selectedViewIndx !== 'number') {
+      project.views.push(view);
+      const isSuccess = await this.apiClient.updateProject(project);
+      if (isSuccess) {
+        DashboardStore.setViewIndex(project?.views.length - 1);
+      }
+    } else {
+      project.views.splice(this.selectedViewIndx + 1, 0, view);
+      const isSuccess = await this.apiClient.updateProject(project);
+      if (isSuccess) {
+        DashboardStore.setViewIndex(this.selectedViewIndx + 1);
+      }
+    }
+  }
+
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     if (!this.topicOrProject) return '';
     const project = isProject(this.topicOrProject)
@@ -196,138 +329,5 @@ export class NgmProjectTopicOverview extends LitElementI18n {
         ${i18next.t('dashboard_back_to_topics')}
       </div>
     `;
-  }
-
-  contextMenu() {
-    return html`
-      <div class="menu">
-        <div class="item" @click=${() => this.copyLink()}>
-          ${i18next.t('dashboard_share_topic')}
-        </div>
-        <div
-          class="item ${this.apiClient.token ? '' : 'disabled'}"
-          @click=${() => this.duplicateToProject()}
-        >
-          ${i18next.t('duplicate_to_project')}
-        </div>
-        <a
-          class="item"
-          target="_blank"
-          href="mailto:?body=${encodeURIComponent(this.getLink() ?? '')}"
-        >
-          ${i18next.t('dashboard_share_topic_email')}
-        </a>
-        ${isProject(this.topicOrProject) &&
-        this.topicOrProject.owner.email !== this.userEmail
-          ? ''
-          : html` <div
-              class="item"
-              ?hidden=${this.activeTab === 'topics'}
-              @click=${() => (this.deleteWarningModal.show = true)}
-            >
-              ${i18next.t('delete')}
-            </div>`}
-      </div>
-    `;
-  }
-
-  async duplicateToProject() {
-    const createProject = this.toCreateProject(this.topicOrProject!);
-    const response = await this.apiClient.duplicateProject(createProject);
-    const id = await response.json();
-    const project = await this.apiClient.getProject(id);
-    this.dispatchEvent(
-      new CustomEvent('onProjectDuplicated', { detail: { project } }),
-    );
-  }
-
-  async deleteProject() {
-    await this.apiClient.deleteProject(this.topicOrProject!.id);
-  }
-
-  async copyLink(viewId?: string) {
-    try {
-      const link = this.getLink(viewId);
-      if (link) await navigator.clipboard.writeText(link);
-      showBannerSuccess(this.toastPlaceholder!, i18next.t('shortlink_copied'));
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  getLink(viewId?: string): string | undefined {
-    if (!this.topicOrProject) return;
-    let link = `${location.protocol}//${location.host}${location.pathname}?`;
-    const idKey = isProject(this.topicOrProject) ? 'projectId' : 'topicId';
-    link = `${link}${idKey}=${this.topicOrProject.id}`;
-    if (viewId) link = `${link}&viewId=${viewId}`;
-    return link;
-  }
-
-  toCreateProject(topicOrProject: Topic | Project): CreateProject {
-    const title = isProject(topicOrProject)
-      ? `${i18next.t('tbx_copy_of_label')} ${topicOrProject.title}`
-      : translated(topicOrProject.title);
-    let description: string | undefined;
-    if (isProject(topicOrProject)) {
-      description = topicOrProject.description;
-    } else if (topicOrProject.description) {
-      description = translated(topicOrProject.description);
-    }
-    return {
-      title,
-      description,
-      color: isProject(topicOrProject)
-        ? topicOrProject.color
-        : DEFAULT_PROJECT_COLOR,
-      geometries: isProject(topicOrProject) ? topicOrProject.geometries : [], // not a copy for topic
-      assets: isProject(topicOrProject) ? topicOrProject.assets : [], // not a copy for topic
-      views: topicOrProject.views.map((view) => ({
-        id: crypto.randomUUID(),
-        title: translated(view.title),
-        permalink: view.permalink,
-      })),
-      owner: {
-        email: this.userEmail,
-        name: this.userEmail.split('@')[0],
-        surname: '',
-      },
-      editors: [],
-      viewers: [],
-    };
-  }
-
-  async saveViewToProject() {
-    const project: Project | undefined = isProject(this.topicOrProject)
-      ? this.topicOrProject
-      : undefined;
-    const editorEmails = project?.editors.map((e) => e.email) || [];
-    if (
-      !project ||
-      ![project.owner.email, ...editorEmails].includes(this.userEmail)
-    )
-      return;
-    const view: View = {
-      id: crypto.randomUUID(),
-      title: `${i18next.t('view')} ${project?.views.length + 1}`,
-      permalink: getPermalink(),
-    };
-    if (typeof this.selectedViewIndx !== 'number') {
-      project.views.push(view);
-      const isSuccess = await this.apiClient.updateProject(project);
-      if (isSuccess) {
-        DashboardStore.setViewIndex(project?.views.length - 1);
-      }
-    } else {
-      project.views.splice(this.selectedViewIndx + 1, 0, view);
-      const isSuccess = await this.apiClient.updateProject(project);
-      if (isSuccess) {
-        DashboardStore.setViewIndex(this.selectedViewIndx + 1);
-      }
-    }
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

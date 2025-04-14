@@ -18,7 +18,7 @@ header {
 
 @media (min-width: 700px) {
   header {
-    justify-content: flex-start;
+    justify-content: space-between;
   }
 }
 
@@ -77,23 +77,5 @@ header > a .logo-text {
 @media (max-width: 1193px) {
   .ngm-map-icon {
     margin-right: 10px;
-  }
-}
-
-header .ngm-header-suffix {
-  width: var(--suffix-width);
-  max-width: var(--suffix-width);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-@media (min-width: 700px) {
-  header .ngm-header-suffix {
-    /* Push the suffix to the end of header. */
-    margin-left: auto;
-
-    width: unset;
-    max-width: unset;
   }
 }

@@ -67,6 +67,10 @@ export class NgmAddMemberForm extends LitElementI18n {
     super.updated(changedProperties);
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     return html` <div class="ngm-member-add-form">
       <div
@@ -140,9 +144,5 @@ export class NgmAddMemberForm extends LitElementI18n {
         </button>
       </div>
     </div>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

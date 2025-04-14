@@ -253,6 +253,10 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
         : ''}`;
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     const geometries = this.selectedFilter
       ? this.geometries.filter((geom) => geom.type === this.selectedFilter)
@@ -365,9 +369,5 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
         }}"
       >
       </ngm-confirmation-modal>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

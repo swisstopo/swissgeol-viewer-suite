@@ -16,6 +16,7 @@ class NgmFullScreenView extends LitElementI18n {
         .forEach((n) => (n.hidden = this.fullScreenActive));
     };
   }
+
   static get properties() {
     return {
       fullScreenActive: { type: Boolean },
@@ -38,6 +39,11 @@ class NgmFullScreenView extends LitElementI18n {
     }
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
+
   render() {
     return html`
       <button
@@ -50,11 +56,6 @@ class NgmFullScreenView extends LitElementI18n {
         <i class="${this.fullScreenActive ? 'compress' : 'expand'} icon"></i>
       </button>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }
 

@@ -36,6 +36,7 @@ export default class MeasureTool {
   private measurePositions: Cartesian3[] = [];
   private highlightEntity: Entity | undefined;
   private points: Entity[] = [];
+
   constructor(viewer: Viewer, options?: Partial<MeasureOptions>) {
     this.viewer = viewer;
     this.measureOptions = {
@@ -102,6 +103,7 @@ export default class MeasureTool {
   get active() {
     return this.measureToolActive;
   }
+
   set active(value: boolean) {
     this.measureToolActive = value;
     if (!value) {
@@ -191,6 +193,7 @@ export default class MeasureTool {
     this.draw.clear();
     this.addMeasureGeometry(info.positions);
   }
+
   clearMeasureGeometry() {
     if (this.draw && this.draw.active) {
       this.draw.active = false;

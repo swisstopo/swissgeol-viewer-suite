@@ -132,6 +132,11 @@ export class NgmPointEdit extends LitElementI18n {
     this.viewer!.scene.requestRender();
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
+
   render() {
     if (this.entity) {
       this.updateInputValues();
@@ -236,10 +241,5 @@ export class NgmPointEdit extends LitElementI18n {
         </div>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

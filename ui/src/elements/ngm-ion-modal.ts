@@ -29,6 +29,7 @@ export class NgmIonModal extends LitElementI18n {
     });
     super.connectedCallback();
   }
+
   async onLoadAssets(removeAssets = false) {
     if (!this.token) return;
     this.confirmationToast = undefined;
@@ -76,6 +77,11 @@ export class NgmIonModal extends LitElementI18n {
       this.confirmationToast = undefined;
     }
     this.dispatchEvent(new CustomEvent('close'));
+  }
+
+  createRenderRoot() {
+    // no shadow dom
+    return this;
   }
 
   render() {
@@ -151,10 +157,5 @@ export class NgmIonModal extends LitElementI18n {
       </div>
       ${dragArea}
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

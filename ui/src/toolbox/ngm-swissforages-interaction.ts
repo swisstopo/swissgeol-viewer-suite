@@ -146,6 +146,11 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
     entity.properties.depth = Number(event.target.value);
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
+
   render() {
     if (!this.item || this.item.type !== 'point') return '';
     return html`
@@ -193,10 +198,5 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
         </div>
       </div>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

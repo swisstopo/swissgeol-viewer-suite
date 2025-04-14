@@ -362,6 +362,11 @@ export class NgmCamConfiguration extends LitElementI18n {
     }
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
+
   render() {
     return html`
       <div class="ngm-floating-window-header drag-handle">
@@ -427,10 +432,5 @@ export class NgmCamConfiguration extends LitElementI18n {
       </div>
       ${dragArea}
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

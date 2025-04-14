@@ -78,6 +78,10 @@ export default class NgmGeometriesList extends LitElementI18n {
     super.updated(changedProperties);
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     const projectMode = DashboardStore.projectMode.value;
     const isProjectEditMode =
@@ -110,9 +114,5 @@ export default class NgmGeometriesList extends LitElementI18n {
         .editingEnabled=${this.editingEnabled}
       >
       </ngm-geometries-simple-list>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

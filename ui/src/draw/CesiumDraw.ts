@@ -150,70 +150,6 @@ export class CesiumDraw extends EventTarget {
     };
   }
 
-  renderSceneIfTranslucent() {
-    // because calling render decreases performance, only call it when needed.
-    // see https://cesium.com/docs/cesiumjs-ref-doc/Scene.html#pickTranslucentDepth
-    if (this.viewer_.scene.globe.translucency.enabled) {
-      this.viewer_.scene.render();
-    }
-  }
-
-  /**
-   *
-   */
-  get active() {
-    return this.eventHandler_ !== undefined;
-  }
-
-  /**
-   *
-   */
-  set active(value) {
-    // todo check for type
-    if (value && this.type) {
-      if (!this.eventHandler_) {
-        this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
-        if (this.entityForEdit) {
-          this.activateEditing();
-        } else {
-          this.eventHandler_.setInputAction(
-            this.onLeftClick.bind(this),
-            ScreenSpaceEventType.LEFT_CLICK,
-          );
-          this.eventHandler_.setInputAction(
-            this.onDoubleClick_.bind(this),
-            ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
-          );
-        }
-        this.eventHandler_.setInputAction(
-          this.onMouseMove_.bind(this),
-          ScreenSpaceEventType.MOUSE_MOVE,
-        );
-      }
-      this.dispatchEvent(
-        new CustomEvent<DrawInfo>('drawinfo', {
-          detail: {
-            length: 0,
-            numberOfSegments: 0,
-            segments: [],
-            type: this.type,
-            drawInProgress: true,
-          },
-        }),
-      );
-    } else {
-      if (this.eventHandler_) {
-        this.eventHandler_.destroy();
-      }
-      this.eventHandler_ = undefined;
-    }
-    this.dispatchEvent(
-      new CustomEvent('statechanged', {
-        detail: { active: value && this.type },
-      }),
-    );
-  }
-
   activateEditing() {
     if (!this.eventHandler_ || !this.entityForEdit) return;
     this.eventHandler_.setInputAction(
@@ -1150,5 +1086,63 @@ export class CesiumDraw extends EventTarget {
         heightDiff: height,
       };
     });
+  }
+
+  get active() {
+    return this.eventHandler_ !== undefined;
+  }
+
+  set active(value) {
+    // todo check for type
+    if (value && this.type) {
+      if (!this.eventHandler_) {
+        this.eventHandler_ = new ScreenSpaceEventHandler(this.viewer_.canvas);
+        if (this.entityForEdit) {
+          this.activateEditing();
+        } else {
+          this.eventHandler_.setInputAction(
+            this.onLeftClick.bind(this),
+            ScreenSpaceEventType.LEFT_CLICK,
+          );
+          this.eventHandler_.setInputAction(
+            this.onDoubleClick_.bind(this),
+            ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
+          );
+        }
+        this.eventHandler_.setInputAction(
+          this.onMouseMove_.bind(this),
+          ScreenSpaceEventType.MOUSE_MOVE,
+        );
+      }
+      this.dispatchEvent(
+        new CustomEvent<DrawInfo>('drawinfo', {
+          detail: {
+            length: 0,
+            numberOfSegments: 0,
+            segments: [],
+            type: this.type,
+            drawInProgress: true,
+          },
+        }),
+      );
+    } else {
+      if (this.eventHandler_) {
+        this.eventHandler_.destroy();
+      }
+      this.eventHandler_ = undefined;
+    }
+    this.dispatchEvent(
+      new CustomEvent('statechanged', {
+        detail: { active: value && this.type },
+      }),
+    );
+  }
+
+  renderSceneIfTranslucent() {
+    // because calling render decreases performance, only call it when needed.
+    // see https://cesium.com/docs/cesiumjs-ref-doc/Scene.html#pickTranslucentDepth
+    if (this.viewer_.scene.globe.translucency.enabled) {
+      this.viewer_.scene.render();
+    }
   }
 }

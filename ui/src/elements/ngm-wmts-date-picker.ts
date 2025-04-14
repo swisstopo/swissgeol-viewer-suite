@@ -52,6 +52,10 @@ export class NgmWmtsDatePicker extends LitElementI18n {
     this.config = undefined;
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     if (!this.dates || !this.config?.setVisibility) return '';
     return html` <div class="ngm-floating-window-header drag-handle">
@@ -79,9 +83,5 @@ export class NgmWmtsDatePicker extends LitElementI18n {
         )}
       </div>
       ${dragArea}`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

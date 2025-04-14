@@ -89,6 +89,10 @@ export class NgmDrawSection extends LitElementI18n {
     ToolboxStore.nextGeometryAction({ file: file, action: 'upload' });
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     const isDisabled = !!(this.draw!.active && this.draw!.entityForEdit);
     return html`
@@ -140,9 +144,5 @@ export class NgmDrawSection extends LitElementI18n {
         @change=${(evt) => this.uploadFile(evt)}
       />
     `;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

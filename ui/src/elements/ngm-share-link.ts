@@ -68,6 +68,11 @@ export class NgmShareLink extends LitElementI18n {
     }
   }
 
+  createRenderRoot() {
+    // no shadow dom
+    return this;
+  }
+
   render() {
     return html`
       <div class="ngm-toast-placeholder"></div>
@@ -103,10 +108,5 @@ export class NgmShareLink extends LitElementI18n {
         ${i18next.t('shortlink_mailto_btn_label')}
       </a>
     `;
-  }
-
-  createRenderRoot() {
-    // no shadow dom
-    return this;
   }
 }

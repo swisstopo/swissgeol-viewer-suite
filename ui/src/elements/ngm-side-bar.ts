@@ -179,155 +179,6 @@ export class SideBar extends LitElementI18n {
       this.activePanel = 'tools';
   }
 
-  private readonly renderMenuItem = (
-    icon: string,
-    title: string,
-    panel: string,
-  ) => html`
-    <ngm-menu-item
-      .icon=${icon}
-      .title=${title}
-      ?isActive=${this.activePanel === panel}
-      ?isMobile=${this.mobileView}
-      @click=${() => this.togglePanel(panel)}
-    ></ngm-menu-item>
-  `;
-
-  render() {
-    if (!this.queryManager) {
-      return '';
-    }
-
-    this.queryManager.activeLayers = this.activeLayers.filter(
-      (config) => config.visible && !config.noQuery,
-    );
-
-    const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
-    const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
-    const projectsBtn = this.renderMenuItem(
-      'projects',
-      'menu_projects',
-      'dashboard',
-    );
-    const shareBtn = this.renderMenuItem('share', 'menu_share', 'share');
-    const settingsBtn = this.renderMenuItem(
-      'config',
-      'menu_settings',
-      'settings',
-    );
-    const mobileExpandBtn = html` <ngm-menu-item
-      icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
-      @click=${() => (this.mobileShowAll = !this.mobileShowAll)}
-    ></ngm-menu-item>`;
-
-    return html`
-      <div
-        .hidden=${!this.mobileView || !this.mobileShowAll}
-        class="ngm-menu-mobile"
-      >
-        ${shareBtn} ${settingsBtn}
-        <!-- required for correct positioning -->
-        <div></div>
-        <div></div>
-      </div>
-      <div class="ngm-menu">
-        <div class="ngm-menu-top">
-          ${layerBtn} ${toolsBtn} ${!this.mobileView ? shareBtn : ''}
-          ${projectsBtn} ${this.mobileView ? mobileExpandBtn : ''}
-        </div>
-        <div ?hidden="${this.mobileView}" class="ngm-menu-top">
-          ${settingsBtn}
-        </div>
-      </div>
-      <ngm-dashboard
-        class="ngm-side-bar-panel ngm-large-panel"
-        ?hidden=${this.activePanel !== 'dashboard'}
-        @close=${() => (this.activePanel = null)}
-        @layerclick=${(e: LayerEvent) =>
-          this.onCatalogLayerClicked(e.detail.layer)}
-      ></ngm-dashboard>
-      <ngm-layer-panel
-        ?hidden="${this.activePanel !== 'data'}"
-        .layers="${this.catalogLayers}"
-        .displayLayers="${this.activeLayers}"
-        @close="${() => (this.activePanel = null)}"
-        @layer-click=${(e: LayerEvent) =>
-          this.onCatalogLayerClicked(e.detail.layer)}
-        @display-layers-update="${this.handleDisplayLayersUpdate}"
-        @display-layer-update="${this.handleDisplayLayerUpdate}"
-        @display-layer-removal="${this.handleDisplayLayerRemoval}"
-      ></ngm-layer-panel>
-      <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
-        <ngm-tools
-          .toolsHidden=${this.activePanel !== 'tools'}
-          @open=${() => (this.activePanel = 'tools')}
-          @close=${() => (this.activePanel = null)}
-        ></ngm-tools>
-      </div>
-      <div
-        .hidden=${this.activePanel !== 'share'}
-        class="ngm-side-bar-panel ngm-share-panel"
-      >
-        <div class="ngm-panel-header">
-          ${i18next.t('lsb_share')}
-          <div
-            class="ngm-close-icon"
-            @click=${() => (this.activePanel = null)}
-          ></div>
-        </div>
-        ${this.activePanel !== 'share'
-          ? ''
-          : html` <ngm-share-link></ngm-share-link>`}
-      </div>
-      <div
-        .hidden=${this.activePanel !== 'settings'}
-        class="ngm-side-bar-panel"
-      >
-        <div class="ngm-panel-header">
-          ${i18next.t('lsb_settings')}
-          <div
-            class="ngm-close-icon"
-            @click=${() => (this.activePanel = null)}
-          ></div>
-        </div>
-        <div class="toolbar-settings">
-          <div class="inner-toolbar-settings">
-            <label>${i18next.t('lsb_debug_tools')}</label>
-            <div
-              class="ngm-checkbox ngm-debug-tools-toggle ${classMap({
-                active: this.debugToolsActive,
-              })}"
-              @click=${() =>
-                (<HTMLInputElement>(
-                  this.querySelector('.ngm-debug-tools-toggle > input')
-                )).click()}
-            >
-              <input
-                type="checkbox"
-                ?checked=${this.debugToolsActive}
-                @change="${this.toggleDebugTools}"
-              />
-              <span class="ngm-checkbox-icon"></span>
-              <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
-            </div>
-            <a
-              class="contact-mailto-link"
-              target="_blank"
-              href="mailto:swissgeol@swisstopo.ch"
-              >${i18next.t('contact_mailto_text')}</a
-            >
-            <a
-              class="disclaimer-link"
-              target="_blank"
-              href="${i18next.t('disclaimer_href')}"
-              >${i18next.t('disclaimer_text')}</a
-            >
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
   async togglePanel(panelName, showHeader = true) {
     if (DashboardStore.projectMode.value === 'edit') {
       DashboardStore.showSaveOrCancelWarning(true);
@@ -755,4 +606,153 @@ export class SideBar extends LitElementI18n {
   createRenderRoot() {
     return this;
   }
+
+  render() {
+    if (!this.queryManager) {
+      return '';
+    }
+
+    this.queryManager.activeLayers = this.activeLayers.filter(
+      (config) => config.visible && !config.noQuery,
+    );
+
+    const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
+    const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
+    const projectsBtn = this.renderMenuItem(
+      'projects',
+      'menu_projects',
+      'dashboard',
+    );
+    const shareBtn = this.renderMenuItem('share', 'menu_share', 'share');
+    const settingsBtn = this.renderMenuItem(
+      'config',
+      'menu_settings',
+      'settings',
+    );
+    const mobileExpandBtn = html` <ngm-menu-item
+      icon="${this.mobileShowAll ? 'viewLess' : 'viewAll'}"
+      @click=${() => (this.mobileShowAll = !this.mobileShowAll)}
+    ></ngm-menu-item>`;
+
+    return html`
+      <div
+        .hidden=${!this.mobileView || !this.mobileShowAll}
+        class="ngm-menu-mobile"
+      >
+        ${shareBtn} ${settingsBtn}
+        <!-- required for correct positioning -->
+        <div></div>
+        <div></div>
+      </div>
+      <div class="ngm-menu">
+        <div class="ngm-menu-top">
+          ${layerBtn} ${toolsBtn} ${!this.mobileView ? shareBtn : ''}
+          ${projectsBtn} ${this.mobileView ? mobileExpandBtn : ''}
+        </div>
+        <div ?hidden="${this.mobileView}" class="ngm-menu-top">
+          ${settingsBtn}
+        </div>
+      </div>
+      <ngm-dashboard
+        class="ngm-side-bar-panel ngm-large-panel"
+        ?hidden=${this.activePanel !== 'dashboard'}
+        @close=${() => (this.activePanel = null)}
+        @layerclick=${(e: LayerEvent) =>
+          this.onCatalogLayerClicked(e.detail.layer)}
+      ></ngm-dashboard>
+      <ngm-layer-panel
+        ?hidden="${this.activePanel !== 'data'}"
+        .layers="${this.catalogLayers}"
+        .displayLayers="${this.activeLayers}"
+        @close="${() => (this.activePanel = null)}"
+        @layer-click=${(e: LayerEvent) =>
+          this.onCatalogLayerClicked(e.detail.layer)}
+        @display-layers-update="${this.handleDisplayLayersUpdate}"
+        @display-layer-update="${this.handleDisplayLayerUpdate}"
+        @display-layer-removal="${this.handleDisplayLayerRemoval}"
+      ></ngm-layer-panel>
+      <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
+        <ngm-tools
+          .toolsHidden=${this.activePanel !== 'tools'}
+          @open=${() => (this.activePanel = 'tools')}
+          @close=${() => (this.activePanel = null)}
+        ></ngm-tools>
+      </div>
+      <div
+        .hidden=${this.activePanel !== 'share'}
+        class="ngm-side-bar-panel ngm-share-panel"
+      >
+        <div class="ngm-panel-header">
+          ${i18next.t('lsb_share')}
+          <div
+            class="ngm-close-icon"
+            @click=${() => (this.activePanel = null)}
+          ></div>
+        </div>
+        ${this.activePanel !== 'share'
+          ? ''
+          : html` <ngm-share-link></ngm-share-link>`}
+      </div>
+      <div
+        .hidden=${this.activePanel !== 'settings'}
+        class="ngm-side-bar-panel"
+      >
+        <div class="ngm-panel-header">
+          ${i18next.t('lsb_settings')}
+          <div
+            class="ngm-close-icon"
+            @click=${() => (this.activePanel = null)}
+          ></div>
+        </div>
+        <div class="toolbar-settings">
+          <div class="inner-toolbar-settings">
+            <label>${i18next.t('lsb_debug_tools')}</label>
+            <div
+              class="ngm-checkbox ngm-debug-tools-toggle ${classMap({
+                active: this.debugToolsActive,
+              })}"
+              @click=${() =>
+                (<HTMLInputElement>(
+                  this.querySelector('.ngm-debug-tools-toggle > input')
+                )).click()}
+            >
+              <input
+                type="checkbox"
+                ?checked=${this.debugToolsActive}
+                @change="${this.toggleDebugTools}"
+              />
+              <span class="ngm-checkbox-icon"></span>
+              <label>${i18next.t('lsb_cesium_toolbar_label')}</label>
+            </div>
+            <a
+              class="contact-mailto-link"
+              target="_blank"
+              href="mailto:swissgeol@swisstopo.ch"
+              >${i18next.t('contact_mailto_text')}</a
+            >
+            <a
+              class="disclaimer-link"
+              target="_blank"
+              href="${i18next.t('disclaimer_href')}"
+              >${i18next.t('disclaimer_text')}</a
+            >
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private readonly renderMenuItem = (
+    icon: string,
+    title: string,
+    panel: string,
+  ) => html`
+    <ngm-menu-item
+      .icon=${icon}
+      .title=${title}
+      ?isActive=${this.activePanel === panel}
+      ?isMobile=${this.mobileView}
+      @click=${() => this.togglePanel(panel)}
+    ></ngm-menu-item>
+  `;
 }

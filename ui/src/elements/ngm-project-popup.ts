@@ -48,6 +48,10 @@ export class NgmProjectPopup extends LitElementI18n {
     DashboardStore.setViewIndex(undefined);
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     if (!this.selectedTopic || this.viewIndex === undefined) return '';
     return html` <div class="ngm-floating-window-header drag-handle">
@@ -67,9 +71,5 @@ export class NgmProjectPopup extends LitElementI18n {
         <div class="ngm-play-icon" @click=${() => this.changeView(1)}></div>
       </div>
       ${dragArea}`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }

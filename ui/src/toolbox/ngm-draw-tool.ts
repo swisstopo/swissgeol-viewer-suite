@@ -21,6 +21,10 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
     });
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   render() {
     return html` <ngm-draw-section ?hidden=${this.hidden}></ngm-draw-section>
       <div class="ngm-divider"></div>
@@ -31,9 +35,5 @@ export class NgmAreaOfInterestDrawer extends LitElementI18n {
         }}
       >
       </ngm-geometries-list>`;
-  }
-
-  createRenderRoot() {
-    return this;
   }
 }
