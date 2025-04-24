@@ -1,5 +1,6 @@
 import { CustomShader, PixelFormat, TextureUniform, UniformType } from 'cesium';
 import { OBJECT_HIGHLIGHT_NORMALIZED_RGB } from '../constants';
+import { LayerTreeNode, LithologyVoxelFilter } from '../layertree';
 
 type ColorConfig = {
   image: Uint8Array;
@@ -7,22 +8,32 @@ type ColorConfig = {
   height: number;
 };
 
-function createCustomShader(config): CustomShader {
-  const lithology = config.voxelFilter.lithology;
+function createCustomShader(config: LayerTreeNode): CustomShader {
+  if (config.voxelFilter == null || !('lithology' in config.voxelFilter)) {
+    throw new Error("can't create shader for config without filter");
+  }
+  if (config.voxelColors == null) {
+    throw new Error("can't create shader for config without color");
+  }
+
+  const filter = config.voxelFilter as LithologyVoxelFilter;
   const colors = config.voxelColors;
 
-  console.assert(config.noData === undefined, 'No data value must be defined');
   console.assert(
-    config.undefinedData === undefined,
+    (config as any).noData === undefined,
+    'No data value must be defined',
+  );
+  console.assert(
+    (config as any).undefinedData === undefined,
     'Undefined data value must be defined',
   );
 
   const fragmentShaderText = `
     void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material)
     {
-      const int lithology_length = ${lithology.length};
+      const int lithology_length = ${filter.lithology.length};
       float lithology_mapping[lithology_length];
-      ${lithology.map((lithology, index) => `lithology_mapping[${index}] = ${lithology.index.toFixed(1)};`).join(' ')}
+      ${filter.lithology.map((lithology, index) => `lithology_mapping[${index}] = ${lithology.value.toFixed(1)};`).join(' ')}
 
       float value = fsInput.metadata.${config.voxelDataName};
       float lithology = fsInput.metadata.${config.voxelFilter.lithologyDataName};
@@ -89,10 +100,11 @@ function createCustomShader(config): CustomShader {
     }
   `;
 
-  const useColorIndex = config.voxelDataName === 'Index';
+  const useColorIndex =
+    config.voxelDataName === 'Index' || config.voxelDataName === 'Klasse';
   if (useColorIndex) {
     console.assert(
-      colors.colors.length === lithology.length,
+      colors.colors.length === filter.lithology.length,
       'Color index mode requires the same number of colors as lithology types',
     );
   }
@@ -134,7 +146,7 @@ function createCustomShader(config): CustomShader {
       },
       u_filter_operator: {
         type: UniformType.INT,
-        value: 0,
+        value: config.voxelDataName === 'Klasse' ? 1 : 0,
       },
       u_noData: {
         type: UniformType.FLOAT,
@@ -150,7 +162,9 @@ function createCustomShader(config): CustomShader {
       },
       u_filter_selected_lithology: {
         type: UniformType.SAMPLER_2D,
-        value: createLithologyIncludeUniform(Array(lithology.length).fill(1)),
+        value: createLithologyIncludeUniform(
+          Array(filter.lithology.length).fill(1),
+        ),
       },
       u_selectedTile: {
         type: UniformType.INT,
@@ -169,13 +183,13 @@ function createSimpleCustomShader(config): CustomShader {
   void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material)
     {
         float value = fsInput.metadata.${config.voxelDataName};
-    
+
         vec3 voxelNormal = normalize(czm_normal * fsInput.voxel.surfaceNormal);
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
-        
+
         bool valueInRange = value >= u_filter_min && value <= u_filter_max;
-    
+
         if (fsInput.voxel.tileIndex == u_selectedTile && fsInput.voxel.sampleIndex == u_selectedSample) {
           material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}) * lighting;
           material.alpha = 1.0;

@@ -10,7 +10,7 @@ import {
 } from '../layers/voxels-helper';
 import { repeat } from 'lit/directives/repeat.js';
 import type { Viewer } from 'cesium';
-import { LayerConfig } from '../layertree';
+import { LithologyVoxelFilter, LayerConfig } from '../layertree';
 
 @customElement('ngm-voxel-filter')
 export class NgmVoxelFilter extends LitElementI18n {
@@ -101,7 +101,9 @@ export class NgmVoxelFilter extends LitElementI18n {
     shader.setUniform(
       'u_filter_selected_lithology',
       createLithologyIncludeUniform(
-        Array(this.config!.voxelFilter.lithology).fill(1),
+        Array(
+          (this.config!.voxelFilter as LithologyVoxelFilter).lithology.length,
+        ).fill(1),
       ),
     );
     shader.setUniform('u_filter_operator', 0);
@@ -127,7 +129,14 @@ export class NgmVoxelFilter extends LitElementI18n {
   }
 
   render() {
-    const hideCheckboxColor = this.config!.voxelDataName !== 'Index';
+    const hideCheckboxColor =
+      this.config!.voxelDataName !== 'Index' &&
+      this.config!.voxelDataName !== 'Klasse';
+    const defaultFilter =
+      this.config!.voxelDataName === 'Klasse'
+        ? ('or' as const)
+        : ('and' as const);
+
     return html`
       <div class="ngm-floating-window-header drag-handle">
         ${i18next.t('vox_filter_filtering_on')} ${i18next.t(this.config!.label)}
@@ -187,7 +196,7 @@ export class NgmVoxelFilter extends LitElementI18n {
                   id="operator_and"
                   name="operator"
                   value="0"
-                  checked
+                  ?checked="${defaultFilter === 'and'}"
                 />
                 <label for="operator_and">${i18next.t('vox_filter_and')}</label>
               </div>
@@ -199,6 +208,7 @@ export class NgmVoxelFilter extends LitElementI18n {
                   id="operator_or"
                   name="operator"
                   value="1"
+                  ?checked="${defaultFilter === 'or'}"
                 />
                 <label for="operator_or">${i18next.t('vox_filter_or')}</label>
               </div>
@@ -218,20 +228,21 @@ export class NgmVoxelFilter extends LitElementI18n {
         </form>
         <form class="lithology-checkbox">
           <div class="filter-label">${i18next.t('vox_filter_lithology')}</div>
-          ${repeat(
-            this.config!.voxelFilter.lithology,
-            (lithology: any, index: number) =>
-              html` <label>
-                <input type="checkbox" value="${lithology.index}" checked />
-                <div
-                  ?hidden=${hideCheckboxColor}
-                  style="background-color: ${this.config!.voxelColors?.colors[
-                    index
-                  ]}; width: 20px;"
-                ></div>
-                ${i18next.t(lithology.label)}
-              </label>`,
-          )}
+          ${'lithology' in this.config!.voxelFilter!
+            ? repeat(
+                (this.config!.voxelFilter as LithologyVoxelFilter).lithology,
+                (lithology, index: number) =>
+                  html` <label>
+                    <input type="checkbox" value="${lithology.value}" checked />
+                    <div
+                      ?hidden=${hideCheckboxColor}
+                      style="background-color: ${this.config!.voxelColors
+                        ?.colors[index]}; width: 20px;"
+                    ></div>
+                    ${i18next.t(lithology.label)}
+                  </label>`,
+              )
+            : ''}
           <div class="lithology-filter-buttons">
             <button
               class="ui button"
