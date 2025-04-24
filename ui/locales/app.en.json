@@ -371,9 +371,9 @@
   "vox_filter_klasse_1": "very large",
   "vox_filter_klasse_2": "large",
   "vox_filter_klasse_3": "moderately large ",
-  "vox_filter_klasse_4": "mämoderatessig",
+  "vox_filter_klasse_4": "moderate",
   "vox_filter_klasse_5": "low",
-  "vox_filter_klasse_6": "svery low",
+  "vox_filter_klasse_6": "very low",
   "vox_filter_xor": "XOR",
   "vox_temperature": "Temperature (°C)",
   "welcome_get_shortlink_error": "An error occurred and the shortcut cannot be created, please try again later."
