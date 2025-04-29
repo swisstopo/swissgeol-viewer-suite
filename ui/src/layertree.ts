@@ -528,7 +528,8 @@ const genevaIndexVoxelFilter: LithologyVoxelFilter = {
   ],
 };
 
-const rheintalVoxelColors: VoxelColors = {
+//@ts-ignore
+const _rheintalVoxelColors: VoxelColors = {
   range: [0, 6],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
@@ -1090,7 +1091,7 @@ const subsurface: LayerTreeNode = {
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
           geocatId: '4a4a530f-6a2a-423d-834e-2831d70fde20',
         },
-        {
+        /* {
           type: LayerType.voxels3dtiles,
           url: 'https://download.swissgeol.ch/testvoxel/test20250113_KTSGRhein/2025-03-21/output/tileset.json',
           voxelDataName: 'Klasse',
@@ -1101,7 +1102,7 @@ const subsurface: LayerTreeNode = {
           opacityDisabled: true,
           pickable: true,
           geocatId: 'c12c8e4e-4c06-41c9-b705-f1dadb0654ae-8371',
-        },
+        }, */
         {
           type: LayerType.voxels3dtiles,
           url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-VISP-Combined/tileset.json',
