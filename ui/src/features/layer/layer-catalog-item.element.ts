@@ -9,6 +9,19 @@ import { LayerEventDetail } from 'src/features/layer/layer-event.model';
 export class LayerCatalogItem extends CoreElement {
   @property() accessor layer!: LayerConfig;
 
+  connectedCallback() {
+    super.connectedCallback();
+
+    let isActive: boolean | null = null;
+    const interval = setInterval(() => {
+      if (this.layer.displayed !== isActive) {
+        isActive = this.layer.displayed ?? null;
+        this.requestUpdate();
+      }
+    }, 1000);
+    this.register(() => clearInterval(interval));
+  }
+
   private toggleLayer(layer: LayerConfig): void {
     this.dispatchEvent(
       new CustomEvent<LayerEventDetail>('layer-click', {

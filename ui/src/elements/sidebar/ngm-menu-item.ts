@@ -10,10 +10,16 @@ import 'src/features/core';
 export class MenuItem extends LitElementI18n {
   @property({ type: String })
   accessor title: string = '';
+
   @property()
   accessor icon: IconKey = 'config';
+
+  @property({ type: Number })
+  accessor counter = 0;
+
   @property({ type: Boolean, attribute: 'isactive', reflect: true })
   accessor isActive: boolean = false;
+
   @property({ type: Boolean })
   accessor isMobile: boolean = false;
 
@@ -23,6 +29,13 @@ export class MenuItem extends LitElementI18n {
         <div class="box ${classMap({ isActive: this.isActive })}">
           <div class="icon">
             <ngm-core-icon icon=${this.icon}></ngm-core-icon>
+            ${!this.isActive || this.counter === 0
+              ? ''
+              : html`
+                  <ngm-core-chip variant="highlight">
+                    ${this.counter}
+                  </ngm-core-chip>
+                `}
           </div>
           <div class="title" ?hidden="${this.isMobile}">
             ${i18next.t(this.title)}
@@ -71,6 +84,7 @@ export class MenuItem extends LitElementI18n {
     }
 
     .container .box > .icon {
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -113,6 +127,12 @@ export class MenuItem extends LitElementI18n {
 
     :host([isactive]) .container .box .icon {
       color: var(--color-bg);
+    }
+
+    ngm-core-chip {
+      position: absolute;
+      top: -11px;
+      right: -11px;
     }
   `;
 }
