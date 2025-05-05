@@ -116,7 +116,7 @@ export class NgmMinimap extends LitElementI18n {
         CesiumMath.PI_OVER_TWO,
         CesiumMath.EPSILON1,
       );
-    if (this.nadirViewActive !== !isNadirView) {
+    if (this.nadirViewActive !== isNadirView) {
       this.toggleNadirStatus();
     }
   }
