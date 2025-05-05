@@ -129,13 +129,14 @@ export class NgmVoxelFilter extends LitElementI18n {
   }
 
   render() {
-    const hideCheckboxColor =
-      this.config!.voxelDataName !== 'Index' &&
-      this.config!.voxelDataName !== 'Klasse';
-    const defaultFilter =
-      this.config!.voxelDataName === 'Klasse'
-        ? ('or' as const)
-        : ('and' as const);
+    const isKlasse = this.config!.voxelDataName === 'Klasse';
+
+    const [titleKey, undefinedKey] = isKlasse
+      ? ['vox_filter_klasse', 'vox_filter_klasse_undefined']
+      : [
+          'vox_filter_hydraulic_conductivity',
+          'vox_filter_undefined_conductivity',
+        ];
 
     return html`
       <div class="ngm-floating-window-header drag-handle">
@@ -144,9 +145,7 @@ export class NgmVoxelFilter extends LitElementI18n {
       </div>
       <div class="content-container">
         <form class="ui form">
-          <div class="filter-label">
-            ${i18next.t('vox_filter_hydraulic_conductivity')}
-          </div>
+          <div class="filter-label">${i18next.t(titleKey)}</div>
           <div class="two fields">
             <div class="field">
               <label>${i18next.t('vox_filter_min')}</label>
@@ -183,91 +182,11 @@ export class NgmVoxelFilter extends LitElementI18n {
                 value="fixme"
                 checked
               />
-              ${i18next.t('vox_filter_undefined_conductivity')}
+              ${i18next.t(undefinedKey)}
             </label>
           </div>
         </form>
-        <form class="ui form">
-          <div class="inline fields">
-            <div class="field">
-              <div class="ui radio checkbox">
-                <input
-                  type="radio"
-                  id="operator_and"
-                  name="operator"
-                  value="0"
-                  ?checked="${defaultFilter === 'and'}"
-                />
-                <label for="operator_and">${i18next.t('vox_filter_and')}</label>
-              </div>
-            </div>
-            <div class="field">
-              <div class="ui radio checkbox">
-                <input
-                  type="radio"
-                  id="operator_or"
-                  name="operator"
-                  value="1"
-                  ?checked="${defaultFilter === 'or'}"
-                />
-                <label for="operator_or">${i18next.t('vox_filter_or')}</label>
-              </div>
-            </div>
-            <div class="field">
-              <div class="ui radio checkbox">
-                <input
-                  type="radio"
-                  id="operator_xor"
-                  name="operator"
-                  value="2"
-                />
-                <label for="operator_xor">${i18next.t('vox_filter_xor')}</label>
-              </div>
-            </div>
-          </div>
-        </form>
-        <form class="lithology-checkbox">
-          <div class="filter-label">${i18next.t('vox_filter_lithology')}</div>
-          ${'lithology' in this.config!.voxelFilter!
-            ? repeat(
-                (this.config!.voxelFilter as LithologyVoxelFilter).lithology,
-                (lithology, index: number) =>
-                  html` <label>
-                    <input type="checkbox" value="${lithology.value}" checked />
-                    <div
-                      ?hidden=${hideCheckboxColor}
-                      style="background-color: ${this.config!.voxelColors
-                        ?.colors[index]}; width: 20px;"
-                    ></div>
-                    ${i18next.t(lithology.label)}
-                  </label>`,
-              )
-            : ''}
-          <div class="lithology-filter-buttons">
-            <button
-              class="ui button"
-              type="button"
-              @click="${() => {
-                this.lithologyCheckbox.forEach(
-                  (checkbox) => (checkbox.checked = true),
-                );
-              }}"
-            >
-              ${i18next.t('vox_filter_select_all')}
-            </button>
-            <button
-              class="ui button"
-              type="button"
-              @click="${() => {
-                this.lithologyCheckbox.forEach(
-                  (checkbox) => (checkbox.checked = false),
-                );
-              }}"
-            >
-              ${i18next.t('vox_filter_unselect_all')}
-            </button>
-          </div>
-        </form>
+        ${isKlasse ? '' : this.renderLayerFilters({ isKlasse })}
         <div>
           <button
             class="ui button ngm-action-btn"
@@ -278,6 +197,91 @@ export class NgmVoxelFilter extends LitElementI18n {
         </div>
       </div>
       ${dragArea}
+    `;
+  }
+
+  private renderLayerFilters({ isKlasse }: { isKlasse: boolean }) {
+    const hideCheckboxColor =
+      this.config!.voxelDataName !== 'Index' && !isKlasse;
+    const defaultFilter = isKlasse ? ('or' as const) : ('and' as const);
+    return html`
+      <form class="ui form">
+        <div class="inline fields">
+          <div class="field">
+            <div class="ui radio checkbox">
+              <input
+                type="radio"
+                id="operator_and"
+                name="operator"
+                value="0"
+                ?checked="${defaultFilter === 'and'}"
+              />
+              <label for="operator_and">${i18next.t('vox_filter_and')}</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox">
+              <input
+                type="radio"
+                id="operator_or"
+                name="operator"
+                value="1"
+                ?checked="${defaultFilter === 'or'}"
+              />
+              <label for="operator_or">${i18next.t('vox_filter_or')}</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox">
+              <input type="radio" id="operator_xor" name="operator" value="2" />
+              <label for="operator_xor">${i18next.t('vox_filter_xor')}</label>
+            </div>
+          </div>
+        </div>
+      </form>
+      <form class="lithology-checkbox">
+        <div class="filter-label">${i18next.t('vox_filter_lithology')}</div>
+        ${'lithology' in this.config!.voxelFilter!
+          ? repeat(
+              (this.config!.voxelFilter as LithologyVoxelFilter).lithology,
+              (lithology, index: number) =>
+                html` <label>
+                  <input type="checkbox" value="${lithology.value}" checked />
+                  <div
+                    ?hidden=${hideCheckboxColor}
+                    style="background-color: ${this.config!.voxelColors?.colors[
+                      index
+                    ]}; width: 20px;"
+                  ></div>
+                  ${i18next.t(lithology.label)}
+                </label>`,
+            )
+          : ''}
+        <div class="lithology-filter-buttons">
+          <button
+            class="ui button"
+            type="button"
+            @click="${() => {
+              this.lithologyCheckbox.forEach(
+                (checkbox) => (checkbox.checked = true),
+              );
+            }}"
+          >
+            ${i18next.t('vox_filter_select_all')}
+          </button>
+          <button
+            class="ui button"
+            type="button"
+            @click="${() => {
+              this.lithologyCheckbox.forEach(
+                (checkbox) => (checkbox.checked = false),
+              );
+            }}"
+          >
+            ${i18next.t('vox_filter_unselect_all')}
+          </button>
+        </div>
+      </form>
     `;
   }
 }
