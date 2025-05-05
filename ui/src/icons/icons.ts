@@ -23,6 +23,7 @@ import { legendIcon } from 'src/icons/i_legend';
 import { downloadIcon } from 'src/icons/i_download';
 import { filterIcon } from 'src/icons/i_filter';
 import { turnPageIcon } from 'src/icons/i_turnPage';
+import { layerIndicatorIcon } from 'src/icons/i_layer-indicator';
 
 export const icons = {
   cesium: cesiumIcon,
@@ -36,6 +37,7 @@ export const icons = {
   grab: grabIcon,
   hidden: hiddenIcon,
   layer: layerIcon,
+  layerIndicator: layerIndicatorIcon,
   legend: legendIcon,
   menu: menuIcon,
   projects: projectsIcon,

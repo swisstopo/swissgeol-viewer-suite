@@ -10,3 +10,4 @@ import './core-modal.element';
 import './core-slider.element';
 import './core-tooltip.element';
 import './core-tooltip-box.element';
+import './core-accordion.element';
