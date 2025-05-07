@@ -22,6 +22,19 @@ export class LayerCatalogCategory extends CoreElement {
         this.userGroups = user?.['cognito:groups'] ?? [];
       }),
     );
+
+    let lastNumber: number | null = null;
+    const interval = setInterval(() => {
+      if (this.node === null) {
+        return;
+      }
+      const number = this.findNumberOfActiveLayersForCategory(this.node);
+      if (lastNumber !== number) {
+        lastNumber = number;
+        this.requestUpdate();
+      }
+    }, 1000);
+    this.register(() => clearInterval(interval));
   }
 
   findNumberOfActiveLayersForCategory(layer: LayerTreeNode): number {

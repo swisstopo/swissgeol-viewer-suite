@@ -63,7 +63,7 @@ export interface SearchLayerWithSource extends BaseSearchLayer {
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
   @property({ type: Object })
-  accessor queryManager: QueryManager | null = null;
+  accessor queryManager: QueryManager | null | undefined = null;
   @property({ type: Boolean })
   accessor mobileView = false;
   @property({ type: Boolean })
@@ -608,15 +608,18 @@ export class SideBar extends LitElementI18n {
   }
 
   render() {
-    if (!this.queryManager) {
-      return '';
+    if (this.queryManager != null) {
+      this.queryManager.activeLayers = this.activeLayers.filter(
+        (config) => config.visible && !config.noQuery,
+      );
     }
 
-    this.queryManager.activeLayers = this.activeLayers.filter(
-      (config) => config.visible && !config.noQuery,
+    const layerBtn = this.renderMenuItem(
+      'layer',
+      'menu_layers',
+      'data',
+      this.activeLayers.length,
     );
-
-    const layerBtn = this.renderMenuItem('layer', 'menu_layers', 'data');
     const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
     const projectsBtn = this.renderMenuItem(
       'projects',
@@ -746,10 +749,12 @@ export class SideBar extends LitElementI18n {
     icon: string,
     title: string,
     panel: string,
+    counter = 0,
   ) => html`
     <ngm-menu-item
       .icon=${icon}
       .title=${title}
+      .counter="${counter}"
       ?isActive=${this.activePanel === panel}
       ?isMobile=${this.mobileView}
       @click=${() => this.togglePanel(panel)}
