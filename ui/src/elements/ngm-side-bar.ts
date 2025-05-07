@@ -35,6 +35,7 @@ import { showSnackbarError, showSnackbarInfo } from 'src/notifications';
 import auth from 'src/store/auth';
 import './ngm-share-link';
 import MainStore from 'src/store/main';
+import ToolboxStore from 'src/store/toolbox';
 import { classMap } from 'lit/directives/class-map.js';
 import $ from 'jquery';
 import { customElement, property, query, state } from 'lit/decorators.js';
@@ -72,7 +73,8 @@ export class SideBar extends LitElementI18n {
   accessor catalogLayers: LayerConfig[] | undefined;
   @state()
   accessor activeLayers: LayerConfig[] = [];
-
+  @state()
+  accessor numberOfVisibleGeometries = 0;
   @state()
   accessor activePanel: string | null = null;
   @state()
@@ -103,6 +105,12 @@ export class SideBar extends LitElementI18n {
 
     MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
+    });
+
+    ToolboxStore.geometries.subscribe((geometries) => {
+      this.numberOfVisibleGeometries = geometries.filter(
+        (geom) => geom.show,
+      ).length;
     });
 
     auth.user.subscribe((user) => {
@@ -620,7 +628,12 @@ export class SideBar extends LitElementI18n {
       'data',
       this.activeLayers.length,
     );
-    const toolsBtn = this.renderMenuItem('tools', 'menu_tools', 'tools');
+    const toolsBtn = this.renderMenuItem(
+      'tools',
+      'menu_tools',
+      'tools',
+      this.numberOfVisibleGeometries,
+    );
     const projectsBtn = this.renderMenuItem(
       'projects',
       'menu_projects',
