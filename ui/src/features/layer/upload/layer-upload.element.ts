@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 import fomanticButtonCss from 'fomantic-ui-css/components/button.css?raw';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
 import { LayerEventDetail } from 'src/features/layer';
+import { CoreModal } from 'src/features/core';
 
 @customElement('ngm-layer-upload')
 export class LayerUpload extends LitElementI18n {
@@ -19,6 +20,8 @@ export class LayerUpload extends LitElementI18n {
 
   @state()
   private accessor viewer: Viewer | null = null;
+
+  private modal: CoreModal | null = null;
 
   private readonly subscription = new Subscription();
 
@@ -89,12 +92,10 @@ export class LayerUpload extends LitElementI18n {
     this.requestUpdate();
   }
 
-  private emitIonModalOpening(): void {
-    this.dispatchEvent(
-      new CustomEvent('openIonModal', {
-        bubbles: true,
-        composed: true,
-      }),
+  private openIonModal(): void {
+    this.modal = CoreModal.open(
+      { size: 'large', hasNoPadding: true, isOverflowHidden: true },
+      html`<ngm-ion-modal @close=${() => this.modal?.close()}></ngm-ion-modal>`,
     );
   }
 
@@ -107,7 +108,8 @@ export class LayerUpload extends LitElementI18n {
     <ngm-core-button
       variant="tertiary"
       shape="large"
-      @click=${this.emitIonModalOpening}
+      justify="start"
+      @click=${this.openIonModal}
     >
       <ngm-core-icon icon="cesium"></ngm-core-icon>
       ${i18next.t('dtd_add_ion_token')}

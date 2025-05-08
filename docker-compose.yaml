@@ -23,9 +23,13 @@ services:
     build:
       context: ./ui
       dockerfile: DockerfileDev
+      args:
+        - GITHUB_TOKEN
     init: true
     ports:
       - "8000:8000"
+    environment:
+      - GITHUB_TOKEN
     depends_on:
       - api
       - abbreviator

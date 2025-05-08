@@ -31,7 +31,11 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
 } from 'cesium';
-import { showSnackbarError, showSnackbarInfo } from 'src/notifications';
+import {
+  showSnackbarError,
+  showSnackbarInfo,
+  showSnackbarSuccess,
+} from 'src/notifications';
 import auth from 'src/store/auth';
 import './ngm-share-link';
 import MainStore from 'src/store/main';
@@ -160,6 +164,7 @@ export class SideBar extends LitElementI18n {
         layer.promise = layer.load();
       }
       addAssetId(asset.id);
+      showSnackbarSuccess(i18next.t('dtd_asset_added'));
       this.activeLayers = [...this.activeLayers];
       syncLayersParam(this.activeLayers);
     });
@@ -253,6 +258,9 @@ export class SideBar extends LitElementI18n {
         const ionAsset = ionAssets.find(
           (asset) => asset.id === Number(assetId),
         );
+        if (ionAsset) {
+          MainStore.updateSelectedIonAssetIds(ionAsset);
+        }
         const layer: LayerConfig = {
           type: LayerType.tiles3d,
           assetId: Number(assetId),
@@ -591,6 +599,9 @@ export class SideBar extends LitElementI18n {
     layer.displayed = false;
     if (layer.remove) {
       layer.remove();
+    }
+    if (layer.ionToken && layer.assetId) {
+      MainStore.removeIonAssetId(layer.assetId);
     }
   }
 

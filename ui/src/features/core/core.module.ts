@@ -11,3 +11,5 @@ import './core-slider.element';
 import './core-tooltip.element';
 import './core-tooltip-box.element';
 import './core-accordion.element';
+import './core-text-input.element';
+import './core-info-panel.element';

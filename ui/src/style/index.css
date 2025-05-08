@@ -3,7 +3,7 @@
 @import "cesium/Build/Cesium/Widgets/widgets.css";
 
 @import "@fontsource/inter/index.css";
-
+@import '@swisstopo/swissgeol-ui-core/styles.css';
 @import "fomantic-ui-css/components/reset.css";
 @import "fomantic-ui-css/components/message.css";
 @import "fomantic-ui-css/components/list.css";
@@ -80,6 +80,12 @@
 ::-webkit-scrollbar-thumb {
   background: rgba(134, 142, 150, 0.5);
   border-radius: 100px;
+}
+
+:root {
+  --sgc-color-brand: #607d52;
+  --sgc-color-primary--active: #607d52;
+  --sgc-color-secondary--active: #b2d2a2;
 }
 
 [hidden] {

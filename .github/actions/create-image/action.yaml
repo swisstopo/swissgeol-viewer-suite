@@ -69,3 +69,5 @@ runs:
         no-cache: true
         build-args: |
           APP_VERSION=${{ inputs.VERSION }}
+        secrets: |
+          github_token=${{ inputs.GITHUB_TOKEN }}

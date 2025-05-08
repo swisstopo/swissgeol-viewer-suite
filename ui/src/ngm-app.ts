@@ -114,8 +114,6 @@ export class NgmApp extends LitElementI18n {
   accessor showProjectSelector = false;
   @state()
   accessor showCesiumToolbar = getCesiumToolbarParam();
-  @state()
-  accessor showIonModal = false;
   @query('ngm-cam-configuration')
   accessor camConfigElement;
   @query('ngm-voxel-filter')
@@ -625,7 +623,6 @@ export class NgmApp extends LitElementI18n {
           @toggleDebugTools=${(evt) => {
             this.showCesiumToolbar = evt.detail.active;
           }}
-          @openIonModal=${() => (this.showIonModal = true)}
         >
         </ngm-side-bar>
         <div class="map" oncontextmenu="return false;">
@@ -704,12 +701,6 @@ export class NgmApp extends LitElementI18n {
           ${this.showCesiumToolbar
             ? html` <cesium-toolbar></cesium-toolbar>`
             : ''}
-          <ngm-ion-modal
-            class="ngm-floating-window"
-            .hidden=${!this.showIonModal}
-            @close=${() => (this.showIonModal = false)}
-          >
-          </ngm-ion-modal>
         </div>
       </main>
     `;

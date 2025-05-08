@@ -140,6 +140,10 @@ export default defineConfig({
         { src: 'manuals/dist/**/*', dest: './manuals' },
         { src: 'manuals/style.css', dest: './manuals' },
         { src: 'manuals/images/**/*', dest: './manuals/images' },
+        {
+          src: 'node_modules/@swisstopo/swissgeol-ui-core/dist/swissgeol-ui-core/assets/*',
+          dest: 'assets',
+        },
       ],
       watch: { reloadPageOnChange: true },
       hook: 'buildStart',
