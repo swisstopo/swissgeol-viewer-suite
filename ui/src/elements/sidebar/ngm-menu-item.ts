@@ -29,7 +29,7 @@ export class MenuItem extends LitElementI18n {
         <div class="box ${classMap({ isActive: this.isActive })}">
           <div class="icon">
             <ngm-core-icon icon=${this.icon}></ngm-core-icon>
-            ${!this.isActive || this.counter === 0
+            ${this.counter === 0
               ? ''
               : html`
                   <ngm-core-chip variant="highlight">
@@ -131,8 +131,8 @@ export class MenuItem extends LitElementI18n {
 
     ngm-core-chip {
       position: absolute;
-      top: -11px;
-      right: -11px;
+      top: -8px;
+      right: -5px;
     }
   `;
 }
