@@ -20,8 +20,8 @@
     "check:tests": "tsc -p tsconfig.test.json --noEmit",
     "test": "cross-env TS_NODE_PROJECT=tsconfig.test.json node --loader ./node_modules/ts-node/esm.mjs --experimental-specifier-resolution=node node_modules/mocha/bin/mocha -- --exit",
     "e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
-    "cypress:open": "cypress open",
-    "cypress:run": "./scripts/cypress_run",
+    "cypress:open": "cypress open --config-file cypress/cypress.config.ts",
+    "cypress:run": "cypress run --config-file cypress/cypress.config.ts",
     "analyze": "cross-env ANALYZE=true npx analyze"
   },
   "dependencies": {
@@ -61,6 +61,8 @@
     "@babel/plugin-transform-class-properties": "^7.25.9",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-typescript": "^7.26.0",
+    "@badeball/cypress-cucumber-preprocessor": "^22.0.1",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.4",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.15.0",
     "@rollup/plugin-babel": "6.0.4",
