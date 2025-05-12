@@ -169,6 +169,7 @@ export class LayerDisplayListItem extends CoreElement {
         transparent
         variant="tertiary"
         shape="icon"
+        data-cy="visibility"
         @click="${this.toggleVisibility}"
       >
         <ngm-core-icon
@@ -187,6 +188,7 @@ export class LayerDisplayListItem extends CoreElement {
                   'is-active': this.isBackgroundActive,
                 })}"
                 role="button"
+                data-cy="background"
                 @click="${this.toggleBackgroundActive}"
                 >${this.label}</span
               >
@@ -199,6 +201,7 @@ export class LayerDisplayListItem extends CoreElement {
           class="opacity-toggle"
           ?active="${this.isOpacityActive}"
           ?disabled="${!this.isVisible}"
+          data-cy="opacity"
           @click="${this.toggleOpacityActive}"
         >
           ${Math.round(this.opacity * 100)}%

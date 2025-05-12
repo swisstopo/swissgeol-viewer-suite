@@ -3,8 +3,9 @@ Feature: Reorder layers
   I want to change the order of the layers displayed in the data displayed section
   So that I can see data which are hidden by others
 
-    Background: viewer.swissgeol.ch is up and running and accessible via the internet
-      Given the user has activated at least two layers
+    Background:
+      Given the viewer is fully loaded
+      And the user has activated at least two layers
       And these layers are displayed in the data displayed section and in the 3D scene
 
     Scenario: Reorder layers

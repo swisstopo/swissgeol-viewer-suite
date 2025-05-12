@@ -3,8 +3,9 @@ Feature: Hover layer
   I want to get a visual reaction when hovering over the different elements of a layer
   So that I get informed which features are available
 
-    Background: viewer.swissgeol.ch is up and running and accessible via the internet
-      Given the user has at least one layer in the data displayed section
+    Background:
+      Given the viewer is fully loaded
+      And the user has at least one layer in the data displayed section
 
     Scenario: Hovering over the layer displayed in the data displayed section
       When the user hovers over a layer in the data displayed section

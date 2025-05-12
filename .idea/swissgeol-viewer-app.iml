@@ -7,7 +7,10 @@
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/ui/cypress/results" />
       <excludeFolder url="file://$MODULE_DIR$/ui/cypress/screenshots" />
+      <excludeFolder url="file://$MODULE_DIR$/api/target" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/node_modules" />
     </content>
+    <content url="file://$MODULE_DIR$/ui/node_modules" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

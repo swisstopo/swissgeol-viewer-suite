@@ -3,8 +3,8 @@ Feature: Select data from data catalog
   As a user I need to select and activate the respective layers in the data catalog
   So that I can use them
 
-  Background: viewer.swissgeol.ch in up and running and accessible via the internet
-    Given viewer.swissgeol.ch is displayed in its inital setup
+  Background:
+    Given the viewer is fully loaded
 
   Scenario: Select data from data catalog
     When the user is hovering in the side bar on the upper most icon

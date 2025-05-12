@@ -12,13 +12,13 @@ const setupNodeEvents = async (
   config: Cypress.PluginConfigOptions,
 ): Promise<Cypress.PluginConfigOptions> => {
   const cucumberConfig = JSON.parse(
-    fs.readFileSync('.cypress-cucumber-preprocessorrc.json', 'utf-8')
+    fs.readFileSync('.cypress-cucumber-preprocessorrc.json', 'utf-8'),
   );
-
-  await addCucumberPreprocessorPlugin(on, {
-    ...config,
+  config.env = {
+    ...config.env,
     ...cucumberConfig,
-  });
+  };
+  await addCucumberPreprocessorPlugin(on, config);
   on(
     'file:preprocessor',
     createBundler({
@@ -26,20 +26,25 @@ const setupNodeEvents = async (
     }),
   );
   return config;
-}
-
+};
 
 export default defineConfig({
+  viewportWidth: 1920,
+  viewportHeight: 1280,
+  experimentalSourceRewriting: true,
+  modifyObstructiveCode: false,
   e2e: {
     setupNodeEvents,
     baseUrl: 'http://localhost:8000',
     watchForFileChanges: true,
-    supportFile: false,
+    includeShadowDom: true,
     specPattern: 'cypress/e2e/**/*.feature',
     screenshotsFolder: 'cypress/screenshots',
     videosFolder: 'cypress/videos',
     downloadsFolder: 'cypress/downloads',
     fixturesFolder: 'cypress/fixtures',
+    supportFolder: 'cypress/support',
+    excludeSpecPattern: ['**/cesium/**'],
   },
   reporter: 'junit',
   reporterOptions: {

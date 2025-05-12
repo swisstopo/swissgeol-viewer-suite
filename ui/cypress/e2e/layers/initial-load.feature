@@ -3,8 +3,9 @@ Feature: Inital Loading
   I want load the web application with its initial settings
   So that I can start to use it without any presets
 
-  Background: viewer.swissgeol.ch is up and running and accessible via the internet
-    Given the user has internet accessible
+  Background:
+    Given the viewer is fully loaded
+    And the user has internet accessible
     And the user is loading https://viewer.swissgeol.ch in a web-browser
 
   Scenario: Initial Loading
