@@ -108,9 +108,7 @@ export class SideBar extends LitElementI18n {
     });
 
     ToolboxStore.geometries.subscribe((geometries) => {
-      this.numberOfVisibleGeometries = geometries.filter(
-        (geom) => geom.show,
-      ).length;
+      this.numberOfVisibleGeometries = geometries.length;
     });
 
     auth.user.subscribe((user) => {
