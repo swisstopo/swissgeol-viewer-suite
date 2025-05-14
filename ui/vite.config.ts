@@ -4,8 +4,6 @@ import { fileURLToPath } from 'url';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import babel from '@rollup/plugin-babel';
 import inlinesvg from 'postcss-inline-svg';
-import cssimport from 'postcss-import';
-import postcssurl from 'postcss-url';
 import analyzer from 'vite-bundle-analyzer';
 
 // @ts-expect-error
@@ -25,9 +23,6 @@ export default defineConfig({
       ),
       './fomantic-ui-css': normalizePath(
         resolve(__dirname, 'node_modules/fomantic-ui-css'),
-      ),
-      './@fontsource/inter': normalizePath(
-        resolve(__dirname, 'node_modules/@fontsource/inter'),
       ),
       src: normalizePath(resolve(__dirname, 'src')),
     },
@@ -132,11 +127,6 @@ export default defineConfig({
           dest: './cesium/Widgets',
         },
         { src: 'locales/**/*', dest: './locales' },
-        { src: 'node_modules/@fontsource/inter/files/**/*', dest: 'fonts' },
-        {
-          src: 'node_modules/fomantic-ui-css/themes/default/assets/fonts/**/*',
-          dest: 'fonts',
-        },
         { src: 'manuals/dist/**/*', dest: './manuals' },
         { src: 'manuals/style.css', dest: './manuals' },
         { src: 'manuals/images/**/*', dest: './manuals/images' },
@@ -151,19 +141,7 @@ export default defineConfig({
   ].filter(Boolean),
   css: {
     postcss: {
-      plugins: [
-        inlinesvg(),
-        cssimport({
-          plugins: [
-            postcssurl([
-              {
-                filter: '**/*.+(woff|woff2)',
-                url: (asset) => `fonts/${asset.url.split('/').pop()}`,
-              },
-            ]),
-          ],
-        }),
-      ],
+      plugins: [inlinesvg()],
     },
   },
 });
