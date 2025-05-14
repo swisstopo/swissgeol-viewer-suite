@@ -9,9 +9,11 @@ WORKDIR /app
 COPY . .
 
 WORKDIR /app/ui
-RUN npm install --ignore-scripts \
- && npm run build --omit=dev
 
+RUN --mount=type=secret,id=github_token \
+    GITHUB_TOKEN=$(cat /run/secrets/github_token) \
+    npm install --ignore-scripts \
+    && npm run build --omit=dev
 
 FROM nginx:alpine
 

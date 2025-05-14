@@ -213,6 +213,12 @@ export class CoreButton extends LitElement {
       padding: var(--button-padding-v);
     }
 
+    /* small shape */
+    :host([shape='small']) button {
+      --button-padding-v: 2px;
+      --button-padding-h: 8px;
+    }
+
     /* chip shape */
     :host([shape='chip']) button {
       border-radius: 60px;
@@ -236,6 +242,12 @@ export class CoreButton extends LitElement {
 
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary';
 
-export type ButtonShape = 'default' | 'large' | 'icon' | 'icon-round' | 'chip';
+export type ButtonShape =
+  | 'default'
+  | 'large'
+  | 'small'
+  | 'icon'
+  | 'icon-round'
+  | 'chip';
 
 export type ButtonJustify = 'center' | 'start' | 'end';

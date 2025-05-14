@@ -9,6 +9,10 @@ interface CoreModalProps {
    */
   isPersistent?: boolean;
   hasNoPadding?: boolean;
+  /**
+   * Set this to true to hide to overflow of the modal
+   */
+  isOverflowHidden?: boolean;
   onClose?: () => void;
 }
 
@@ -20,6 +24,8 @@ export class CoreModal extends LitElement {
   accessor isPersistent = true;
   @property({ type: Boolean, attribute: 'no-padding', reflect: true })
   accessor hasNoPadding = false;
+  @property({ type: Boolean, attribute: 'overflow-hidden', reflect: true })
+  accessor isOverflowHidden = false;
 
   constructor() {
     super();
@@ -48,6 +54,7 @@ export class CoreModal extends LitElement {
         .isPersistent="${props.isPersistent}"
         .size="${props.size ?? 'auto'}"
         .hasNoPadding="${props.hasNoPadding}"
+        .isOverflowHidden="${props.isOverflowHidden}"
         >${content}</ngm-core-modal
       >`,
       container,
@@ -131,7 +138,7 @@ export class CoreModal extends LitElement {
     }
 
     :host([size='large']) dialog {
-      width: 909px;
+      width: 938px;
     }
 
     dialog::backdrop {
@@ -143,6 +150,10 @@ export class CoreModal extends LitElement {
 
     :host(:not([no-padding])) dialog > div {
       padding: 24px;
+    }
+
+    :host([overflow-hidden]) dialog {
+      overflow: hidden;
     }
   `;
 }

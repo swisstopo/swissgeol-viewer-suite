@@ -24,22 +24,28 @@ import { downloadIcon } from 'src/icons/i_download';
 import { filterIcon } from 'src/icons/i_filter';
 import { turnPageIcon } from 'src/icons/i_turnPage';
 import { layerIndicatorIcon } from 'src/icons/i_layer-indicator';
+import { infoIcon } from 'src/icons/i_info';
+import { plusIcon } from 'src/icons/i_plus';
+import { documentationIcon } from 'src/icons/i_documentation';
 
 export const icons = {
   cesium: cesiumIcon,
   checkmark: checkmarkIcon,
   close: closeIcon,
   config: configIcon,
+  documentation: documentationIcon,
   download: downloadIcon,
   dropdown: dropdownIcon,
   filter: filterIcon,
   geocat: geocatIcon,
   grab: grabIcon,
   hidden: hiddenIcon,
+  info: infoIcon,
   layer: layerIcon,
   layerIndicator: layerIndicatorIcon,
   legend: legendIcon,
   menu: menuIcon,
+  plus: plusIcon,
   projects: projectsIcon,
   search: searchIcon,
   share: shareIcon,
