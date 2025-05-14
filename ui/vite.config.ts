@@ -135,7 +135,7 @@ export default defineConfig({
           dest: 'assets',
         },
         {
-          src: 'node_modules/@swisstopo/swissgeol-ui-core/dist/components/*',
+          src: 'node_modules/@swisstopo/swissgeol-ui-core/dist/esm/*',
           dest: 'assets',
         },
       ],
