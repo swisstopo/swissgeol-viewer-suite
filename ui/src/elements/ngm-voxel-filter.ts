@@ -10,7 +10,7 @@ import {
 } from '../layers/voxels-helper';
 import { repeat } from 'lit/directives/repeat.js';
 import type { Viewer } from 'cesium';
-import { LithologyVoxelFilter, LayerConfig } from '../layertree';
+import { LayerConfig, LithologyVoxelFilter } from '../layertree';
 
 @customElement('ngm-voxel-filter')
 export class NgmVoxelFilter extends LitElementI18n {
@@ -131,62 +131,15 @@ export class NgmVoxelFilter extends LitElementI18n {
   render() {
     const isKlasse = this.config!.voxelDataName === 'Klasse';
 
-    const [titleKey, undefinedKey] = isKlasse
-      ? ['vox_filter_klasse', 'vox_filter_klasse_undefined']
-      : [
-          'vox_filter_hydraulic_conductivity',
-          'vox_filter_undefined_conductivity',
-        ];
-
     return html`
       <div class="ngm-floating-window-header drag-handle">
         ${i18next.t('vox_filter_filtering_on')} ${i18next.t(this.config!.label)}
         <div class="ngm-close-icon" @click=${() => this.close()}></div>
       </div>
       <div class="content-container">
-        <form class="ui form">
-          <div class="filter-label">${i18next.t(titleKey)}</div>
-          <div class="two fields">
-            <div class="field">
-              <label>${i18next.t('vox_filter_min')}</label>
-              <input
-                required
-                class="min-conductivity"
-                type="number"
-                step="0.01"
-                value="${this.minConductivity}"
-                min="${this.minConductivityValue}"
-                max="${this.maxConductivity}"
-                @input="${(evt) => this.minConductivityChanged(evt)}"
-              />
-            </div>
-            <div class="field">
-              <label>${i18next.t('vox_filter_max')}</label>
-              <input
-                required
-                class="max-conductivity"
-                type="number"
-                step="0.01"
-                value="${this.maxConductivity}"
-                min="${this.minConductivity}"
-                max="${this.maxConductivityValue}"
-                @input="${(evt) => this.maxConductivityChanged(evt)}"
-              />
-            </div>
-          </div>
-          <div>
-            <label>
-              <input
-                class="vox_filter_include_undefined"
-                type="checkbox"
-                value="fixme"
-                checked
-              />
-              ${i18next.t(undefinedKey)}
-            </label>
-          </div>
-        </form>
-        ${isKlasse ? '' : this.renderLayerFilters({ isKlasse })}
+        ${isKlasse ? '' : this.renderRangeFilters()}
+        ${isKlasse ? '' : this.renderLogicalOperators()}
+        ${this.renderLayerFilters({ isKlasse })}
         <div>
           <button
             class="ui button ngm-action-btn"
@@ -200,45 +153,88 @@ export class NgmVoxelFilter extends LitElementI18n {
     `;
   }
 
+  private renderRangeFilters() {
+    return html` <form class="ui form">
+      <div class="filter-label">
+        ${i18next.t('vox_filter_hydraulic_conductivity')}
+      </div>
+      <div class="two fields">
+        <div class="field">
+          <label>${i18next.t('vox_filter_min')}</label>
+          <input
+            required
+            class="min-conductivity"
+            type="number"
+            step="0.01"
+            value="${this.minConductivity}"
+            min="${this.minConductivityValue}"
+            max="${this.maxConductivity}"
+            @input="${(evt) => this.minConductivityChanged(evt)}"
+          />
+        </div>
+        <div class="field">
+          <label>${i18next.t('vox_filter_max')}</label>
+          <input
+            required
+            class="max-conductivity"
+            type="number"
+            step="0.01"
+            value="${this.maxConductivity}"
+            min="${this.minConductivity}"
+            max="${this.maxConductivityValue}"
+            @input="${(evt) => this.maxConductivityChanged(evt)}"
+          />
+        </div>
+      </div>
+      <div>
+        <label>
+          <input
+            class="vox_filter_include_undefined"
+            type="checkbox"
+            value="fixme"
+            checked
+          />
+          ${i18next.t('vox_filter_undefined_conductivity')}
+        </label>
+      </div>
+    </form>`;
+  }
+
+  private renderLogicalOperators() {
+    return html`<form class="ui form">
+      <div class="inline fields">
+        <div class="field">
+          <div class="ui radio checkbox">
+            <input
+              type="radio"
+              id="operator_and"
+              name="operator"
+              value="0"
+              checked
+            />
+            <label for="operator_and">${i18next.t('vox_filter_and')}</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui radio checkbox">
+            <input type="radio" id="operator_or" name="operator" value="1" />
+            <label for="operator_or">${i18next.t('vox_filter_or')}</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui radio checkbox">
+            <input type="radio" id="operator_xor" name="operator" value="2" />
+            <label for="operator_xor">${i18next.t('vox_filter_xor')}</label>
+          </div>
+        </div>
+      </div>
+    </form>`;
+  }
+
   private renderLayerFilters({ isKlasse }: { isKlasse: boolean }) {
     const hideCheckboxColor =
       this.config!.voxelDataName !== 'Index' && !isKlasse;
-    const defaultFilter = isKlasse ? ('or' as const) : ('and' as const);
     return html`
-      <form class="ui form">
-        <div class="inline fields">
-          <div class="field">
-            <div class="ui radio checkbox">
-              <input
-                type="radio"
-                id="operator_and"
-                name="operator"
-                value="0"
-                ?checked="${defaultFilter === 'and'}"
-              />
-              <label for="operator_and">${i18next.t('vox_filter_and')}</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui radio checkbox">
-              <input
-                type="radio"
-                id="operator_or"
-                name="operator"
-                value="1"
-                ?checked="${defaultFilter === 'or'}"
-              />
-              <label for="operator_or">${i18next.t('vox_filter_or')}</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui radio checkbox">
-              <input type="radio" id="operator_xor" name="operator" value="2" />
-              <label for="operator_xor">${i18next.t('vox_filter_xor')}</label>
-            </div>
-          </div>
-        </div>
-      </form>
       <form class="lithology-checkbox">
         <div class="filter-label">${i18next.t('vox_filter_lithology')}</div>
         ${'lithology' in this.config!.voxelFilter!
