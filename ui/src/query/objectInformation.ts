@@ -57,6 +57,7 @@ export function extractVoxelAttributes(
           value[0] <= -9999
             ? i18next.t('vox_filter_undefined_lithology')
             : value;
+
         return [
           i18next.t('vox_filter_hydraulic_conductivity'),
           valueOrUndefined,
