@@ -361,7 +361,6 @@
   "vox_filter_hydraulic_conductivity": "Hydraulische Leitfähigkeit",
   "vox_filter_lithology": "Modelliereinheit",
   "vox_filter_klasse": "Durchlässigkeit",
-  "vox_filter_klasse_undefined": "Undefinierte Durchlässigkeit",
   "vox_filter_max": "Max",
   "vox_filter_min": "Min",
   "vox_filter_or": "OR",

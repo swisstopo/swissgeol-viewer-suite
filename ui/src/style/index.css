@@ -583,7 +583,6 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
 .lithology-filter-buttons {
   display: flex;
   column-gap: 10px;
-  margin-top: 14px;
 }
 
 .popup-arrow {

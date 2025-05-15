@@ -83,8 +83,9 @@ export class NgmVoxelFilter extends LitElementI18n {
     );
     const operator = this.querySelector<HTMLInputElement>(
       'input[name="operator"]:checked',
-    )!;
-    shader.setUniform('u_filter_operator', parseInt(operator.value, 10));
+    );
+    const value = operator ? parseInt(operator.value, 10) : 0;
+    shader.setUniform('u_filter_operator', value);
     shader.setUniform(
       'u_filter_include_undefined_conductivity',
       this.includeUndefinedConductivity.checked,
@@ -236,23 +237,6 @@ export class NgmVoxelFilter extends LitElementI18n {
       this.config!.voxelDataName !== 'Index' && !isKlasse;
     return html`
       <form class="lithology-checkbox">
-        <div class="filter-label">${i18next.t('vox_filter_lithology')}</div>
-        ${'lithology' in this.config!.voxelFilter!
-          ? repeat(
-              (this.config!.voxelFilter as LithologyVoxelFilter).lithology,
-              (lithology, index: number) =>
-                html` <label>
-                  <input type="checkbox" value="${lithology.value}" checked />
-                  <div
-                    ?hidden=${hideCheckboxColor}
-                    style="background-color: ${this.config!.voxelColors?.colors[
-                      index
-                    ]}; width: 20px;"
-                  ></div>
-                  ${i18next.t(lithology.label)}
-                </label>`,
-            )
-          : ''}
         <div class="lithology-filter-buttons">
           <button
             class="ui button"
@@ -277,6 +261,27 @@ export class NgmVoxelFilter extends LitElementI18n {
             ${i18next.t('vox_filter_unselect_all')}
           </button>
         </div>
+        <div class="filter-label">
+          ${isKlasse
+            ? i18next.t('vox_filter_klasse')
+            : i18next.t('vox_filter_lithology')}
+        </div>
+        ${'lithology' in this.config!.voxelFilter!
+          ? repeat(
+              (this.config!.voxelFilter as LithologyVoxelFilter).lithology,
+              (lithology, index: number) =>
+                html` <label>
+                  <input type="checkbox" value="${lithology.value}" checked />
+                  <div
+                    ?hidden=${hideCheckboxColor}
+                    style="background-color: ${this.config!.voxelColors?.colors[
+                      index
+                    ]}; width: 20px;"
+                  ></div>
+                  ${i18next.t(lithology.label)}
+                </label>`,
+            )
+          : ''}
       </form>
     `;
   }
