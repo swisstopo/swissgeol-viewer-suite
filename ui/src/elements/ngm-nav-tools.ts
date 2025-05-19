@@ -3,22 +3,24 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { html } from 'lit';
 import draggable from './draggable';
 import { DEFAULT_VIEW } from '../constants';
-import { ConstantPositionProperty, Event, Scene, Viewer } from 'cesium';
 import {
   ArcType,
   CallbackProperty,
   Cartesian3,
   Cartographic,
   Color,
+  ConstantPositionProperty,
   CustomDataSource,
   Entity,
+  Event,
   JulianDate,
   KeyboardEventModifier,
   Matrix4,
   PolylineCollection,
-  Transforms,
+  Scene,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
+  Viewer,
 } from 'cesium';
 import type { Interactable } from '@interactjs/types';
 import { classMap } from 'lit/directives/class-map.js';
@@ -265,22 +267,17 @@ export class NgmNavTools extends LitElementI18n {
         showSnackbarError(i18next.t('nav_tools_out_glob_warn'));
         return;
       }
-      this.addTargetPoint(position, true);
+      this.addTargetPoint(position);
     }
     syncTargetParam(position && Cartographic.fromCartesian(position));
     NavToolsStore.setTargetPointPosition(position);
     this.toggleAxis(position);
   }
 
-  addTargetPoint(center: Cartesian3, lookAtTransform = false) {
+  addTargetPoint(center: Cartesian3) {
     this.showTargetPoint = true;
     this.refIcon.position = new ConstantPositionProperty(center);
-    const cam = this.viewer!.camera;
     this.refIcon.show = true;
-    if (lookAtTransform) {
-      const transform = Transforms.eastNorthUpToFixedFrame(center);
-      cam.lookAtTransform(transform);
-    }
     document.addEventListener('keydown', this.ctrlListener);
   }
 
@@ -325,8 +322,6 @@ export class NgmNavTools extends LitElementI18n {
     this.addTargetPoint(center);
     const camera = this.viewer!.camera;
     lookAtPoint(center, camera);
-    const transform = Transforms.eastNorthUpToFixedFrame(center);
-    camera.lookAtTransform(transform);
     this.toggleAxis(center);
 
     this.viewer!.scene.screenSpaceCameraController.enableInputs = true;
