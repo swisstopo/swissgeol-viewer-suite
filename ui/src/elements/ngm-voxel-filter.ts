@@ -24,7 +24,7 @@ export class NgmVoxelFilter extends LitElementI18n {
   @query('.max-conductivity')
   accessor maxConductivityInput!: HTMLInputElement;
   @query('.vox_filter_include_undefined')
-  accessor includeUndefinedConductivity!: HTMLInputElement;
+  accessor includeUndefinedConductivity: HTMLInputElement | null = null;
   @queryAll('.lithology-checkbox input[type="checkbox"]')
   accessor lithologyCheckbox!: NodeListOf<HTMLInputElement>;
 
@@ -88,7 +88,7 @@ export class NgmVoxelFilter extends LitElementI18n {
     shader.setUniform('u_filter_operator', value);
     shader.setUniform(
       'u_filter_include_undefined_conductivity',
-      this.includeUndefinedConductivity.checked,
+      this.includeUndefinedConductivity?.checked ?? true,
     );
 
     this.viewer.scene.requestRender();
@@ -115,7 +115,9 @@ export class NgmVoxelFilter extends LitElementI18n {
     this.querySelectorAll<HTMLFormElement>('.content-container form').forEach(
       (form) => form.reset(),
     );
-    this.includeUndefinedConductivity.checked = true;
+    if (this.includeUndefinedConductivity) {
+      this.includeUndefinedConductivity.checked = true;
+    }
   }
 
   firstUpdated() {
