@@ -76,9 +76,6 @@ const shouldShowDisclaimer = !isLocalhost;
 
 const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
   let sse = 2;
-  if (isLocalhost) {
-    sse = 20;
-  }
   if (searchParams.has('maximumScreenSpaceError')) {
     sse = parseFloat(searchParams.get('maximumScreenSpaceError')!);
   }
