@@ -1,21 +1,49 @@
-import {customElement, property} from 'lit/decorators.js';
-import {LitElementI18n} from '../../i18n.js';
-import {css, html} from 'lit';
-import {classMap} from 'lit/directives/class-map.js';
-import {IconKey} from '../../icons/icons';
+import { customElement, property } from 'lit/decorators.js';
+import { LitElementI18n } from '../../i18n.js';
+import { css, html } from 'lit';
+import { classMap } from 'lit/directives/class-map.js';
+import { IconKey } from '../../icons/icons';
 import i18next from 'i18next';
-import '../../components/core';
+import 'src/features/core';
 
 @customElement('ngm-menu-item')
 export class MenuItem extends LitElementI18n {
-  @property({type: String})
+  @property({ type: String })
   accessor title: string = '';
+
   @property()
   accessor icon: IconKey = 'config';
-  @property({type: Boolean, attribute: 'isactive', reflect: true})
+
+  @property({ type: Number })
+  accessor counter = 0;
+
+  @property({ type: Boolean, attribute: 'isactive', reflect: true })
   accessor isActive: boolean = false;
-  @property({type: Boolean})
+
+  @property({ type: Boolean })
   accessor isMobile: boolean = false;
+
+  render() {
+    return html`
+      <div class="container">
+        <div class="box ${classMap({ isActive: this.isActive })}">
+          <div class="icon">
+            <ngm-core-icon icon=${this.icon}></ngm-core-icon>
+            ${this.counter === 0
+              ? ''
+              : html`
+                  <ngm-core-chip variant="highlight">
+                    ${this.counter}
+                  </ngm-core-chip>
+                `}
+          </div>
+          <div class="title" ?hidden="${this.isMobile}">
+            ${i18next.t(this.title)}
+          </div>
+        </div>
+      </div>
+    `;
+  }
 
   static readonly styles = css`
     :host {
@@ -56,6 +84,7 @@ export class MenuItem extends LitElementI18n {
     }
 
     .container .box > .icon {
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -99,20 +128,11 @@ export class MenuItem extends LitElementI18n {
     :host([isactive]) .container .box .icon {
       color: var(--color-bg);
     }
-  `;
 
-  render() {
-    return html`
-      <div class="container">
-        <div class="box ${classMap({'isActive': this.isActive})}">
-          <div class="icon">
-            <ngm-core-icon icon=${this.icon}></ngm-core-icon>
-          </div>
-          <div class="title" ?hidden="${this.isMobile}">
-            ${i18next.t(this.title)}
-          </div>
-        </div>
-      </div>
-    `;
-  }
+    ngm-core-chip {
+      position: absolute;
+      top: -8px;
+      right: -5px;
+    }
+  `;
 }

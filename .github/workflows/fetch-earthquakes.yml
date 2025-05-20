@@ -1,0 +1,33 @@
+name: Fetch Earthquakes
+
+on:
+  workflow_dispatch:
+
+  # Run this workflow every night
+  schedule:
+    - cron:  '0 10 * * *'
+
+jobs:
+  fetch-earthquakes:
+    name: "fetch earthquakes"
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID_DOWNLOAD}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_DOWNLOAD}}
+      AWS_DEFAULT_REGION: eu-west-1
+    steps:
+      - name: 'Fetch last 90 days'
+        run: |
+          FILENAME="earthquakes_last_90d.txt"
+          STARTTIME=$(date -d '-90 days' +'%FT%H:%M:%S')
+          ENDTIME=$(date +'%FT%H:%M:%S')
+          curl --fail "http://arclink.ethz.ch/fdsnws/event/1/query?starttime=$STARTTIME&endtime=$ENDTIME&minmagnitude=1&format=text&nodata=404&EventType=earthquake" > $FILENAME    
+          aws s3 --debug cp --cache-control no-cache $FILENAME s3://ngmpub-download-bgdi-ch/earthquakes/
+      - name: 'Fetch all with a magnitude greater than three'
+        run: |
+          FILENAME="earthquakes_magnitude_gt_3.txt"
+          STARTTIME="1979-01-01T00:00:00"
+          ENDTIME=$(date +'%FT%H:%M:%S')
+          curl --fail "http://arclink.ethz.ch/fdsnws/event/1/query?starttime=$STARTTIME&endtime=$ENDTIME&minmagnitude=3&format=text&nodata=404&EventType=earthquake" > $FILENAME
+          aws s3 --debug cp --cache-control no-cache $FILENAME s3://ngmpub-download-bgdi-ch/earthquakes/

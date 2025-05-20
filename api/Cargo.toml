@@ -23,7 +23,7 @@ axum-extra = { version = "0.9.6", features = ["typed-header"] }
 axum-macros = "0.4.2"
 hyper = { version = "1.5.0", features = ["full"] }
 tower = "0.5.1"
-tower-http = { version = "0.6.1", features = ["cors", "trace"] }
+tower-http = { version = "0.6.1", features = ["cors", "trace", "set-header"] }
 
 # Database
 sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres", "uuid", "time"] }
@@ -51,4 +51,4 @@ reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"
 url = "2.5"
 uuid = { version = "1.11", features = ["serde", "v4"] }
 jsonwebtoken = "9.3"
-rand = "0.8"
+rand = "0.8.0"

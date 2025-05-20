@@ -1,6 +1,6 @@
 services:
   api:
-    image: swissgeol-viewer-app/api:local
+    image: swissgeol-viewer-suite/api:local
     build:
       context: ./api
       dockerfile: DockerfileDev
@@ -19,13 +19,17 @@ services:
       - .env
 
   ui:
-    image: swissgeol-viewer-app/ui:local
+    image: swissgeol-viewer-suite/ui:local
     build:
       context: ./ui
       dockerfile: DockerfileDev
+      args:
+        - GITHUB_TOKEN
     init: true
     ports:
       - "8000:8000"
+    environment:
+      - GITHUB_TOKEN
     depends_on:
       - api
       - abbreviator

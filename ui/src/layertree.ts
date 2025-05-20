@@ -1,5 +1,10 @@
-import {CustomDataSource, GeoJsonDataSource, ImageryLayer, VoxelPrimitive} from 'cesium';
-import {PickableCesium3DTileset} from './layers/helpers';
+import {
+  CustomDataSource,
+  GeoJsonDataSource,
+  ImageryLayer,
+  VoxelPrimitive,
+} from 'cesium';
+import { PickableCesium3DTileset } from './layers/helpers';
 import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer';
 
 export interface LayerTreeNode {
@@ -36,20 +41,27 @@ export interface LayerTreeNode {
   children?: LayerTreeNode[];
   voxelDataName?: string;
   voxelColors?: VoxelColors;
-  voxelFilter?: any;
-  customAsset?: boolean
+  voxelFilter?: VoxelFilter;
+  customAsset?: boolean;
   wmtsTimes?: string[];
   wmtsCurrentTime?: string;
 }
 
-type LayerInstances = GeoJsonDataSource | PickableCesium3DTileset | VoxelPrimitive | ImageryLayer | CustomDataSource | EarthquakeVisualizer;
-export type LayerPromise = Promise<GeoJsonDataSource> |
-    Promise<PickableCesium3DTileset> |
-    Promise<VoxelPrimitive> |
-    Promise<ImageryLayer> |
-    Promise<CustomDataSource> |
-    Promise<EarthquakeVisualizer> |
-    Promise<LayerInstances>;
+type LayerInstances =
+  | GeoJsonDataSource
+  | PickableCesium3DTileset
+  | VoxelPrimitive
+  | ImageryLayer
+  | CustomDataSource
+  | EarthquakeVisualizer;
+export type LayerPromise =
+  | Promise<GeoJsonDataSource>
+  | Promise<PickableCesium3DTileset>
+  | Promise<VoxelPrimitive>
+  | Promise<ImageryLayer>
+  | Promise<CustomDataSource>
+  | Promise<EarthquakeVisualizer>
+  | Promise<LayerInstances>;
 
 export interface LayerConfig extends LayerTreeNode {
   add?: (value: number) => void;
@@ -68,20 +80,25 @@ export interface LayerConfig extends LayerTreeNode {
 
 export interface VoxelColors {
   label?: string;
-  range: number[];
+  range: [number, number];
   noData: number;
   undefinedData: number;
   colors: string[];
 }
 
-export type VoxelFilter = {
-  conductivityRange: [number, number],
-  lithologyDataName: string,
-  conductivityDataName: string,
+export interface VoxelFilter {
+  conductivityRange: [number, number];
+  lithologyDataName: string;
+  conductivityDataName: string;
 }
 
-export type IndexVoxelFilter = VoxelFilter & {
-  lithology: {index: number, label: string}[]
+export interface LithologyVoxelFilter extends VoxelFilter {
+  lithology: LithologyFilterItem[];
+}
+
+export interface LithologyFilterItem {
+  value: number;
+  label: string;
 }
 
 export enum LayerType {
@@ -106,16 +123,16 @@ const SWISSTOPO_LABEL_STYLE = {
   labelColor: {
     conditions: [
       ['${OBJEKTART} === "See"', 'color("blue")'],
-      ['true', 'color("black")']
-    ]
+      ['true', 'color("black")'],
+    ],
   },
   labelOutlineColor: 'color("white", 1)',
   labelOutlineWidth: 5,
   font: {
     conditions: [
       ['${OBJEKTART} === "See"', '"bold 32px arial"'],
-      ['true', '"32px arial"']
-    ]
+      ['true', '"32px arial"'],
+    ],
   },
   scaleByDistance: {
     conditions: [
@@ -127,8 +144,8 @@ const SWISSTOPO_LABEL_STYLE = {
       ['${LOD} === "2"', 'vec4(1000, 1, 30000, 0.4)'],
       ['${LOD} === "1"', 'vec4(1000, 1, 50000, 0.4)'],
       ['${LOD} === "0"', 'vec4(1000, 1, 500000, 0.4)'],
-      ['true', 'vec4(1000, 1, 10000, 0.4)']
-    ]
+      ['true', 'vec4(1000, 1, 10000, 0.4)'],
+    ],
   },
   distanceDisplayCondition: {
     conditions: [
@@ -140,22 +157,45 @@ const SWISSTOPO_LABEL_STYLE = {
       ['${LOD} === "2"', 'vec2(0, 30000)'],
       ['${LOD} === "1"', 'vec2(0, 50000)'],
       ['${LOD} === "0"', 'vec2(0, 500000)'],
-    ]
-  }
+    ],
+  },
 };
 
-
 // Property orders
-const DOWNLOAD_PROP_ORDER = ['Download Move', 'Download GoCad', 'Download DXF', 'Download ASCII', 'Download All data'];
+const DOWNLOAD_PROP_ORDER = [
+  'Download Move',
+  'Download GoCad',
+  'Download DXF',
+  'Download ASCII',
+  'Download All data',
+];
 const DOWNLOAD_ROOT_GEOMOL = 'https://download.swissgeol.ch/geomol/';
 const DOWNLOAD_ROOT_VOXEL = 'https://download.swissgeol.ch/voxel/';
 const CENOZOIC_BEDROCK_ORDER = ['Name', 'Horizon', ...DOWNLOAD_PROP_ORDER];
 CENOZOIC_BEDROCK_ORDER.splice(6, 0, 'Download ESRI-GRID');
-const CONSOLIDATED_ORDER = ['Name', 'Horizon', 'HARMOS-ORIGINAL', ...DOWNLOAD_PROP_ORDER];
-const FAULTS_ORDER = ['Name', 'Source', 'Status', 'Type', 'Version', ...DOWNLOAD_PROP_ORDER];
+const CONSOLIDATED_ORDER = [
+  'Name',
+  'Horizon',
+  'HARMOS-ORIGINAL',
+  ...DOWNLOAD_PROP_ORDER,
+];
+const FAULTS_ORDER = [
+  'Name',
+  'Source',
+  'Status',
+  'Type',
+  'Version',
+  ...DOWNLOAD_PROP_ORDER,
+];
 const TEMPERATURE_HORIZON_ORDER = ['name', 'temp_c'];
 const TEMPERATURE_HORIZON_BGL_ORDER = ['name', 'temp_c', 'depth_bgl'];
-const EARTHQUAKES_PROP_ORDER = ['Time', 'Magnitude', 'Depthkm', 'EventLocationName', 'Details'];
+const EARTHQUAKES_PROP_ORDER = [
+  'Time',
+  'Magnitude',
+  'Depthkm',
+  'EventLocationName',
+  'Details',
+];
 
 const voxelNoData = -99999;
 const voxelUndefinedData = -9999;
@@ -204,18 +244,14 @@ const temperaturVoxelColors: VoxelColors = {
     'rgb(255, 215, 215)',
     'rgb(255, 235, 235)',
     'rgb(255, 255, 255)',
-  ]
+  ],
 };
 
 const logkVoxelColors: VoxelColors = {
   range: [-9, -1],
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
-  colors: [
-    'rgb(0, 102, 255)',
-    'rgb(255, 204, 0)',
-    'rgb(204, 0, 0)',
-  ],
+  colors: ['rgb(0, 102, 255)', 'rgb(255, 204, 0)', 'rgb(204, 0, 0)'],
 };
 
 const birrIndexVoxelColors: VoxelColors = {
@@ -292,75 +328,75 @@ const birrIndexVoxelColors: VoxelColors = {
   ],
 };
 
-const birrIndexVoxelFilter: IndexVoxelFilter = {
+const birrIndexVoxelFilter: LithologyVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
-    {index: 22, label: 'künstliche Aufschüttung'},
-    {index: 46, label: 'Überschwemmungssedimente'},
-    {index: 53, label: 'Verlandungssedimente'},
-    {index: 3, label: 'Bachschutt'},
-    {index: 16, label: 'Hanglehm'},
-    {index: 40, label: 'Schwemmlehm'},
-    {index: 17, label: 'Hangschutt'},
-    {index: 38, label: 'Rutschungsschutt'},
-    {index: 24, label: 'Löss'},
-    {index: 42, label: 'Stetten-Lehm'},
-    {index: 61, label: 'Eiszeitliche Seesedimente'},
-    {index: 31, label: 'Pulveren-Moräne'},
-    {index: 44, label: 'Tanklager-Formation'},
-    {index: 26, label: 'Mellingen-Lehm'},
-    {index: 27, label: 'Mellingen-Moräne'},
-    {index: 62, label: 'Mellingen-Schotter'},
-    {index: 60, label: 'Birmenstorf-Glazigene Sed.'},
-    {index: 14, label: 'Gruemet-Schotter'},
-    {index: 1, label: 'Aaretal-Schotter'},
-    {index: 34, label: 'Reusstal-Schotter'},
-    {index: 23, label: 'Limmattal-Schotter'},
-    {index: 51, label: 'Dättwil-Schotter'},
-    {index: 8, label: 'Bünztalschotter'},
-    {index: 29, label: 'Oberhard-Moräne'},
-    {index: 30, label: 'Othmarsingen-Moräne'},
-    {index: 13, label: 'Flüefeld-Schotter'},
-    {index: 5, label: 'Birr-Schotter'},
-    {index: 36, label: 'Rüsshalde-Formation'},
-    {index: 2, label: 'Ämmert-Moräne'},
-    {index: 47, label: 'Aemmert-Schotter'},
-    {index: 28, label: 'Mülligen-Schotter'},
-    {index: 21, label: 'Hinterbänkler-Formation'},
-    {index: 10, label: 'Dättwil-Lehm'},
-    {index: 41, label: 'Seebli-Formation'},
-    {index: 11, label: 'Fahracher-Formation'},
-    {index: 18, label: 'Hard-Schotter'},
-    {index: 25, label: 'Lupfig-Schotter'},
-    {index: 48, label: 'Reusstal-Sand'},
-    {index: 33, label: 'Reusstal-Lehm'},
-    {index: 56, label: 'Vogelsang-Formation'},
-    {index: 12, label: 'Fislisbach-Schotter'},
-    {index: 9, label: 'Burghalden-Moräne'},
-    {index: 35, label: 'Rüfenach-Moräne'},
-    {index: 49, label: 'Rüfenach-Schotter'},
-    {index: 50, label: 'Ruckfeld-Schotter'},
-    {index: 19, label: 'Hausen-Lehm'},
-    {index: 39, label: 'Schlattboden-Schotter'},
-    {index: 63, label: 'Remigen-Moräne'},
-    {index: 32, label: 'Remigen-Schotter'},
-    {index: 64, label: 'Remigen-Sediment'},
-    {index: 20, label: 'Hausen-Moräne'},
-    {index: 4, label: 'Birr-Lehm'},
-    {index: 45, label: 'Tannholz-Formation'},
-    {index: 52, label: 'Buenztal-Lehm'},
-    {index: 54, label: 'Birch-Formation'},
-    {index: 37, label: 'Rütenen-Moräne'},
-    {index: 43, label: 'Strick-Schotter'},
-    {index: 57, label: 'Oetlisberg-Schotter'},
-    {index: 15, label: 'Habsburg-Schotter'},
-    {index: 6, label: 'Brand-Formation'},
-    {index: 55, label: 'Moos-Lehm'},
-    {index: 7, label: 'Brand-Moräne'},
-    {index: 65, label: 'Riniken-Moräne'},
-    {index: 66, label: 'Riniken-Seesedimente'},
-    {index: 67, label: 'Bruggerberg-Schotter'},
+    { value: voxelUndefinedData, label: t('vox_filter_undefined_lithology') },
+    { value: 22, label: 'künstliche Aufschüttung' },
+    { value: 46, label: 'Überschwemmungssedimente' },
+    { value: 53, label: 'Verlandungssedimente' },
+    { value: 3, label: 'Bachschutt' },
+    { value: 16, label: 'Hanglehm' },
+    { value: 40, label: 'Schwemmlehm' },
+    { value: 17, label: 'Hangschutt' },
+    { value: 38, label: 'Rutschungsschutt' },
+    { value: 24, label: 'Löss' },
+    { value: 42, label: 'Stetten-Lehm' },
+    { value: 61, label: 'Eiszeitliche Seesedimente' },
+    { value: 31, label: 'Pulveren-Moräne' },
+    { value: 44, label: 'Tanklager-Formation' },
+    { value: 26, label: 'Mellingen-Lehm' },
+    { value: 27, label: 'Mellingen-Moräne' },
+    { value: 62, label: 'Mellingen-Schotter' },
+    { value: 60, label: 'Birmenstorf-Glazigene Sed.' },
+    { value: 14, label: 'Gruemet-Schotter' },
+    { value: 1, label: 'Aaretal-Schotter' },
+    { value: 34, label: 'Reusstal-Schotter' },
+    { value: 23, label: 'Limmattal-Schotter' },
+    { value: 51, label: 'Dättwil-Schotter' },
+    { value: 8, label: 'Bünztalschotter' },
+    { value: 29, label: 'Oberhard-Moräne' },
+    { value: 30, label: 'Othmarsingen-Moräne' },
+    { value: 13, label: 'Flüefeld-Schotter' },
+    { value: 5, label: 'Birr-Schotter' },
+    { value: 36, label: 'Rüsshalde-Formation' },
+    { value: 2, label: 'Ämmert-Moräne' },
+    { value: 47, label: 'Aemmert-Schotter' },
+    { value: 28, label: 'Mülligen-Schotter' },
+    { value: 21, label: 'Hinterbänkler-Formation' },
+    { value: 10, label: 'Dättwil-Lehm' },
+    { value: 41, label: 'Seebli-Formation' },
+    { value: 11, label: 'Fahracher-Formation' },
+    { value: 18, label: 'Hard-Schotter' },
+    { value: 25, label: 'Lupfig-Schotter' },
+    { value: 48, label: 'Reusstal-Sand' },
+    { value: 33, label: 'Reusstal-Lehm' },
+    { value: 56, label: 'Vogelsang-Formation' },
+    { value: 12, label: 'Fislisbach-Schotter' },
+    { value: 9, label: 'Burghalden-Moräne' },
+    { value: 35, label: 'Rüfenach-Moräne' },
+    { value: 49, label: 'Rüfenach-Schotter' },
+    { value: 50, label: 'Ruckfeld-Schotter' },
+    { value: 19, label: 'Hausen-Lehm' },
+    { value: 39, label: 'Schlattboden-Schotter' },
+    { value: 63, label: 'Remigen-Moräne' },
+    { value: 32, label: 'Remigen-Schotter' },
+    { value: 64, label: 'Remigen-Sediment' },
+    { value: 20, label: 'Hausen-Moräne' },
+    { value: 4, label: 'Birr-Lehm' },
+    { value: 45, label: 'Tannholz-Formation' },
+    { value: 52, label: 'Buenztal-Lehm' },
+    { value: 54, label: 'Birch-Formation' },
+    { value: 37, label: 'Rütenen-Moräne' },
+    { value: 43, label: 'Strick-Schotter' },
+    { value: 57, label: 'Oetlisberg-Schotter' },
+    { value: 15, label: 'Habsburg-Schotter' },
+    { value: 6, label: 'Brand-Formation' },
+    { value: 55, label: 'Moos-Lehm' },
+    { value: 7, label: 'Brand-Moräne' },
+    { value: 65, label: 'Riniken-Moräne' },
+    { value: 66, label: 'Riniken-Seesedimente' },
+    { value: 67, label: 'Bruggerberg-Schotter' },
   ],
 };
 
@@ -394,31 +430,55 @@ const aaretalIndexVoxelColors: VoxelColors = {
   ],
 };
 
-const aaretalVoxelFilter: IndexVoxelFilter = {
+const aaretalVoxelFilter: LithologyVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
-    {index: 3, label: 'Verlandungssedimente, Sumpf, Ried'},
-    {index: 4, label: 'Subrezente bis rezente Alluvionen (Fluss- und Bachschotter, Überschwemmungssediment, undifferenziert)'},
-    {index: 5, label: 'Hangschutt / Hanglehm (undifferenziert)'},
-    {index: 6, label: 'Bachschutt / Bachschuttkegel (undifferenziert)'},
-    {index: 7, label: 'Spät- bis postglaziale Schotter'},
-    {index: 8, label: 'Spät- bis postglaziale Stausedimente und Seeablagerungen (undifferenziert)'},
-    {index: 9, label: 'Spätglaziale Moräne (undifferenziert)'},
-    {index: 10, label: 'Rückzugsschotter der Letzten Vergletscherung ("Felderschotter" und Äquivalente)'},
-    {index: 11, label: 'Stauschotter (undifferenziert)'},
-    {index: 12, label: 'Rinnenschotter'},
-    {index: 13, label: 'Moräne der Letzten Vergletscherung'},
-    {index: 14, label: 'Vorstossschotter der Letzten Vergletscherung (vorwiegend Münsingen- u. Karlsruhe-Schotter)'},
-    {index: 15, label: 'Interglaziale Seetone (Eemzeitliche Seetone)'},
-    {index: 16, label: 'Rückzugsschotter der Vorletzten Vergletscherung, Kies-Sand-Komplex von Kleinhöchstetten'},
-    {index: 17, label: 'Moräne der Vorletzten Vergletscherung ("Altmoräne")'},
-    {index: 18, label: 'Vorletzteiszeitliche glaziolakustrische Ablagerungen und Schlammmoräne'},
-    {index: 19, label: 'Alte Deltaschotter im Belpmoos'},
-    {index: 20, label: 'Uttigen-Bümberg-Steghalde-Schotter'},
-    {index: 21, label: 'Oppligen-Sand'},
-    {index: 22, label: 'Raintal-Deltaschotter, Hani-Deltaschotter'},
-    {index: 23, label: 'Alte Seetone'},
+    { value: voxelUndefinedData, label: t('vox_filter_undefined_lithology') },
+    { value: 3, label: 'Verlandungssedimente, Sumpf, Ried' },
+    {
+      value: 4,
+      label:
+        'Subrezente bis rezente Alluvionen (Fluss- und Bachschotter, Überschwemmungssediment, undifferenziert)',
+    },
+    { value: 5, label: 'Hangschutt / Hanglehm (undifferenziert)' },
+    { value: 6, label: 'Bachschutt / Bachschuttkegel (undifferenziert)' },
+    { value: 7, label: 'Spät- bis postglaziale Schotter' },
+    {
+      value: 8,
+      label:
+        'Spät- bis postglaziale Stausedimente und Seeablagerungen (undifferenziert)',
+    },
+    { value: 9, label: 'Spätglaziale Moräne (undifferenziert)' },
+    {
+      value: 10,
+      label:
+        'Rückzugsschotter der Letzten Vergletscherung ("Felderschotter" und Äquivalente)',
+    },
+    { value: 11, label: 'Stauschotter (undifferenziert)' },
+    { value: 12, label: 'Rinnenschotter' },
+    { value: 13, label: 'Moräne der Letzten Vergletscherung' },
+    {
+      value: 14,
+      label:
+        'Vorstossschotter der Letzten Vergletscherung (vorwiegend Münsingen- u. Karlsruhe-Schotter)',
+    },
+    { value: 15, label: 'Interglaziale Seetone (Eemzeitliche Seetone)' },
+    {
+      value: 16,
+      label:
+        'Rückzugsschotter der Vorletzten Vergletscherung, Kies-Sand-Komplex von Kleinhöchstetten',
+    },
+    { value: 17, label: 'Moräne der Vorletzten Vergletscherung ("Altmoräne")' },
+    {
+      value: 18,
+      label:
+        'Vorletzteiszeitliche glaziolakustrische Ablagerungen und Schlammmoräne',
+    },
+    { value: 19, label: 'Alte Deltaschotter im Belpmoos' },
+    { value: 20, label: 'Uttigen-Bümberg-Steghalde-Schotter' },
+    { value: 21, label: 'Oppligen-Sand' },
+    { value: 22, label: 'Raintal-Deltaschotter, Hani-Deltaschotter' },
+    { value: 23, label: 'Alte Seetone' },
   ],
 };
 
@@ -438,24 +498,61 @@ const genevaIndexVoxelColors: VoxelColors = {
     'rgb(255, 255, 0)',
     'rgb(168, 168, 0)',
     'rgb(255, 235, 191)',
-  ]
+  ],
 };
 
-
-const genevaIndexVoxelFilter: IndexVoxelFilter = {
+const genevaIndexVoxelFilter: LithologyVoxelFilter = {
   ...voxelFilter,
   lithology: [
-    {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
-    {index: 3000, label: 'Eboulis, Formations de pente, Colluvions, Limons de ruissellement'},
-    {index: 4000, label: 'Alluvions de terrasses'},
-    {index: 5000, label: 'Dépôts ou vases lacustres, tourbe, craie lacustre'},
-    {index: 6000, label: 'Formations supraglaciaires de retrait würmiens'},
-    {index: 7000, label: 'Moraine würmienne à cailloux et blocs alpins'},
-    {index: 8000, label: 'Dépôts intramorainiques ou intraformationnels würmiens'},
-    {index: 9000, label: 'Cailloutis morainiques profonds ou « Alluvion Ancienne »'},
-    {index: 10000, label: 'Interglaciaire Riss-Würm'},
-    {index: 11000, label: 'Formations de retrait rissiens'},
-    {index: 12000, label: 'Moraines à cailloux et blocs alpins rissiens'},
+    { value: voxelUndefinedData, label: t('vox_filter_undefined_lithology') },
+    {
+      value: 3000,
+      label:
+        'Eboulis, Formations de pente, Colluvions, Limons de ruissellement',
+    },
+    { value: 4000, label: 'Alluvions de terrasses' },
+    { value: 5000, label: 'Dépôts ou vases lacustres, tourbe, craie lacustre' },
+    { value: 6000, label: 'Formations supraglaciaires de retrait würmiens' },
+    { value: 7000, label: 'Moraine würmienne à cailloux et blocs alpins' },
+    {
+      value: 8000,
+      label: 'Dépôts intramorainiques ou intraformationnels würmiens',
+    },
+    {
+      value: 9000,
+      label: 'Cailloutis morainiques profonds ou « Alluvion Ancienne »',
+    },
+    { value: 10000, label: 'Interglaciaire Riss-Würm' },
+    { value: 11000, label: 'Formations de retrait rissiens' },
+    { value: 12000, label: 'Moraines à cailloux et blocs alpins rissiens' },
+  ],
+};
+
+const rheintalVoxelColors: VoxelColors = {
+  range: [0, 6],
+  noData: voxelNoData,
+  undefinedData: voxelUndefinedData,
+  colors: [
+    /* 1 */ 'rgb(0, 0, 255)',
+    /* 2 */ 'rgb(30, 144, 255)',
+    /* 3 */ 'rgb(173, 216, 230)',
+    /* 4 */ 'rgb(144, 238, 144)',
+    /* 5 */ 'rgb(255, 165, 0)',
+    /* 6 */ 'rgb(255, 255, 0)',
+  ],
+};
+
+const rheintalVoxelFilter: LithologyVoxelFilter = {
+  conductivityDataName: 'Klasse',
+  conductivityRange: [0, 6],
+  lithologyDataName: 'Klasse',
+  lithology: [
+    { value: 1, label: t('vox_filter_klasse_1') },
+    { value: 2, label: t('vox_filter_klasse_2') },
+    { value: 3, label: t('vox_filter_klasse_3') },
+    { value: 4, label: t('vox_filter_klasse_4') },
+    { value: 5, label: t('vox_filter_klasse_5') },
+    { value: 6, label: t('vox_filter_klasse_6') },
   ],
 };
 
@@ -487,47 +584,48 @@ const vispIndexVoxelColors: VoxelColors = {
     'rgb(53, 160, 0)', // 3
     'rgb(34, 102, 0)', // 4
     'rgb(199, 207, 175)', // 6
-  ]
-};
-
-const vispIndexVoxelFilter: IndexVoxelFilter = {
-  ...voxelFilter,
-  lithology: [
-    {index: voxelUndefinedData, label: t('vox_filter_undefined_lithology')},
-    {index: 54, label: 'Künstliche Ablagerung Lonzadeponie'},
-    {index: 14, label: 'Gehängeschutt'},
-    {index: 16, label: 'Bergsturzmaterial'},
-    {index: 31, label: 'Felssackung'},
-    {index: 30, label: 'Sackungsmasse Riedberg'},
-    {index: 40, label: 'Bachschuttablagerung'},
-    {index: 41, label: 'Bachschuttablagerung Baltschiederbach'},
-    {index: 44, label: 'Bachschuttablagerung Gamsa'},
-    {index: 42, label: 'Bachschuttablagerung Bietschbach'},
-    {index: 43, label: 'Bachschuttablagerung Chelchbach'},
-    {index: 45, label: 'Bachschuttablagerung Jolibach'},
-    {index: 46, label: 'Bachschuttablagerung Lonza'},
-    {index: 47, label: 'Bachschuttablagerung Saltina'},
-    {index: 48, label: 'Bachschuttablagerung Vispa'},
-    {index: 9, label: 'Rhoneschotter und Rhonesande'},
-    {index: 7, label: 'Obere Limnische Ablagerungen oli'},
-    {index: 8, label: 'Untere Limnische Ablagerungen uli'},
-    {index: 1, label: 'Limnische Ablagerungen'},
-    {index: 2, label: 'Limnische Ablagerungen 2'},
-    {index: 3, label: 'Limnische Ablagerungen 4'},
-    {index: 4, label: 'Limnische Ablagerungen 5'},
-    {index: 6, label: 'Moränenmaterial'},
   ],
 };
 
-export const voxelLayerToFilter: Record<string, IndexVoxelFilter> = {
-  'voxel_birrfeld_litho': birrIndexVoxelFilter,
-  'voxel_birrfeld_logk': birrIndexVoxelFilter,
-  'voxel_aaretal_litho': aaretalVoxelFilter,
-  'voxel_aaretal_logk': aaretalVoxelFilter,
-  'voxel_geneva_litho': genevaIndexVoxelFilter,
-  'voxel_geneva_logk': genevaIndexVoxelFilter,
-  'voxel_visp_litho': vispIndexVoxelFilter,
-  'voxel_visp_logk': vispIndexVoxelFilter,
+const vispIndexVoxelFilter: LithologyVoxelFilter = {
+  ...voxelFilter,
+  lithology: [
+    { value: voxelUndefinedData, label: t('vox_filter_undefined_lithology') },
+    { value: 54, label: 'Künstliche Ablagerung Lonzadeponie' },
+    { value: 14, label: 'Gehängeschutt' },
+    { value: 16, label: 'Bergsturzmaterial' },
+    { value: 31, label: 'Felssackung' },
+    { value: 30, label: 'Sackungsmasse Riedberg' },
+    { value: 40, label: 'Bachschuttablagerung' },
+    { value: 41, label: 'Bachschuttablagerung Baltschiederbach' },
+    { value: 44, label: 'Bachschuttablagerung Gamsa' },
+    { value: 42, label: 'Bachschuttablagerung Bietschbach' },
+    { value: 43, label: 'Bachschuttablagerung Chelchbach' },
+    { value: 45, label: 'Bachschuttablagerung Jolibach' },
+    { value: 46, label: 'Bachschuttablagerung Lonza' },
+    { value: 47, label: 'Bachschuttablagerung Saltina' },
+    { value: 48, label: 'Bachschuttablagerung Vispa' },
+    { value: 9, label: 'Rhoneschotter und Rhonesande' },
+    { value: 7, label: 'Obere Limnische Ablagerungen oli' },
+    { value: 8, label: 'Untere Limnische Ablagerungen uli' },
+    { value: 1, label: 'Limnische Ablagerungen' },
+    { value: 2, label: 'Limnische Ablagerungen 2' },
+    { value: 3, label: 'Limnische Ablagerungen 4' },
+    { value: 4, label: 'Limnische Ablagerungen 5' },
+    { value: 6, label: 'Moränenmaterial' },
+  ],
+};
+
+export const voxelLayerToFilter: Record<string, LithologyVoxelFilter> = {
+  voxel_birrfeld_litho: birrIndexVoxelFilter,
+  voxel_birrfeld_logk: birrIndexVoxelFilter,
+  voxel_aaretal_litho: aaretalVoxelFilter,
+  voxel_aaretal_logk: aaretalVoxelFilter,
+  voxel_geneva_litho: genevaIndexVoxelFilter,
+  voxel_geneva_logk: genevaIndexVoxelFilter,
+  voxel_rheintal_klasse: rheintalVoxelFilter,
+  voxel_visp_litho: vispIndexVoxelFilter,
+  voxel_visp_logk: vispIndexVoxelFilter,
 };
 
 // Layers
@@ -585,11 +683,10 @@ const geo_map_series: LayerTreeNode = {
           geocatId: 'f1455593-7571-48b0-8603-307ec59a6702',
           legend: 'ch.swisstopo.geologie-eiszeit-lgm-raster',
         },
-      ]
+      ],
     },
-  ]
+  ],
 };
-
 
 const geo_base: LayerTreeNode = {
   label: t('lyr_geological_bases_label'),
@@ -606,15 +703,38 @@ const geo_base: LayerTreeNode = {
           pickable: true,
           visible: false,
           displayed: false, // private until they have been re-integrated
-          restricted: ['ngm-dev-privileged', 'ngm-int-privileged', 'ngm-prod-privileged'], // private until they have been re-integrated
+          restricted: [
+            'ngm-dev-privileged',
+            'ngm-int-privileged',
+            'ngm-prod-privileged',
+          ], // private until they have been re-integrated
           // Temporarily disable the boreholes download, see https://jira.camptocamp.com/browse/GSNGM-936
           // downloadDataType: 'csv',
           // downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
-          propsOrder: ['bh_pub_XCOORD', 'bh_pub_YCOORD', 'bh_pub_ZCOORDB', 'bh_pub_ORIGNAME', 'bh_pub_NAMEPUB',
-            'bh_pub_SHORTNAME', 'bh_pub_BOHREDAT', 'bh_pub_BOHRTYP', 'bh_pub_GRUND', 'bh_pub_RESTRICTIO',
-            'bh_pub_TIEFEMD', 'bh_pub_DEPTHFROM', 'bh_pub_DEPTHTO', 'bh_pub_LAYERDESC', 'bh_pub_ORIGGEOL',
-            'bh_pub_LITHOLOGY', 'bh_pub_LITHOSTRAT', 'bh_pub_CHRONOSTR', 'bh_pub_TECTO', 'bh_pub_USCS1',
-            'bh_pub_USCS2', 'bh_pub_USCS3'],
+          propsOrder: [
+            'bh_pub_XCOORD',
+            'bh_pub_YCOORD',
+            'bh_pub_ZCOORDB',
+            'bh_pub_ORIGNAME',
+            'bh_pub_NAMEPUB',
+            'bh_pub_SHORTNAME',
+            'bh_pub_BOHREDAT',
+            'bh_pub_BOHRTYP',
+            'bh_pub_GRUND',
+            'bh_pub_RESTRICTIO',
+            'bh_pub_TIEFEMD',
+            'bh_pub_DEPTHFROM',
+            'bh_pub_DEPTHTO',
+            'bh_pub_LAYERDESC',
+            'bh_pub_ORIGGEOL',
+            'bh_pub_LITHOLOGY',
+            'bh_pub_LITHOSTRAT',
+            'bh_pub_CHRONOSTR',
+            'bh_pub_TECTO',
+            'bh_pub_USCS1',
+            'bh_pub_USCS2',
+            'bh_pub_USCS3',
+          ],
           geocatId: '3996dfad-69dd-418f-a4e6-5f32b96c760a',
         },
         {
@@ -625,11 +745,15 @@ const geo_base: LayerTreeNode = {
           pickable: true,
           visible: false,
           displayed: false,
-          restricted: ['ngm-dev-privileged', 'ngm-int-privileged', 'ngm-prod-privileged'], // the group required to see this layer
+          restricted: [
+            'ngm-dev-privileged',
+            'ngm-int-privileged',
+            'ngm-prod-privileged',
+          ], // the group required to see this layer
           aws_s3_bucket: 'ngm-protected-prod',
           aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
         },
-      ]
+      ],
     },
     {
       label: t('lyr_cross_section_label'),
@@ -644,9 +768,19 @@ const geo_base: LayerTreeNode = {
           visible: false,
           displayed: false,
           pickable: true,
-          propsOrder: ['CSGA25Px_No', 'CSGA25Px_Name', 'CSGA25Px_Pub', 'CSGA25Px_Author', 'CSGA25Px_Plate_No',
-            'CSGA25Px_Section_No', 'CSGA25Px_Sec_Type', 'CSGA25Px_Scale', 'CSGA25Px_Vert_Exag', 'CSGA25Px_Link_Orig',
-            'CSGA25Px_Link_Shp'],
+          propsOrder: [
+            'CSGA25Px_No',
+            'CSGA25Px_Name',
+            'CSGA25Px_Pub',
+            'CSGA25Px_Author',
+            'CSGA25Px_Plate_No',
+            'CSGA25Px_Section_No',
+            'CSGA25Px_Sec_Type',
+            'CSGA25Px_Scale',
+            'CSGA25Px_Vert_Exag',
+            'CSGA25Px_Link_Orig',
+            'CSGA25Px_Link_Shp',
+          ],
           geocatId: '97197401-6019-49b0-91d6-eaf35d57529c',
         },
         {
@@ -670,7 +804,7 @@ const geo_base: LayerTreeNode = {
           displayed: false,
           pickable: true,
           geocatId: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
-          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Cross-Sections.zip'
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Cross-Sections.zip',
         },
         {
           type: LayerType.tiles3d,
@@ -681,12 +815,18 @@ const geo_base: LayerTreeNode = {
           visible: false,
           displayed: false,
           pickable: true,
-          propsOrder: ['CS-AAT-Cross-section', 'CS-AAT-Lithostratigraphy', 'CS-AAT-Type', 'CS-AAT-Legend', 'CS-AAT-Report'],
+          propsOrder: [
+            'CS-AAT-Cross-section',
+            'CS-AAT-Lithostratigraphy',
+            'CS-AAT-Type',
+            'CS-AAT-Legend',
+            'CS-AAT-Report',
+          ],
           geocatId: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
-        }
-      ]
+        },
+      ],
     },
-  ]
+  ],
 };
 
 const geo_energy: LayerTreeNode = {
@@ -826,9 +966,9 @@ const geo_energy: LayerTreeNode = {
           geocatId: '31dc428e-a62b-4f6b-a263-e5eca9d9a074',
           legend: 'ch.swisstopo.geologie-geomol-isotherme_150',
         },
-      ]
+      ],
     },
-  ]
+  ],
 };
 
 const natural_hazard: LayerTreeNode = {
@@ -842,8 +982,10 @@ const natural_hazard: LayerTreeNode = {
       displayed: false,
       opacity: DEFAULT_LAYER_OPACITY,
       propsOrder: EARTHQUAKES_PROP_ORDER,
-      downloadUrl: 'https://download.swissgeol.ch/earthquakes/earthquakes_last_90d.txt',
-      detailsUrl: 'http://www.seismo.ethz.ch/en/earthquakes/switzerland/last-90-days',
+      downloadUrl:
+        'https://download.swissgeol.ch/earthquakes/earthquakes_last_90d.txt',
+      detailsUrl:
+        'http://www.seismo.ethz.ch/en/earthquakes/switzerland/last-90-days',
       geocatId: 'f44ee7fc-efd0-47ad-8a8c-db74dcc20610',
     },
     {
@@ -854,11 +996,12 @@ const natural_hazard: LayerTreeNode = {
       displayed: false,
       opacity: DEFAULT_LAYER_OPACITY,
       propsOrder: EARTHQUAKES_PROP_ORDER,
-      downloadUrl: 'https://download.swissgeol.ch/earthquakes/earthquakes_magnitude_gt_3.txt',
+      downloadUrl:
+        'https://download.swissgeol.ch/earthquakes/earthquakes_magnitude_gt_3.txt',
       detailsUrl: 'http://www.seismo.ethz.ch',
       geocatId: 'fab0e70e-6e33-4ba9-8c42-2b8ac1578384',
     },
-  ]
+  ],
 };
 
 const subsurface: LayerTreeNode = {
@@ -947,6 +1090,18 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/test20250113_KTSGRhein/2025-03-21/output/tileset.json',
+          voxelDataName: 'Klasse',
+          voxelColors: rheintalVoxelColors,
+          voxelFilter: rheintalVoxelFilter,
+          label: t('lyr_voxel_rheintal_klasse_label'),
+          layer: 'voxel_rheintal_klasse',
+          opacityDisabled: true,
+          pickable: true,
+          geocatId: 'c12c8e4e-4c06-41c9-b705-f1dadb0654ae-8371',
+        },
+        {
+          type: LayerType.voxels3dtiles,
           url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-VISP-Combined/tileset.json',
           voxelDataName: 'Index',
           voxelColors: vispIndexVoxelColors,
@@ -971,7 +1126,7 @@ const subsurface: LayerTreeNode = {
           downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
           geocatId: 'f7847c2c-bd3a-4dda-99c7-d50453b24c3d',
         },
-      ]
+      ],
     },
     {
       label: t('lyr_top_bedrock_surface_label'),
@@ -986,9 +1141,9 @@ const subsurface: LayerTreeNode = {
           propsOrder: CENOZOIC_BEDROCK_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Bedrock.zip',
           geocatId: '133b54a9-60d1-481c-85e8-e1a222d6ac3f',
-          previewColor: '#dbdb22'
+          previewColor: '#dbdb22',
         },
-      ]
+      ],
     },
     {
       label: t('lyr_consolidated_rocks_label'),
@@ -1001,9 +1156,10 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip',
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip',
           geocatId: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
-          previewColor: '#cad0c3'
+          previewColor: '#cad0c3',
         },
         {
           type: LayerType.tiles3d,
@@ -1013,9 +1169,10 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerFreshwaterMolasse.zip',
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerFreshwaterMolasse.zip',
           geocatId: '2d7a0729-dd29-40fa-ad4f-b09f94b7fb00',
-          previewColor: '#cdd0d0'
+          previewColor: '#cdd0d0',
         },
         {
           type: LayerType.tiles3d,
@@ -1025,9 +1182,10 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMarineMolasse.zip',
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMarineMolasse.zip',
           geocatId: 'fedb8d24-a000-4b78-9e6e-fb90305ad3ea',
-          previewColor: '#d3cfc0'
+          previewColor: '#d3cfc0',
         },
         {
           type: LayerType.tiles3d,
@@ -1039,7 +1197,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CENOZOIC_BEDROCK_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Cenozoic.zip',
           geocatId: '0e780e6c-18e2-4014-ad16-b35124706580',
-          previewColor: '#d6d91a'
+          previewColor: '#d6d91a',
         },
         {
           type: LayerType.tiles3d,
@@ -1051,7 +1209,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Cretaceous.zip',
           geocatId: '09334747-14e7-40d6-881b-00e552b71f61',
-          previewColor: '#b8d0c6'
+          previewColor: '#b8d0c6',
         },
         {
           type: LayerType.tiles3d,
@@ -1063,7 +1221,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMalm.zip',
           geocatId: '2378cab1-4673-4837-b12e-a35aefab389a',
-          previewColor: '#bdd1de'
+          previewColor: '#bdd1de',
         },
         {
           type: LayerType.tiles3d,
@@ -1075,7 +1233,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMalm.zip',
           geocatId: 'af51f4eb-1430-4e4e-a679-3c0eefb4a6b3',
-          previewColor: '#c3d1da'
+          previewColor: '#c3d1da',
         },
         {
           type: LayerType.tiles3d,
@@ -1087,7 +1245,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Dogger.zip',
           geocatId: '0dea083d-23b0-4c5b-b82d-1cd7bda3d583',
-          previewColor: '#c6c7c5'
+          previewColor: '#c6c7c5',
         },
         {
           type: LayerType.tiles3d,
@@ -1099,7 +1257,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Lias.zip',
           geocatId: '793a40d6-ab83-4e1e-80d7-d7c49bf00f3c',
-          previewColor: '#c6c5d9'
+          previewColor: '#c6c5d9',
         },
         {
           type: LayerType.tiles3d,
@@ -1111,7 +1269,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Keuper.zip',
           geocatId: 'e2344c21-2139-4494-8679-36fe30d034f9',
-          previewColor: '#d8cecc'
+          previewColor: '#d8cecc',
         },
         {
           type: LayerType.tiles3d,
@@ -1123,7 +1281,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CONSOLIDATED_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Muschelkalk.zip',
           geocatId: 'dae3dd91-a04c-46c5-aa49-de6235c0478a',
-          previewColor: '#d2c493'
+          previewColor: '#d2c493',
         },
         {
           type: LayerType.tiles3d,
@@ -1135,7 +1293,7 @@ const subsurface: LayerTreeNode = {
           propsOrder: CENOZOIC_BEDROCK_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Mesozoic.zip',
           geocatId: 'ec67a58d-531e-4dae-98da-85c49525b4d2',
-          previewColor: '#c4e0e0'
+          previewColor: '#c4e0e0',
         },
         {
           type: LayerType.tiles3d,
@@ -1145,9 +1303,10 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous.zip',
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous.zip',
           geocatId: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
-          previewColor: '#bb9f8a'
+          previewColor: '#bb9f8a',
         },
         {
           type: LayerType.tiles3d,
@@ -1157,11 +1316,12 @@ const subsurface: LayerTreeNode = {
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
           propsOrder: CONSOLIDATED_ORDER,
-          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous-inferred.zip',
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous-inferred.zip',
           geocatId: '0f1acc23-bdfc-40bf-94b7-7be10f0f78ed',
-          previewColor: '#c9b19e'
+          previewColor: '#c9b19e',
         },
-      ]
+      ],
     },
     {
       label: t('lyr_fault_zones_label'),
@@ -1176,11 +1336,12 @@ const subsurface: LayerTreeNode = {
           propsOrder: FAULTS_ORDER,
           downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Faults.zip',
           downloadDataType: 'indexed_download',
-          downloadDataPath: 'https://download.swissgeol.ch/Faults/footprints_boxed.geojson',
+          downloadDataPath:
+            'https://download.swissgeol.ch/Faults/footprints_boxed.geojson',
           geocatId: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
-          previewColor: '#c40001'
+          previewColor: '#c40001',
         },
-      ]
+      ],
     },
     {
       label: t('lyr_3d_model_label'),
@@ -1192,14 +1353,23 @@ const subsurface: LayerTreeNode = {
           layer: '3d_model_berne',
           opacity: DEFAULT_LAYER_OPACITY,
           pickable: true,
-          propsOrder: ['3DBern-Unit', '3DBern-Link', '3DBern-Lithology', '3DBern-TectonicUnit',
-            '3DBern-ChronoB-T', '3DBern-OrigDesc', '3DBern-Version', '3DBern-Aothor', '3DBern-Purpose',
-            '3DBern-Download'],
+          propsOrder: [
+            '3DBern-Unit',
+            '3DBern-Link',
+            '3DBern-Lithology',
+            '3DBern-TectonicUnit',
+            '3DBern-ChronoB-T',
+            '3DBern-OrigDesc',
+            '3DBern-Version',
+            '3DBern-Aothor',
+            '3DBern-Purpose',
+            '3DBern-Download',
+          ],
           geocatId: '372c25ac-fb8a-44ee-8f81-6427939f6353',
         },
-      ]
+      ],
     },
-  ]
+  ],
 };
 
 const man_made_objects: LayerTreeNode = {
@@ -1240,8 +1410,8 @@ const man_made_objects: LayerTreeNode = {
       pickable: false,
       opacity: DEFAULT_LAYER_OPACITY,
       geocatId: '21c98c73-48da-408b-ab73-8f1ab9d5fbe4',
-    }
-  ]
+    },
+  ],
 };
 
 const background: LayerTreeNode = {
@@ -1253,10 +1423,10 @@ const background: LayerTreeNode = {
       label: t('lyr_swissnames_label'),
       style: SWISSTOPO_LABEL_STYLE,
       layer: 'ch.swisstopo.swissnames3d.3d',
-      opacityDisabled: true // opacity not work with color conditions
+      opacityDisabled: true, // opacity not work with color conditions
     },
     man_made_objects,
-  ]
+  ],
 };
 
 const defaultLayerTree: LayerTreeNode[] = [

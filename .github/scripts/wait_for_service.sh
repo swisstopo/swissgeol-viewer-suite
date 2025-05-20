@@ -9,7 +9,7 @@ if [ ! -n "$SERVICE_NAME" ]; then
 fi
 
 for i in $(seq 1 $MAX_RETRY_COUNT); do
-  if [ "$(docker inspect -f '{{.State.Health.Status}}' "swissgeol-viewer-app-$SERVICE_NAME-1")" == "healthy" ]; then
+  if [ "$(docker inspect -f '{{.State.Health.Status}}' "swissgeol-viewer-suite-$SERVICE_NAME-1")" == "healthy" ]; then
     echo "Service $SERVICE_NAME is healthy!"
     exit 0
   else

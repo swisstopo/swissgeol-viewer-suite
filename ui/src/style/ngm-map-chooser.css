@@ -1,6 +1,9 @@
-
 .ngm-maps-container {
   display: flex;
+}
+
+.ngm-maps-container > ngm-background-layer-select {
+  padding-left: 9px;
 }
 
 .ngm-map-preview img {
@@ -16,7 +19,11 @@
   border: 1px solid lightgrey;
 }
 
-.ngm-map-preview:hover {
+.ngm-selected-map-container > ngm-background-layer-item {
+  cursor: pointer;
+}
+
+.ngm-selected-map-container > ngm-background-layer-item:hover {
   opacity: 0.75;
 }
 
@@ -26,16 +33,18 @@
 }
 
 .ngm-bg-chooser-map {
-  background: #F1F3F5;
+  background: #f1f3f5;
   box-shadow: 4px 4px 2px #00000029;
-  border-radius: 28px;
-  height: 56px;
+  border-radius: 104px;
+  height: 52px;
   margin: auto 12px;
+
+  display: flex;
+  align-items: center;
 }
 
 .ngm-bg-chooser-map .ngm-maps-container {
-  width: 256px;
-  height: 56px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,7 +86,7 @@
   height: 48px;
   width: 48px;
   margin: 4px;
-  background-color: #F1F3F5;
+  background-color: #f1f3f5;
 }
 
 .ngm-bg-chooser-map .ngm-selected-map-container .ngm-map-preview img {
@@ -87,5 +96,5 @@
 }
 
 .ngm-bg-chooser-map .ngm-selected-map-container:hover .ngm-map-preview {
-  background-color: #DEE2E6;
+  background-color: #dee2e6;
 }

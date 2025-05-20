@@ -1,17 +1,24 @@
-import {BehaviorSubject, Subject} from 'rxjs';
-import {Viewer} from 'cesium';
-import type MapChooser from '../MapChooser';
-import {getIonToken, setIonToken} from '../permalink';
-import {IonAsset} from '../api-ion';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { Viewer } from 'cesium';
+import { getIonToken, setIonToken } from '../permalink';
+import { IonAsset } from '../api-ion';
 
 export default class MainStore {
-  private static readonly viewerSubject = new BehaviorSubject<Viewer | null>(null);
-  private static readonly mapChooserSubject = new BehaviorSubject<MapChooser | null>(null);
+  private static readonly viewerSubject = new BehaviorSubject<Viewer | null>(
+    null,
+  );
   private static readonly layersRemovedSubject = new Subject<void>();
   private static readonly syncMapSubject = new Subject<void>();
-  private static readonly voxelLayerCountSubject = new BehaviorSubject<string[]>([]);
-  private static readonly ionTokenSubject = new BehaviorSubject<string | null>(getIonToken());
+  private static readonly voxelLayerCountSubject = new BehaviorSubject<
+    string[]
+  >([]);
+  private static readonly ionTokenSubject = new BehaviorSubject<string | null>(
+    getIonToken(),
+  );
   private static readonly ionAssetSubject = new Subject<IonAsset>();
+  private static readonly selectIonAssetsSubject = new BehaviorSubject<
+    Set<number>
+  >(new Set<number>());
   private static readonly removeIonAssetsSubject = new Subject<void>();
   static readonly setUrlLayersSubject = new Subject<void>();
   static readonly syncLayerParams = new Subject<void>();
@@ -19,7 +26,9 @@ export default class MainStore {
    * List of uploaded KML dataSource names. Required to get list of uploaded layers and update properties in batch (e.g. exaggeration)
    * @private
    */
-  private static readonly uploadedKmlListSubject = new BehaviorSubject<string[]>([]);
+  private static readonly uploadedKmlListSubject = new BehaviorSubject<
+    string[]
+  >([]);
 
   static get viewer(): BehaviorSubject<Viewer | null> {
     return this.viewerSubject;
@@ -31,14 +40,6 @@ export default class MainStore {
 
   static setViewer(value: Viewer): void {
     this.viewerSubject.next(value);
-  }
-
-  static get mapChooser(): BehaviorSubject<MapChooser | null> {
-    return this.mapChooserSubject;
-  }
-
-  static setMapChooser(value: MapChooser): void {
-    this.mapChooserSubject.next(value);
   }
 
   static get layersRemoved() {
@@ -70,7 +71,7 @@ export default class MainStore {
   }
 
   static removeVisibleVoxelLayer(layer) {
-    const voxelLayers = this.visibleVoxelLayers.filter(l => l !== layer);
+    const voxelLayers = this.visibleVoxelLayers.filter((l) => l !== layer);
     this.voxelLayerCountSubject.next(voxelLayers);
   }
 
@@ -83,8 +84,25 @@ export default class MainStore {
     return this.ionTokenSubject;
   }
 
+  static get selectedIonAssets(): BehaviorSubject<Set<number>> {
+    return this.selectIonAssetsSubject;
+  }
+
+  static updateSelectedIonAssetIds(ionAsset: IonAsset) {
+    const selectedIonAssets = this.selectIonAssetsSubject.value;
+    selectedIonAssets.add(ionAsset.id);
+    this.selectIonAssetsSubject.next(new Set(selectedIonAssets));
+  }
+
   static addIonAssetId(ionAsset: IonAsset) {
+    MainStore.updateSelectedIonAssetIds(ionAsset);
     this.ionAssetSubject.next(ionAsset);
+  }
+
+  static removeIonAssetId(ionAssetId: number) {
+    const selectedIonAssets = this.selectIonAssetsSubject.value;
+    selectedIonAssets.delete(ionAssetId);
+    this.selectIonAssetsSubject.next(new Set(selectedIonAssets));
   }
 
   static get onIonAssetAdd() {
@@ -114,5 +132,4 @@ export default class MainStore {
     names.push(name);
     this.uploadedKmlListSubject.next(names);
   }
-
 }

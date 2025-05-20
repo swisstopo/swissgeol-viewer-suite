@@ -36,7 +36,7 @@ spec:
           - name: APP_PORT
             value: '3000'
           - name: ENV
-            value: prod
+            value: {{ .Values.env }}
 
           # Database
           - name: PGHOST
@@ -76,6 +76,10 @@ spec:
           # ION
           - name: ION_DEFAULT_ACCESS_TOKEN
             value: "{{ .Values.ion.default_access_token }}"
+
+          # GST
+          - name: GST_URL
+            value: "{{ .Values.gst_url }}"
 
       imagePullSecrets:
       - name: {{ .Release.Namespace }}-registry

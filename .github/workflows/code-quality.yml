@@ -74,6 +74,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node_modules-
       - name: Install node dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: cd ui && npm ci
 
 

@@ -1,0 +1,43 @@
+name: Deploy K8s
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: The environment to which the Kubernetes config is deployed.
+        options:
+          - dev
+          - int
+          - prod
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TARGET_ENV: ${{ github.event.inputs.env || 'dev' }}
+
+jobs:
+  deploy-viewer:
+    name: "deploy viewer"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Select AWS_ROLE"
+        id: select-aws-role
+        env:
+          DEV_ROLE: ${{ secrets.AWS_ROLE_DEV }}
+          INT_ROLE: ${{ secrets.AWS_ROLE_INT }}
+          PROD_ROLE: ${{ secrets.AWS_ROLE_PROD }}
+        run: |
+          VAR_NAME="${TARGET_ENV^^}_ROLE"
+          AWS_ROLE="${!VAR_NAME}"
+          echo "AWS_ROLE=$AWS_ROLE" >> $GITHUB_OUTPUT
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - name: "Deploy"
+        uses: ./.github/actions/deploy-k8s-suite
+        with:
+          TARGET_ENV: ${{ env.TARGET_ENV }}
+          AWS_ROLE: ${{ steps.select-aws-role.outputs.AWS_ROLE }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
