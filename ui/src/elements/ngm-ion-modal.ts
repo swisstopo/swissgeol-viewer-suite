@@ -144,7 +144,6 @@ export class NgmIonModal extends LitElementI18n {
   render() {
     return html`
       <h2 class="header">${i18next.t('dtd_add_ion_token')}</h2>
-      <hr />
       <div class="content">
         <div .hidden=${this.assets.length}>
           <ngm-core-info-panel
@@ -238,7 +237,6 @@ export class NgmIonModal extends LitElementI18n {
           </table>
         </div>
       </div>
-      <hr />
       <div class="actions">
         <sgc-button
           color="tertiary"
@@ -264,6 +262,10 @@ export class NgmIonModal extends LitElementI18n {
     :host,
     :host * {
       box-sizing: border-box;
+    }
+
+    .header {
+      border-bottom: 1px solid var(--sgc-color-border--default);
     }
 
     .header,
@@ -292,6 +294,7 @@ export class NgmIonModal extends LitElementI18n {
       gap: 24px;
       max-height: 692px;
       overflow: auto;
+      margin-bottom: 84px;
     }
 
     .token-input {
@@ -322,11 +325,11 @@ export class NgmIonModal extends LitElementI18n {
       display: flex;
       justify-content: flex-end;
       gap: 16px;
-    }
-
-    // TODO: remove once the sgc-checkbox is updated
-    sgc-checkbox {
-      box-sizing: border-box;
+      position: absolute;
+      bottom: 0;
+      background-color: white;
+      width: 100%;
+      border-top: 1px solid var(--sgc-color-border--default);
     }
 
     table {
@@ -370,6 +373,10 @@ export class NgmIonModal extends LitElementI18n {
 
     .table-column-checkbox {
       width: 44px;
+
+      sgc-checkbox {
+        position: relative;
+      }
     }
 
     .table-column-id {
