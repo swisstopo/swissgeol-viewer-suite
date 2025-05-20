@@ -84,18 +84,22 @@ function createCustomShader(config: LayerTreeNode): CustomShader {
         vec3 voxelNormal = normalize(czm_normal * fsInput.voxel.surfaceNormal);
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
+        material.alpha = 1.0;
         if (fsInput.voxel.tileIndex == u_selectedTile && fsInput.voxel.sampleIndex == u_selectedSample) {
           material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}) * lighting;
         } else if (u_us_color_index) {
           float textureX = (float(lithologyIndex) / float(lithology_length)) + (lithologyPixelWidth / 2.0);
-          material.diffuse = texture(u_colorRamp, vec2(textureX, 0.5)).rgb * lighting;
+          vec4 color = texture(u_colorRamp, vec2(textureX, 0.5));
+          material.diffuse = color.rgb * lighting;
+          material.alpha = color.a;
         } else if (value == u_undefined_data) {
           material.diffuse = vec3(0.797, 0.797, 0.797) * lighting;
         } else {
           float lerp = (value - u_min) / (u_max - u_min);
-          material.diffuse = texture(u_colorRamp, vec2(lerp, 0.5)).rgb * lighting;
+          vec4 color = texture(u_colorRamp, vec2(lerp, 0.5));
+          material.diffuse = color.rgb * lighting;
+          material.alpha = color.a;
         }
-        material.alpha = 1.0;
       }
     }
   `;

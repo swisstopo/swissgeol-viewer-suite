@@ -533,13 +533,12 @@ const rheintalVoxelColors: VoxelColors = {
   noData: voxelNoData,
   undefinedData: voxelUndefinedData,
   colors: [
-    'rgb(0, 0, 0, 255)',
-    'rgb(0, 0, 255)',
-    'rgb(30, 144, 255)',
-    'rgb(173, 216, 230)',
-    'rgb(144, 238, 144)',
-    'rgb(255, 165, 0)',
-    'rgb(255, 255, 0)',
+    /* 1 */ 'rgb(0, 0, 255)',
+    /* 2 */ 'rgb(30, 144, 255)',
+    /* 3 */ 'rgb(173, 216, 230)',
+    /* 4 */ 'rgb(144, 238, 144)',
+    /* 5 */ 'rgb(255, 165, 0)',
+    /* 6 */ 'rgb(255, 255, 0)',
   ],
 };
 
@@ -548,7 +547,6 @@ const rheintalVoxelFilter: LithologyVoxelFilter = {
   conductivityRange: [0, 6],
   lithologyDataName: 'Klasse',
   lithology: [
-    { value: voxelUndefinedData, label: t('vox_filter_undefined_lithology') },
     { value: 1, label: t('vox_filter_klasse_1') },
     { value: 2, label: t('vox_filter_klasse_2') },
     { value: 3, label: t('vox_filter_klasse_3') },
