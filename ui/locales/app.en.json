@@ -190,7 +190,7 @@
   "lyr_voxel_geneva_logk_label": "Geneva: Hydraulic conductivity",
   "lyr_voxel_visp_litho_label": "Visp: Modelling Unit",
   "lyr_voxel_visp_logk_label": "Visp: Hydraulic conductivity",
-  "lyr_voxel_rheintal_klasse_label": "Rheintal - Entire model (fine)",
+  "lyr_voxel_rheintal_klasse_label": "St.Galler Rheintal - Permeability ",
   "lyr_water_tunnel_label": "Underground water tunnel",
   "map_elevation_label": "Elevation (m AMSL)",
   "map_position_label": "Position",
