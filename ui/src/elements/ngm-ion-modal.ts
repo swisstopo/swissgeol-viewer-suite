@@ -180,61 +180,63 @@ export class NgmIonModal extends LitElementI18n {
               @inputChange="${this.searchForIonAssets}"
             ></ngm-core-text-input>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th class="table-column-checkbox">
-                  <sgc-checkbox
-                    .value="${this.assetsToAdd.size > 0}"
-                    ?indeterminate="${this.assetsToAdd.size > 0 &&
-                    this.assetsToAdd.size < this.unselectedAssets.length}"
-                    @checkboxChange="${() => this.toggleAllAssets()}"
-                  ></sgc-checkbox>
-                </th>
-                <th class="table-column-id">ID</th>
-                <th class="table-column-value">
-                  ${i18next.t('tbx_name_label')}
-                </th>
-                <th class="table-column-action"></th>
-              </tr>
-            </thead>
-            <tbody>
-              ${repeat(
-                this.assetsToDisplay,
-                (row) => row.id,
-                (row) => html`
-                  <tr
-                    class="${classMap({
-                      'is-active': this.assetsToAdd.has(row),
-                    })}"
-                  >
-                    <td class="table-column-checkbox">
-                      <sgc-checkbox
-                        value="${this.assetsToAdd.has(row)}"
-                        ?disabled="${this.selectedIonAssetIds.has(row.id)}"
-                        @checkboxChange="${() => this.toggleSingleAsset(row)}"
-                      ></sgc-checkbox>
-                    </td>
-                    <td class="table-column-id">${row.id}</td>
-                    <td class="table-column-value">${row.name}</td>
-                    <td class="table-column-action">
-                      ${this.selectedIonAssetIds.has(row.id)
-                        ? html`<sgc-icon name="checkmark"></sgc-icon>`
-                        : // Replace button with sgc-button when new size has been added
-                          html` <ngm-core-button
-                            variant="secondary"
-                            shape="small"
-                            @click=${() => this.addAsset(row)}
-                          >
-                            <sgc-icon name="plus"></sgc-icon>
-                            ${i18next.t('dtd_add_ion_asset_btn')}
-                          </ngm-core-button>`}
-                    </td>
-                  </tr>
-                `,
-              )}
-            </tbody>
-          </table>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th class="table-column-checkbox">
+                    <sgc-checkbox
+                      .value="${this.assetsToAdd.size > 0}"
+                      ?indeterminate="${this.assetsToAdd.size > 0 &&
+                      this.assetsToAdd.size < this.unselectedAssets.length}"
+                      @checkboxChange="${() => this.toggleAllAssets()}"
+                    ></sgc-checkbox>
+                  </th>
+                  <th class="table-column-id">ID</th>
+                  <th class="table-column-value">
+                    ${i18next.t('tbx_name_label')}
+                  </th>
+                  <th class="table-column-action"></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${repeat(
+                  this.assetsToDisplay,
+                  (row) => row.id,
+                  (row) => html`
+                    <tr
+                      class="${classMap({
+                        'is-active': this.assetsToAdd.has(row),
+                      })}"
+                    >
+                      <td class="table-column-checkbox">
+                        <sgc-checkbox
+                          value="${this.assetsToAdd.has(row)}"
+                          ?disabled="${this.selectedIonAssetIds.has(row.id)}"
+                          @checkboxChange="${() => this.toggleSingleAsset(row)}"
+                        ></sgc-checkbox>
+                      </td>
+                      <td class="table-column-id">${row.id}</td>
+                      <td class="table-column-value">${row.name}</td>
+                      <td class="table-column-action">
+                        ${this.selectedIonAssetIds.has(row.id)
+                          ? html`<sgc-icon name="checkmark"></sgc-icon>`
+                          : // Replace button with sgc-button when new size has been added
+                            html` <ngm-core-button
+                              variant="secondary"
+                              shape="small"
+                              @click=${() => this.addAsset(row)}
+                            >
+                              <sgc-icon name="plus"></sgc-icon>
+                              ${i18next.t('dtd_add_ion_asset_btn')}
+                            </ngm-core-button>`}
+                      </td>
+                    </tr>
+                  `,
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       <div class="actions">
@@ -292,8 +294,6 @@ export class NgmIonModal extends LitElementI18n {
       display: flex;
       flex-direction: column;
       gap: 24px;
-      max-height: 692px;
-      overflow: auto;
       margin-bottom: 84px;
     }
 
@@ -330,6 +330,11 @@ export class NgmIonModal extends LitElementI18n {
       background-color: white;
       width: 100%;
       border-top: 1px solid var(--sgc-color-border--default);
+    }
+
+    .table-container {
+      max-height: 500px;
+      overflow-y: scroll;
     }
 
     table {
