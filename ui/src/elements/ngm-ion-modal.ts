@@ -144,7 +144,11 @@ export class NgmIonModal extends LitElementI18n {
   render() {
     return html`
       <h2 class="header">${i18next.t('dtd_add_ion_token')}</h2>
-      <div class="content">
+      <div
+        class="content ${classMap({
+          'has-table': this.assetsToDisplay.length !== 0,
+        })}"
+      >
         <div .hidden=${this.assets.length}>
           <ngm-core-info-panel
             .icon=${'info'}
@@ -297,6 +301,10 @@ export class NgmIonModal extends LitElementI18n {
       margin-bottom: 84px;
     }
 
+    .content.has-table {
+      padding-bottom: 0;
+    }
+
     .token-input {
       display: flex;
       gap: 12px;
@@ -333,7 +341,8 @@ export class NgmIonModal extends LitElementI18n {
     }
 
     .table-container {
-      max-height: 500px;
+      max-height: calc(80vh - calc(24px * 16));
+      padding-bottom: 24px;
       overflow-y: scroll;
     }
 
