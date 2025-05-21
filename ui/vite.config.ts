@@ -28,60 +28,6 @@ export default defineConfig({
     },
     extensions,
   },
-  build: {
-    outDir: 'dist',
-    emptyOutDir: false,
-    minify: 'terser',
-    sourcemap: true,
-    cssCodeSplit: true,
-    rollupOptions: {
-      input: 'index.html',
-      output: {
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash][extname]',
-      },
-      plugins: [
-        babel({
-          babelHelpers: 'bundled',
-          babelrc: false,
-          // this is duplicated in .browserlistrc
-          // https://babeljs.io/docs/en/options#targets
-          targets:
-            'last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions, Edge 18',
-          plugins: [
-            [
-              '@babel/plugin-proposal-decorators',
-              { decoratorsBeforeExport: true, version: '2023-05' },
-            ],
-          ],
-          presets: [
-            [
-              '@babel/preset-typescript',
-              {
-                allowDeclareFields: true,
-              },
-            ],
-            [
-              '@babel/preset-env',
-              {
-                //debug: true, // disable to get debug information
-                modules: false,
-
-                useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
-                corejs: { version: 3, proposals: false },
-              },
-            ],
-          ],
-          // exclude: 'node_modules/**'
-          extensions: extensions,
-          exclude: [
-            'node_modules/**', // yes, this is eXtreme excluding (includes aws-sdk)
-          ],
-        }),
-      ],
-    },
-  },
   server: {
     hmr: {
       host: 'localhost',
@@ -146,6 +92,62 @@ export default defineConfig({
   css: {
     postcss: {
       plugins: [inlinesvg()],
+    },
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: false,
+    minify: 'terser',
+    sourcemap: true,
+    cssCodeSplit: true,
+    rollupOptions: {
+      input: 'index.html',
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
+      },
+      external: ['cypress'],
+      plugins: [
+        babel({
+          babelHelpers: 'bundled',
+          babelrc: false,
+          // this is duplicated in .browserlistrc
+          // https://babeljs.io/docs/en/options#targets
+          targets:
+            'last 2 Chrome versions, last 2 Firefox versions, last 2 Safari versions, last 2 Edge versions, Edge 18',
+          plugins: [
+            [
+              '@babel/plugin-proposal-decorators',
+              { decoratorsBeforeExport: true, version: '2023-05' },
+            ],
+          ],
+          presets: [
+            [
+              '@babel/preset-typescript',
+              {
+                allowDeclareFields: true,
+              },
+            ],
+            [
+              '@babel/preset-env',
+              {
+                //debug: true, // disable to get debug information
+                modules: false,
+
+                useBuiltIns: 'usage', // required to determine list of polyfills according to browserlist
+                corejs: { version: 3, proposals: false },
+              },
+            ],
+          ],
+          // exclude: 'node_modules/**'
+          extensions: extensions,
+          exclude: [
+            'cypress/**',
+            'node_modules/**', // yes, this is eXtreme excluding (includes aws-sdk)
+          ],
+        }),
+      ],
     },
   },
 });
