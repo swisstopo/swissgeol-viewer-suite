@@ -9,22 +9,27 @@ import {
   getVoxelShader,
 } from '../layers/voxels-helper';
 import { repeat } from 'lit/directives/repeat.js';
-import type { Viewer } from 'cesium';
+import { TextureUniform, Viewer } from 'cesium';
 import { LayerConfig, LithologyVoxelFilter } from '../layertree';
+import { PropertyValues } from '@lit/reactive-element';
 
 @customElement('ngm-voxel-filter')
 export class NgmVoxelFilter extends LitElementI18n {
   @property({ type: Object })
   accessor config: LayerConfig | undefined;
+
   @property({ type: Object })
   accessor viewer!: Viewer;
 
   @query('.min-conductivity')
   accessor minConductivityInput!: HTMLInputElement;
+
   @query('.max-conductivity')
   accessor maxConductivityInput!: HTMLInputElement;
+
   @query('.vox_filter_include_undefined')
   accessor includeUndefinedConductivity: HTMLInputElement | null = null;
+
   @queryAll('.lithology-checkbox input[type="checkbox"]')
   accessor lithologyCheckbox!: NodeListOf<HTMLInputElement>;
 
@@ -34,8 +39,52 @@ export class NgmVoxelFilter extends LitElementI18n {
   private minConductivityValue = NaN;
   private maxConductivityValue = NaN;
 
+  private isLithologyActiveByIndex: boolean[] = [];
+
   shouldUpdate(): boolean {
     return this.config !== undefined;
+  }
+
+  update(changedProperties: PropertyValues<this>): void {
+    this.classList.toggle('is-klasse', this.isKlasse);
+
+    if (changedProperties.has('config') && this.config !== undefined) {
+      this.initializeFromShader();
+    }
+
+    super.update(changedProperties);
+  }
+
+  private initializeFromShader(): void {
+    const shader = getVoxelShader(this.config);
+
+    this.minConductivity = shader.uniforms['u_filter_conductivity_min']
+      .value as number;
+
+    this.maxConductivity = shader.uniforms['u_filter_conductivity_max']
+      .value as number;
+
+    const lithologyUniform = shader.uniforms['u_filter_selected_lithology']
+      .value as TextureUniform;
+    this.isLithologyActiveByIndex = [
+      ...(lithologyUniform as { typedArray: Uint8Array }).typedArray,
+    ].map((value) => value === 1);
+
+    console.log(this.isLithologyActiveByIndex);
+    if (this.includeUndefinedConductivity !== null) {
+      this.includeUndefinedConductivity.checked = shader.uniforms[
+        'u_filter_include_undefined_conductivity'
+      ].value as boolean;
+    }
+
+    const operator = shader.uniforms['u_filter_operator'].value as number;
+    const operatorInputs = this.querySelectorAll<HTMLInputElement>(
+      'input[name="operator"]',
+    );
+    for (let i = 0; i < operatorInputs.length; i++) {
+      const input = operatorInputs[i];
+      input.checked = i === operator;
+    }
   }
 
   willUpdate() {
@@ -60,33 +109,31 @@ export class NgmVoxelFilter extends LitElementI18n {
 
   close() {
     this.hidden = true;
-    this.resetShader();
+    this.isLithologyActiveByIndex = [];
     this.resetForm();
 
     this.config = undefined;
   }
 
   applyFilter() {
-    const shader = getVoxelShader(this.config);
-    shader.setUniform('u_filter_conductivity_min', this.minConductivity);
-    shader.setUniform('u_filter_conductivity_max', this.maxConductivity);
+    this.updateUniform('u_filter_conductivity_min', this.minConductivity);
+    this.updateUniform('u_filter_conductivity_max', this.maxConductivity);
 
     const lithologyInclude: number[] = [];
     this.lithologyCheckbox.forEach((checkbox) =>
       lithologyInclude.push(checkbox.checked ? 1 : 0),
     );
 
-    // @ts-ignore https://github.com/CesiumGS/cesium/pull/11284
-    shader.setUniform(
-      'u_filter_selected_lithology',
-      createLithologyIncludeUniform(lithologyInclude),
-    );
+    const lithologyUniform = createLithologyIncludeUniform(lithologyInclude);
+
+    this.updateUniform('u_filter_selected_lithology', lithologyUniform);
+
     const operator = this.querySelector<HTMLInputElement>(
       'input[name="operator"]:checked',
     );
     const value = operator ? parseInt(operator.value, 10) : 0;
-    shader.setUniform('u_filter_operator', value);
-    shader.setUniform(
+    this.updateUniform('u_filter_operator', value);
+    this.updateUniform(
       'u_filter_include_undefined_conductivity',
       this.includeUndefinedConductivity?.checked ?? true,
     );
@@ -94,21 +141,16 @@ export class NgmVoxelFilter extends LitElementI18n {
     this.viewer.scene.requestRender();
   }
 
-  resetShader() {
+  private updateUniform(
+    name: string,
+    value: boolean | number | TextureUniform,
+  ): void {
     const shader = getVoxelShader(this.config);
-    shader.setUniform('u_filter_conductivity_min', this.minConductivityValue);
-    shader.setUniform('u_filter_conductivity_max', this.maxConductivityValue);
-    // @ts-ignore https://github.com/CesiumGS/cesium/pull/11284
-    shader.setUniform(
-      'u_filter_selected_lithology',
-      createLithologyIncludeUniform(
-        Array(
-          (this.config!.voxelFilter as LithologyVoxelFilter).lithology.length,
-        ).fill(1),
-      ),
-    );
-    shader.setUniform('u_filter_operator', 0);
-    this.viewer.scene.requestRender();
+    // Update the uniform on the GPU.
+    shader.setUniform(name, value);
+
+    // Update the cached value so we can use it to retrieve the uniform state later on.
+    shader.uniforms[name].value = value;
   }
 
   resetForm() {
@@ -131,9 +173,12 @@ export class NgmVoxelFilter extends LitElementI18n {
     return this;
   }
 
-  render() {
-    const isKlasse = this.config!.voxelDataName === 'Klasse';
+  private get isKlasse(): boolean {
+    return this.config!.voxelDataName === 'Klasse';
+  }
 
+  render() {
+    const { isKlasse } = this;
     return html`
       <div class="ngm-floating-window-header drag-handle">
         ${i18next.t('vox_filter_filtering_on')} ${i18next.t(this.config!.label)}
@@ -204,7 +249,7 @@ export class NgmVoxelFilter extends LitElementI18n {
   }
 
   private renderLogicalOperators() {
-    return html`<form class="ui form">
+    return html` <form class="ui form">
       <div class="inline fields">
         <div class="field">
           <div class="ui radio checkbox">
@@ -271,9 +316,18 @@ export class NgmVoxelFilter extends LitElementI18n {
         ${'lithology' in this.config!.voxelFilter!
           ? repeat(
               (this.config!.voxelFilter as LithologyVoxelFilter).lithology,
+              (lithology) => lithology,
               (lithology, index: number) =>
                 html` <label>
-                  <input type="checkbox" value="${lithology.value}" checked />
+                  <input
+                    type="checkbox"
+                    value="${lithology.value}"
+                    ?checked="${this.isLithologyActiveByIndex[index]}"
+                    @input="${(e: InputEvent) =>
+                      (this.isLithologyActiveByIndex[index] = (
+                        e.target as HTMLInputElement
+                      ).checked)}"
+                  />
                   <div
                     ?hidden=${hideCheckboxColor}
                     style="background-color: ${this.config!.voxelColors?.colors[
