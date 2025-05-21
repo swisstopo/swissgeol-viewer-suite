@@ -231,6 +231,15 @@ const _COGNITO_VARIABLES = {
     userPoolId: 'eu-west-1_1NcmOhPt4',
   },
 };
-_COGNITO_VARIABLES['default_active_env'] = _COGNITO_VARIABLES['dev'];
+
+const COGNITO_ENV_BY_PAGE_HOST = {
+  'localhost:8000': 'dev',
+  'dev-viewer.swissgeol.ch': 'dev',
+  'int-viewer.swissgeol.ch': 'int',
+  'swissgeol.ch': 'prod',
+  'viewer.swissgeol.ch': 'prod',
+};
+
 export const COGNITO_VARIABLES =
-  _COGNITO_VARIABLES[(window as any).activeEnvironment];
+  _COGNITO_VARIABLES[COGNITO_ENV_BY_PAGE_HOST[window.location.host] ?? 'dev'] ??
+  _COGNITO_VARIABLES['dev'];
