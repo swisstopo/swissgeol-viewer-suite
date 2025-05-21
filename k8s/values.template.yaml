@@ -1,5 +1,10 @@
 env:
-host:
+
+ui:
+  host:
+
+api:
+  host:
 
 docker:
   api_image:
