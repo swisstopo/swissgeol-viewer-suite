@@ -16,6 +16,7 @@ import {
 } from 'src/utils/base.service';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { GstService } from 'src/gst.service';
+import { ControlsService } from 'src/features/controls/controls.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -58,6 +59,7 @@ export const registerAppContext = (
   );
 
   contexts.push(makeProvider(BackgroundLayerService));
+  contexts.push(makeProvider(ControlsService));
   return contexts;
 };
 
