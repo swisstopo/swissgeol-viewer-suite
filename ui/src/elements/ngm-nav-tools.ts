@@ -440,17 +440,21 @@ export class NgmNavTools extends LitElementI18n {
           })}"
           @click=${() => this.dispatchEvent(new CustomEvent('togglecamconfig'))}
         ></div>
-        <div
-          title="${i18next.t('nav_target_point')}"
-          class="ngm-coords-icon ${classMap({
-            'ngm-active-icon': this.showTargetPoint,
-            'ngm-disabled':
-              this.lockType !== '' && this.lockType !== 'elevation',
-          })}"
-          @click=${() => this.toggleReference()}
-        ></div>
       </div>
       ${dragArea}
     `;
   }
+
+  // TODO Fix the target point tool and then add this icon back to the toolbar.
+  /*
+  <div
+    title="${i18next.t('nav_target_point')}"
+    class="ngm-coords-icon ${classMap({
+      'ngm-active-icon': this.showTargetPoint,
+      'ngm-disabled':
+        this.lockType !== '' && this.lockType !== 'elevation',
+    })}"
+    @click=${() => this.toggleReference()}
+  ></div>
+   */
 }
