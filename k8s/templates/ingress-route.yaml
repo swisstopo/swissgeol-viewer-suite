@@ -20,8 +20,11 @@ spec:
         - name: {{ .Release.Name }}-api
           port: 3000
     - kind: Rule
-      match: Host(`{{ .Values.api.host }}`) && PathPrefixStrip(`/titiler`)
+      match: Host(`{{ .Values.api.host }}`) && PathPrefix(`/titiler`)
       priority: 140
+      middlewares:
+        - name: {{ .Release.Name }}-titiler-middleware
+          namespace: {{ .Release.Namespace }}
       services:
         - name: {{ .Release.Name }}-titiler
           port: 8000
