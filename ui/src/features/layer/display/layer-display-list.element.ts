@@ -265,7 +265,7 @@ export class LayerDisplayList extends CoreElement {
             role="listitem"
             .layer="${layer}"
             .title="${i18next.t(layer.label)}"
-            ?visible="${layer.visible}"
+            ?visible="${(layer as LayerConfig).visible}"
             .opacity="${layer.opacity ?? 1}"
             draggable
             data-id="${layer.label}"

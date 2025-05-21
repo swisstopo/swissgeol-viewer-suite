@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-titiler
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    keel.sh/policy: force
+    keel.sh/match-tag: 'true'
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-titiler
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-titiler
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-titiler
+        image: {{ .Values.docker.titiler_image }}
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8000
+        env:
+        - name: CORS_ORIGINS
+          value: {{ .Values.host }}
+
+      imagePullSecrets:
+      - name: {{ .Release.Namespace }}-registry
+
+
+

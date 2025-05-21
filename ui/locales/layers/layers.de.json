@@ -1,0 +1,32 @@
+{
+  "catalog": {
+    "filter": "Filter öffnen"
+  },
+  "geoTIFF": {
+    "bandsWindow": {
+      "title": "{{ layer }} - Bänder",
+      "open": "Bänder anzeigen"
+    },
+    "infoWindow": {
+      "title": "Info",
+      "zoomToObject": "Auf Objekt zoomen"
+    },
+    "noData": "kein Wert"
+  },
+  "swissBEDROCK": {
+    "title": "swissBEDROCK",
+    "bands": {
+      "BEM": "BEM",
+      "TMUD": "TMUD",
+      "Uncertainty": "Uncertainty",
+      "Version": "Version",
+      "Author": "Author",
+      "Change": "Change",
+      "prev_BEM": "prev_BEM",
+      "prev_TMUD": "prev_TMUD",
+      "prev_Uncertainty": "prev_Uncertainty",
+      "prev_Version": "prev_Version",
+      "prev_Author": "prev_Author"
+    }
+  }
+}

@@ -1,9 +1,9 @@
 import { customElement, property, state } from 'lit/decorators.js';
-import { css, html } from 'lit';
+import { css, html, PropertyValues } from 'lit';
 import { applyTransition, applyTypography } from 'src/styles/theme';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
 import { classMap } from 'lit/directives/class-map.js';
-import { CoreElement, dropdown, tooltip } from 'src/features/core';
+import { CoreElement, CoreWindow, dropdown, tooltip } from 'src/features/core';
 import { LayerConfig, LayerType } from 'src/layertree';
 import MainStore from 'src/store/main';
 import { Entity, Viewer } from 'cesium';
@@ -50,6 +50,7 @@ export class LayerDisplayListItem extends CoreElement {
     this.removeLayer = this.removeLayer.bind(this);
     this.openLegend = this.openLegend.bind(this);
     this.openVoxelFilter = this.openVoxelFilter.bind(this);
+    this.openTiffFilter = this.openTiffFilter.bind(this);
     this.openWmtsDatePicker = this.openWmtsDatePicker.bind(this);
 
     this.register(
@@ -149,6 +150,24 @@ export class LayerDisplayListItem extends CoreElement {
     );
   }
 
+  private tiffFilterWindow: CoreWindow | null = null;
+
+  private openTiffFilter(): void {
+    if (this.tiffFilterWindow !== null || this.layer === null) {
+      return;
+    }
+    this.tiffFilterWindow = CoreWindow.open({
+      title: () =>
+        i18next.t('layers:geoTIFF.bandsWindow.title', { layer: this.title }),
+      body: () => html`
+        <ngm-layer-tiff-bands .layer="${this.layer}"></ngm-layer-tiff-bands>
+      `,
+      onClose: () => {
+        this.tiffFilterWindow = null;
+      },
+    });
+  }
+
   private openWmtsDatePicker(): void {
     this.dispatchEvent(
       new CustomEvent('showWmtsDatePicker', {
@@ -159,6 +178,10 @@ export class LayerDisplayListItem extends CoreElement {
         },
       }),
     );
+  }
+
+  protected updated(_changedProperties: PropertyValues) {
+    this.tiffFilterWindow?.rerender();
   }
 
   readonly render = () => html`
@@ -277,6 +300,17 @@ export class LayerDisplayListItem extends CoreElement {
             >
               <ngm-core-icon icon="filter"></ngm-core-icon>
               ${i18next.t('dtd_voxel_filter')}
+            </ngm-core-dropdown-item>
+          `
+        : ''}
+      ${this.layer?.type === LayerType.geoTIFF
+        ? html`
+            <ngm-core-dropdown-item
+              role="button"
+              @click="${this.openTiffFilter}"
+            >
+              <ngm-core-icon icon="filter"></ngm-core-icon>
+              ${i18next.t('layers:geoTIFF.bandsWindow.open')}
             </ngm-core-dropdown-item>
           `
         : ''}

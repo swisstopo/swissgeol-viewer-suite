@@ -109,6 +109,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CONTEXT: .
 
+  build_and_push_titiler:
+    name: "build and push titiler"
+    needs:
+      - determine_version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create image
+        uses: ./.github/actions/create-image
+        with:
+          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-titiler
+          TAG: ${{ env.IS_EDGE == 'true' && 'edge' || '' }}
+          VERSION: ${{ needs.determine_version.outputs.version }}
+          DOCKERFILE: ./titiler/Dockerfile
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTEXT: ./titiler
+
   tag_commit:
     name: "tag commit"
     needs:

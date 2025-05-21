@@ -37,6 +37,7 @@ import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisual
 import { parseKml, renderWithDelay } from '../../cesiumutils';
 import { consume } from '@lit/context';
 import { apiClientContext } from '../../context';
+import { LayerTiffController } from 'src/features/layer';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -199,7 +200,11 @@ export class NgmDashboard extends LitElementI18n {
         await Promise.all(
           this.assets.map(async (layer) => {
             const data = await layer.promise;
-            if (data && !(data instanceof EarthquakeVisualizer))
+            if (
+              data &&
+              !(data instanceof EarthquakeVisualizer) &&
+              !(data instanceof LayerTiffController)
+            )
               data.show = true;
             this.dispatchEvent(
               new CustomEvent('layerclick', {

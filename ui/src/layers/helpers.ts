@@ -23,7 +23,8 @@ import { isLabelOutlineEnabled } from '../permalink';
 import AmazonS3Resource from '../AmazonS3Resource.js';
 import { getVoxelShader } from './voxels-helper';
 import MainStore from '../store/main';
-import { LayerConfig } from '../layertree';
+import { GeoTIFFLayer, LayerConfig } from '../layertree';
+import { LayerTiffController } from 'src/features/layer';
 
 export interface PickableCesium3DTileset extends Cesium3DTileset {
   pickable?: boolean;
@@ -56,6 +57,15 @@ export function createIonGeoJSONFromConfig(viewer: Viewer, config) {
       config.setVisibility = (visible) => (dataSource.show = !!visible);
       return dataSource;
     });
+}
+
+export function createGeoTiffImageryProviderFromConfig(
+  viewer: Viewer,
+  config: LayerConfig,
+) {
+  const tiff = config as LayerConfig & GeoTIFFLayer;
+  const controller = new LayerTiffController(tiff, viewer);
+  return Promise.resolve(controller);
 }
 
 export async function create3DVoxelsTilesetFromConfig(
@@ -238,6 +248,7 @@ export function createCesiumObject(
     [LayerType.voxels3dtiles]: create3DVoxelsTilesetFromConfig,
     [LayerType.swisstopoWMTS]: createSwisstopoWMTSImageryLayer,
     [LayerType.earthquakes]: createEarthquakeFromConfig,
+    [LayerType.geoTIFF]: createGeoTiffImageryProviderFromConfig,
   };
   return factories[config.type!](viewer, config, tileLoadCallback);
 }
