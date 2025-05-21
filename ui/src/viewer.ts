@@ -296,12 +296,12 @@ function enableCenterOfRotate(viewer: Viewer) {
   // move camera around picked position when ctrl pressed
   eventHandler.setInputAction(
     () => {
-      scene.camera.setView({
-        orientation: {
-          heading: scene.camera.heading,
-          pitch: scene.camera.pitch,
-        },
-      });
+      // scene.camera.setView({
+      //   orientation: {
+      //     heading: scene.camera.heading,
+      //     pitch: scene.camera.pitch,
+      //   },
+      // });
     },
     ScreenSpaceEventType.MOUSE_MOVE,
     KeyboardEventModifier.CTRL,

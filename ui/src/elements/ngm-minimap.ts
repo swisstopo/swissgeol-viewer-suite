@@ -20,14 +20,19 @@ export class NgmMinimap extends LitElementI18n {
   accessor viewer: Viewer | null = null;
   @state()
   accessor interaction: Interactable | null = null;
+
   @state()
   accessor moveMarker = false;
+
   @state()
   accessor left = 0;
+
   @state()
   accessor bottom = 0;
+
   @state()
   accessor heading = 0;
+
   @state()
   accessor nadirViewActive = false;
   private unlistenPostRender: Event.RemoveCallback | null = null;
@@ -99,20 +104,24 @@ export class NgmMinimap extends LitElementI18n {
     const position = this.viewer.scene.camera.positionCartographic;
     const lon = CesiumMath.toDegrees(position.longitude);
     const lat = CesiumMath.toDegrees(position.latitude);
+
+    const heading = this.viewer.scene.camera.heading;
+    const pitch = this.viewer.scene.camera.pitch;
+
     this.left =
       (lon - MINIMAP_EXTENT[0]) / (MINIMAP_EXTENT[2] - MINIMAP_EXTENT[0]);
     this.bottom =
       (lat - MINIMAP_EXTENT[1]) / (MINIMAP_EXTENT[3] - MINIMAP_EXTENT[1]);
-    this.heading = this.viewer.scene.camera.heading - 1.57;
+    this.heading = heading - 1.57;
 
     const isNadirView =
       CesiumMath.equalsEpsilon(
-        this.viewer.scene.camera.pitch,
+        pitch,
         -CesiumMath.PI_OVER_TWO,
         CesiumMath.EPSILON1,
       ) ||
       CesiumMath.equalsEpsilon(
-        this.viewer.scene.camera.pitch,
+        pitch,
         CesiumMath.PI_OVER_TWO,
         CesiumMath.EPSILON1,
       );

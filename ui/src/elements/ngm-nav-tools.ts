@@ -3,22 +3,25 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { html } from 'lit';
 import draggable from './draggable';
 import { DEFAULT_VIEW } from '../constants';
-import { ConstantPositionProperty, Event, Scene, Viewer } from 'cesium';
 import {
   ArcType,
   CallbackProperty,
   Cartesian3,
   Cartographic,
   Color,
+  ConstantPositionProperty,
   CustomDataSource,
   Entity,
+  Event,
   JulianDate,
   KeyboardEventModifier,
   Matrix4,
   PolylineCollection,
-  Transforms,
+  Scene,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
+  Transforms,
+  Viewer,
 } from 'cesium';
 import type { Interactable } from '@interactjs/types';
 import { classMap } from 'lit/directives/class-map.js';
@@ -45,16 +48,22 @@ const AXIS_LENGTH = 120;
 export class NgmNavTools extends LitElementI18n {
   @property({ type: Object })
   accessor viewer: Viewer | null = null;
+
   @property({ type: Boolean })
   accessor showCamConfig = false;
+
   @state()
   accessor moveAmount = 200;
+
   @state()
   accessor interaction: Interactable | null = null;
+
   @state()
   accessor showTargetPoint = false;
+
   @state()
   accessor lockType: LockType = '';
+
   private zoomingIn = false;
   private zoomingOut = false;
   private unlistenFromPostRender: Event.RemoveCallback | null = null;
@@ -454,6 +463,7 @@ export class NgmNavTools extends LitElementI18n {
           })}"
           @click=${() => this.toggleReference()}
         ></div>
+        <controls-2d-action></controls-2d-action>
       </div>
       ${dragArea}
     `;

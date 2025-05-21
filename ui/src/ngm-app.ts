@@ -17,11 +17,12 @@ import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
 import '@geoblocks/cesium-view-cube';
-import 'src/features/layout/layout.module';
 import './elements/ngm-map-chooser';
 
-import 'src/features/background/background.module';
 import 'src/features/core/core.module';
+import 'src/features/background/background.module';
+import 'src/features/controls/controls.module';
+import 'src/features/layout/layout.module';
 import 'src/features/navigation/navigation.module';
 
 import { DEFAULT_VIEW } from './constants';
@@ -76,9 +77,6 @@ const shouldShowDisclaimer = !isLocalhost;
 
 const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
   let sse = 2;
-  if (isLocalhost) {
-    sse = 20;
-  }
   if (searchParams.has('maximumScreenSpaceError')) {
     sse = parseFloat(searchParams.get('maximumScreenSpaceError')!);
   }

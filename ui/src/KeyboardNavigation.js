@@ -231,8 +231,8 @@ export default class KeyboardNavigation {
     if (heading !== undefined && pitch !== undefined) {
       camera.setView({
         orientation: {
-          heading: heading,
-          pitch: pitch,
+          heading,
+          pitch,
         },
       });
     }
