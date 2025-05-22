@@ -1,21 +1,26 @@
-# swissgeol-viewer - 3D sub-surface viewer of Switzerland
+# viewer.swissgeol.ch
 
 ![Sliced 3D scene](ui/public/images/readme.png)
 
 ## Description
 
-With viewer.swissgeol.ch you can get an overview of available geological data and their location below the earth’s surface. Existing data can be combined or supplemented with your own data.
+Use viewer.swissgeol.ch to explore geological data across Switzerland - both at the surface and deep underground. You can view existing datasets, combine different sources, and even integrate your own data for a tailored experience.
 
-With the swissgeol viewer you  can ...  
-... get an overview of existing data in the sub-surface of Switzerland  
-... combine data from above and below ground  
-... slice the 3D-scene and get an idea of Switzerland sub-surface  
-... add your own data  
-... and much more.
+With viewer.swissgeol.ch, you can...
+
+...get an overview of geological data available across Switzerland
+
+...combine surface and subsurface datasets
+
+...slice through 3D geological models to explore underground structures
+
+...upload and visualize your own geodata
+
+...and much more
 
 ## Installation
 
-Follow the steps below to run the 3D sub-surface viewer in your local development environment.
+Follow the steps below to run viewer.swissgeol.ch in your local development environment.
 
 ### Prerequisites
 
