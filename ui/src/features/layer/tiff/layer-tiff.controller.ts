@@ -83,7 +83,7 @@ export class LayerTiffController {
       band_names: string[];
     }
 
-    const url = `http://localhost:8481/cog/point/${longitude},${latitude}?url=${this.layer.url}`;
+    const url = `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/point/${longitude},${latitude}?url=${this.layer.url}`;
     const json: Json = await Resource.fetchJson({ url });
     try {
       const activeValue = json.values[this.active.band.index - 1];
