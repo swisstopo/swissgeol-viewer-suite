@@ -95,7 +95,7 @@ services:
       TITILER_API_DEBUG: "1"
     volumes:
       - ./titiler:/app:ro
-    mem_limit: 512m
+    mem_limit: 2g
     cpus: 0.5
 
 volumes:

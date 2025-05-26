@@ -2,7 +2,18 @@ import { customElement } from 'lit/decorators.js';
 import { CoreElement, CoreWindow } from 'src/features/core';
 import { css, html, PropertyValues } from 'lit';
 import MainStore from 'src/store/main';
-import { Entity, ImageryLayer, Viewer } from 'cesium';
+import {
+  Cartesian3,
+  Cartographic,
+  ConstantPositionProperty,
+  ConstantProperty,
+  Ellipsoid,
+  Entity,
+  HeightReference,
+  ImageryLayer,
+  JulianDate,
+  Viewer,
+} from 'cesium';
 import {
   isLayerTiffImagery,
   LayerTiffImagery,
@@ -40,6 +51,12 @@ export class LayerTiffPicker extends CoreElement {
         this.register(
           layers.layerRemoved.addEventListener(this.handleLayerRemoved),
         );
+
+        this.register(
+          this.viewer.camera.changed.addEventListener(() =>
+            this.adjustHighlight(),
+          ),
+        );
       }),
     );
 
@@ -74,17 +91,23 @@ export class LayerTiffPicker extends CoreElement {
     if (this.infoWindow !== null) {
       this.infoWindow.close();
     }
-
     this.highlight = this.viewer.entities.add({
       position: data.coordinates,
+      properties: {
+        pickCoordinates: data.coordinates,
+        pickCartographic: Ellipsoid.WGS84.cartesianToCartographic(
+          data.coordinates,
+        ),
+      },
       billboard: {
         image:
           'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="rgba(120,255,52,0.6)"/></svg>',
-        verticalOrigin: Cesium.VerticalOrigin.CENTER,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
         horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-        heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+        alignedAxis: Cesium.Cartesian3.ZERO,
       },
     });
+    this.adjustHighlight();
 
     this.infoWindow = CoreWindow.open({
       title: () => i18next.t('layers:geoTIFF.infoWindow.title'),
@@ -105,11 +128,56 @@ export class LayerTiffPicker extends CoreElement {
     });
   };
 
+  private adjustHighlight(): void {
+    if (this.highlight === null) {
+      return;
+    }
+    const height = this.viewer.camera.positionCartographic.height;
+    const position: Cartographic =
+      this.highlight.properties!.pickCartographic.getValue(JulianDate.now());
+
+    const heightDiff = height - position.height;
+
+    const heightReference = this.highlight.billboard!.heightReference?.getValue(
+      JulianDate.now(),
+    );
+
+    if (heightDiff < 5_000) {
+      if (heightReference === HeightReference.CLAMP_TO_GROUND) {
+        return;
+      }
+      this.highlight.position = new ConstantPositionProperty(
+        Cartesian3.fromRadians(position.longitude, position.latitude, 0),
+      );
+      this.highlight.billboard!.heightReference = new ConstantProperty(
+        HeightReference.CLAMP_TO_GROUND,
+      );
+    } else {
+      if (heightReference === HeightReference.RELATIVE_TO_GROUND) {
+        return;
+      }
+      this.highlight.position = new ConstantPositionProperty(
+        Cartesian3.fromRadians(position.longitude, position.latitude, 1000),
+      );
+      this.highlight.billboard!.heightReference = new ConstantProperty(
+        HeightReference.RELATIVE_TO_GROUND,
+      );
+    }
+  }
+
   private readonly zoomToData = (): void => {
     if (this.highlight === null) {
       return;
     }
-    this.viewer.flyTo(this.highlight).then();
+    const position: Cartographic =
+      this.highlight.properties!.pickCartographic.getValue(JulianDate.now());
+    this.viewer.camera.flyTo({
+      destination: Cartesian3.fromRadians(
+        position.longitude,
+        position.latitude,
+        position.height + 1000,
+      ),
+    });
   };
 
   closeWindow(): void {
