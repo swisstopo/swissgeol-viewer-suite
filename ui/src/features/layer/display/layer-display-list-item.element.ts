@@ -251,7 +251,6 @@ export class LayerDisplayListItem extends CoreElement {
       variant="tertiary"
       shape="icon"
       class="actions"
-      ?disabled="${!this.isVisible}"
     >
       <ngm-core-icon icon="menu"></ngm-core-icon>
     </ngm-core-button>
