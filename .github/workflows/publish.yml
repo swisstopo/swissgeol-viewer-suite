@@ -1,0 +1,119 @@
+name: Publish
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: "The tag used on the published images."
+        type: string
+        required: true
+      version_script:
+        description: "The JS script that retrieves the version number with which the release is published."
+        type: string
+        required: true
+    outputs:
+      version:
+        description: "The version determined via `version_script`."
+        value: ${{ jobs.determine-version.outputs.version }}
+
+permissions: write-all
+
+jobs:
+  determine-version:
+    name: "determine version"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.find-version.outputs.result }}
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - name: "Install dependencies"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm install @octokit/rest
+      - name: "Find version"
+        id: find-version
+        uses: actions/github-script@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+        with:
+          result-encoding: string
+          script: ${{ inputs.version_script }}
+
+  build-and-push-api:
+    name: "build and push api"
+    needs:
+      - determine-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create image
+        uses: ./.github/actions/create-image
+        with:
+          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-api
+          TAG: ${{ inputs.tag }}
+          VERSION: ${{ needs.determine-version.outputs.version }}
+          DOCKERFILE: ./api/Dockerfile
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTEXT: "./api"
+
+  build-and-push-ui:
+    name: "build and push ui"
+    needs:
+      - determine-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create image
+        uses: ./.github/actions/create-image
+        with:
+          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-ui
+          TAG: ${{ inputs.tag }}
+          VERSION: ${{ needs.determine-version.outputs.version }}
+          DOCKERFILE: ./ui/Dockerfile
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-and-push-titiler:
+    name: "build and push titiler"
+    needs:
+      - determine-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create image
+        uses: ./.github/actions/create-image
+        with:
+          IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}-titiler
+          TAG: ${{ inputs.tag }}
+          VERSION: ${{ needs.determine-version.outputs.version }}
+          DOCKERFILE: ./titiler/Dockerfile
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTEXT: ./titiler
+
+  tag-commit:
+    name: "tag commit"
+    needs:
+      - determine-version
+      - build-and-push-api
+      - build-and-push-ui
+      - build-and-push-titiler
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Tag commit
+        uses: ./.github/actions/tag-commit
+        with:
+          TAG_NAME: ${{ inputs.tag }}
+          SHA: ${{ github.sha }}
+      - name: Tag version
+        if: ${{ inputs.tag == 'latest' }}
+        uses: ./.github/actions/tag-commit
+        with:
+          TAG_NAME: ${{ needs.determine-version.outputs.version }}
+          SHA: ${{ github.sha }}

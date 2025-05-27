@@ -1,0 +1,100 @@
+name: Publish PROD
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: "publish"
+
+# Run all publish workflow in sequence to ensure consistent version numbers.
+permissions: write-all
+
+jobs:
+  enforce-main:
+    name: "enforce main"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if not on main
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            echo "This job must be run on the main branch."
+            exit 1
+          fi
+
+  publish:
+    needs:
+      - enforce-main
+    uses: './.github/workflows/publish.yml'
+    with:
+      tag: latest
+      version_script: |
+        const { findLatestReleasableVersion } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/package.utils.mjs`);
+        const {
+        determineNextRcVersionBySourceBranch,
+        stringifyVersion,
+        } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/version.utils.mjs`);
+        
+        const releasableVersion = await findLatestReleasableVersion();
+        if (releasableVersion === null) {
+        throw new Error('No releasable version found');
+        }
+        return stringifyVersion({ ...releasableVersion, preRelease: null });
+
+  create-release:
+    name: "create release"
+    needs:
+      - publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Extract CHANGELOG entry
+        id: extract-changelog
+        run: |
+          content=$(awk '
+            BEGIN { found = 0 }
+            /^## \[/ {
+              if (found++) exit
+            }
+            found { print }
+          ' CHANGELOG.md)
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$content" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "${{ needs.publish.outputs.version }}"
+          name: "swissgeol Viewer v${{ needs.publish.outputs.version }}"
+          body: ${{ steps.extract-changelog.outputs.content }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generate_release_notes: false
+
+
+  cleanup:
+    name: "cleanup"
+    needs:
+      - publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm install @octokit/rest
+      - name: Remove outdated versions
+        uses: actions/github-script@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_IMAGE_NAME: ${{ vars.BASE_IMAGE_NAME }}
+          CURRENT_VERSION: ${{ needs.publish.outputs.version }}
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+        with:
+          script: |
+            const { findOutdatedVersions, removePackageVersions } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/package.utils.mjs`);
+            const { parseVersion, stringifyVersion } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/version.utils.mjs`);
+
+            const version = parseVersion(process.env.CURRENT_VERSION);
+            const outdatedVersions = await findOutdatedVersions(version);
+            await removePackageVersions(outdatedVersions);
