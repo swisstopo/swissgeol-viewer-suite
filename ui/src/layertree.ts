@@ -7,6 +7,7 @@ import {
 import { PickableCesium3DTileset } from './layers/helpers';
 import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer';
 import { LayerTiffController } from 'src/features/layer';
+import { AppEnv, ClientConfig } from 'src/api/client-config';
 
 export type LayerTreeNode =
   | UnspecificLayerTreeNode
@@ -53,6 +54,7 @@ interface UnspecificLayerTreeNode {
   customAsset?: boolean;
   wmtsTimes?: string[];
   wmtsCurrentTime?: string;
+  env?: Array<AppEnv>;
 }
 
 export interface GeoTIFFLayer {
@@ -63,6 +65,7 @@ export interface GeoTIFFLayer {
   label: string;
   bands: GeoTIFFLayerBand[];
   opacity?: number;
+  env?: Array<AppEnv>;
 
   controller?: LayerTiffController;
 }
@@ -1183,6 +1186,7 @@ const subsurface: LayerTreeNode = {
           id: 'swissBEDROCK',
           label: t('layers:swissBEDROCK.title'),
           opacity: 0.5,
+          env: [AppEnv.Local, AppEnv.Dev],
           bands: [
             {
               index: 1,
@@ -1555,4 +1559,18 @@ const defaultLayerTree: LayerTreeNode[] = [
   background,
 ];
 
-export default defaultLayerTree;
+export const getDefaultLayerTree = (config: ClientConfig) =>
+  filterLayer(defaultLayerTree, config.env);
+
+const filterLayer = (layers: LayerTreeNode[], env: AppEnv): LayerTreeNode[] =>
+  layers.reduce((acc, layer) => {
+    const filteredLayer = { ...layer };
+    if (layer.env !== undefined && !layer.env.includes(env)) {
+      return acc;
+    }
+    if (layer.children !== undefined) {
+      filteredLayer.children = filterLayer(layer.children, env);
+    }
+    acc.push(filteredLayer);
+    return acc;
+  }, [] as LayerTreeNode[]);

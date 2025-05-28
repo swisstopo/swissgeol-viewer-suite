@@ -5,7 +5,7 @@ import 'src/elements/dashboard/ngm-dashboard';
 import 'src/elements/sidebar/ngm-menu-item';
 import LayersActions from '../layers/LayersActions';
 import { DEFAULT_LAYER_OPACITY, LayerType } from '../constants';
-import defaultLayerTree, { LayerConfig } from '../layertree';
+import { getDefaultLayerTree, LayerConfig } from '../layertree';
 import {
   addAssetId,
   getAssetIds,
@@ -48,6 +48,9 @@ import type QueryManager from 'src/query/QueryManager';
 import DashboardStore from 'src/store/dashboard';
 import { getAssets } from 'src/api-ion';
 import { LayerEvent, LayersEvent } from 'src/features/layer';
+import { clientConfigContext } from 'src/context';
+import { ClientConfig } from 'src/api/client-config';
+import { consume } from '@lit/context';
 
 export type SearchLayer = SearchLayerWithLayer | SearchLayerWithSource;
 
@@ -69,35 +72,54 @@ export interface SearchLayerWithSource extends BaseSearchLayer {
 export class SideBar extends LitElementI18n {
   @property({ type: Object })
   accessor queryManager: QueryManager | null | undefined = null;
+
   @property({ type: Boolean })
   accessor mobileView = false;
+
   @property({ type: Boolean })
   accessor displayUndergroundHint = true;
+
+  @consume({ context: clientConfigContext })
+  accessor clientConfig!: ClientConfig;
+
   @state()
   accessor catalogLayers: LayerConfig[] | undefined;
+
   @state()
   accessor activeLayers: LayerConfig[] = [];
+
   @state()
   accessor numberOfVisibleGeometries = 0;
   @state()
   accessor activePanel: string | null = null;
+
   @state()
   accessor showHeader = false;
+
   @state()
   accessor mobileShowAll = false;
+
   @state()
   accessor hideDataDisplayed = false;
+
   @state()
   accessor debugToolsActive = getCesiumToolbarParam();
+
   @query('.ngm-side-bar-panel > .ngm-toast-placeholder')
   accessor toastPlaceholder;
+
   private layerActions: LayersActions | undefined;
+
   private zoomedToPosition = false;
+
   private accordionInited = false;
+
   private shareListenerAdded = false;
+
   private readonly shareDownListener = (evt) => {
     if (!evt.composedPath().includes(this)) this.activePanel = null;
   };
+
   private viewer: Viewer | null = null;
 
   constructor() {
@@ -307,7 +329,7 @@ export class SideBar extends LitElementI18n {
     if (this.viewer && !this.layerActions) {
       this.layerActions = new LayersActions(this.viewer);
       if (!this.catalogLayers) {
-        this.catalogLayers = [...defaultLayerTree];
+        this.catalogLayers = getDefaultLayerTree(this.clientConfig);
         await this.syncActiveLayers();
       }
     }

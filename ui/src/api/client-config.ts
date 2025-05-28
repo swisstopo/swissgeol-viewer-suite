@@ -1,5 +1,5 @@
 export interface ClientConfig {
-  env: 'dev' | 'int' | 'prod';
+  env: AppEnv;
   version: string;
   ionDefaultAccessToken: string;
   gstUrl: string;
@@ -9,4 +9,11 @@ export interface ClientConfig {
     cognito_identity_pool_id: string;
     cognito_aws_region: string;
   };
+}
+
+export enum AppEnv {
+  Local = 'local',
+  Dev = 'dev',
+  Int = 'int',
+  Prod = 'prod',
 }
