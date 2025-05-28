@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "develop"
+      - "feature/build"
 
   workflow_dispatch:
     inputs:
