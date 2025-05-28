@@ -571,9 +571,7 @@ export class NgmApp extends LitElementI18n {
 
   render() {
     return html`
-      ${this.clientConfig.env === 'prod'
-        ? ''
-        : html`<layout-env-ribbon></layout-env-ribbon>`}
+      <layout-env-ribbon></layout-env-ribbon>
       <header>
         <div class="left">
           <a id="ngm-home-link" href="">
