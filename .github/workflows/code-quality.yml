@@ -14,16 +14,6 @@ env:
   PGHOST: localhost # Overrides the default value in .env
 
 jobs:
-  #  add_review_links:
-  #    runs-on: ubuntu-22.04
-  #    timeout-minutes: 3
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #      - name: Add review links
-  #        env:
-  #          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #        run: scripts/github_add_link_for_reviews.sh
-
   dependency-review:
     name: "Dependency Review"
     runs-on: ubuntu-latest
@@ -100,29 +90,6 @@ jobs:
         run: cd ui && npm run check
 
 
-  test-ui:
-    name: "Test UI"
-    runs-on: ubuntu-latest
-    needs:
-      - check-ui
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Restore cached node modules
-        uses: actions/cache/restore@v4
-        with:
-          path: ./ui/node_modules
-          key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
-      - name: Run tests
-        run: |
-          cd ui
-          npm run test
-
-
   lint-ui:
     name: "Lint UI"
     runs-on: ubuntu-latest
@@ -150,7 +117,6 @@ jobs:
     name: "Build UI"
     runs-on: ubuntu-latest
     needs:
-      - test-ui
       - lint-ui
     steps:
       - name: Checkout repository

@@ -6,17 +6,17 @@ import draggable from './draggable';
 import i18next from 'i18next';
 import type { Interactable } from '@interactjs/types';
 import {
-  Event,
-  Scene,
-  Viewer,
   Cartesian2,
   Cartesian3,
+  Ellipsoid,
+  Event,
   KeyboardEventModifier,
   Math as CesiumMath,
   Matrix4,
+  Scene,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-  Ellipsoid,
+  Viewer,
 } from 'cesium';
 import {
   formatCartographicAs2DLv95,
@@ -30,10 +30,13 @@ import NavToolsStore from '../store/navTools';
 import { dragArea } from './helperElements';
 import './ngm-minimap';
 import { CoordinateWithCrs } from './ngm-cam-coordinates';
+import { consume } from '@lit/context';
+import { ControlsService } from 'src/features/controls/controls.service';
 
 export type LockType = '' | 'elevation' | 'angle' | 'pitch' | 'move';
 export const ABSOLUTE_ELEVATION_MIN = 30000;
 export const ABSOLUTE_ELEVATION_MAX = 700000;
+
 /*
  * Convert cartographic height (between -30'000m and +300'000) to input value (between 0 and 1)
  * The input value between 0 to 0.5 is mapped to the height between -30'000m and 0m
@@ -62,26 +65,42 @@ export function valueToHeight(value: number): number {
 export class NgmCamConfiguration extends LitElementI18n {
   @property({ type: Object })
   accessor viewer: Viewer | null = null;
+
+  @consume({ context: ControlsService.context() })
+  accessor controlsService!: ControlsService;
+
   @state()
   accessor scene: Scene | null = null;
+
   @state()
   accessor interaction: Interactable | null = null;
+
   @state()
   accessor unlistenPostRender: Event.RemoveCallback | null = null;
+
   @state()
   accessor heading = 0;
+
   @state()
   accessor elevation = 0;
+
   @state()
   accessor pitch = 0;
+
   @state()
   accessor coordinates: Record<string, (string | number)[]> | null = null;
+
   @state()
   accessor lockType: LockType = '';
+
+  @state()
+  accessor is2DActive = false;
+
   // always use the 'de-CH' locale to always have the simple tick as thousands separator
   private readonly integerFormat = new Intl.NumberFormat('de-CH', {
     maximumFractionDigits: 1,
   });
+
   private timeout: null | NodeJS.Timeout = null;
   private handler: ScreenSpaceEventHandler | undefined;
   private lockMove = false;
@@ -128,6 +147,7 @@ export class NgmCamConfiguration extends LitElementI18n {
         }, 300);
       },
       lock: () => this.toggleLock('elevation'),
+      isDisabled: () => false,
     },
     {
       label: () => html`${i18next.t('camera_position_angle_label')}<br />(°)`,
@@ -144,6 +164,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       getValueLabel: () => `${this.integerFormat.format(this.heading)}°`,
       onSliderChange: (evt) => this.updateAngle(Number(evt.target.value)),
       lock: () => this.toggleLock('angle'),
+      isDisabled: () => false,
     },
     {
       label: () => html`${i18next.t('camera_position_pitch_label')}<br />(°)`,
@@ -160,6 +181,7 @@ export class NgmCamConfiguration extends LitElementI18n {
       getValueLabel: () => `${this.integerFormat.format(this.pitch)}°`,
       onSliderChange: (evt) => this.updatePitch(Number(evt.target.value)),
       lock: () => this.toggleLock('pitch'),
+      isDisabled: () => this.is2DActive,
     },
   ];
 
@@ -196,8 +218,10 @@ export class NgmCamConfiguration extends LitElementI18n {
     const pc = camera.positionCartographic;
     const altitude = this.scene!.globe.getHeight(pc) ?? 0;
     this.elevation = pc.height - altitude;
+
     this.pitch = Math.round(CesiumMath.toDegrees(camera.pitch));
     let heading = Math.round(CesiumMath.toDegrees(camera.heading));
+
     // hack to avoid angle numbers jumping
     if (this.pitch > 87 && heading > 0 && heading < 180) heading += 180;
     else if (this.pitch > 87 && heading >= 180) heading -= 180;
@@ -225,6 +249,10 @@ export class NgmCamConfiguration extends LitElementI18n {
   }
 
   updatePitch(value: number) {
+    if (this.controlsService.is2DActive) {
+      return;
+    }
+
     NavToolsStore.hideTargetPoint();
     this.scene!.camera.setView({
       orientation: {
@@ -281,6 +309,10 @@ export class NgmCamConfiguration extends LitElementI18n {
   }
 
   enableLock(type: LockType) {
+    if (this.controlsService.is2DActive && type === 'pitch') {
+      return;
+    }
+
     if (!this.scene) return;
     this.disableLock();
     this.lockType = type;
@@ -384,6 +416,7 @@ export class NgmCamConfiguration extends LitElementI18n {
               <div
                 class=${c.iconClass()}
                 title=${i18next.t('cam_lock')}
+                ?aria-disabled="${c.isDisabled()}"
                 @click=${c.lock}
               ></div>
               <div class="ngm-cam-conf-slider">
@@ -391,11 +424,14 @@ export class NgmCamConfiguration extends LitElementI18n {
                   <label>${c.label()}</label>
                   <input
                     type="number"
-                    class="ngm-cam-conf-number-input"
+                    class="ngm-cam-conf-number-input ${classMap({
+                      disabled: c.isDisabled(),
+                    })}"
                     min="${c.minInputValue ?? c.minValue}"
                     max="${c.maxInputValue ?? c.maxValue}"
                     step="${c.inputStep ?? c.step}"
                     .value=${c.getInputValue ? c.getInputValue() : c.getValue()}
+                    ?disabled="${c.isDisabled()}"
                     @input=${c.onInputChange
                       ? c.onInputChange
                       : c.onSliderChange}
@@ -403,12 +439,13 @@ export class NgmCamConfiguration extends LitElementI18n {
                 </div>
                 <input
                   type="range"
-                  class="ngm-slider"
+                  class="ngm-slider ${classMap({ disabled: c.isDisabled() })}"
                   style=${styleMap(c.style())}
                   min=${c.minValue}
                   max=${c.maxValue}
                   step=${c.step}
                   .value=${c.getValue()}
+                  ?disabled="${c.isDisabled()}"
                   @input=${c.onSliderChange}
                   @keydown="${(e) =>
                     (e.key === 'ArrowLeft' || e.key === 'ArrowRight') &&

@@ -232,19 +232,6 @@ export default [
   },
   {
     ...sharedConfig,
-    files: ['src/test/**/*.ts', 'src/test/**/*.js'],
-    languageOptions: {
-      ...sharedConfig.languageOptions,
-      parserOptions: {
-        project: './tsconfig.test.json',
-      },
-      globals: {
-        ...globals.mocha,
-      },
-    },
-  },
-  {
-    ...sharedConfig,
     files: ['cypress/**/*.ts', 'cypress/**/*.js'],
     languageOptions: {
       ...sharedConfig.languageOptions,

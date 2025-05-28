@@ -32,6 +32,7 @@ import {
 import MainStore from './store/main';
 import { getExaggeration } from './permalink';
 import { pickPositionOrVoxel } from './cesiumutils';
+import { ControlsService } from 'src/features/controls/controls.service';
 
 window['CESIUM_BASE_URL'] = './cesium';
 
@@ -97,6 +98,7 @@ export interface BaseLayerConfig {
 
 export async function setupViewer(
   container: Element,
+  controlsService: ControlsService,
   rethrowRenderErrors: boolean,
 ) {
   const searchParams = new URLSearchParams(location.search);
@@ -166,7 +168,7 @@ export async function setupViewer(
   viewer.screenSpaceEventHandler.removeInputAction(
     ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
   );
-  enableCenterOfRotate(viewer);
+  enableCenterOfRotate(viewer, controlsService);
 
   const globe = scene.globe;
   scene.verticalExaggeration = zExaggeration;
@@ -270,13 +272,19 @@ export async function setupViewer(
   return viewer;
 }
 
-function enableCenterOfRotate(viewer: Viewer) {
+function enableCenterOfRotate(
+  viewer: Viewer,
+  controlsService: ControlsService,
+) {
   const scene = viewer.scene;
   const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
   scene.camera.constrainedAxis = new Cartesian3(0, 0, 1);
   // look fix camera on picked position when ctrl pressed
   eventHandler.setInputAction(
     (event) => {
+      if (controlsService.is2DActive) {
+        return;
+      }
       const pickedPosition = pickPositionOrVoxel(scene, event.position);
       if (pickedPosition) {
         const transform = Transforms.eastNorthUpToFixedFrame(pickedPosition);

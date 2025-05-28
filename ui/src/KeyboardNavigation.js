@@ -162,7 +162,6 @@ export default class KeyboardNavigation {
       } else if (this.cancelKeys_.includes(key)) {
         this.cancel_();
       }
-
       if (hideTargetPoint) NavToolsStore.hideTargetPoint();
 
       if (this.hasKeyDown_()) {
@@ -231,8 +230,8 @@ export default class KeyboardNavigation {
     if (heading !== undefined && pitch !== undefined) {
       camera.setView({
         orientation: {
-          heading: heading,
-          pitch: pitch,
+          heading,
+          pitch,
         },
       });
     }

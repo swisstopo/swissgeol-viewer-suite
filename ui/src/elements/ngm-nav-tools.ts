@@ -39,6 +39,8 @@ import NavToolsStore from '../store/navTools';
 import { dragArea } from './helperElements';
 import type { LockType } from './ngm-cam-configuration';
 import MainStore from '../store/main';
+import { consume } from '@lit/context';
+import { ControlsService } from 'src/features/controls/controls.service';
 
 const AXIS_WIDTH = 5;
 const AXIS_LENGTH = 120;
@@ -47,16 +49,25 @@ const AXIS_LENGTH = 120;
 export class NgmNavTools extends LitElementI18n {
   @property({ type: Object })
   accessor viewer: Viewer | null = null;
+
   @property({ type: Boolean })
   accessor showCamConfig = false;
+
+  @consume({ context: ControlsService.context() })
+  accessor controlsService!: ControlsService;
+
   @state()
   accessor moveAmount = 200;
+
   @state()
   accessor interaction: Interactable | null = null;
+
   @state()
   accessor showTargetPoint = false;
+
   @state()
   accessor lockType: LockType = '';
+
   private zoomingIn = false;
   private zoomingOut = false;
   private unlistenFromPostRender: Event.RemoveCallback | null = null;
@@ -177,8 +188,13 @@ export class NgmNavTools extends LitElementI18n {
       });
       this.refIcon = this.viewer.entities.add(this.refIcon);
       this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+
+      // This creates the rotate/tilt indicator.
       this.eventHandler.setInputAction(
         (event) => {
+          if (this.controlsService.is2DActive) {
+            return;
+          }
           const pickedPosition = pickPositionOrVoxel(scene, event.position);
           this.toggleAxis(pickedPosition);
         },
@@ -440,6 +456,7 @@ export class NgmNavTools extends LitElementI18n {
           })}"
           @click=${() => this.dispatchEvent(new CustomEvent('togglecamconfig'))}
         ></div>
+        <controls-2d-action></controls-2d-action>
       </div>
       ${dragArea}
     `;
