@@ -20,7 +20,7 @@ import { lv95ToDegrees } from 'src/projection';
 import { escapeRegExp } from 'src/utils';
 import { extractEntitiesAttributes } from 'src/query/objectInformation';
 import auth from 'src/store/auth';
-import defaultLayerTree, { LayerTreeNode } from 'src/layertree';
+import { getDefaultLayerTree, LayerTreeNode } from 'src/layertree';
 import NavToolsStore from 'src/store/navTools';
 import {
   SearchLayer,
@@ -28,6 +28,9 @@ import {
   SideBar,
 } from 'src/elements/ngm-side-bar';
 import { createRef, ref } from 'lit/directives/ref.js';
+import { clientConfigContext } from 'src/context';
+import { ClientConfig } from 'src/api/client-config';
+import { consume } from '@lit/context';
 
 @customElement('ngm-navigation-search')
 export class NavigationSearch extends LitElementI18n {
@@ -36,6 +39,9 @@ export class NavigationSearch extends LitElementI18n {
 
   @property()
   private accessor sidebar: SideBar | null = null;
+
+  @consume({ context: clientConfigContext })
+  accessor clientConfig!: ClientConfig;
 
   @state()
   private accessor isActive = false;
@@ -178,7 +184,10 @@ export class NavigationSearch extends LitElementI18n {
   }
 
   private searchAdditionalItemsByCatalog(query: RegExp): AdditionalItem[] {
-    return this.searchAdditionalItemsByLayerTree(query, defaultLayerTree);
+    return this.searchAdditionalItemsByLayerTree(
+      query,
+      getDefaultLayerTree(this.clientConfig),
+    );
   }
 
   private searchAdditionalItemsByLayerTree(

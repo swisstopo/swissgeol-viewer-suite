@@ -93,32 +93,46 @@ const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
 export class NgmApp extends LitElementI18n {
   @state()
   accessor slicer_: Slicer | undefined;
+
   @state()
   accessor showCamConfig = false;
+
   @state()
   accessor loading = false;
+
   @state()
   accessor determinateLoading = false;
+
   @state()
   accessor queueLength = 0;
+
   @state()
   accessor legendConfigs: LayerConfig[] = [];
+
   @state()
   accessor showProjectPopup = false;
+
   @state()
   accessor mobileView = false;
+
   @state()
   accessor showAxisOnMap = false;
+
   @state()
   accessor showProjectSelector = false;
+
   @state()
   accessor showCesiumToolbar = getCesiumToolbarParam();
+
   @query('ngm-cam-configuration')
   accessor camConfigElement;
+
   @query('ngm-voxel-filter')
   accessor voxelFilterElement;
+
   @query('ngm-voxel-simple-filter')
   accessor voxelSimpleFilterElement;
+
   @query('ngm-wmts-date-picker')
   accessor wmtsDatePickerElement;
 
