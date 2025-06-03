@@ -11,6 +11,7 @@ import {
 import { GeoTIFFLayer, GeoTIFFLayerBand, LayerConfig } from 'src/layertree';
 import { SWITZERLAND_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
 import { Observable, Subject } from 'rxjs';
+import proj4 from 'proj4';
 
 export class LayerTiffController {
   private active!: ActiveBand;
@@ -90,9 +91,17 @@ export class LayerTiffController {
       if (activeValue === null) {
         return false;
       }
+      const [cellLongitude, cellLatitude] = this.computeCellCenter(
+        longitude,
+        latitude,
+      );
       this.pickSubject.next({
         layer: this.layer,
-        coordinates: cartesian,
+        coordinates: Cartesian3.fromDegrees(
+          cellLongitude,
+          cellLatitude,
+          coords.height,
+        ),
         bands: json.values,
       });
       return true;
@@ -161,6 +170,40 @@ export class LayerTiffController {
     }
     this.active.imagery.alpha = opacity;
   };
+
+  /**
+   * Given a 2d coordinate, this method calculates in which of the TIFF's cells that coordinate falls.
+   *
+   * @param lon The coordinate's longitude.
+   * @param lat The coordinate's latitude.
+   * @return The center longitude/latitude of the cell that contains the given coordinates.
+   *
+   * @private
+   */
+  private computeCellCenter(lon: number, lat: number): [number, number] {
+    const wgs84 = 'EPSG:4326';
+    const targetCRS = 'EPSG:3857';
+
+    const [x, y] = proj4(wgs84, targetCRS, [lon, lat]);
+
+    const [[a, _b, c], [_d, e, f]] = this.layer.metadata.transform;
+
+    const px = Math.floor((x - c) / a);
+    const py = Math.floor((y - f) / e);
+
+    const centerPx = px;
+    const centerPy = py;
+
+    const centerX = a * centerPx + c + a / 2;
+    const centerY = e * centerPy + f + e / 2;
+
+    const [centerLon, centerLat] = proj4('EPSG:3857', 'EPSG:4326', [
+      centerX,
+      centerY,
+    ]);
+
+    return [centerLon, centerLat];
+  }
 }
 
 interface ActiveBand {
