@@ -1,10 +1,10 @@
 import {
-  Camera,
   CameraEventType,
   Cartesian2,
   Cartesian3,
   Ellipsoid,
   Math as CesiumMath,
+  sampleTerrainMostDetailed,
   Scene,
   ScreenSpaceCameraController,
   Viewer,
@@ -39,7 +39,7 @@ export class Control2dController {
 
   private activate(): void {
     this.toggleTerrainCollision(true);
-    this.rotateCameraTo2D();
+    this.rotateCameraTo2D().then();
     this.disableTiltGestures();
   }
 
@@ -52,9 +52,18 @@ export class Control2dController {
     this.cameraController.enableCollisionDetection = isActive;
   }
 
-  private rotateCameraTo2D(): void {
-    const currentHeight = this.camera.positionCartographic.height;
-    if (currentHeight <= 1000) {
+  private async rotateCameraTo2D(): Promise<void> {
+    // Find the position that the camera is looking at.
+    // We want to adjust the camera to look down at that position.
+    const center = new Cartesian2(
+      this.viewer.canvas.clientWidth / 2,
+      this.viewer.canvas.clientHeight / 2,
+    );
+    const position = this.scene.pickPosition(center);
+
+    // If we can't find the center position, then the camera is looking at the sky.
+    // In that case, we simply switch to the default 2d view.
+    if (position === undefined) {
       this.viewer.camera.flyTo({
         duration: 2,
         ...DEFAULT_VIEW,
@@ -62,19 +71,32 @@ export class Control2dController {
       return;
     }
 
-    const center = new Cartesian2(
-      this.viewer.canvas.clientWidth / 2,
-      this.viewer.canvas.clientHeight / 2,
+    // Check if the camera is below the terrain.
+    const cameraPosition = this.viewer.scene.camera.positionCartographic;
+    const [terrainPosition] = await sampleTerrainMostDetailed(
+      this.viewer.terrainProvider,
+      [cameraPosition.clone()],
     );
-    const position = this.scene.pickPosition(center);
-    const targetCarto = Ellipsoid.WGS84.cartesianToCartographic(position);
 
+    const heightDifference = cameraPosition.height - terrainPosition.height;
+    const targetHeight =
+      heightDifference < 0
+        ? // If the camera is below the terrain, we adjust the height so we end up as far above the terrain as we were below it.
+          terrainPosition.height - heightDifference
+        : // If the camera is above the terrain, we simply keep the current height.
+          cameraPosition.height;
+
+    // Find the position that we want to rotate to by combining the position that the camera is looking at
+    // with the height adjusted to be above the terrain.
+    const targetCartographic =
+      Ellipsoid.WGS84.cartesianToCartographic(position);
     const destination = Cartesian3.fromRadians(
-      targetCarto.longitude,
-      targetCarto.latitude,
-      currentHeight,
+      targetCartographic.longitude,
+      targetCartographic.latitude,
+      targetHeight,
     );
 
+    // Adjust the camera, ensuring that we are looking down at the map.
     this.viewer.camera.flyTo({
       duration: 2,
       destination,
@@ -100,10 +122,6 @@ export class Control2dController {
 
   private get scene(): Scene {
     return this.viewer.scene;
-  }
-
-  private get camera(): Camera {
-    return this.scene.camera;
   }
 
   private get cameraController(): ScreenSpaceCameraController {
