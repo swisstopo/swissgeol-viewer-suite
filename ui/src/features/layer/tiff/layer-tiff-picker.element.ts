@@ -2,14 +2,12 @@ import { customElement } from 'lit/decorators.js';
 import { CoreElement, CoreWindow } from 'src/features/core';
 import { css, html, PropertyValues } from 'lit';
 import MainStore from 'src/store/main';
+import * as Cesium from 'cesium';
 import {
   Cartesian3,
   Cartographic,
-  ConstantPositionProperty,
-  ConstantProperty,
-  Ellipsoid,
+  EllipsoidGeodesic,
   Entity,
-  HeightReference,
   ImageryLayer,
   JulianDate,
   Viewer,
@@ -21,7 +19,6 @@ import {
 } from 'src/features/layer';
 import { Subscription } from 'rxjs';
 import i18next from 'i18next';
-import * as Cesium from 'cesium';
 
 @customElement('ngm-layer-tiff-picker')
 export class LayerTiffPicker extends CoreElement {
@@ -50,12 +47,6 @@ export class LayerTiffPicker extends CoreElement {
 
         this.register(
           layers.layerRemoved.addEventListener(this.handleLayerRemoved),
-        );
-
-        this.register(
-          this.viewer.camera.changed.addEventListener(() =>
-            this.adjustHighlight(),
-          ),
         );
       }),
     );
@@ -91,23 +82,55 @@ export class LayerTiffPicker extends CoreElement {
     if (this.infoWindow !== null) {
       this.infoWindow.close();
     }
+
+    const centerCarto = Cartographic.fromCartesian(data.coordinates);
+    const geodesic = new EllipsoidGeodesic();
+
+    function offsetPosition(
+      carto: Cartographic,
+      dNorth: number,
+      dEast: number,
+    ) {
+      const delta = Cesium.Math.toRadians(0.00001);
+
+      geodesic.setEndPoints(
+        carto,
+        new Cartographic(carto.longitude, carto.latitude + delta),
+      );
+      const meterPerLat = geodesic.surfaceDistance / delta;
+
+      geodesic.setEndPoints(
+        carto,
+        new Cartographic(carto.longitude + delta, carto.latitude),
+      );
+      const meterPerLon = geodesic.surfaceDistance / delta;
+
+      const dLat = dNorth / meterPerLat;
+      const dLon = dEast / meterPerLon;
+
+      return Cesium.Ellipsoid.WGS84.cartographicToCartesian(
+        new Cartographic(carto.longitude + dLon, carto.latitude + dLat),
+      );
+    }
+
+    const offset = data.layer.metadata.cellSize / 2;
+
+    // Calculate corners of a 10x10 rectangle, adjusted for the current projection.
+    const positions = [
+      offsetPosition(centerCarto, -offset, -offset),
+      offsetPosition(centerCarto, -offset, offset),
+      offsetPosition(centerCarto, offset, offset),
+      offsetPosition(centerCarto, offset, -offset),
+    ];
+
     this.highlight = this.viewer.entities.add({
-      position: data.coordinates,
-      properties: {
-        pickCoordinates: data.coordinates,
-        pickCartographic: Ellipsoid.WGS84.cartesianToCartographic(
-          data.coordinates,
-        ),
-      },
-      billboard: {
-        image:
-          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="rgba(120,255,52,0.6)"/></svg>',
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-        alignedAxis: Cesium.Cartesian3.ZERO,
+      polygon: {
+        hierarchy: new Cesium.PolygonHierarchy(positions),
+        material: Cesium.Color.fromBytes(120, 255, 52, Math.round(0.6 * 255)),
+        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        perPositionHeight: false,
       },
     });
-    this.adjustHighlight();
 
     this.infoWindow = CoreWindow.open({
       title: () => i18next.t('layers:geoTIFF.infoWindow.title'),
@@ -127,43 +150,6 @@ export class LayerTiffPicker extends CoreElement {
       },
     });
   };
-
-  private adjustHighlight(): void {
-    if (this.highlight === null) {
-      return;
-    }
-    const height = this.viewer.camera.positionCartographic.height;
-    const position: Cartographic =
-      this.highlight.properties!.pickCartographic.getValue(JulianDate.now());
-
-    const heightDiff = height - position.height;
-
-    const heightReference = this.highlight.billboard!.heightReference?.getValue(
-      JulianDate.now(),
-    );
-
-    if (heightDiff < 5_000) {
-      if (heightReference === HeightReference.CLAMP_TO_GROUND) {
-        return;
-      }
-      this.highlight.position = new ConstantPositionProperty(
-        Cartesian3.fromRadians(position.longitude, position.latitude, 0),
-      );
-      this.highlight.billboard!.heightReference = new ConstantProperty(
-        HeightReference.CLAMP_TO_GROUND,
-      );
-    } else {
-      if (heightReference === HeightReference.RELATIVE_TO_GROUND) {
-        return;
-      }
-      this.highlight.position = new ConstantPositionProperty(
-        Cartesian3.fromRadians(position.longitude, position.latitude, 1000),
-      );
-      this.highlight.billboard!.heightReference = new ConstantProperty(
-        HeightReference.RELATIVE_TO_GROUND,
-      );
-    }
-  }
 
   private readonly zoomToData = (): void => {
     if (this.highlight === null) {

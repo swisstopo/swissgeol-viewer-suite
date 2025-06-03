@@ -68,6 +68,21 @@ export interface GeoTIFFLayer {
   env?: Array<AppEnv>;
 
   controller?: LayerTiffController;
+
+  /**
+   * Information about what the TIFF's contents represent.
+   */
+  metadata: {
+    /**
+     * The TIFF's transform matrix.
+     */
+    transform: [[number, number, number], [number, number, number]];
+
+    /**
+     * The width and height of each of the TIFF's cells, in meters.
+     */
+    cellSize: number;
+  };
 }
 
 export interface GeoTIFFLayerBand {
@@ -1263,6 +1278,13 @@ const subsurface: LayerTreeNode = {
               name: 'prev_Author',
             },
           ],
+          metadata: {
+            transform: [
+              [14.58, 0.0, 657112.46],
+              [0.0, -14.63, 6079035.06],
+            ],
+            cellSize: 10,
+          },
         } satisfies GeoTIFFLayer,
       ],
     },

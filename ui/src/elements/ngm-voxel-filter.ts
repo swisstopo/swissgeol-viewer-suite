@@ -70,7 +70,6 @@ export class NgmVoxelFilter extends LitElementI18n {
       ...(lithologyUniform as { typedArray: Uint8Array }).typedArray,
     ].map((value) => value === 1);
 
-    console.log(this.isLithologyActiveByIndex);
     if (this.includeUndefinedConductivity !== null) {
       this.includeUndefinedConductivity.checked = shader.uniforms[
         'u_filter_include_undefined_conductivity'
