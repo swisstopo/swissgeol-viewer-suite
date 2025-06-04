@@ -1,4 +1,3 @@
-import { LitElementI18n } from '../i18n';
 import { customElement, property, state } from 'lit/decorators.js';
 import { html } from 'lit';
 import draggable from './draggable';
@@ -14,12 +13,9 @@ import {
   Entity,
   Event,
   JulianDate,
-  KeyboardEventModifier,
   Matrix4,
   PolylineCollection,
   Scene,
-  ScreenSpaceEventHandler,
-  ScreenSpaceEventType,
   Viewer,
 } from 'cesium';
 import type { Interactable } from '@interactjs/types';
@@ -33,7 +29,6 @@ import {
 } from '../cesiumutils';
 import { showSnackbarError } from '../notifications';
 import i18next from 'i18next';
-import { debounce } from '../utils';
 import { getTargetParam, syncTargetParam } from '../permalink';
 import NavToolsStore from '../store/navTools';
 import { dragArea } from './helperElements';
@@ -41,12 +36,23 @@ import type { LockType } from './ngm-cam-configuration';
 import MainStore from '../store/main';
 import { consume } from '@lit/context';
 import { ControlsService } from 'src/features/controls/controls.service';
+import {
+  ButtonGesture,
+  ButtonGestureEvent,
+  filterByButtonGesture,
+  filterByModifier,
+  GestureControlsService,
+  GestureModifier,
+  MoveGestureEvent,
+} from 'src/features/controls/gestures/gesture-controls.service';
+import { CoreElement } from 'src/features/core';
+import { debounceTime, Subscription } from 'rxjs';
 
 const AXIS_WIDTH = 5;
 const AXIS_LENGTH = 120;
 
 @customElement('ngm-nav-tools')
-export class NgmNavTools extends LitElementI18n {
+export class NgmNavTools extends CoreElement {
   @property({ type: Object })
   accessor viewer: Viewer | null = null;
 
@@ -55,6 +61,9 @@ export class NgmNavTools extends LitElementI18n {
 
   @consume({ context: ControlsService.context() })
   accessor controlsService!: ControlsService;
+
+  @consume({ context: GestureControlsService.context() })
+  accessor gestureControlsService!: GestureControlsService;
 
   @state()
   accessor moveAmount = 200;
@@ -68,10 +77,11 @@ export class NgmNavTools extends LitElementI18n {
   @state()
   accessor lockType: LockType = '';
 
+  private gestureSubscription: Subscription | null = null;
+
   private zoomingIn = false;
   private zoomingOut = false;
   private unlistenFromPostRender: Event.RemoveCallback | null = null;
-  private eventHandler: ScreenSpaceEventHandler | undefined;
   private readonly stopZoomFunction: () => void = () => this.stopZoom();
   private refIcon: Entity = new Entity({
     position: Cartesian3.ZERO,
@@ -187,23 +197,7 @@ export class NgmNavTools extends LitElementI18n {
         }
       });
       this.refIcon = this.viewer.entities.add(this.refIcon);
-      this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
 
-      // This creates the rotate/tilt indicator.
-      this.eventHandler.setInputAction(
-        (event) => {
-          if (this.controlsService.is2DActive) {
-            return;
-          }
-          const pickedPosition = pickPositionOrVoxel(scene, event.position);
-          this.toggleAxis(pickedPosition);
-        },
-        ScreenSpaceEventType.LEFT_DOWN,
-        KeyboardEventModifier.CTRL,
-      );
-      document.addEventListener('keyup', (evt) => {
-        if (evt.key === 'Control') this.toggleAxis(undefined);
-      });
       this.syncPoint();
     }
   }
@@ -214,6 +208,57 @@ export class NgmNavTools extends LitElementI18n {
       allowFrom: '.ngm-drag-area',
     });
     super.connectedCallback();
+
+    // Create the rotate/tilt indicator.
+    this.register(
+      this.gestureControlsService.leftMouseButton$
+        .pipe(
+          filterByModifier(GestureModifier.Control),
+          filterByButtonGesture(ButtonGesture.Down),
+        )
+        .subscribe(this.createTiltIndicator),
+    );
+    this.register(
+      this.gestureControlsService.middleMouseButton$
+        .pipe(filterByButtonGesture(ButtonGesture.Down))
+        .subscribe(this.createTiltIndicator),
+    );
+
+    // Remove the indicator when the middle mouse button is released.
+    this.register(
+      this.gestureControlsService.middleMouseButton$
+        .pipe(filterByButtonGesture(ButtonGesture.Up))
+        .subscribe(() => {
+          this.toggleAxis(undefined);
+        }),
+    );
+
+    // Trigger the indicator when control is clicked after the mouse button.
+    let activeLeftClick: ButtonGestureEvent | null = null;
+    this.register(
+      this.gestureControlsService.leftMouseButton$.subscribe((event) => {
+        activeLeftClick = event;
+      }),
+    );
+    const enableAxisHandler = (evt: KeyboardEvent) => {
+      if (evt.key === 'Control' && activeLeftClick !== null) {
+        this.createTiltIndicator(activeLeftClick);
+        activeLeftClick = null;
+      }
+    };
+    document.addEventListener('keydown', enableAxisHandler);
+    this.register(() =>
+      document.removeEventListener('keydown', enableAxisHandler),
+    );
+
+    // Remove the indicator when control is released.
+    const disableAxisHandler = (evt: KeyboardEvent) => {
+      if (evt.key === 'Control') this.toggleAxis(undefined);
+    };
+    document.addEventListener('keyup', disableAxisHandler);
+    this.register(() =>
+      document.removeEventListener('keyup', disableAxisHandler),
+    );
   }
 
   disconnectedCallback() {
@@ -258,26 +303,31 @@ export class NgmNavTools extends LitElementI18n {
   }
 
   toggleReference(forcePosition?: Cartesian3) {
-    if (!this.eventHandler) return;
     let position: Cartesian3 | undefined = forcePosition;
     if (this.showTargetPoint && !forcePosition) {
-      this.eventHandler.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
-      this.eventHandler.removeInputAction(ScreenSpaceEventType.LEFT_DOWN);
-      this.eventHandler.removeInputAction(ScreenSpaceEventType.LEFT_UP);
+      this.gestureSubscription?.unsubscribe();
+      this.gestureSubscription = null;
       this.removeTargetPoint();
     } else if (!this.lockType || this.lockType === 'elevation') {
-      this.eventHandler.setInputAction(
-        debounce((event) => this.onMouseMove(event), 250),
-        ScreenSpaceEventType.MOUSE_MOVE,
+      this.gestureSubscription?.unsubscribe();
+      const subscription = new Subscription();
+      subscription.add(
+        this.gestureControlsService.mouseMove$
+          .pipe(debounceTime(250))
+          .subscribe(this.onMouseMove.bind(this)),
       );
-      this.eventHandler.setInputAction(
-        (event) => this.onLeftDown(event),
-        ScreenSpaceEventType.LEFT_DOWN,
+      subscription.add(
+        this.gestureControlsService.leftMouseButton$
+          .pipe(filterByButtonGesture(ButtonGesture.Down))
+          .subscribe(this.onLeftDown.bind(this)),
       );
-      this.eventHandler.setInputAction(
-        () => this.onLeftUp(),
-        ScreenSpaceEventType.LEFT_UP,
+      subscription.add(
+        this.gestureControlsService.leftMouseButton$
+          .pipe(filterByButtonGesture(ButtonGesture.Up))
+          .subscribe(this.onLeftUp.bind(this)),
       );
+      this.gestureSubscription = subscription;
+
       position = position || pickCenterOnMapOrObject(this.viewer!.scene);
       if (!position) {
         showSnackbarError(i18next.t('nav_tools_out_glob_warn'));
@@ -310,7 +360,7 @@ export class NgmNavTools extends LitElementI18n {
     this.removeTargetPoint();
   };
 
-  onLeftDown(event) {
+  onLeftDown(event: ButtonGestureEvent) {
     const pickedObject = this.viewer!.scene.pick(event.position);
     if (
       pickedObject &&
@@ -341,26 +391,24 @@ export class NgmNavTools extends LitElementI18n {
     this.toggleAxis(center);
 
     this.viewer!.scene.screenSpaceCameraController.enableInputs = true;
-    // for better performance
-    this.eventHandler!.setInputAction(
-      debounce((event) => this.onMouseMove(event), 250),
-      ScreenSpaceEventType.MOUSE_MOVE,
-    );
+
+    if (this.gestureSubscription === null) {
+      this.gestureSubscription = this.gestureControlsService.mouseMove$
+        .pipe(debounceTime(250))
+        .subscribe(this.onMouseMove.bind(this));
+    }
     this.viewer!.scene.requestRender();
   }
 
-  onMouseMove(event) {
+  onMouseMove(event: MoveGestureEvent) {
     if (this.moveRef) {
-      const position = pickPositionOrVoxel(
-        this.viewer!.scene,
-        event.endPosition,
-      );
+      const position = pickPositionOrVoxel(this.viewer!.scene, event.position);
       if (!position) return;
       this.addTargetPoint(position);
       syncTargetParam(Cartographic.fromCartesian(position));
       this.viewer!.scene.requestRender();
     } else {
-      const pickedObject = this.viewer!.scene.pick(event.endPosition);
+      const pickedObject = this.viewer!.scene.pick(event.position);
       if (
         pickedObject &&
         pickedObject.id &&
@@ -371,6 +419,17 @@ export class NgmNavTools extends LitElementI18n {
         this.viewer!.canvas.style.cursor = '';
     }
   }
+
+  private readonly createTiltIndicator = (event: ButtonGestureEvent): void => {
+    if (this.controlsService.is2DActive) {
+      return;
+    }
+    const pickedPosition = pickPositionOrVoxel(
+      this.viewer!.scene,
+      event.position,
+    );
+    this.toggleAxis(pickedPosition);
+  };
 
   createAxis() {
     if (!this.axisDataSource) return;
