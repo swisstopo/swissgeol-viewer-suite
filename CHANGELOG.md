@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0]
+
+### Added
+- Added a control with which the camera can be fixed in a 2d top-down position.
+- The filter window for voxel layers can now be closed without resetting the layer.
+
+### Changed
+- Removed the target point control as it is currently not working properly.
+- The context button of activated layers is no longer disabled when the layer is hidden.
+- The new Rheintal layer no longer offers a conductivity filter.
+
+### Fixed
+- Fixed the beta ribbon being missing on PROD.
+- Fixed Google Analytics not being properly included.
+- Voxel layers can now be made transparent via the opacity slider.
+
 ## [1.1.0]
 
 ### Added
