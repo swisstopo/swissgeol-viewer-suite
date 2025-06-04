@@ -110,7 +110,7 @@ export default [
   })),
   ...baseConfigs.map((config) => ({
     ...config,
-    files: ['src/**/*.ts', 'src/**/*.js'],
+    files: ['src/**/*.ts', 'src/**/*.js', 'cypress/**/*.ts', 'cypress/**/*.js'],
     ignores: [...sharedConfig.ignores, 'src/test/**'],
     languageOptions: {
       ...config.languageOptions,
@@ -232,14 +232,11 @@ export default [
   },
   {
     ...sharedConfig,
-    files: ['src/test/**/*.ts', 'src/test/**/*.js'],
+    files: ['cypress/**/*.ts', 'cypress/**/*.js'],
     languageOptions: {
       ...sharedConfig.languageOptions,
       parserOptions: {
-        project: './tsconfig.test.json',
-      },
-      globals: {
-        ...globals.mocha,
+        project: './cypress/tsconfig.json',
       },
     },
   },

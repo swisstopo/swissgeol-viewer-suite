@@ -46,7 +46,7 @@ export function formatCartographicAs2DLv95(carto: Cartographic): Array<string> {
     (carto.longitude * 180) / Math.PI,
     (carto.latitude * 180) / Math.PI,
   ])
-    .map((num: number) => num.toFixed(1))
+    .map((num: number) => Number(num.toFixed(1)))
     .map(swissIntegerFormat.format);
 }
 

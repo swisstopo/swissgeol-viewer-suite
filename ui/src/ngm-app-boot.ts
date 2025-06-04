@@ -14,10 +14,11 @@ export class NgmAppBoot extends LitElement {
       const clientConfig =
         (await new ConfigService().getConfig()) as ClientConfig;
       if (!clientConfig) {
-        console.error('Failed to load client config');
-        return;
+        throw new Error('Failed to load client config');
       }
-
+      return clientConfig;
+    },
+    onComplete: (clientConfig) => {
       registerAppContext(this, clientConfig);
     },
     args: () => [],

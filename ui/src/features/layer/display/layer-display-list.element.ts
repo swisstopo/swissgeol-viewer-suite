@@ -9,7 +9,7 @@ import {
 } from 'src/features/layer/display/layer-display-list-item.element';
 import i18next from 'i18next';
 import { CoreElement } from 'src/features/core';
-import { LayerConfig, LayerTreeNode } from 'src/layertree';
+import { LayerConfig, LayerTreeNode, LayerType } from 'src/layertree';
 import DashboardStore from 'src/store/dashboard';
 import Sortable from 'sortablejs';
 import { repeat } from 'lit/directives/repeat.js';
@@ -20,6 +20,7 @@ import {
   LayersEventDetail,
 } from 'src/features/layer';
 import LayersActions from 'src/layers/LayersActions';
+import { getVoxelShader } from 'src/layers/voxels-helper';
 
 @customElement('ngm-layer-display-list')
 export class LayerDisplayList extends CoreElement {
@@ -190,6 +191,12 @@ export class LayerDisplayList extends CoreElement {
     opacity: number,
   ): Promise<void> {
     layer.opacity = opacity;
+    if (layer.type === LayerType.voxels3dtiles) {
+      const shader = getVoxelShader(layer);
+      shader.setUniform('u_alpha', opacity);
+      shader.uniforms['u_alpha'].value = opacity;
+    }
+
     this.actions.changeOpacity(layer, opacity);
     await this.updateLayerVisibility(layer, opacity > 0);
     this.changeLayer(layer);
@@ -258,7 +265,7 @@ export class LayerDisplayList extends CoreElement {
             role="listitem"
             .layer="${layer}"
             .title="${i18next.t(layer.label)}"
-            ?visible="${layer.visible}"
+            ?visible="${(layer as LayerConfig).visible}"
             .opacity="${layer.opacity ?? 1}"
             draggable
             data-id="${layer.label}"

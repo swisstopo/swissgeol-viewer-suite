@@ -1,0 +1,27 @@
+name: Publish DEV
+
+on:
+  push:
+    branches:
+      - "develop"
+
+# Run all publish workflow in sequence to ensure consistent version numbers.
+concurrency:
+  group: "publish"
+
+jobs:
+  publish:
+    uses: './.github/workflows/publish.yml'
+    with:
+      tag: edge
+      version_script: |
+        const { findSourceAndTargetBranches } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/branch.utils.mjs`);
+        const {
+          determineNextDevVersion,
+          stringifyVersion,
+        } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/version.utils.mjs`);
+        
+        const [source, target] = await findSourceAndTargetBranches(context);
+        const nextVersion = await determineNextDevVersion(source);
+        
+        return stringifyVersion(nextVersion);

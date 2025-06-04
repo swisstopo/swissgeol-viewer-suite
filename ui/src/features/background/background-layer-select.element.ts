@@ -37,6 +37,7 @@ export class BackgroundLayerSelect extends CoreElement {
               <ngm-background-layer-item
                 .layer="${layer}"
                 .isActive="${this.background.id === layer.id}"
+                data-layer="${layer.id}"
               ></ngm-background-layer-item>
             </li>
           `,

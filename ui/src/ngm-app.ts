@@ -17,11 +17,12 @@ import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
 import '@geoblocks/cesium-view-cube';
-import 'src/features/layout/layout.module';
 import './elements/ngm-map-chooser';
 
-import 'src/features/background/background.module';
 import 'src/features/core/core.module';
+import 'src/features/background/background.module';
+import 'src/features/controls/controls.module';
+import 'src/features/layout/layout.module';
 import 'src/features/navigation/navigation.module';
 
 import { DEFAULT_VIEW } from './constants';
@@ -68,6 +69,7 @@ import { distinctUntilKeyChanged } from 'rxjs';
 import { addSwisstopoLayer } from 'src/swisstopoImagery';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
+import { ControlsService } from 'src/features/controls/controls.service';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -76,9 +78,6 @@ const shouldShowDisclaimer = !isLocalhost;
 
 const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
   let sse = 2;
-  if (isLocalhost) {
-    sse = 20;
-  }
   if (searchParams.has('maximumScreenSpaceError')) {
     sse = parseFloat(searchParams.get('maximumScreenSpaceError')!);
   }
@@ -94,42 +93,61 @@ const onStep1Finished = (globe: Globe, searchParams: URLSearchParams) => {
 export class NgmApp extends LitElementI18n {
   @state()
   accessor slicer_: Slicer | undefined;
+
   @state()
   accessor showCamConfig = false;
+
   @state()
   accessor loading = false;
+
   @state()
   accessor determinateLoading = false;
+
   @state()
   accessor queueLength = 0;
+
   @state()
   accessor legendConfigs: LayerConfig[] = [];
+
   @state()
   accessor showProjectPopup = false;
+
   @state()
   accessor mobileView = false;
+
   @state()
   accessor showAxisOnMap = false;
+
   @state()
   accessor showProjectSelector = false;
+
   @state()
   accessor showCesiumToolbar = getCesiumToolbarParam();
+
   @query('ngm-cam-configuration')
   accessor camConfigElement;
+
   @query('ngm-voxel-filter')
   accessor voxelFilterElement;
+
   @query('ngm-voxel-simple-filter')
   accessor voxelSimpleFilterElement;
+
   @query('ngm-wmts-date-picker')
   accessor wmtsDatePickerElement;
 
+  @consume({ context: ControlsService.context() })
+  accessor controlsService!: ControlsService;
+
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
+
   @consume({ context: BackgroundLayerService.context() })
   accessor backgroundLayerService!: BackgroundLayerService;
 
   @provide({ context: viewerContext })
   accessor viewer: Viewer | null = null;
+
   @provide({ context: BackgroundLayerService.backgroundContext })
   accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
 
@@ -288,7 +306,11 @@ export class NgmApp extends LitElementI18n {
     setupI18n();
     rewriteParams();
     const cesiumContainer = this.querySelector('#cesium')!;
-    const viewer = await setupViewer(cesiumContainer, isLocalhost);
+    const viewer = await setupViewer(
+      cesiumContainer,
+      this.controlsService,
+      isLocalhost,
+    );
     if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
       this.setResolutionScale();
     }
@@ -349,8 +371,9 @@ export class NgmApp extends LitElementI18n {
   }
 
   private initializeBackgroundLayers(): void {
-    this.backgroundLayerService.background$.subscribe((background) => {
+    this.backgroundLayerService.background$.subscribe(async (background) => {
       this.background = background;
+      await import('src/features/layer/layer.module');
     });
 
     let activeLayers: ImageryLayer[] = [];
@@ -677,6 +700,7 @@ export class NgmApp extends LitElementI18n {
               .viewer=${this.viewer}
               hidden
             ></ngm-voxel-simple-filter>
+            <ngm-layer-tiff-picker></ngm-layer-tiff-picker>
             <ngm-coordinate-popup
               class="ngm-floating-window"
             ></ngm-coordinate-popup>

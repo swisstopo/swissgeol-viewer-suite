@@ -6,21 +6,14 @@ export function initAnalytics(active) {
     script.type = 'text/javascript';
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-    document.head.insertBefore(script, document.head.firstChild);
+    document.head.appendChild(script);
 
-    // @ts-ignore
     window.dataLayer = window.dataLayer || [];
-
-    sendAnalytics('js', new Date());
-    sendAnalytics('config', GA_MEASUREMENT_ID, {
-      anonymize_ip: true,
-    });
-    sendAnalytics('event', 'page_view');
-  }
-}
-
-export function sendAnalytics(...args) {
-  if (window.dataLayer) {
-    window.dataLayer.push(args);
+    function gtag() {
+      // eslint-disable-next-line prefer-rest-params
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-E15CQLC985');
   }
 }

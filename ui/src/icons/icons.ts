@@ -27,8 +27,10 @@ import { layerIndicatorIcon } from 'src/icons/i_layer-indicator';
 import { infoIcon } from 'src/icons/i_info';
 import { plusIcon } from 'src/icons/i_plus';
 import { documentationIcon } from 'src/icons/i_documentation';
+import { the2dDIcon } from 'src/icons/i_2d';
 
 export const icons = {
+  '2d': the2dDIcon,
   cesium: cesiumIcon,
   checkmark: checkmarkIcon,
   close: closeIcon,

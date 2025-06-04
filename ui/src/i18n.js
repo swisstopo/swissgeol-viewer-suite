@@ -54,7 +54,7 @@ export function setupI18n() {
     .use(Backend)
     .use(LanguageDetector)
     .init({
-      ns: ['app', 'assets'],
+      ns: ['app', 'assets', 'layers'],
       defaultNS: 'app',
       supportedLngs: SUPPORTED_LANGUAGES,
       nonExplicitWhitelist: true,
@@ -63,7 +63,7 @@ export function setupI18n() {
       //load: 'languageOnly',
       debug: false,
       backend: {
-        loadPath: 'locales/{{ns}}.{{lng}}.json',
+        loadPath: 'locales/{{ns}}/{{ns}}.{{lng}}.json',
       },
     });
 

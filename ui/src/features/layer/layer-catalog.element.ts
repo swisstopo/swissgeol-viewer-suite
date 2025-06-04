@@ -1,6 +1,6 @@
 import { css, html, TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { LayerConfig, LayerTreeNode } from 'src/layertree';
+import type { LayerConfig } from 'src/layertree';
 import '../core';
 import { CoreElement } from 'src/features/core';
 import { repeat } from 'lit/directives/repeat.js';
@@ -8,7 +8,7 @@ import { repeat } from 'lit/directives/repeat.js';
 @customElement('ngm-layer-catalog')
 export class LayerCatalog extends CoreElement {
   @property()
-  accessor layers!: LayerConfig[];
+  accessor layers: LayerConfig[] = [];
 
   readonly render = () =>
     html`${repeat(
@@ -32,7 +32,7 @@ export class LayerCatalog extends CoreElement {
 }
 
 export const getCategoryOrLayerTemplate = (
-  node: LayerTreeNode,
+  node: LayerConfig,
   isTopLevel: boolean,
 ): TemplateResult => {
   if (node.children) {

@@ -6,8 +6,17 @@ import {
 } from 'cesium';
 import { PickableCesium3DTileset } from './layers/helpers';
 import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer';
+import { LayerTiffController } from 'src/features/layer';
+import { AppEnv, ClientConfig } from 'src/api/client-config';
 
-export interface LayerTreeNode {
+export type LayerTreeNode =
+  | UnspecificLayerTreeNode
+
+  // `GeoTIFFLayer` is the concrete type that we want to use everywhere,
+  // `UnspecificLayerTreeNode` is here so it remains compatible with all the old code.
+  | (GeoTIFFLayer & UnspecificLayerTreeNode);
+
+interface UnspecificLayerTreeNode {
   type?: LayerType;
   layer?: string;
   label: string;
@@ -45,6 +54,45 @@ export interface LayerTreeNode {
   customAsset?: boolean;
   wmtsTimes?: string[];
   wmtsCurrentTime?: string;
+  env?: Array<AppEnv>;
+}
+
+export interface GeoTIFFLayer {
+  type: LayerType.geoTIFF;
+  url: string;
+  layer: string;
+  id: string;
+  label: string;
+  bands: GeoTIFFLayerBand[];
+  opacity?: number;
+  env?: Array<AppEnv>;
+
+  controller?: LayerTiffController;
+
+  /**
+   * Information about what the TIFF's contents represent.
+   */
+  metadata: {
+    /**
+     * The TIFF's transform matrix.
+     */
+    transform: [[number, number, number], [number, number, number]];
+
+    /**
+     * The width and height of each of the TIFF's cells, in meters.
+     */
+    cellSize: number;
+  };
+}
+
+export interface GeoTIFFLayerBand {
+  index: number;
+  name: string;
+  display?: {
+    bounds: [number, number];
+    colorMap: string;
+    noData?: number;
+  };
 }
 
 type LayerInstances =
@@ -53,7 +101,8 @@ type LayerInstances =
   | VoxelPrimitive
   | ImageryLayer
   | CustomDataSource
-  | EarthquakeVisualizer;
+  | EarthquakeVisualizer
+  | LayerTiffController;
 export type LayerPromise =
   | Promise<GeoJsonDataSource>
   | Promise<PickableCesium3DTileset>
@@ -61,9 +110,10 @@ export type LayerPromise =
   | Promise<ImageryLayer>
   | Promise<CustomDataSource>
   | Promise<EarthquakeVisualizer>
-  | Promise<LayerInstances>;
+  | Promise<LayerInstances>
+  | Promise<LayerTiffController>;
 
-export interface LayerConfig extends LayerTreeNode {
+export interface LayerConfig extends UnspecificLayerTreeNode {
   add?: (value: number) => void;
   remove?: () => void;
   setTime?: (time: string) => void;
@@ -107,6 +157,7 @@ export enum LayerType {
   voxels3dtiles = 'voxels3dtiles',
   ionGeoJSON = 'ionGeoJSON',
   earthquakes = 'earthquakes',
+  geoTIFF = 'geoTIFF',
 }
 
 export const DEFAULT_LAYER_OPACITY = 1;
@@ -1143,6 +1194,98 @@ const subsurface: LayerTreeNode = {
           geocatId: '133b54a9-60d1-481c-85e8-e1a222d6ac3f',
           previewColor: '#dbdb22',
         },
+        {
+          type: LayerType.geoTIFF,
+          url: 'https://download.swissgeol.ch/swissbedrock/test2025-04-07/release1_EPSG3857.tif',
+          layer: 'ch.swisstopo.swissbedrock-geotiff',
+          id: 'swissBEDROCK',
+          label: t('layers:swissBEDROCK.title'),
+          opacity: 0.5,
+          env: [AppEnv.Local, AppEnv.Dev],
+          bands: [
+            {
+              index: 1,
+              name: 'BEM',
+              display: {
+                bounds: [-433, 4535],
+                colorMap: 'swissBEDROCK_BEM',
+              },
+            },
+            {
+              index: 2,
+              name: 'TMUD',
+              display: {
+                bounds: [0, 800],
+                colorMap: 'swissBEDROCK_TMUD',
+                noData: 0,
+              },
+            },
+            {
+              index: 3,
+              name: 'Uncertainty',
+              display: {
+                bounds: [0, 25],
+                colorMap: 'swissBEDROCK_Uncertainty',
+              },
+            },
+            {
+              index: 4,
+              name: 'Version',
+            },
+            {
+              index: 5,
+              name: 'Author',
+            },
+            {
+              index: 6,
+              name: 'Change',
+              display: {
+                bounds: [-30, 30],
+                colorMap: 'swissBEDROCK_Change',
+              },
+            },
+            {
+              index: 7,
+              name: 'prev_BEM',
+              display: {
+                bounds: [-433, 4535],
+                colorMap: 'swissBEDROCK_BEM',
+              },
+            },
+            {
+              index: 8,
+              name: 'prev_TMUD',
+              display: {
+                bounds: [0, 800],
+                colorMap: 'swissBEDROCK_TMUD',
+                noData: 0,
+              },
+            },
+            {
+              index: 9,
+              name: 'prev_Uncertainty',
+              display: {
+                bounds: [0, 25],
+                colorMap: 'swissBEDROCK_Uncertainty',
+              },
+            },
+            {
+              index: 10,
+              name: 'prev_Version',
+            },
+            {
+              index: 11,
+              name: 'prev_Author',
+            },
+          ],
+          metadata: {
+            transform: [
+              [14.58, 0.0, 657112.46],
+              [0.0, -14.63, 6079035.06],
+            ],
+            cellSize: 10,
+          },
+        } satisfies GeoTIFFLayer,
       ],
     },
     {
@@ -1438,4 +1581,18 @@ const defaultLayerTree: LayerTreeNode[] = [
   background,
 ];
 
-export default defaultLayerTree;
+export const getDefaultLayerTree = (config: ClientConfig) =>
+  filterLayer(defaultLayerTree, config.env);
+
+const filterLayer = (layers: LayerTreeNode[], env: AppEnv): LayerTreeNode[] =>
+  layers.reduce((acc, layer) => {
+    const filteredLayer = { ...layer };
+    if (layer.env !== undefined && !layer.env.includes(env)) {
+      return acc;
+    }
+    if (layer.children !== undefined) {
+      filteredLayer.children = filterLayer(layer.children, env);
+    }
+    acc.push(filteredLayer);
+    return acc;
+  }, [] as LayerTreeNode[]);

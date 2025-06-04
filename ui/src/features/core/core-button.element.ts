@@ -207,6 +207,10 @@ export class CoreButton extends LitElement {
       --button-bg: transparent;
     }
 
+    :host([transparent][variant='tertiary']) {
+      --button-border: transparent;
+    }
+
     /* icon shape */
     :host([shape='icon']) button,
     :host([shape='icon-round']) button {

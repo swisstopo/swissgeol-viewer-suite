@@ -38,8 +38,8 @@ export function tooltip(
   const props =
     contentOrNone === undefined ? {} : (propsOrContent as PopupProps);
   return html`<ngm-core-tooltip
-    .position="${props.position}"
-    .align="${props.align}"
+    .position="${props.position ?? null}"
+    .align="${props.align ?? null}"
     .content="${content}"
   ></ngm-core-tooltip>`;
 }

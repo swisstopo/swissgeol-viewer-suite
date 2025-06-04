@@ -8,14 +8,23 @@ spec:
     - web
   routes:
     - kind: Rule
-      match: Host(`{{ .Values.host }}`)
+      match: Host(`{{ .Values.ui.host }}`)
       priority: 100
       services:
         - name: {{ .Release.Name }}-ui
           port: 80
     - kind: Rule
-      match: Host(`api.{{ .Values.host }}`) && PathPrefix(`/api`)
+      match: Host(`{{ .Values.api.host }}`) && PathPrefix(`/api`)
       priority: 120
       services:
         - name: {{ .Release.Name }}-api
           port: 3000
+    - kind: Rule
+      match: Host(`{{ .Values.api.host }}`) && PathPrefix(`/titiler`)
+      priority: 140
+      middlewares:
+        - name: {{ .Release.Name }}-titiler-middleware
+          namespace: {{ .Release.Namespace }}
+      services:
+        - name: {{ .Release.Name }}-titiler
+          port: 8000

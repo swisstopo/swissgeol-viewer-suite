@@ -84,6 +84,20 @@ services:
       timeout: 5s
       retries: 5
 
+  titiler:
+    image: swissgeol-viewer-app/titiler:local
+    build:
+      context: ./titiler
+      dockerfile: Dockerfile
+    ports:
+      - "8481:8000"
+    environment:
+      TITILER_API_DEBUG: "1"
+    volumes:
+      - ./titiler:/app:ro
+    mem_limit: 2g
+    cpus: 0.5
+
 volumes:
   minio:
   db:

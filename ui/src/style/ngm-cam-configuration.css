@@ -18,7 +18,12 @@ ngm-cam-configuration {
   cursor: pointer;
 }
 
-.ngm-cam-container > div > div:first-child:hover {
+.ngm-cam-container > div > div:first-child[aria-disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ngm-cam-container > div > div:first-child:not([aria-disabled]):hover {
   background-color: var(--ngm-interaction-hover);
 }
 

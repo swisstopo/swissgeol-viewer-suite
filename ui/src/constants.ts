@@ -199,11 +199,18 @@ export const SHORTLINK_URL_BY_PAGE_HOST = {
 
 export const API_BY_PAGE_HOST = {
   'localhost:8000': '/api',
-  'review-viewer.swissgeol.ch': 'https://api.dev-viewer.swissgeol.ch/api',
   'dev-viewer.swissgeol.ch': 'https://api.dev-viewer.swissgeol.ch/api',
   'int-viewer.swissgeol.ch': 'https://api.int-viewer.swissgeol.ch/api',
   'swissgeol.ch': 'https://api.swissgeol.ch/api',
   'viewer.swissgeol.ch': 'https://api.swissgeol.ch/api',
+};
+
+export const TITILER_BY_PAGE_HOST = {
+  'localhost:8000': 'http://localhost:8481',
+  'dev-viewer.swissgeol.ch': 'https://api.dev-viewer.swissgeol.ch/titiler',
+  'int-viewer.swissgeol.ch': 'https://api.int-viewer.swissgeol.ch/titiler',
+  'swissgeol.ch': 'https://api.swissgeol.ch/titiler',
+  'viewer.swissgeol.ch': 'https://api.swissgeol.ch/titiler',
 };
 
 export const DEFAULT_UPLOADED_KML_COLOR = Color.fromCssColorString('#0056A4');

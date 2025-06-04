@@ -84,21 +84,21 @@ function createCustomShader(config: LayerTreeNode): CustomShader {
         vec3 voxelNormal = normalize(czm_normal * fsInput.voxel.surfaceNormal);
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
-        material.alpha = 1.0;
+        material.alpha = u_alpha;
         if (fsInput.voxel.tileIndex == u_selectedTile && fsInput.voxel.sampleIndex == u_selectedSample) {
           material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}) * lighting;
         } else if (u_us_color_index) {
           float textureX = (float(lithologyIndex) / float(lithology_length)) + (lithologyPixelWidth / 2.0);
           vec4 color = texture(u_colorRamp, vec2(textureX, 0.5));
           material.diffuse = color.rgb * lighting;
-          material.alpha = color.a;
+          material.alpha = color.a * u_alpha;
         } else if (value == u_undefined_data) {
           material.diffuse = vec3(0.797, 0.797, 0.797) * lighting;
         } else {
           float lerp = (value - u_min) / (u_max - u_min);
           vec4 color = texture(u_colorRamp, vec2(lerp, 0.5));
           material.diffuse = color.rgb * lighting;
-          material.alpha = color.a;
+          material.alpha = color.a * u_alpha;
         }
       }
     }
@@ -177,6 +177,10 @@ function createCustomShader(config: LayerTreeNode): CustomShader {
       u_selectedSample: {
         type: UniformType.INT,
         value: -1.0,
+      },
+      u_alpha: {
+        type: UniformType.FLOAT,
+        value: config.opacity ?? 1,
       },
     },
   });
