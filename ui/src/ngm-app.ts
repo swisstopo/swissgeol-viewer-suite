@@ -61,7 +61,7 @@ import type { SideBar } from './elements/ngm-side-bar';
 import { LayerConfig } from './layertree';
 import { clientConfigContext, viewerContext } from './context';
 import { consume, provide } from '@lit/context';
-import { ClientConfig } from './api/client-config';
+import { AppEnv, ClientConfig } from './api/client-config';
 import { CoreModal } from 'src/features/core';
 import { makeId } from 'src/models/id.model';
 import { BackgroundLayer } from 'src/features/layer/layer.model';
@@ -157,10 +157,6 @@ export class NgmApp extends LitElementI18n {
     this.handleTrackingAllowedChanged =
       this.handleTrackingAllowedChanged.bind(this);
 
-    if (shouldShowDisclaimer) {
-      this.openDisclaimer();
-    }
-
     const boundingRect = document.body.getBoundingClientRect();
     this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
     window.addEventListener('resize', () => {
@@ -185,6 +181,14 @@ export class NgmApp extends LitElementI18n {
         ></ngm-layout-consent-modal>
       `,
     );
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    if (shouldShowDisclaimer) {
+      this.openDisclaimer();
+    }
   }
 
   /**
@@ -571,7 +575,10 @@ export class NgmApp extends LitElementI18n {
     this.disclaimer?.close();
     this.disclaimer = null;
     this.showNavigationHint();
-    initAnalytics(event.detail.isAllowed);
+
+    if (this.clientConfig.env === AppEnv.Prod) {
+      initAnalytics(event.detail.isAllowed);
+    }
   }
 
   showNavigationHint() {
@@ -594,9 +601,7 @@ export class NgmApp extends LitElementI18n {
 
   render() {
     return html`
-      ${this.clientConfig.env === 'prod'
-        ? ''
-        : html`<layout-env-ribbon></layout-env-ribbon>`}
+      <layout-env-ribbon></layout-env-ribbon>
       <header>
         <div class="left">
           <a id="ngm-home-link" href="">
