@@ -17,6 +17,7 @@ import {
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { GstService } from 'src/gst.service';
 import { ControlsService } from 'src/features/controls/controls.service';
+import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -60,6 +61,7 @@ export const registerAppContext = (
 
   contexts.push(makeProvider(BackgroundLayerService));
   contexts.push(makeProvider(ControlsService));
+  contexts.push(makeProvider(GestureControlsService));
   return contexts;
 };
 

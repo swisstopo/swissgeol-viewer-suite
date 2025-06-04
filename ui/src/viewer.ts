@@ -5,7 +5,6 @@ import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
 
 import {
-  CameraEventType,
   Cartesian3,
   Cartesian4,
   CesiumInspector,
@@ -17,22 +16,16 @@ import {
   Ion,
   IonResource,
   JulianDate,
-  KeyboardEventModifier,
-  Matrix4,
   PostProcessStage,
   Rectangle,
   RequestScheduler,
-  ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   SunLight,
-  Transforms,
   Viewer,
   WebGLOptions,
 } from 'cesium';
 import MainStore from './store/main';
 import { getExaggeration } from './permalink';
-import { pickPositionOrVoxel } from './cesiumutils';
-import { ControlsService } from 'src/features/controls/controls.service';
 
 window['CESIUM_BASE_URL'] = './cesium';
 
@@ -98,7 +91,6 @@ export interface BaseLayerConfig {
 
 export async function setupViewer(
   container: Element,
-  controlsService: ControlsService,
   rethrowRenderErrors: boolean,
 ) {
   const searchParams = new URLSearchParams(location.search);
@@ -168,8 +160,6 @@ export async function setupViewer(
   viewer.screenSpaceEventHandler.removeInputAction(
     ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
   );
-  enableCenterOfRotate(viewer, controlsService);
-
   const globe = scene.globe;
   scene.verticalExaggeration = zExaggeration;
 
@@ -270,62 +260,6 @@ export async function setupViewer(
     }
   }
   return viewer;
-}
-
-function enableCenterOfRotate(
-  viewer: Viewer,
-  controlsService: ControlsService,
-) {
-  const scene = viewer.scene;
-  const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
-  scene.camera.constrainedAxis = new Cartesian3(0, 0, 1);
-  // look fix camera on picked position when ctrl pressed
-  eventHandler.setInputAction(
-    (event) => {
-      if (controlsService.is2DActive) {
-        return;
-      }
-      const pickedPosition = pickPositionOrVoxel(scene, event.position);
-      if (pickedPosition) {
-        const transform = Transforms.eastNorthUpToFixedFrame(pickedPosition);
-        scene.camera.lookAtTransform(transform);
-        scene.screenSpaceCameraController.rotateEventTypes = [
-          CameraEventType.LEFT_DRAG,
-          {
-            eventType: CameraEventType.LEFT_DRAG,
-            modifier: KeyboardEventModifier.CTRL,
-          },
-        ];
-      }
-    },
-    ScreenSpaceEventType.LEFT_DOWN,
-    KeyboardEventModifier.CTRL,
-  );
-  // move camera around picked position when ctrl pressed
-  eventHandler.setInputAction(
-    () => {
-      scene.camera.setView({
-        orientation: {
-          heading: scene.camera.heading,
-          pitch: scene.camera.pitch,
-        },
-      });
-    },
-    ScreenSpaceEventType.MOUSE_MOVE,
-    KeyboardEventModifier.CTRL,
-  );
-  // free view if left mouse button released
-  eventHandler.setInputAction(
-    () => {
-      scene.camera.lookAtTransform(Matrix4.IDENTITY);
-    },
-    ScreenSpaceEventType.LEFT_UP,
-    KeyboardEventModifier.CTRL,
-  );
-  // free view if ctrl released
-  document.addEventListener('keyup', (evt) => {
-    if (evt.key === 'Control') scene.camera.lookAtTransform(Matrix4.IDENTITY);
-  });
 }
 
 export function addMantelEllipsoid(viewer: Viewer) {
