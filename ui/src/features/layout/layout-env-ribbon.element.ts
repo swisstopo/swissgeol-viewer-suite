@@ -11,7 +11,12 @@ export class LayoutEnvRibbon extends CoreElement {
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
 
-  readonly render = () => this.clientConfig.env;
+  private get text(): string {
+    const { env } = this.clientConfig;
+    return env === 'prod' ? 'beta' : env;
+  }
+
+  readonly render = () => this.text;
 
   static readonly styles = css`
     :host {
