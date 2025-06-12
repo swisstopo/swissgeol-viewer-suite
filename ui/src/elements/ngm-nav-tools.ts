@@ -5,7 +5,6 @@ import { DEFAULT_VIEW } from '../constants';
 import {
   ArcType,
   CallbackProperty,
-  Cartesian2,
   Cartesian3,
   Cartographic,
   Color,
@@ -48,7 +47,6 @@ import {
 } from 'src/features/controls/gestures/gesture-controls.service';
 import { CoreElement } from 'src/features/core';
 import { debounceTime, Subscription } from 'rxjs';
-import { CoordinateWithCrs } from 'src/elements/ngm-cam-coordinates';
 
 const AXIS_WIDTH = 5;
 const AXIS_LENGTH = 120;

@@ -8,6 +8,7 @@ import {
 import { BaseService } from 'src/utils/base.service';
 import MainStore from 'src/store/main';
 import { filter, Observable, OperatorFunction, Subject } from 'rxjs';
+import { OrbitController } from 'src/features/controls/gestures/orbit.controller';
 
 export class GestureControlsService extends BaseService {
   private readonly mouseMoveSubject = new Subject<MoveGestureEvent>();
@@ -99,6 +100,8 @@ export class GestureControlsService extends BaseService {
     this.rightMouseButton$.subscribe(
       handleMouseModifier(GestureModifier.RightMouseButton),
     );
+
+    new OrbitController(viewer);
   }
 
   get mouseMove$(): Observable<MoveGestureEvent> {
