@@ -680,13 +680,16 @@ export const voxelLayerToFilter: Record<string, LithologyVoxelFilter> = {
 };
 
 // Layers
+// Top-Level Group "Geological map series"
 const geo_map_series: LayerTreeNode = {
   label: t('lyr_geological_map_series_label'),
   children: [
     {
+      // Sub-Group I "Geological maps"
       label: t('lyr_geological_maps_label'),
       children: [
         {
+          // Layer "GeoCover"
           type: LayerType.swisstopoWMTS,
           label: t('lyr_swisstopo_geologie_geocover_label'),
           layer: 'ch.swisstopo.geologie-geocover',
@@ -698,7 +701,34 @@ const geo_map_series: LayerTreeNode = {
           geocatId: '2467ab13-e794-4c13-8c55-59fe276398c5',
           legend: 'ch.swisstopo.geologie-geocover',
         },
+                {
+          // Layer "GA25"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_ga25_label'),
+          layer: 'ch.swisstopo.geologie-geologischer_atlas',
+          maximumLevel: 16,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '258814a5-8fcf-47df-b0c6-160602b0078c',
+          legend: 'ch.swisstopo.geologie-geologischer_atlas',
+        },
+                        {
+          // Layer "Lithology 500"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_litho_500_label'),
+          layer: 'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '435522fb-599e-41c0-a7c0-49d922ea6acf',
+          legend: 'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
+        },
         {
+          // Layer "Geology 500"
           type: LayerType.swisstopoWMTS,
           label: t('lyr_swisstopo_geologie_geology_500_label'),
           layer: 'ch.swisstopo.geologie-geologische_karte',
@@ -711,6 +741,7 @@ const geo_map_series: LayerTreeNode = {
           legend: 'ch.swisstopo.geologie-geologische_karte',
         },
         {
+          // Layer "Tectomics 500"
           type: LayerType.swisstopoWMTS,
           label: t('lyr_swisstopo_geologie_tectonics_500_label'),
           layer: 'ch.swisstopo.geologie-tektonische_karte',
@@ -722,7 +753,14 @@ const geo_map_series: LayerTreeNode = {
           geocatId: 'ca917a71-dcc9-44b6-8804-823c694be516',
           legend: 'ch.swisstopo.geologie-tektonische_karte',
         },
+      ],
+    },
+    {
+      // Sub-Group I "Thematic maps"
+      label: t('lyr_thematic_maps_label'),
+      children: [
         {
+          // Layer "Last glacial maximum 500 (map)"
           type: LayerType.swisstopoWMTS,
           label: t('lyr_swisstopo_geologie_last_iceage_max_map500_label'),
           layer: 'ch.swisstopo.geologie-eiszeit-lgm-raster',
@@ -1572,9 +1610,11 @@ const background: LayerTreeNode = {
   ],
 };
 
+// Top-level Groups
 const defaultLayerTree: LayerTreeNode[] = [
   geo_map_series,
   geo_base,
+  //geo_boreholes,
   geo_energy,
   natural_hazard,
   subsurface,
