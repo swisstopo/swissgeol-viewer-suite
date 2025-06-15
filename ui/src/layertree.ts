@@ -753,6 +753,32 @@ const geo_map_series: LayerTreeNode = {
           geocatId: 'ca917a71-dcc9-44b6-8804-823c694be516',
           legend: 'ch.swisstopo.geologie-tektonische_karte',
         },
+         {
+          // Layer "Gesteinsgruppen 500"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_rockgroups_500_label'),
+          layer: 'ch.swisstopo.geologie-geotechnik-gk500-gesteinsklassierung',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'f2c81b93-f0c5-4899-83a9-974ce36c48e6',
+          legend: 'ch.swisstopo.geologie-geotechnik-gk500-gesteinsklassierung',
+        },
+        {
+          // Layer "Entstehung der Gesteine 500"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_geneses_500_label'),
+          layer: 'ch.swisstopo.geologie-geotechnik-gk500-genese',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '65652bdd-76e3-4df2-9329-140a04a2a66c',
+          legend: 'ch.swisstopo.geologie-geotechnik-gk500-genese',
+        },
       ],
     },
     {
@@ -784,6 +810,161 @@ const geo_map_series: LayerTreeNode = {
           noQuery: true,
           geocatId: 'f1455593-7571-48b0-8603-307ec59a6702',
           legend: 'ch.swisstopo.geologie-eiszeit-lgm',
+        },
+        {
+          // Layer "Glacier thickness"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_glacier_thickness_label'),
+          layer: 'ch.swisstopo.geologie-gletschermaechtigkeit',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          noQuery: true,
+          geocatId: '57052989-5074-4841-abb6-22d1989d615f',
+          legend: 'ch.swisstopo.geologie-gletschermaechtigkeit',
+        },
+        {
+          // Layer "Extent of glaciers"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_extent_glaciers_label'),
+          layer: 'ch.swisstopo.geologie-gletscherausdehnung',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          noQuery: true,
+          geocatId: 'f6fb6139-f13e-4a56-bf01-01b7dd4358d5',
+          legend: 'ch.swisstopo.geologie-gletscherausdehnung',
+        },
+        {
+          // Layer "Overview of geomorphology"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_overview_geomorphology_label'),
+          layer: 'ch.swisstopo.geologie-geomorphologie',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          noQuery: true,
+          geocatId: '1bf16162-a44c-4970-9da1-044383bacff8',
+          legend: 'ch.swisstopo.geologie-geomorphologie',
+        },
+      ],
+    },
+     {
+      // Sub-Group I "Historical maps"
+      label: t('lyr_historic_maps_label'),
+      children: [
+        {
+          // Layer "General Geol. Map 200"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_ggk_200_label'),
+          layer: 'ch.swisstopo.geologie-generalkarte-ggk200',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'f6416e51-bf55-445a-946e-3eee2134d131',
+          legend: 'ch.swisstopo.geologie-generalkarte-ggk200',
+        },
+      ]
+    },
+    {
+      // Sub-Group I "Cross sections"
+      label: t('lyr_cross_section_label'),
+      children: [
+        {
+          // Layer "Geological profiles GA25 - Traces"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_ga25_profiles_label'),
+          layer: 'ch.swisstopo.geologie-geologischer_atlas_profile',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '345d02a3-9628-46d7-9e57-e0ab1d9faf8a',
+          legend: 'ch.swisstopo.geologie-geologischer_atlas_profile',
+        },
+        {
+          // Layer "GA25 cross-sections 3D-traces"
+          type: LayerType.tiles3d,
+          assetId: 376868,
+          label: t('lyr_cross_section_ga25_pixel_label'),
+          layer: 'cross_section_ga25_pixel',
+          opacity: DEFAULT_LAYER_OPACITY,
+          backgroundId: 'lakes_rivers_map',
+          visible: false,
+          displayed: false,
+          pickable: true,
+          restricted: [
+            'ngm-dev-privileged',
+            'ngm-int-privileged',
+            'ngm-prod-privileged',
+          ],
+          propsOrder: [
+            'CSGA25Px_No',
+            'CSGA25Px_Name',
+            'CSGA25Px_Pub',
+            'CSGA25Px_Author',
+            'CSGA25Px_Plate_No',
+            'CSGA25Px_Section_No',
+            'CSGA25Px_Sec_Type',
+            'CSGA25Px_Scale',
+            'CSGA25Px_Vert_Exag',
+            'CSGA25Px_Link_Orig',
+            'CSGA25Px_Link_Shp',
+          ],
+          geocatId: '97197401-6019-49b0-91d6-eaf35d57529c',
+        },
+        {
+          // Layer "GA25 cross-section (vector) - Bolligen"
+          type: LayerType.tiles3d,
+          assetId: 68881,
+          label: t('lyr_cross_section_ga25_label'),
+          layer: 'cross_section',
+          opacity: DEFAULT_LAYER_OPACITY,
+          visible: false,
+          displayed: false,
+          pickable: true,
+          restricted: [
+            'ngm-dev-privileged',
+            'ngm-int-privileged',
+            'ngm-prod-privileged',
+          ],
+          geocatId: '2924c78a-8f1e-4eb4-b6f6-0fb2405fa7df',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 452436,
+          label: t('lyr_cross_section_geomol_label'),
+          layer: 'cross_section_geomol',
+          opacity: DEFAULT_LAYER_OPACITY,
+          visible: false,
+          displayed: false,
+          pickable: true,
+          geocatId: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Cross-Sections.zip',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 472446,
+          label: t('lyr_cross_section_geoquat_label'),
+          layer: 'cross_section_geoquat',
+          opacity: DEFAULT_LAYER_OPACITY,
+          visible: false,
+          displayed: false,
+          pickable: true,
+          propsOrder: [
+            'CS-AAT-Cross-section',
+            'CS-AAT-Lithostratigraphy',
+            'CS-AAT-Type',
+            'CS-AAT-Legend',
+            'CS-AAT-Report',
+          ],
+          geocatId: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
         },
       ],
     },
@@ -875,11 +1056,11 @@ const geo_boreholes: LayerTreeNode = {
     },
   ]
 }
-
-const geo_base: LayerTreeNode = {
+/*
+const geo_base: LayerTreeNode = { // --> DELETE
   label: t('lyr_geological_bases_label'),
   children: [
-    /*
+
     {
       label: t('lyr_boreholes_label'),
       children: [
@@ -944,8 +1125,8 @@ const geo_base: LayerTreeNode = {
         },
       ],
     },
-    */
     {
+      // Sub-Group I "Cross sections"
       label: t('lyr_cross_section_label'),
       children: [
         {
@@ -1016,9 +1197,12 @@ const geo_base: LayerTreeNode = {
         },
       ],
     },
+
   ],
 };
+*/
 
+// Top-Level Group "Genergy"
 const geo_energy: LayerTreeNode = {
   label: t('lyr_geo_energy_label'),
   children: [
@@ -1714,7 +1898,7 @@ const background: LayerTreeNode = {
 // Top-level Groups
 const defaultLayerTree: LayerTreeNode[] = [
   geo_map_series,
-  geo_base, // --> DELETE
+  //geo_base, // --> DELETE
   geo_boreholes,
   //geopyhsics
   geo_energy,
