@@ -741,7 +741,7 @@ const geo_map_series: LayerTreeNode = {
           legend: 'ch.swisstopo.geologie-geologische_karte',
         },
         {
-          // Layer "Tectomics 500"
+          // Layer "Tectonics 500"
           type: LayerType.swisstopoWMTS,
           label: t('lyr_swisstopo_geologie_tectonics_500_label'),
           layer: 'ch.swisstopo.geologie-tektonische_karte',
@@ -777,9 +777,96 @@ const geo_map_series: LayerTreeNode = {
   ],
 };
 
+// Top-Level Group "Boreholes"
+const geo_boreholes: LayerTreeNode = {
+  label: t('lyr_geological_boreholes_label'),
+  children: [
+    {
+          // Layer "Deep wells 500"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_wells_gt_500_label'),
+          layer: 'ch.swisstopo.geologie-bohrungen_tiefer_500',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          noQuery: true,
+          geocatId: 'a61d9f7a-00cd-4448-a36d-b81423f1f566',
+          legend: 'ch.swisstopo.geologie-bohrungen_tiefer_500',
+        },
+        {
+      label: t('lyr_boreholes_label'),
+      children: [
+        {
+          // Layer "Public boreholes"
+          type: LayerType.tiles3d,
+          assetId: 287568,
+          label: t('lyr_boreholes_public_label'),
+          layer: 'boreholes',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          visible: false,
+          displayed: false, // private until they have been re-integrated
+          restricted: [
+            'ngm-dev-privileged',
+            'ngm-int-privileged',
+            'ngm-prod-privileged',
+          ], // private until they have been re-integrated
+          // Temporarily disable the boreholes download, see https://jira.camptocamp.com/browse/GSNGM-936
+          // downloadDataType: 'csv',
+          // downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
+          propsOrder: [
+            'bh_pub_XCOORD',
+            'bh_pub_YCOORD',
+            'bh_pub_ZCOORDB',
+            'bh_pub_ORIGNAME',
+            'bh_pub_NAMEPUB',
+            'bh_pub_SHORTNAME',
+            'bh_pub_BOHREDAT',
+            'bh_pub_BOHRTYP',
+            'bh_pub_GRUND',
+            'bh_pub_RESTRICTIO',
+            'bh_pub_TIEFEMD',
+            'bh_pub_DEPTHFROM',
+            'bh_pub_DEPTHTO',
+            'bh_pub_LAYERDESC',
+            'bh_pub_ORIGGEOL',
+            'bh_pub_LITHOLOGY',
+            'bh_pub_LITHOSTRAT',
+            'bh_pub_CHRONOSTR',
+            'bh_pub_TECTO',
+            'bh_pub_USCS1',
+            'bh_pub_USCS2',
+            'bh_pub_USCS3',
+          ],
+          geocatId: '3996dfad-69dd-418f-a4e6-5f32b96c760a',
+        },
+        {
+          // Layer "Private boreholes"
+          type: LayerType.tiles3d,
+          label: t('lyr_boreholes_private_label'),
+          layer: 'boreholes_authenticated',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          visible: false,
+          displayed: false,
+          restricted: [
+            'ngm-dev-privileged',
+            'ngm-int-privileged',
+            'ngm-prod-privileged',
+          ], // the group required to see this layer
+          aws_s3_bucket: 'ngm-protected-prod',
+          aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
+        },
+      ],
+    },
+  ]
+}
+
 const geo_base: LayerTreeNode = {
   label: t('lyr_geological_bases_label'),
   children: [
+    /*
     {
       label: t('lyr_boreholes_label'),
       children: [
@@ -844,6 +931,7 @@ const geo_base: LayerTreeNode = {
         },
       ],
     },
+    */
     {
       label: t('lyr_cross_section_label'),
       children: [
@@ -1613,10 +1701,15 @@ const background: LayerTreeNode = {
 // Top-level Groups
 const defaultLayerTree: LayerTreeNode[] = [
   geo_map_series,
-  geo_base,
-  //geo_boreholes,
+  geo_base, // --> DELETE
+  geo_boreholes,
+  //geopyhsics
   geo_energy,
+  //mineral_resources
+  //groundwater
   natural_hazard,
+  //geotourism
+  //subsurface_space
   subsurface,
   background,
 ];
