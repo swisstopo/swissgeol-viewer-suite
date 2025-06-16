@@ -871,6 +871,93 @@ const geo_map_series: LayerTreeNode = {
         },
       ]
     },
+         {
+      // Sub-Group I "Sheet divisions"
+      label: t('lyr_sheet_division_label'),
+      children: [
+        /*
+        {
+          // Layer ">>>>>>>>> TEMPLATE"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
+          layer: 'c',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '',
+          legend: '',
+        },
+        */
+/*         {
+          // Layer "Division GGK 200 Raster" --> WMS (ch.swisstopo.geologie-generalkarte-ggk200.metadata)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
+          layer: 'c',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '',
+          legend: '',
+        }, */
+        {
+          // Layer "Division GSK Raster"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_division_gsk_raster_label'),
+          layer: 'ch.swisstopo.geologie-spezialkarten_schweiz.metadata',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '5a7e79b5-0aef-4514-9df4-62fb92edee97',
+          legend: 'ch.swisstopo.geologie-spezialkarten_schweiz.metadata',
+        },
+/*
+        {
+          // Layer "Division GSK Vector" --> WMS  (ch.swisstopo.geologie-spezialkarten_schweiz_vector.metadata)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
+          layer: 'c',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '',
+          legend: '',
+        }, */
+/*         {
+          // Layer "Division GA25 Raster" --> WMS (ch.swisstopo.geologie-geologischer_atlas.metadata)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
+          layer: 'c',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '',
+          legend: '',
+        }, */
+/*         {
+          // Layer "Division GeoCover" --> WMS (ch.swisstopo.geologie-geocover.metadata)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
+          layer: 'c',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '',
+          legend: '',
+        }, */
+      ]
+    },
     {
       // Sub-Group I "Cross sections"
       label: t('lyr_cross_section_label'),
@@ -966,6 +1053,472 @@ const geo_map_series: LayerTreeNode = {
           ],
           geocatId: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
         },
+      ],
+    },
+        {
+      // Sub-Group I "3D model"
+      label: t('lyr_3D_models_label'),
+      children: [
+        {
+      // Unconsolidated rocks
+      label: t('lyr_unconsolidated_rocks_label'),
+      children: [
+        {
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-Aaretal-Combined/tileset.json',
+          voxelDataName: 'Index',
+          voxelColors: aaretalIndexVoxelColors,
+          voxelFilter: aaretalVoxelFilter,
+          label: t('lyr_voxel_aaretal_litho_label'),
+          layer: 'voxel_aaretal_litho',
+          opacityDisabled: true,
+          pickable: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
+          geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+        },
+        {
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-Aaretal-Combined/tileset.json',
+          voxelDataName: 'logk',
+          voxelColors: logkVoxelColors,
+          voxelFilter: aaretalVoxelFilter,
+          label: t('lyr_voxel_aaretal_logk_label'),
+          layer: 'voxel_aaretal_logk',
+          opacityDisabled: true,
+          pickable: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
+          geocatId: '9471ee1b-5811-489d-b050-612c011f9d57',
+        },
+        {
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-BIRR-Combined/tileset.json',
+          voxelDataName: 'Index',
+          voxelColors: birrIndexVoxelColors,
+          voxelFilter: birrIndexVoxelFilter,
+          label: t('lyr_voxel_birrfeld_litho_label'),
+          layer: 'voxel_birrfeld_litho',
+          opacityDisabled: true,
+          pickable: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
+          geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
+        },
+        {
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-BIRR-Combined/tileset.json',
+          voxelDataName: 'logk',
+          voxelColors: logkVoxelColors,
+          voxelFilter: birrIndexVoxelFilter,
+          label: t('lyr_voxel_birrfeld_logk_label'),
+          layer: 'voxel_birrfeld_logk',
+          opacityDisabled: true,
+          pickable: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
+          geocatId: '96f923d6-a747-481b-a0d8-2cfec321170e',
+        },
+        {
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-GENF-Combined/tileset.json',
+          voxelDataName: 'Index',
+          voxelColors: genevaIndexVoxelColors,
+          voxelFilter: genevaIndexVoxelFilter,
+          label: t('lyr_voxel_geneva_litho_label'),
+          layer: 'voxel_geneva_litho',
+          opacityDisabled: true,
+          pickable: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
+          geocatId: '697f4c99-ed1b-4901-bc87-3710fcce1352',
+        },
+        {
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-GENF-Combined/tileset.json',
+          voxelDataName: 'logk',
+          voxelColors: logkVoxelColors,
+          voxelFilter: genevaIndexVoxelFilter,
+          label: t('lyr_voxel_geneva_logk_label'),
+          layer: 'voxel_geneva_logk',
+          opacityDisabled: true,
+          pickable: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
+          geocatId: '4a4a530f-6a2a-423d-834e-2831d70fde20',
+        },
+        {
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/test20250113_KTSGRhein/2025-03-21/output/tileset.json',
+          voxelDataName: 'Klasse',
+          voxelColors: rheintalVoxelColors,
+          voxelFilter: rheintalVoxelFilter,
+          label: t('lyr_voxel_rheintal_klasse_label'),
+          layer: 'voxel_rheintal_klasse',
+          opacityDisabled: true,
+          pickable: true,
+          geocatId: 'c12c8e4e-4c06-41c9-b705-f1dadb0654ae-8371',
+        },
+        {
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-VISP-Combined/tileset.json',
+          voxelDataName: 'Index',
+          voxelColors: vispIndexVoxelColors,
+          voxelFilter: vispIndexVoxelFilter,
+          label: t('lyr_voxel_visp_litho_label'),
+          layer: 'voxel_visp_litho',
+          opacityDisabled: true,
+          pickable: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
+          geocatId: 'b621de46-2553-4fb2-88b4-f770e0243299',
+        },
+        {
+          type: LayerType.voxels3dtiles,
+          url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-VISP-Combined/tileset.json',
+          voxelDataName: 'logk',
+          voxelColors: logkVoxelColors,
+          voxelFilter: vispIndexVoxelFilter,
+          label: t('lyr_voxel_visp_logk_label'),
+          layer: 'voxel_visp_logk',
+          opacityDisabled: true,
+          pickable: true,
+          downloadUrl: DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
+          geocatId: 'f7847c2c-bd3a-4dda-99c7-d50453b24c3d',
+        },
+      ],
+    },
+    {
+      // Top bedrock
+      label: t('lyr_top_bedrock_surface_label'),
+      children: [
+        {
+          // Layer Top Bedrock Mesh
+          type: LayerType.tiles3d,
+          assetId: 267898,
+          label: t('lyr_top_bedrock_label'),
+          layer: 'top_bedrock',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CENOZOIC_BEDROCK_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Bedrock.zip',
+          geocatId: '133b54a9-60d1-481c-85e8-e1a222d6ac3f',
+          previewColor: '#dbdb22',
+        },
+        {
+          // Layer Top Bedrock Geotiff
+          type: LayerType.geoTIFF,
+          url: 'https://download.swissgeol.ch/swissbedrock/test2025-04-07/release1_EPSG3857.tif',
+          layer: 'ch.swisstopo.swissbedrock-geotiff',
+          id: 'swissBEDROCK',
+          label: t('layers:swissBEDROCK.title'),
+          opacity: 0.5,
+          env: [AppEnv.Local, AppEnv.Dev],
+          bands: [
+            {
+              index: 1,
+              name: 'BEM',
+              display: {
+                bounds: [-433, 4535],
+                colorMap: 'swissBEDROCK_BEM',
+              },
+            },
+            {
+              index: 2,
+              name: 'TMUD',
+              display: {
+                bounds: [0, 800],
+                colorMap: 'swissBEDROCK_TMUD',
+                noData: 0,
+              },
+            },
+            {
+              index: 3,
+              name: 'Uncertainty',
+              display: {
+                bounds: [0, 25],
+                colorMap: 'swissBEDROCK_Uncertainty',
+              },
+            },
+            {
+              index: 4,
+              name: 'Version',
+            },
+            {
+              index: 5,
+              name: 'Author',
+            },
+            {
+              index: 6,
+              name: 'Change',
+              display: {
+                bounds: [-30, 30],
+                colorMap: 'swissBEDROCK_Change',
+              },
+            },
+            {
+              index: 7,
+              name: 'prev_BEM',
+              display: {
+                bounds: [-433, 4535],
+                colorMap: 'swissBEDROCK_BEM',
+              },
+            },
+            {
+              index: 8,
+              name: 'prev_TMUD',
+              display: {
+                bounds: [0, 800],
+                colorMap: 'swissBEDROCK_TMUD',
+                noData: 0,
+              },
+            },
+            {
+              index: 9,
+              name: 'prev_Uncertainty',
+              display: {
+                bounds: [0, 25],
+                colorMap: 'swissBEDROCK_Uncertainty',
+              },
+            },
+            {
+              index: 10,
+              name: 'prev_Version',
+            },
+            {
+              index: 11,
+              name: 'prev_Author',
+            },
+          ],
+          metadata: {
+            transform: [
+              [14.58, 0.0, 657112.46],
+              [0.0, -14.63, 6079035.06],
+            ],
+            cellSize: 10,
+          },
+        } satisfies GeoTIFFLayer,
+      ],
+    },
+    {
+      //Consolidated rocks
+      label: t('lyr_consolidated_rocks_label'),
+      children: [
+        {
+          type: LayerType.tiles3d,
+          assetId: 267959,
+          label: t('lyr_top_omm_label'),
+          layer: 'top_omm',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip',
+          geocatId: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
+          previewColor: '#cad0c3',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267961,
+          label: t('lyr_top_usm_label'),
+          layer: 'top_usm',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerFreshwaterMolasse.zip',
+          geocatId: '2d7a0729-dd29-40fa-ad4f-b09f94b7fb00',
+          previewColor: '#cdd0d0',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267966,
+          label: t('lyr_top_umm_label'),
+          layer: 'top_umm',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMarineMolasse.zip',
+          geocatId: 'fedb8d24-a000-4b78-9e6e-fb90305ad3ea',
+          previewColor: '#d3cfc0',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267954,
+          label: t('lyr_base_cenozoic_label'),
+          layer: 'base_cenozoic',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CENOZOIC_BEDROCK_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Cenozoic.zip',
+          geocatId: '0e780e6c-18e2-4014-ad16-b35124706580',
+          previewColor: '#d6d91a',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267958,
+          label: t('lyr_top_cretaceous_label'),
+          layer: 'top_cretaceous',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Cretaceous.zip',
+          geocatId: '09334747-14e7-40d6-881b-00e552b71f61',
+          previewColor: '#b8d0c6',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267962,
+          label: t('lyr_top_upper_malm_label'),
+          layer: 'top_upper_malm',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMalm.zip',
+          geocatId: '2378cab1-4673-4837-b12e-a35aefab389a',
+          previewColor: '#bdd1de',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267963,
+          label: t('lyr_top_lower_malm_label'),
+          layer: 'top_lower_malm',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMalm.zip',
+          geocatId: 'af51f4eb-1430-4e4e-a679-3c0eefb4a6b3',
+          previewColor: '#c3d1da',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267957,
+          label: t('lyr_top_dogger_label'),
+          layer: 'top_dogger',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Dogger.zip',
+          geocatId: '0dea083d-23b0-4c5b-b82d-1cd7bda3d583',
+          previewColor: '#c6c7c5',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267899,
+          label: t('lyr_top_lias_label'),
+          layer: 'top_lias',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Lias.zip',
+          geocatId: '793a40d6-ab83-4e1e-80d7-d7c49bf00f3c',
+          previewColor: '#c6c5d9',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267960,
+          label: t('lyr_top_keuper_label'),
+          layer: 'top_keuper',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Keuper.zip',
+          geocatId: 'e2344c21-2139-4494-8679-36fe30d034f9',
+          previewColor: '#d8cecc',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267953,
+          label: t('lyr_top_muschelkalk_label'),
+          layer: 'top_muschelkalk',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Muschelkalk.zip',
+          geocatId: 'dae3dd91-a04c-46c5-aa49-de6235c0478a',
+          previewColor: '#d2c493',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267952,
+          label: t('lyr_base_mesozoic_label'),
+          layer: 'base_mesozoic',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CENOZOIC_BEDROCK_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Mesozoic.zip',
+          geocatId: 'ec67a58d-531e-4dae-98da-85c49525b4d2',
+          previewColor: '#c4e0e0',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267965,
+          label: t('lyr_base_permocarboniferous'),
+          layer: 'base_permocarboniferous',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous.zip',
+          geocatId: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
+          previewColor: '#bb9f8a',
+        },
+        {
+          type: LayerType.tiles3d,
+          assetId: 267964,
+          label: t('lyr_base_permocarboniferous_supposed'),
+          layer: 'base_permocarboniferous_supposed',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Permocarboniferous-inferred.zip',
+          geocatId: '0f1acc23-bdfc-40bf-94b7-7be10f0f78ed',
+          previewColor: '#c9b19e',
+        },
+      ],
+    },
+    {
+      // Faults
+      label: t('lyr_fault_zones_label'),
+      children: [
+        {
+          type: LayerType.tiles3d,
+          assetId: 267872,
+          label: t('lyr_faults_geomol_label'),
+          layer: 'faults_geomol',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: FAULTS_ORDER,
+          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Faults.zip',
+          downloadDataType: 'indexed_download',
+          downloadDataPath:
+            'https://download.swissgeol.ch/Faults/footprints_boxed.geojson',
+          geocatId: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+          previewColor: '#c40001',
+        },
+      ],
+    },
+    {
+      label: t('lyr_3d_model_label'),
+      children: [
+        {
+          type: LayerType.tiles3d,
+          assetId: 493224,
+          label: t('lyr_3d_model_berne_label'),
+          layer: '3d_model_berne',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: [
+            '3DBern-Unit',
+            '3DBern-Link',
+            '3DBern-Lithology',
+            '3DBern-TectonicUnit',
+            '3DBern-ChronoB-T',
+            '3DBern-OrigDesc',
+            '3DBern-Version',
+            '3DBern-Aothor',
+            '3DBern-Purpose',
+            '3DBern-Download',
+          ],
+          geocatId: '372c25ac-fb8a-44ee-8f81-6427939f6353',
+        },
+      ],
+    },
       ],
     },
   ],
@@ -1377,11 +1930,12 @@ const natural_hazard: LayerTreeNode = {
     },
   ],
 };
-
+/*
 const subsurface: LayerTreeNode = {
   label: t('lyr_subsurface_label'),
   children: [
     {
+      // Unconsolidated rocks
       label: t('lyr_unconsolidated_rocks_label'),
       children: [
         {
@@ -1503,6 +2057,7 @@ const subsurface: LayerTreeNode = {
       ],
     },
     {
+      // Top bedrock
       label: t('lyr_top_bedrock_surface_label'),
       children: [
         {
@@ -1612,6 +2167,7 @@ const subsurface: LayerTreeNode = {
       ],
     },
     {
+      //Consolidated rocks
       label: t('lyr_consolidated_rocks_label'),
       children: [
         {
@@ -1790,6 +2346,7 @@ const subsurface: LayerTreeNode = {
       ],
     },
     {
+      // Faults
       label: t('lyr_fault_zones_label'),
       children: [
         {
@@ -1837,6 +2394,7 @@ const subsurface: LayerTreeNode = {
     },
   ],
 };
+*/
 
 const man_made_objects: LayerTreeNode = {
   label: t('lyr_man_made_objects_label'),
@@ -1907,7 +2465,7 @@ const defaultLayerTree: LayerTreeNode[] = [
   natural_hazard,
   //geotourism
   //subsurface_space
-  subsurface,
+  //subsurface, --> DELETE
   background,
 ];
 
