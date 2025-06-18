@@ -680,6 +680,24 @@ export const voxelLayerToFilter: Record<string, LithologyVoxelFilter> = {
 };
 
 // Layers
+
+        /*
+        {
+          // Layer ">>>>>>>>> TEMPLATE WMTS / WMS"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
+          layer: 'c',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '',
+          legend: '',
+        },
+        */
+
+
 // Top-Level Group "Geological map series"
 const geo_map_series: LayerTreeNode = {
   label: t('lyr_geological_map_series_label'),
@@ -875,34 +893,19 @@ const geo_map_series: LayerTreeNode = {
       // Sub-Group I "Sheet divisions"
       label: t('lyr_sheet_division_label'),
       children: [
-        /*
         {
-          // Layer ">>>>>>>>> TEMPLATE"
+          // Layer "Division GGK 200 Raster"
           type: LayerType.swisstopoWMTS,
-          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
-          layer: 'c',
+          label: t('lyr_swisstopo_geologie_division_ggk_200_raster_label'),
+          layer: 'ch.swisstopo.geologie-generalkarte-ggk200.metadata',
           maximumLevel: 18,
           visible: false,
           displayed: false,
           opacity: 0.7,
           queryType: 'geoadmin',
-          geocatId: '',
-          legend: '',
+          geocatId: 'c17ba742-9a43-4ed2-9331-e776d6e9065d',
+          legend: 'ch.swisstopo.geologie-generalkarte-ggk200.metadata',
         },
-        */
-/*         {
-          // Layer "Division GGK 200 Raster" --> WMS (ch.swisstopo.geologie-generalkarte-ggk200.metadata)
-          type: LayerType.swisstopoWMTS,
-          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
-          layer: 'c',
-          maximumLevel: 18,
-          visible: false,
-          displayed: false,
-          opacity: 0.7,
-          queryType: 'geoadmin',
-          geocatId: '',
-          legend: '',
-        }, */
         {
           // Layer "Division GSK Raster"
           type: LayerType.swisstopoWMTS,
@@ -916,46 +919,45 @@ const geo_map_series: LayerTreeNode = {
           geocatId: '5a7e79b5-0aef-4514-9df4-62fb92edee97',
           legend: 'ch.swisstopo.geologie-spezialkarten_schweiz.metadata',
         },
-/*
         {
-          // Layer "Division GSK Vector" --> WMS  (ch.swisstopo.geologie-spezialkarten_schweiz_vector.metadata)
+          // Layer "Division GSK Vector"
           type: LayerType.swisstopoWMTS,
-          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
-          layer: 'c',
+          label: t('lyr_swisstopo_geologie_division_gsk_vector_label'),
+          layer: 'ch.swisstopo.geologie-spezialkarten_schweiz_vector.metadata',
           maximumLevel: 18,
           visible: false,
           displayed: false,
           opacity: 0.7,
           queryType: 'geoadmin',
-          geocatId: '',
-          legend: '',
-        }, */
-/*         {
-          // Layer "Division GA25 Raster" --> WMS (ch.swisstopo.geologie-geologischer_atlas.metadata)
+          geocatId: 'b15b89ac-d7e5-412c-bd4a-5077c935806c',
+          legend: 'ch.swisstopo.geologie-spezialkarten_schweiz_vector.metadata',
+        },
+        {
+          // Layer "Division GA25 Raster"
           type: LayerType.swisstopoWMTS,
-          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
-          layer: 'c',
+          label: t('lyr_swisstopo_geologie_ga25_raster_label'),
+          layer: 'ch.swisstopo.geologie-geologischer_atlas.metadata',
           maximumLevel: 18,
           visible: false,
           displayed: false,
           opacity: 0.7,
           queryType: 'geoadmin',
-          geocatId: '',
-          legend: '',
-        }, */
-/*         {
-          // Layer "Division GeoCover" --> WMS (ch.swisstopo.geologie-geocover.metadata)
+          geocatId: 'a891e1e7-7f85-4c92-94d9-7120edf91a9c',
+          legend: 'ch.swisstopo.geologie-geologischer_atlas.metadata',
+        },
+        {
+          // Layer "Division GeoCover"
           type: LayerType.swisstopoWMTS,
-          label: t('lyr_swisstopo_geologie_XXXXXXXX_label'),
-          layer: 'c',
+          label: t('lyr_swisstopo_geologie_division_geocover_label'),
+          layer: 'ch.swisstopo.geologie-geocover.metadata',
           maximumLevel: 18,
           visible: false,
           displayed: false,
           opacity: 0.7,
           queryType: 'geoadmin',
-          geocatId: '',
-          legend: '',
-        }, */
+          geocatId: 'f7485f4f-2224-4b76-a43c-52cbf8883a42',
+          legend: 'ch.swisstopo.geologie-geocover.metadata',
+        },
       ]
     },
     {
@@ -1057,7 +1059,7 @@ const geo_map_series: LayerTreeNode = {
     },
         {
       // Sub-Group I "3D model"
-      label: t('lyr_3D_models_label'),
+      label: t('lyr_3d_models_label'),
       children: [
         {
       // Unconsolidated rocks
@@ -1494,7 +1496,7 @@ const geo_map_series: LayerTreeNode = {
       ],
     },
     {
-      label: t('lyr_3d_model_label'),
+      label: t('lyr_3d_local_models_label'),
       children: [
         {
           type: LayerType.tiles3d,
@@ -1755,8 +1757,86 @@ const geo_base: LayerTreeNode = { // --> DELETE
 };
 */
 
+// Top-Level Group "Geological map series"
+const geo_geopyhsics: LayerTreeNode = {
+  label: t('lyr_geophysics_label'),
+  children: [
+    {
+      // Layer "Reflection seismic"
+      type: LayerType.swisstopoWMTS,
+      label: t('lyr_swisstopo_geophysics_reflexion_seismic_label'),
+      layer: 'ch.swisstopo.geologie-reflexionsseismik',
+      maximumLevel: 18,
+      visible: false,
+      displayed: false,
+      opacity: 0.7,
+      queryType: 'geoadmin',
+      geocatId: '61866340-a491-444a-8f60-9a6e70df37d8',
+      legend: 'ch.swisstopo.geologie-reflexionsseismik',
+    },
+    {
+      // Layer "Rock Density"
+      type: LayerType.swisstopoWMTS,
+      label: t('lyr_swisstopo_geophysics_rock_density_label'),
+      layer: 'ch.swisstopo.geologie-gesteinsdichte',
+      maximumLevel: 18,
+      visible: false,
+      displayed: false,
+      opacity: 0.7,
+      queryType: 'geoadmin',
+      geocatId: 'c4a7ceb5-8bf5-457d-ab0a-57216dafce53',
+      legend: 'ch.swisstopo.geologie-gesteinsdichte',
+    },
+    {
+      // Layer "Anthro. seismic noise CH"
+      type: LayerType.swisstopoWMTS,
+      label: t('lyr_swisstopo_geophysics_antho_seismic_noise_CH_label'),
+      layer: 'ch.swisstopo.geologie-gesteinsdichte',
+      maximumLevel: 18,
+      visible: false,
+      displayed: false,
+      opacity: 0.7,
+      queryType: 'geoadmin',
+      geocatId: 'c4a7ceb5-8bf5-457d-ab0a-57216dafce53',
+      legend: 'ch.swisstopo.geologie-gesteinsdichte',
+    },
+    {
+      // Layer "Terrestrial radiation"
+      type: LayerType.swisstopoWMTS,
+      label: t('lyr_swisstopo_geophysics_terrestrial_radiation_label'),
+      layer: 'ch.swisstopo.geologie-dosisleistung-terrestrisch',
+      maximumLevel: 18,
+      visible: false,
+      displayed: false,
+      opacity: 0.7,
+      queryType: 'geoadmin',
+      geocatId: 'eccbc751-9928-4221-89e1-1184cbb3aff5',
+      legend: 'ch.swisstopo.geologie-dosisleistung-terrestrisch',
+    },
+    {
+      // Sub-Group I "Earth's gravity field"
+      label: t('lyr_geopysics_earth_gravity_field_label'),
+      children: [
+        {
+          // Layer "Gravimetric base network"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geopysics_grav_base_network_label') ,
+          layer: 'ch.swisstopo.landesschwerenetz',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '95879cd4-e93d-4d4d-af57-4ec6731b9c97',
+          legend: 'ch.swisstopo.landesschwerenetz',
+        },
+      ]
+    }
+  ]
+};
+
 // Top-Level Group "Genergy"
-const geo_energy: LayerTreeNode = {
+const geo_geoenergy: LayerTreeNode = {
   label: t('lyr_geo_energy_label'),
   children: [
     {
@@ -2441,14 +2521,15 @@ const man_made_objects: LayerTreeNode = {
 const background: LayerTreeNode = {
   label: t('lyr_background_label'),
   children: [
-    {
+/*     {
+      // Layer "swissNames"
       type: LayerType.tiles3d,
       url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
       label: t('lyr_swissnames_label'),
       style: SWISSTOPO_LABEL_STYLE,
       layer: 'ch.swisstopo.swissnames3d.3d',
       opacityDisabled: true, // opacity not work with color conditions
-    },
+    }, */
     man_made_objects,
   ],
 };
@@ -2458,8 +2539,8 @@ const defaultLayerTree: LayerTreeNode[] = [
   geo_map_series,
   //geo_base, // --> DELETE
   geo_boreholes,
-  //geopyhsics
-  geo_energy,
+  geo_geopyhsics,
+  geo_geoenergy,
   //mineral_resources
   //groundwater
   natural_hazard,
