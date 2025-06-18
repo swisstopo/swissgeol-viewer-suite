@@ -132,21 +132,30 @@ export async function create3DTilesetFromConfig(
   const tileset: PickableCesium3DTileset = await Cesium3DTileset.fromUrl(
     resource,
     {
-      show: !!config.visible,
+      show: true,
       backFaceCulling: false,
       maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
     },
   );
 
-  if (config.style) {
-    if (config.layer === 'ch.swisstopo.swissnames3d.3d') {
-      // for performance testing
-      config.style.labelStyle = isLabelOutlineEnabled()
-        ? LabelStyle.FILL_AND_OUTLINE
-        : LabelStyle.FILL;
-    }
-    tileset.style = new Cesium3DTileStyle(config.style);
-  }
+  tileset.maximumScreenSpaceError = 20.0;
+  tileset.pointCloudShading.maximumAttenuation = undefined; // Will be based on maximumScreenSpaceError instead
+  tileset.pointCloudShading.baseResolution = undefined;
+  tileset.pointCloudShading.geometricErrorScale = 2.0;
+  tileset.pointCloudShading.attenuation = true;
+
+  // for correct highlighting
+  // tileset.colorBlendMode = Cesium3DTileColorBlendMode.REPLACE;
+
+  // if (config.style) {
+  //   if (config.layer === 'ch.swisstopo.swissnames3d.3d') {
+  //     // for performance testing
+  //     config.style.labelStyle = isLabelOutlineEnabled()
+  //       ? LabelStyle.FILL_AND_OUTLINE
+  //       : LabelStyle.FILL;
+  //   }
+  //   tileset.style = new Cesium3DTileStyle(config.style);
+  // }
 
   tileset.pickable = config.pickable ?? false;
   viewer.scene.primitives.add(tileset);
@@ -155,23 +164,23 @@ export async function create3DTilesetFromConfig(
     tileset.show = !!visible;
   };
 
-  if (!config.opacityDisabled) {
-    config.setOpacity = (opacity) => {
-      const style = config.style;
-      if (style && (style.color || style.labelColor)) {
-        const { propertyName, colorType, colorValue } = styleColorParser(style);
-        const color = `${colorType}(${colorValue}, ${opacity})`;
-        tileset.style = new Cesium3DTileStyle({
-          ...style,
-          [propertyName]: color,
-        });
-      } else {
-        const color = `color("white", ${opacity})`;
-        tileset.style = new Cesium3DTileStyle({ ...style, color });
-      }
-    };
-    config.setOpacity(config.opacity ? config.opacity : 1);
-  }
+  // if (!config.opacityDisabled) {
+  //   config.setOpacity = (opacity) => {
+  //     const style = config.style;
+  //     if (style && (style.color || style.labelColor)) {
+  //       const { propertyName, colorType, colorValue } = styleColorParser(style);
+  //       const color = `${colorType}(${colorValue}, ${opacity})`;
+  //       tileset.style = new Cesium3DTileStyle({
+  //         ...style,
+  //         [propertyName]: color,
+  //       });
+  //     } else {
+  //       const color = `color("white", ${opacity})`;
+  //       tileset.style = new Cesium3DTileStyle({ ...style, color });
+  //     }
+  //   };
+  //   config.setOpacity(config.opacity ? config.opacity : 1);
+  // }
 
   if (tileLoadCallback) {
     const removeTileLoadListener = tileset.tileLoad.addEventListener((tile) =>
@@ -200,8 +209,6 @@ export async function create3DTilesetFromConfig(
     tileset.modelMatrix = Matrix4.fromTranslation(translation);
     viewer.scene.requestRender();
   }
-  // for correct highlighting
-  tileset.colorBlendMode = Cesium3DTileColorBlendMode.REPLACE;
   return tileset;
 }
 

@@ -1,4 +1,4 @@
-import { JulianDate, VoxelCell } from 'cesium';
+import { Cesium3DTileset, JulianDate, VoxelCell } from 'cesium';
 import { PickableVoxelPrimitive } from '../layers/helpers';
 import { getValueOrUndefined } from '../cesiumutils';
 import i18next from 'i18next';
@@ -81,9 +81,10 @@ export function isPickable(object) {
   } else if (
     !(object instanceof VoxelCell) &&
     object.primitive &&
-    object.primitive.allowPicking !== undefined
+    (object.primitive.allowPicking !== undefined ||
+      object.primitive.pickable !== undefined)
   ) {
-    return object.primitive.allowPicking;
+    return object.primitive.allowPicking ?? object.primitive.pickable;
   } else if (object instanceof VoxelCell) {
     const voxelPrimitive: PickableVoxelPrimitive = object.primitive;
     return voxelPrimitive && voxelPrimitive.pickable;

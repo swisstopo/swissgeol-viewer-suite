@@ -1573,6 +1573,15 @@ const background: LayerTreeNode = {
 };
 
 const defaultLayerTree: LayerTreeNode[] = [
+  {
+    type: LayerType.tiles3d,
+    assetId: 3427459,
+    label: 'PointCloud',
+    layer: 'temperature_horizon_tuma',
+    pickable: true,
+    geocatId: '613cdc6f-0237-416d-af16-ae5d2f1934ff',
+    legend: 'ch.swisstopo.geologie-geomol-temperatur_top_omalm',
+  },
   geo_map_series,
   geo_base,
   geo_energy,

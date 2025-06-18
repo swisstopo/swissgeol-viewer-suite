@@ -87,6 +87,7 @@ export default class ObjectSelector {
       if (!isPickable(object)) {
         return;
       }
+      console.log(object);
       if (object.getPropertyIds) {
         attributes.properties = extractPrimitiveAttributes(object);
         attributes.zoom = () => {

@@ -130,6 +130,7 @@ export default class QueryManager {
   async pickObject(position: Cartesian2) {
     const pickedPosition = this.scene.pickPosition(position);
     const object = this.objectSelector.getObjectAtPosition(position);
+    console.log(this.scene.pick(position));
     let attributes = this.objectSelector.pickAttributes(
       position,
       pickedPosition,
