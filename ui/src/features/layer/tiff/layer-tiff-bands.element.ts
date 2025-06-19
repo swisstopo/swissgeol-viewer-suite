@@ -5,6 +5,7 @@ import { GeoTIFFLayer, GeoTIFFLayerBand } from 'src/layertree';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
 import { LayerTiffController } from 'src/features/layer';
+import i18next from 'i18next';
 
 @customElement('ngm-layer-tiff-bands')
 export class LayerTiffBands extends CoreElement {
@@ -50,7 +51,7 @@ export class LayerTiffBands extends CoreElement {
         ?disabled="${band.display === undefined}"
         @click="${() => this.handleBandClick(band)}"
       >
-        ${band.name}
+        ${i18next.t(`layers:${this.layer.id}.bands.${band.name}`)}
       </ngm-core-radio>
     </li>
   `;

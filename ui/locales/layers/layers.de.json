@@ -16,17 +16,17 @@
   "swissBEDROCK": {
     "title": "swissBEDROCK",
     "bands": {
-      "BEM": "BEM",
-      "TMUD": "TMUD",
-      "Uncertainty": "Uncertainty",
-      "Version": "Version",
-      "Author": "Author",
-      "Change": "Change",
-      "prev_BEM": "prev_BEM",
-      "prev_TMUD": "prev_TMUD",
-      "prev_Uncertainty": "prev_Uncertainty",
-      "prev_Version": "prev_Version",
-      "prev_Author": "prev_Author"
+      "BEM": "Höhenmodell der Felsoberfläche [m.ü.M]",
+      "TMUD": "Mächtigkeitsmodell des Lockergesteins [m]",
+      "Uncertainty": "Unsicherheit [m]",
+      "Version": "Versionsnummer",
+      "Author": "Numerische Autoren-ID",
+      "Change": "Änderung zur vorherigen Version [m]",
+      "prev_BEM": "Vorherige Version des Höhenmodells der Felsoberfläche [m ü. M.]",
+      "prev_TMUD": "Vorherige Version des Mächtigkeitsmodells des Lockergesteins [m]",
+      "prev_Uncertainty": "Vorherige Version der Unsicherheit",
+      "prev_Version": "Vorherige Versionsnummer",
+      "prev_Author": "Vorherige Version – numerische Autoren-ID"
     }
   }
 }

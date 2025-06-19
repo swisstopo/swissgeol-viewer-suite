@@ -1,1 +1,32 @@
-{}
+{
+  "catalog": {
+    "filter": "Ouvrir le filtre"
+  },
+  "geoTIFF": {
+    "bandsWindow": {
+      "title": "{{ layer }} - Bandes",
+      "open": "Afficher les bandes"
+    },
+    "infoWindow": {
+      "title": "Info",
+      "zoomToObject": "Zoom sur l'objet"
+    },
+    "noData": "aucune valeur"
+  },
+  "swissBEDROCK": {
+    "title": "swissBEDROCK",
+    "bands": {
+      "BEM": "Modèle d’altitude du toit du rocher [m s.n.m.]",
+      "TMUD": "Modèle d’épaisseur des terrains meubles [m]",
+      "Uncertainty": "Incertitude [m]",
+      "Version": "Numéro de version",
+      "Author": "ID numérique de l’auteur",
+      "Change": "Changement vers la version précédente [m]",
+      "prev_BEM": "Version précédente du modèle d’altitude du toit du rocher [m s.n.m.]",
+      "prev_TMUD": "Version précédente du modèle d’épaisseur des terrains meubles [m]",
+      "prev_Uncertainty": "Version précédente de l’incertitude [m]",
+      "prev_Version": "Numéro de version précédent",
+      "prev_Author": "Version précédente – ID numérique de l’auteur"
+    }
+  }
+}
