@@ -16,7 +16,7 @@
   "swissBEDROCK": {
     "title": "swissBEDROCK",
     "bands": {
-      "BEM": "BEM",
+      "BEM": "Bedrock elevation model [m.a.s.l.]",
       "TMUD": "TMUD",
       "Uncertainty": "Uncertainty",
       "Version": "Version",
