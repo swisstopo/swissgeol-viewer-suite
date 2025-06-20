@@ -1688,7 +1688,7 @@ const geo_geopyhsics: LayerTreeNode = {
         {
           // Layer "Isostatische Anomalien 500" (aus WMTS)
           type: LayerType.swisstopoWMTS,
-          label: t('lyr_ch.swisstopo.geologie-geodaesie-isostatische_anomalien_label'),
+          label: t('lyr_swisstopo_geophysics_isostatic_anomalies_label'),
           layer: 'ch.swisstopo.geologie-geodaesie-isostatische_anomalien',
           maximumLevel: 18,
           visible: false,
@@ -1701,7 +1701,7 @@ const geo_geopyhsics: LayerTreeNode = {
         {
           // Layer "Bouguer-Anomalien 500" (aus WMTS)
           type: LayerType.swisstopoWMTS,
-          label: t('lyr_ch.swisstopo.geologie-geodaesie-bouguer_anomalien_label'),
+          label: t('lyr_swisstopo_geophysics_bouguer_anomalies_label'),
           layer: 'ch.swisstopo.geologie-geodaesie-bouguer_anomalien',
           maximumLevel: 18,
           visible: false,
@@ -1714,7 +1714,7 @@ const geo_geopyhsics: LayerTreeNode = {
         {
           // Layer "Gravimetrischer Atlas 100" (aus WMTS)
           type: LayerType.swisstopoWMTS,
-          label: t('lyr_ch.swisstopo.geologie-gravimetrischer_atlas_label'),
+          label: t('lyr_swisstopo_geophysics_gravimetric_atlas_label'),
           layer: 'ch.swisstopo.geologie-gravimetrischer_atlas',
           maximumLevel: 18,
           visible: false,
@@ -1727,7 +1727,7 @@ const geo_geopyhsics: LayerTreeNode = {
         {
           // Layer "Gravimetrische Messpunkte 100" (aus WMTS)
           type: LayerType.swisstopoWMTS,
-          label: t('lyr_ch.swisstopo.geologie-gravimetrischer_atlas.messpunkte_label'),
+          label: t('lyr_swisstopo_geophysics_gravimetric_atlas_messurements_label'),
           layer: 'ch.swisstopo.geologie-gravimetrischer_atlas.messpunkte',
           maximumLevel: 18,
           visible: false,
@@ -1740,7 +1740,7 @@ const geo_geopyhsics: LayerTreeNode = {
         {
           // Layer "Geoidmodell in CH1903" (aus WMTS)
           type: LayerType.swisstopoWMTS,
-          label: t('lyr_ch.swisstopo.geoidmodell-ch1903_label'),
+          label: t('lyr_swisstopo_geophysics_geoidmodell_ch1903_label'),
           layer: 'ch.swisstopo.geoidmodell-ch1903',
           maximumLevel: 18,
           visible: false,
@@ -1768,6 +1768,84 @@ const geo_geopyhsics: LayerTreeNode = {
           queryType: 'geoadmin',
           geocatId: '4cc706a2-0005-4cc6-8326-7b944a1d5b05',
           legend: 'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_schweiz',
+        },
+        {
+          // Layer "Aeromagnetik Mittelland/Jura 500" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geophysics_aeromagnetic_map_jura_label'),
+          layer: 'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_jura',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'f952b9be-9a11-478c-a21c-9d5e8631c7c2',
+          legend: 'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_jura',
+        },
+        {
+          // Layer "Aeromagnetik Aargau 1100 m 100" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geophysics_aeromagnetic_map_1100_label'),
+          layer: 'ch.nagra.aeromagnetische-karte_1100',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '2ffdbb13-27dc-4380-8349-8debfeca4fd9',
+          legend: 'ch.nagra.aeromagnetische-karte_1100',
+        },
+        {
+          // Layer "Aeromagnetik Aargau 1500 m 100" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geophysics_aeromagnetic_map_1500_label'),
+          layer: 'ch.nagra.aeromagnetische-karte_1500',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'b814401b-9eb2-4e6c-b4a9-f24df7b8bba6',
+          legend: 'ch.nagra.aeromagnetische-karte_1500',
+        },
+        {
+          // Layer "Deklination 500" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geophysics_declination_500_label'),
+          layer: 'ch.swisstopo.geologie-geophysik-deklination',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '8f38b25f-f984-450a-ae48-02290e82136c',
+          legend: 'ch.swisstopo.geologie-geophysik-deklination',
+        },
+        {
+          // Layer "Inklination 500" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geophysics_inclination_500_label'),
+          layer: 'ch.swisstopo.geologie-geophysik-inklination',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '639c0536-bfea-44d3-b088-ed7b6b43cde9',
+          legend: 'ch.swisstopo.geologie-geophysik-inklination',
+        },
+        {
+          // Layer "Magnetfeldstärke 500" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geophysics_totalintensity_label'),
+          layer: 'ch.swisstopo.geologie-geophysik-totalintensitaet',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '132d9ff6-92de-4c02-87a7-72df26bcb33e',
+          legend: 'ch.swisstopo.geologie-geophysik-totalintensitaet',
         },
       ]
     }
