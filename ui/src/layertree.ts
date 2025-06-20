@@ -1611,151 +1611,6 @@ const geo_boreholes: LayerTreeNode = {
     },
   ]
 }
-/*
-const geo_base: LayerTreeNode = { // --> DELETE
-  label: t('lyr_geological_bases_label'),
-  children: [
-
-    {
-      label: t('lyr_boreholes_label'),
-      children: [
-        {
-          type: LayerType.tiles3d,
-          assetId: 287568,
-          label: t('lyr_boreholes_public_label'),
-          layer: 'boreholes',
-          opacity: DEFAULT_LAYER_OPACITY,
-          pickable: true,
-          visible: false,
-          displayed: false, // private until they have been re-integrated
-          restricted: [
-            'ngm-dev-privileged',
-            'ngm-int-privileged',
-            'ngm-prod-privileged',
-          ], // private until they have been re-integrated
-          // Temporarily disable the boreholes download, see https://jira.camptocamp.com/browse/GSNGM-936
-          // downloadDataType: 'csv',
-          // downloadDataPath: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
-          propsOrder: [
-            'bh_pub_XCOORD',
-            'bh_pub_YCOORD',
-            'bh_pub_ZCOORDB',
-            'bh_pub_ORIGNAME',
-            'bh_pub_NAMEPUB',
-            'bh_pub_SHORTNAME',
-            'bh_pub_BOHREDAT',
-            'bh_pub_BOHRTYP',
-            'bh_pub_GRUND',
-            'bh_pub_RESTRICTIO',
-            'bh_pub_TIEFEMD',
-            'bh_pub_DEPTHFROM',
-            'bh_pub_DEPTHTO',
-            'bh_pub_LAYERDESC',
-            'bh_pub_ORIGGEOL',
-            'bh_pub_LITHOLOGY',
-            'bh_pub_LITHOSTRAT',
-            'bh_pub_CHRONOSTR',
-            'bh_pub_TECTO',
-            'bh_pub_USCS1',
-            'bh_pub_USCS2',
-            'bh_pub_USCS3',
-          ],
-          geocatId: '3996dfad-69dd-418f-a4e6-5f32b96c760a',
-        },
-        {
-          type: LayerType.tiles3d,
-          label: t('lyr_boreholes_private_label'),
-          layer: 'boreholes_authenticated',
-          opacity: DEFAULT_LAYER_OPACITY,
-          pickable: true,
-          visible: false,
-          displayed: false,
-          restricted: [
-            'ngm-dev-privileged',
-            'ngm-int-privileged',
-            'ngm-prod-privileged',
-          ], // the group required to see this layer
-          aws_s3_bucket: 'ngm-protected-prod',
-          aws_s3_key: 'tiles/bh_private_20210201_00/tileset.json',
-        },
-      ],
-    },
-    {
-      // Sub-Group I "Cross sections"
-      label: t('lyr_cross_section_label'),
-      children: [
-        {
-          type: LayerType.tiles3d,
-          assetId: 376868,
-          label: t('lyr_cross_section_ga25_pixel_label'),
-          layer: 'cross_section_ga25_pixel',
-          opacity: DEFAULT_LAYER_OPACITY,
-          backgroundId: 'lakes_rivers_map',
-          visible: false,
-          displayed: false,
-          pickable: true,
-          propsOrder: [
-            'CSGA25Px_No',
-            'CSGA25Px_Name',
-            'CSGA25Px_Pub',
-            'CSGA25Px_Author',
-            'CSGA25Px_Plate_No',
-            'CSGA25Px_Section_No',
-            'CSGA25Px_Sec_Type',
-            'CSGA25Px_Scale',
-            'CSGA25Px_Vert_Exag',
-            'CSGA25Px_Link_Orig',
-            'CSGA25Px_Link_Shp',
-          ],
-          geocatId: '97197401-6019-49b0-91d6-eaf35d57529c',
-        },
-        {
-          type: LayerType.tiles3d,
-          assetId: 68881,
-          label: t('lyr_cross_section_ga25_label'),
-          layer: 'cross_section',
-          opacity: DEFAULT_LAYER_OPACITY,
-          visible: false,
-          displayed: false,
-          pickable: true,
-          geocatId: '2924c78a-8f1e-4eb4-b6f6-0fb2405fa7df',
-        },
-        {
-          type: LayerType.tiles3d,
-          assetId: 452436,
-          label: t('lyr_cross_section_geomol_label'),
-          layer: 'cross_section_geomol',
-          opacity: DEFAULT_LAYER_OPACITY,
-          visible: false,
-          displayed: false,
-          pickable: true,
-          geocatId: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
-          downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Cross-Sections.zip',
-        },
-        {
-          type: LayerType.tiles3d,
-          assetId: 472446,
-          label: t('lyr_cross_section_geoquat_label'),
-          layer: 'cross_section_geoquat',
-          opacity: DEFAULT_LAYER_OPACITY,
-          visible: false,
-          displayed: false,
-          pickable: true,
-          propsOrder: [
-            'CS-AAT-Cross-section',
-            'CS-AAT-Lithostratigraphy',
-            'CS-AAT-Type',
-            'CS-AAT-Legend',
-            'CS-AAT-Report',
-          ],
-          geocatId: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
-        },
-      ],
-    },
-
-  ],
-};
-*/
 
 // Top-Level Group "Geological map series"
 const geo_geopyhsics: LayerTreeNode = {
@@ -1830,6 +1685,90 @@ const geo_geopyhsics: LayerTreeNode = {
           geocatId: '95879cd4-e93d-4d4d-af57-4ec6731b9c97',
           legend: 'ch.swisstopo.landesschwerenetz',
         },
+        {
+          // Layer "Isostatische Anomalien 500" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_ch.swisstopo.geologie-geodaesie-isostatische_anomalien_label'),
+          layer: 'ch.swisstopo.geologie-geodaesie-isostatische_anomalien',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '7234896a-842c-4524-8710-5d900953cb1d',
+          legend: 'ch.swisstopo.geologie-geodaesie-isostatische_anomalien',
+        },
+        {
+          // Layer "Bouguer-Anomalien 500" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_ch.swisstopo.geologie-geodaesie-bouguer_anomalien_label'),
+          layer: 'ch.swisstopo.geologie-geodaesie-bouguer_anomalien',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '618c9697-129f-47c7-830a-7a256b4c2499',
+          legend: 'ch.swisstopo.geologie-geodaesie-bouguer_anomalien',
+        },
+        {
+          // Layer "Gravimetrischer Atlas 100" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_ch.swisstopo.geologie-gravimetrischer_atlas_label'),
+          layer: 'ch.swisstopo.geologie-gravimetrischer_atlas',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '732cb247-8307-4cc7-8c31-b1c505a94633',
+          legend: 'ch.swisstopo.geologie-gravimetrischer_atlas',
+        },
+        {
+          // Layer "Gravimetrische Messpunkte 100" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_ch.swisstopo.geologie-gravimetrischer_atlas.messpunkte_label'),
+          layer: 'ch.swisstopo.geologie-gravimetrischer_atlas.messpunkte',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '297a1958-3636-45af-a17c-e90120605132',
+          legend: 'ch.swisstopo.geologie-gravimetrischer_atlas.messpunkte',
+        },
+        {
+          // Layer "Geoidmodell in CH1903" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_ch.swisstopo.geoidmodell-ch1903_label'),
+          layer: 'ch.swisstopo.geoidmodell-ch1903',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '2b20aece-5cb1-41f1-a618-7c6e1ff6a81b',
+          legend: 'ch.swisstopo.geoidmodell-ch1903',
+        },
+      ]
+    },
+    {
+      // Sub-Group I "Earth's magnetic field"
+      label: t('lyr_swisstopo_geopysics_earth_magnetic_field_label'),
+      children: [
+        {
+          // Layer "Aeromagnetics 500"
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_swisstopo_geophysics_aeromagnetics_500_label') ,
+          layer: 'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_schweiz',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '4cc706a2-0005-4cc6-8326-7b944a1d5b05',
+          legend: 'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_schweiz',
+        },
       ]
     }
   ]
@@ -1839,6 +1778,19 @@ const geo_geopyhsics: LayerTreeNode = {
 const geo_geoenergy: LayerTreeNode = {
   label: t('lyr_geo_energy_label'),
   children: [
+    {
+      // Layer "Deep geothermal projects"
+      type: LayerType.swisstopoWMTS,
+      label: t('lyr_swisstopo_geophysics_geothermal_projects_label'),
+      layer: 'ch.swisstopo.geologie-tiefengeothermie_projekte',
+      maximumLevel: 18,
+      visible: false,
+      displayed: false,
+      opacity: 0.7,
+      queryType: 'geoadmin',
+      geocatId: '2df11e59-d85a-40cf-98cf-4b941577e23c',
+      legend: 'ch.swisstopo.geologie-tiefengeothermie_projekte'
+    },
     {
       // Sub-Group I "Temperature models"
       label: t('lyr_geothermal_energy_label'),
