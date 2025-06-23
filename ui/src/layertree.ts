@@ -1057,15 +1057,16 @@ const geo_map_series: LayerTreeNode = {
         },
       ],
     },
-        {
+    {
       // Sub-Group I "3D model"
       label: t('lyr_3d_models_label'),
       children: [
         {
-      // Unconsolidated rocks
+      // Sub-Group II "Unconsolidated rocks"
       label: t('lyr_unconsolidated_rocks_label'),
       children: [
         {
+          // Layer "Voxel-Aaretal"
           type: LayerType.voxels3dtiles,
           url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-Aaretal-Combined/tileset.json',
           voxelDataName: 'Index',
@@ -2151,7 +2152,7 @@ const geo_mineral_resources: LayerTreeNode = {
       ],
     },
     {
-      // Sub-Group I "Metallic" raw materials"
+      // Sub-Group I "Metallic raw materials"
       label: t('lyr_swisstopo_ressources_metallic_minerals_label'),
       children: [
           {
@@ -2169,10 +2170,229 @@ const geo_mineral_resources: LayerTreeNode = {
         },
       ],
     },
+    {
+      // Sub-Group I "Industrial minerals"
+      label: t('lyr_swisstopo_ressources_industrial_minerals_label'),
+      children: [
+{
+          // Layer "Gips" (aus WMS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Gips_label'),
+          layer: 'ch.swisstopo.geologie-rohstoffe-gips_abbau_verarbeitung',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '33f974a7-8852-449d-ba68-646b10710f60',
+          legend: 'ch.swisstopo.geologie-rohstoffe-gips_abbau_verarbeitung',
+        },
+        {
+          // Layer "Salz" (aus WMS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Salz_label'),
+          layer: 'ch.swisstopo.geologie-rohstoffe-salz_abbau_verarbeitung',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'e5bed380-6a35-46c9-97c9-0cbf5875f292',
+          legend: 'ch.swisstopo.geologie-rohstoffe-salz_abbau_verarbeitung',
+        },
+        {
+          // Layer "Weitere Industrieminerale" (aus WMS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Weitere Industrieminerale_label'),
+          layer: 'ch.swisstopo.geologie-rohstoffe-industrieminerale',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'ec3471db-6e86-4148-abbf-d702196381bd',
+          legend: 'ch.swisstopo.geologie-rohstoffe-industrieminerale',
+        },
+      ],
+    },
+    {
+      // Sub-Group I "Energy raw materials"
+      label: t('lyr_swisstopo_ressources_energy_raw_materials_label'),
+      children: [
+        {
+          // Layer "Energierohstoffe" (aus WMS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Energierohstoffe_label'),
+          layer: 'ch.swisstopo.geologie-rohstoffe-kohlen_bitumen_erdgas',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'ee51374d-1472-44bd-a5a7-c65c4e46f3b4',
+          legend: 'ch.swisstopo.geologie-rohstoffe-kohlen_bitumen_erdgas',
+        },
+      ],
+    },
   ]
-}
+};
 
+// Top-Level Group "Groudwater"
+const geo_groundwater: LayerTreeNode = {
+  label: t('lyr_groundwater_label'),
+  children: [
+        {
+          // Layer "Thermale Wässer" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Thermale Waesser_label'),
+          layer: 'ch.swisstopo.geologie-thermale_waesser',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '04fb057a-4c46-4d6d-8a64-8003df749762',
+          legend: 'ch.swisstopo.geologie-thermale_waesser',
+        },
+        {
+          // Layer "Übersichtskarte Hydrogeologie" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Übersichtskarte Hydrogeologie_label'),
+          layer: 'ch.bafu.hydrogeologie-uebersichtskarte',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'e238580b-a03d-45c2-9ea6-f6634ff9c64c',
+          legend: 'ch.bafu.hydrogeologie-uebersichtskarte',
+        },
+        {
+          // Layer "Grundwasservorkommen 500" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Grundwasservorkommen 500_label'),
+          layer: 'ch.swisstopo.geologie-hydrogeologische_karte-grundwasservorkommen',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'f198f6f6-8efa-4235-a55f-99767ea0206c',
+          legend: 'ch.swisstopo.geologie-hydrogeologische_karte-grundwasservorkommen',
+        },
+        {
+          // Layer "Grundwasservulnerabilität 500" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Grundwasservulnerabilität 500_label'),
+          layer: 'ch.swisstopo.geologie-hydrogeologische_karte-grundwasservulnerabilitaet',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'b8efde6b-7323-4496-aa70-b976ec55cec9',
+          legend: 'ch.swisstopo.geologie-hydrogeologische_karte-grundwasservulnerabilitaet',
+        },
+        {
+          // Layer "Hydrogeologische Karte 100" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Hydrogeologische Karte 100_label'),
+          layer: 'ch.bafu.hydrogeologische-karte_100',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'b01523a1-9f61-43a2-95cb-be843cc1b18a',
+          legend: 'ch.bafu.hydrogeologische-karte_100',
+        },
+        {
+      // Sub-Group I "Karst groundwater"
+      label: t('lyr_swisstopo_groundwater_karst_label'),
+      children: [
+        {
+          // Layer "Karstwasservorkommen" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Karstwasservorkommen_label'),
+          layer: 'ch.bafu.karst-ausdehnung_grundwasservorkommen',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '4ea295bb-a098-492b-84f8-e7687737fb35',
+          legend: 'ch.bafu.karst-ausdehnung_grundwasservorkommen',
+        },
+        {
+          // Layer "Karstquellen und Schwinden" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Karstquellen und Schwinden_label'),
+          layer: 'ch.bafu.karst-quellen_schwinden',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '1786c0cc-8aac-44b1-880c-aa627de09c1e',
+          legend: 'ch.bafu.karst-quellen_schwinden',
+        },
+        {
+          // Layer "Unterirdische Fliesswege" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Unterirdische Fliesswege_label'),
+          layer: 'ch.bafu.karst-unterirdische_fliesswege',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '7db32f1d-691d-4d2d-a842-ee188210acf6',
+          legend: 'ch.bafu.karst-unterirdische_fliesswege',
+        },
+        {
+          // Layer "Karst-Einzugsgebiete" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Karst-Einzugsgebiete_label'),
+          layer: 'ch.bafu.karst-einzugsgebiete',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: '01811bd5-7f55-4c89-92f2-78fcd379affa',
+          legend: 'ch.bafu.karst-einzugsgebiete',
+        },
+        {
+          // Layer "Karst-Einzugsgebietseinheiten" (aus WMTS)
+          type: LayerType.swisstopoWMTS,
+          label: t('lyr_Karst-Einzugsgebietseinheiten_label'),
+          layer: 'ch.bafu.karst-einzugsgebietseinheiten',
+          maximumLevel: 18,
+          visible: false,
+          displayed: false,
+          opacity: 0.7,
+          queryType: 'geoadmin',
+          geocatId: 'fa918831-97d1-4486-a348-c891f4e900ad',
+          legend: 'ch.bafu.karst-einzugsgebietseinheiten',
+        },
+      ],
+    },
+    {
+      // Layer "Grundwasserkörper" (aus WMTS)
+      type: LayerType.swisstopoWMTS,
+      label: t('lyr_Grundwasserkörper_label'),
+      layer: 'ch.bafu.grundwasserkoerper',
+      maximumLevel: 18,
+      visible: false,
+      displayed: false,
+      opacity: 0.7,
+      queryType: 'geoadmin',
+      geocatId: '2bd1ab86-83ec-4c3e-b937-ab81b4968bc6',
+      legend: 'ch.bafu.grundwasserkoerper',
+    },
 
+  ]
+};
 
 const natural_hazard: LayerTreeNode = {
   label: t('lyr_natural_hazard_label'),
@@ -2252,15 +2472,6 @@ const man_made_objects: LayerTreeNode = {
 const background: LayerTreeNode = {
   label: t('lyr_background_label'),
   children: [
-/*     {
-      // Layer "swissNames"
-      type: LayerType.tiles3d,
-      url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swissnames3d.3d/20180716/tileset.json',
-      label: t('lyr_swissnames_label'),
-      style: SWISSTOPO_LABEL_STYLE,
-      layer: 'ch.swisstopo.swissnames3d.3d',
-      opacityDisabled: true, // opacity not work with color conditions
-    }, */
     man_made_objects,
   ],
 };
@@ -2272,7 +2483,7 @@ const defaultLayerTree: LayerTreeNode[] = [
   geo_geopyhsics,
   geo_geoenergy,
   geo_mineral_resources,
-  //groundwater
+  geo_groundwater,
   natural_hazard,
   //geotourism
   //subsurface_space
