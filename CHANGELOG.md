@@ -1,6 +1,11 @@
 # Changelog
 
-## [1.2.0]
+## [1.4.0]
+
+### Changed
+- Google Analytics is now only running in PROD.
+
+## [1.3.0]
 
 ### Added
 - Added a control with which the camera can be fixed in a 2d top-down position.
