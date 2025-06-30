@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-abbreviator
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    keel.sh/policy: force
+    keel.sh/match-tag: 'true'
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-abbreviator
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-abbreviator
+    spec:
+      serviceAccountName: abbreviator
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-abbreviator-pvc
+      containers:
+      - name: {{ .Release.Name }}-api
+        image: {{ .Values.docker.abbreviator_image }}
+        imagePullPolicy: Always
+        ports:
+          - name: http
+            containerPort: 8000
+            protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /health_check
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /health_check
+            port: http
+        volumeMounts:
+          - name: storage
+            mountPath: /storage
+        env:
+          - name: PORT
+            value: '8000'
+          - name: DATABASE_URL
+            value: {{ .Values.abbreviator.db_url }}
+          - name: HOST_WHITELIST
+            value: {{ .Values.abbreviator.host_whitelist }}
+
+      imagePullSecrets:
+      - name: {{ .Release.Namespace }}-registry
