@@ -27,7 +27,7 @@ export class NgmObjectInformation extends LitElementI18n {
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
-        this.opened = false;
+        this.close();
       }
     });
   }
@@ -43,6 +43,10 @@ export class NgmObjectInformation extends LitElementI18n {
     // no shadow dom
     return this;
   }
+
+  private readonly close = () => {
+    QueryStore.setObjectInfo(undefined);
+  };
 
   render() {
     this.hidden = !this.opened;
@@ -109,10 +113,7 @@ export class NgmObjectInformation extends LitElementI18n {
 
       return html`
         <div class="ngm-floating-window-header drag-handle">
-          <div
-            class="ngm-close-icon"
-            @click=${() => (this.opened = false)}
-          ></div>
+          <div class="ngm-close-icon" @click=${this.close}></div>
         </div>
         <div class="htmlpopup-header" ?hidden="${!this.info.zoom}">
           <button

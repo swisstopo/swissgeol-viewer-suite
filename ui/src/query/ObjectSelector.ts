@@ -199,12 +199,19 @@ export default class ObjectSelector {
   }
 
   toggleTileHighlight(obj) {
-    if (this.selectedObj && this.selectedObj.color) {
-      this.selectedObj.color = this.savedColor;
+    if (this.selectedObj) {
+      if (this.selectedObj instanceof VoxelCell) {
+        const { customShader } = this.selectedObj.primitive;
+        customShader.setUniform('u_selectedTile', -1);
+        customShader.setUniform('u_selectedSample', -1);
+      } else if (this.selectedObj.color) {
+        this.selectedObj.color = this.savedColor;
+      }
       this.selectedObj = null;
     }
     if (!obj) return;
     if (obj instanceof VoxelCell) {
+      this.selectedObj = obj;
       const { customShader } = obj.primitive;
       // todo remove when voxel picking released
       // @ts-ignore

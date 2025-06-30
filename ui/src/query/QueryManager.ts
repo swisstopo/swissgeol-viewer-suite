@@ -45,6 +45,14 @@ export default class QueryManager {
       ScreenSpaceEventType.LEFT_CLICK,
     );
     this.viewer.dataSources.add(this.highlightedGroup);
+
+    QueryStore.objectInfo.subscribe((info) => {
+      if (info === undefined) {
+        this.unhighlightEntity();
+        this.unhighlightGroup();
+        this.objectSelector.unhighlight();
+      }
+    });
   }
 
   set activeLayers(layers) {
@@ -137,7 +145,6 @@ export default class QueryManager {
     );
     const isAttributesEmpty =
       !attributes || !Object.getOwnPropertyNames(attributes).length;
-
     // we only search the remote Swisstopo service when there was no result for the local search.
     if (isAttributesEmpty && pickedPosition) {
       if (object) {
@@ -154,14 +161,12 @@ export default class QueryManager {
         attributes = result || attributes;
       }
     }
-
     if (attributes?.geomId) {
       ToolboxStore.setOpenedGeometryOptions({ id: attributes.geomId });
       return;
     }
 
     this.showObjectInformation(attributes);
-
     this.scene.requestRender();
   }
 
