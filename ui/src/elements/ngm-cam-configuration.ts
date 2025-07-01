@@ -200,13 +200,16 @@ export class NgmCamConfiguration extends LitElementI18n {
   }
 
   updated(changedProperties: PropertyValues) {
-    if (this.viewer && !this.unlistenPostRender) {
-      this.scene = this.viewer.scene;
-      this.handler = new ScreenSpaceEventHandler(this.viewer.canvas);
-      this.unlistenPostRender = this.scene.postRender.addEventListener(() =>
-        this.updateFromCamera(),
-      );
-      this.updateFromCamera();
+    const { viewer } = this;
+    if (viewer && !this.unlistenPostRender) {
+      setTimeout(() => {
+        this.scene = viewer.scene;
+        this.handler = new ScreenSpaceEventHandler(viewer.canvas);
+        this.unlistenPostRender = this.scene.postRender.addEventListener(() =>
+          this.updateFromCamera(),
+        );
+        this.updateFromCamera();
+      });
     }
     if (changedProperties.has('lockType'))
       NavToolsStore.setNavLockType(this.lockType);

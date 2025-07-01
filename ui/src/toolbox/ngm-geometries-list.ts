@@ -14,27 +14,41 @@ import { isProject } from '../elements/dashboard/helpers';
 export default class NgmGeometriesList extends LitElementI18n {
   @property({ type: String })
   accessor selectedId = '';
+
   @property({ type: Object })
   accessor optionsTemplate:
     | ((geom: NgmGeometry, active: boolean) => TemplateResult)
     | undefined;
+
   @property({ type: Array })
   accessor disabledTypes: string[] = [];
+
   @property({ type: Object })
   accessor disabledCallback: ((geom: NgmGeometry) => boolean) | undefined;
+
   @state()
   accessor geometries: NgmGeometry[] = [];
+
   @state()
   accessor noEditGeometries: NgmGeometry[] = [];
+
   @state()
   accessor editingEnabled = false;
+
   @state()
   accessor selectedFilter: GeometryTypes | undefined;
+
   @state()
   accessor nameEditIndex: number | undefined;
   private scrollDown = false;
 
   protected firstUpdated() {
+    setTimeout(() => {
+      this.initializeSubscriptions();
+    });
+  }
+
+  private initializeSubscriptions(): void {
     ToolboxStore.geometries.subscribe((geoms) => {
       this.geometries = geoms;
     });

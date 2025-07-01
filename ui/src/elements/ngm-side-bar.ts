@@ -325,7 +325,7 @@ export class SideBar extends LitElementI18n {
     };
   }
 
-  async update(changedProperties) {
+  async willUpdate(changedProperties) {
     if (this.viewer && !this.layerActions) {
       this.layerActions = new LayersActions(this.viewer);
       if (!this.catalogLayers) {
@@ -343,7 +343,7 @@ export class SideBar extends LitElementI18n {
       document.removeEventListener('pointerdown', this.shareDownListener);
       document.removeEventListener('keydown', this.shareDownListener);
     }
-    super.update(changedProperties);
+    super.willUpdate(changedProperties);
   }
 
   updated(changedProperties) {
