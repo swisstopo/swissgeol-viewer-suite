@@ -24,6 +24,7 @@ import type { Cartographic, Camera } from 'cesium';
 import type { TopicParamSubject, ProjectParamSubject } from './store/dashboard';
 
 import { LayerConfig } from './layertree';
+import { LayerService } from 'src/features/layer/layer.service';
 
 export type LayerFromParam = {
   layer: string;
@@ -140,14 +141,14 @@ export function setIonToken(token: string) {
   setURLSearchParams(params);
 }
 
-export function syncLayersParam(activeLayers: LayerConfig[]) {
+export function syncLayersParam(layerService: LayerService) {
   const params = getURLSearchParams();
   const layerNames: string[] = [];
   const layersTransparency: string[] = [];
   const layersTimestamps: string[] = [];
   const layersVisibility: boolean[] = [];
-  activeLayers.forEach((l) => {
-    if (!l.customAsset && !l.notSaveToPermalink && l.layer) {
+  layerService.activeLayers.forEach((l) => {
+    if (!l.customAsset && !(l as LayerConfig).notSaveToPermalink && l.layer) {
       layerNames.push(l.layer);
       const transparency = !l.opacity || isNaN(l.opacity) ? 0 : 1 - l.opacity;
       layersTransparency.push(transparency.toFixed(2));
@@ -172,7 +173,9 @@ export function syncLayersParam(activeLayers: LayerConfig[]) {
 
   if (assetParams.length) {
     const assetIds = assetParams.filter((id) =>
-      activeLayers.find((l) => l.assetId === Number(id) && l.displayed),
+      layerService.activeLayers.find(
+        (l) => l.assetId === Number(id) && l.displayed,
+      ),
     );
     if (assetIds.length) {
       params.set(ASSET_IDS_URL_PARAM, assetIds.join(','));
@@ -343,20 +346,6 @@ export function getTopicOrProject():
           param: { projectId, viewId: params.get(VIEW_PARAM) },
         }
       : undefined;
-}
-
-export function setTopic(topicId: string, viewId: string) {
-  const params = getURLSearchParams();
-  params.set(TOPIC_PARAM, topicId);
-  viewId && params.set(VIEW_PARAM, viewId);
-  setURLSearchParams(params);
-}
-
-export function removeTopic() {
-  const params = getURLSearchParams();
-  params.delete(TOPIC_PARAM);
-  params.delete(VIEW_PARAM);
-  setURLSearchParams(params);
 }
 
 export function removeProject() {

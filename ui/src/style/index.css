@@ -2,7 +2,7 @@
 
 @import "cesium/Build/Cesium/Widgets/widgets.css";
 
-@import "@swisstopo/swissgeol-ui-core/styles.css";
+@import "@swissgeol/ui-core/styles.css";
 @import "fomantic-ui-css/components/reset.css";
 @import "fomantic-ui-css/components/message.css";
 @import "fomantic-ui-css/components/list.css";

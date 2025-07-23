@@ -10,16 +10,13 @@ import {
 } from 'cesium';
 import { GeoTIFFLayer, GeoTIFFLayerBand, LayerConfig } from 'src/layertree';
 import { SWITZERLAND_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
-import { Observable, Subject } from 'rxjs';
 import proj4 from 'proj4';
 
 export class LayerTiffController {
   private active!: ActiveBand;
 
-  private readonly pickSubject = new Subject<PickData>();
-
   constructor(
-    private readonly layer: LayerConfig & GeoTIFFLayer,
+    readonly layer: LayerConfig & GeoTIFFLayer,
     private readonly viewer: Viewer,
   ) {
     if (layer.controller !== undefined) {
@@ -44,10 +41,6 @@ export class LayerTiffController {
     return this.active.band;
   }
 
-  get pick$(): Observable<PickData> {
-    return this.pickSubject.asObservable();
-  }
-
   activateBand(index: number): void {
     const band = this.layer.bands.find((it) => it.index === index);
     if (band == null) {
@@ -69,9 +62,9 @@ export class LayerTiffController {
     this.viewer.scene.requestRender();
   }
 
-  async pick(cartesian: Cartesian3): Promise<boolean> {
+  async pick(cartesian: Cartesian3): Promise<PickData | null> {
     if (!this.layer.visible) {
-      return false;
+      return null;
     }
 
     const coords = Cartographic.fromCartesian(cartesian);
@@ -89,13 +82,13 @@ export class LayerTiffController {
     try {
       const activeValue = json.values[this.active.band.index - 1];
       if (activeValue === null) {
-        return false;
+        return null;
       }
       const [cellLongitude, cellLatitude] = this.computeCellCenter(
         longitude,
         latitude,
       );
-      this.pickSubject.next({
+      return {
         layer: this.layer,
         coordinates: Cartesian3.fromDegrees(
           cellLongitude,
@@ -103,11 +96,10 @@ export class LayerTiffController {
           coords.height,
         ),
         bands: json.values,
-      });
-      return true;
+      };
     } catch (e) {
       console.error(`failed to pick geoTIFF ${this.layer.id}`, e);
-      return false;
+      return null;
     }
   }
 

@@ -20,13 +20,16 @@ import type { Viewer } from 'cesium';
 
 import { LayerConfig } from '../layertree';
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer';
+import { LayerService } from 'src/features/layer/layer.service';
 
 export default class LayersAction {
   viewer: Viewer;
+  layerService: LayerService;
   boundingBoxEntity: any;
 
-  constructor(viewer: Viewer) {
+  constructor(viewer: Viewer, layerService: LayerService) {
     this.viewer = viewer;
+    this.layerService = layerService;
     this.boundingBoxEntity = this.viewer.entities.add({
       position: Cartesian3.ZERO,
       show: false,
@@ -167,7 +170,7 @@ export default class LayersAction {
       }
     }
     this.viewer.scene.requestRender();
-    syncLayersParam(newLayers);
+    syncLayersParam(this.layerService);
   }
 
   listenForEvent(config: LayerConfig, eventName, callback) {
