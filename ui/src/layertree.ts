@@ -1464,6 +1464,25 @@ const subsurface: LayerTreeNode = {
           geocatId: '0f1acc23-bdfc-40bf-94b7-7be10f0f78ed',
           previewColor: '#c9b19e',
         },
+        {
+        // Test GeoMol exported from GST
+        label: t('TEST GeoMol from GST'),
+        children: [
+          {
+          type: LayerType.tiles3d,
+          assetId: 3564227,
+          label: t('lyr_top_omm_label'),
+          layer: 'top_omm',
+          opacity: DEFAULT_LAYER_OPACITY,
+          pickable: true,
+          propsOrder: CONSOLIDATED_ORDER,
+          downloadUrl:
+            DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip',
+          geocatId: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
+          previewColor: '#c00000',
+        },
+        ]
+        }
       ],
     },
     {
@@ -1484,6 +1503,7 @@ const subsurface: LayerTreeNode = {
           geocatId: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
           previewColor: '#c40001',
         },
+
       ],
     },
     {
