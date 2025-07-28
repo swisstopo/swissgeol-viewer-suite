@@ -154,24 +154,25 @@ export async function create3DTilesetFromConfig(
   config.setVisibility = (visible) => {
     tileset.show = !!visible;
   };
+  // Aus kommentiert, um die korrekte Farbgebung der neuen GeoMol-Horizonte zu prüfen
 
-  if (!config.opacityDisabled) {
-    config.setOpacity = (opacity) => {
-      const style = config.style;
-      if (style && (style.color || style.labelColor)) {
-        const { propertyName, colorType, colorValue } = styleColorParser(style);
-        const color = `${colorType}(${colorValue}, ${opacity})`;
-        tileset.style = new Cesium3DTileStyle({
-          ...style,
-          [propertyName]: color,
-        });
-      } else {
-        const color = `color("white", ${opacity})`;
-        tileset.style = new Cesium3DTileStyle({ ...style, color });
-      }
-    };
-    config.setOpacity(config.opacity ? config.opacity : 1);
-  }
+  // if (!config.opacityDisabled) {
+  //   config.setOpacity = (opacity) => {
+  //     const style = config.style;
+  //     if (style && (style.color || style.labelColor)) {
+  //       const { propertyName, colorType, colorValue } = styleColorParser(style);
+  //       const color = `${colorType}(${colorValue}, ${opacity})`;
+  //       tileset.style = new Cesium3DTileStyle({
+  //         ...style,
+  //         [propertyName]: color,
+  //       });
+  //     } else {
+  //       const color = `color("white", ${opacity})`;
+  //       tileset.style = new Cesium3DTileStyle({ ...style, color });
+  //     }
+  //   };
+  //   config.setOpacity(config.opacity ? config.opacity : 1);
+  // }
 
   if (tileLoadCallback) {
     const removeTileLoadListener = tileset.tileLoad.addEventListener((tile) =>
