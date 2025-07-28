@@ -179,7 +179,7 @@ export async function create3DTilesetFromConfig(
     );
   }
 
-  if (config.propsOrder) {
+  if (config.propsOrder && tileset.properties !== undefined) {
     tileset.properties.propsOrder = config.propsOrder;
   }
   if (config.heightOffset) {
