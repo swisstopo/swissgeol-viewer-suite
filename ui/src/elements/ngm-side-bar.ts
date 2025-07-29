@@ -793,6 +793,7 @@ export class SideBar extends LitElementI18n {
     counter = 0,
   ) => html`
     <ngm-menu-item
+      data-cy="${`menu-item--${panel}`}"
       .icon=${icon}
       .title=${title}
       .counter="${counter}"
