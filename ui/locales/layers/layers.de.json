@@ -5,7 +5,8 @@
   "geoTIFF": {
     "bandsWindow": {
       "title": "{{ layer }} - Bänder",
-      "open": "Bänder anzeigen"
+      "open": "Bänder anzeigen",
+      "legend": "Legende"
     },
     "infoWindow": {
       "title": "Info",

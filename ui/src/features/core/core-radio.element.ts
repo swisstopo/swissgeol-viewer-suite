@@ -78,8 +78,6 @@ export class CoreRadio extends LitElement {
 
     /* icon */
     .icon {
-      ${applyTransition('fade')}
-
       position: relative;
       display: flex;
       align-items: center;
@@ -123,8 +121,9 @@ export class CoreRadio extends LitElement {
       content: ' ';
       width: 12px;
       height: 12px;
-      top: 2px;
-      left: 2px;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
       background-color: transparent;
       border-radius: 50%;
 
