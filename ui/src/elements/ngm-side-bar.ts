@@ -208,6 +208,13 @@ export class SideBar extends LitElementI18n {
     const sliceOptions = getSliceParam();
     if (sliceOptions?.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
+
+    this.layerService.activeLayers$.subscribe((activeLayers) => {
+      if (this.layerActions == null) {
+        return;
+      }
+      this.layerActions!.reorderLayers(activeLayers as LayerConfig[]).then();
+    });
   }
 
   async togglePanel(panelName, showHeader = true) {
@@ -361,11 +368,6 @@ export class SideBar extends LitElementI18n {
           }
           this.accordionInited = true;
         }
-      }
-      if (changedProperties.has('activeLayers')) {
-        this.layerActions!.reorderLayers(
-          this.layerService.activeLayers as LayerConfig[],
-        ).then();
       }
     }
 

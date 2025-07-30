@@ -37,6 +37,10 @@ export class LayerTiffController {
     this.activateBand(layer.bands[0].index);
   }
 
+  get activeImagery(): ImageryLayer {
+    return this.active.imagery;
+  }
+
   get activeBand(): GeoTIFFLayerBand {
     return this.active.band;
   }

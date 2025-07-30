@@ -18,7 +18,7 @@ import {
 } from 'cesium';
 import type { Viewer } from 'cesium';
 
-import { LayerConfig } from '../layertree';
+import { GeoTIFFLayer, LayerConfig } from '../layertree';
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer';
 import { LayerService } from 'src/features/layer/layer.service';
 
@@ -167,6 +167,9 @@ export default class LayersAction {
         dataSources.contains(layer)
       ) {
         dataSources.raiseToTop(layer);
+      } else if (config.type === LayerType.geoTIFF) {
+        const imagery = (config as GeoTIFFLayer).controller!.activeImagery;
+        imageries.raiseToTop(imagery);
       }
     }
     this.viewer.scene.requestRender();
