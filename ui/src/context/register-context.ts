@@ -24,7 +24,7 @@ type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
   element: LitElement,
   clientConfig: ClientConfig,
-) => {
+): AppContext[] => {
   const makeProvider = makeProviderForElement(element);
 
   const contexts: AppContext[] = [];

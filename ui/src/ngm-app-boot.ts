@@ -9,8 +9,6 @@ import { ConfigService } from './api/config.service';
 
 @customElement('ngm-app-boot')
 export class NgmAppBoot extends LitElement {
-  private isReady = false;
-
   private readonly viewerInitialization = new Task(this, {
     task: async () => {
       const clientConfig =
@@ -20,21 +18,12 @@ export class NgmAppBoot extends LitElement {
       }
       return clientConfig;
     },
+    onComplete: (clientConfig) => {
+      registerAppContext(this, clientConfig);
+    },
     args: () => [],
   });
 
-  updated() {
-    const { value: clientConfig } = this.viewerInitialization;
-    if (!this.isReady && clientConfig !== undefined) {
-      setTimeout(() => {
-        registerAppContext(this, clientConfig);
-        this.isReady = true;
-        this.requestUpdate();
-      });
-    }
-  }
-
-  // This deactivates shadow DOM. Because this is done for all other components, we have to add it for the time being.
   createRenderRoot() {
     return this;
   }
@@ -42,8 +31,8 @@ export class NgmAppBoot extends LitElement {
   render() {
     return this.viewerInitialization.render({
       pending: () => html`<p>Loading</p>`,
-      complete: () =>
-        this.isReady ? html`<ngm-app></ngm-app>` : html`<p>Loading</p>`,
+      complete: () => html` <ngm-app></ngm-app>`,
+
       error: (e) => html`<p>Error: ${e}</p>`,
     });
   }
