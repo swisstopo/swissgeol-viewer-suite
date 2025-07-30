@@ -27,6 +27,10 @@ export class LayerInfoService extends BaseService {
 
   private viewer!: Viewer;
 
+  private isPicking = false;
+
+  private nextPick: Cartesian3 | null = null;
+
   constructor() {
     super();
 
@@ -41,41 +45,12 @@ export class LayerInfoService extends BaseService {
         this.initializeQueryableLayers(layerService);
 
         const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
-
-        eventHandler.setInputAction(() => {
-          // TODO close?
-        }, ScreenSpaceEventType.LEFT_DOWN);
-
         eventHandler.setInputAction(
           async (event: ScreenSpaceEventHandler.PositionedEvent) => {
             const cartesian = viewer.scene.pickPosition(event.position);
-            if (!cartesian) {
-              return;
+            if (cartesian) {
+              this.pick(cartesian);
             }
-
-            const data: LayerPickData = {
-              cartesian,
-              cartographic: Cartographic.fromCartesian(cartesian),
-              distance: Cartesian3.distance(
-                viewer.scene.camera.positionWC,
-                cartesian,
-              ),
-            };
-
-            viewer.canvas.style.cursor = 'progress';
-            const infos: LayerInfo[] = [];
-            const picks = this.pickers.map(async (picker) => {
-              const pickedInfos = await picker.pick(data);
-              infos.push(...pickedInfos);
-            });
-            for (const info of this.infosSubject.value) {
-              info.destroy();
-            }
-            await Promise.all(picks);
-            this.infosSubject.next(infos);
-            viewer.canvas.style.cursor = 'default';
-
-            viewer.scene.requestRender();
           },
           ScreenSpaceEventType.LEFT_CLICK,
         );
@@ -86,12 +61,62 @@ export class LayerInfoService extends BaseService {
     return this.infosSubject.asObservable();
   }
 
+  pick(cartesian: Cartesian3): void {
+    if (this.isPicking) {
+      this.nextPick = cartesian;
+      return;
+    }
+    this.isPicking = true;
+    this.handlePick(cartesian).finally(() => {
+      this.isPicking = false;
+      if (this.nextPick !== null) {
+        const pick = this.nextPick;
+        this.nextPick = null;
+        this.pick(pick);
+      }
+    });
+  }
+
   reset(): void {
     for (const info of this.infosSubject.value) {
       info.destroy();
     }
     this.infosSubject.next([]);
     this.viewer.scene.requestRender();
+  }
+
+  private async handlePick(cartesian: Cartesian3): Promise<void> {
+    const data: LayerPickData = {
+      cartesian,
+      cartographic: Cartographic.fromCartesian(cartesian),
+      distance: Cartesian3.distance(
+        this.viewer.scene.camera.positionWC,
+        cartesian,
+      ),
+    };
+
+    this.viewer.canvas.style.cursor = 'progress';
+    const infos: LayerInfo[] = [];
+    const picks = this.pickers.map(async (picker) => {
+      const pickedInfos = await picker.pick(data);
+      infos.push(...pickedInfos);
+    });
+    for (const info of this.infosSubject.value) {
+      info.destroy();
+    }
+    await Promise.all(picks);
+    if (this.nextPick === null) {
+      // If there is no next pick queued up, we can display the results.
+      this.infosSubject.next(infos);
+      this.viewer.canvas.style.cursor = 'default';
+      this.viewer.scene.requestRender();
+    } else {
+      // If there is already a new pick queued, we simply destroy our results.
+      // Without this, the results would be visibly for a short second and then be removed either way.
+      for (const info of infos) {
+        info.destroy();
+      }
+    }
   }
 
   private initializeImageryLayers(): void {

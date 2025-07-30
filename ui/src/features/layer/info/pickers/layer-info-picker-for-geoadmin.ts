@@ -104,7 +104,6 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
   }
 
   private createEntityForGeometry(geometry: IdentifiedGeometry): Entity {
-    console.log(geometry.type);
     switch (geometry.type) {
       case 'MultiPolygon':
         return this.createMultiPolygonEntity(

@@ -138,7 +138,7 @@ export class CoreWindow extends CoreElement {
       flex-direction: column;
       gap: 8px;
       padding: 16px;
-      max-height: 50vw;
+      max-height: calc(100vh - 200px);
       overflow-x: auto;
 
       background-color: var(--sgc-color-bg--white);
