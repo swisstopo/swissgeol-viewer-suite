@@ -5,6 +5,7 @@ Feature: Hover layer
 
     Background:
       Given the viewer is fully loaded
+      And the data panel is open
       And one layer is being displayed
 
     Scenario: Hovering over the layer displayed in the data displayed section

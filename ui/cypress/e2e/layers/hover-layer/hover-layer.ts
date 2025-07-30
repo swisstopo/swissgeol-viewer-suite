@@ -1,9 +1,6 @@
 import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 
 Given(/^one layer is being displayed$/, () => {
-  cy.get('[data-cy=menu-item--data]').click();
-  cy.get('ngm-navigation-panel', { timeout: 10_000 }).should('be.visible');
-
   const level1 = cy
     .get('ngm-layer-catalog')
     .shadow()
