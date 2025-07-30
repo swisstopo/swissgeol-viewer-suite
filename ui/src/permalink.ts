@@ -1,27 +1,25 @@
-import { Math, Cartesian3 } from 'cesium';
+import type { Camera, Cartographic } from 'cesium';
+import { Cartesian3, Math } from 'cesium';
 
 import { getURLSearchParams, parseJson, setURLSearchParams } from './utils';
 import {
   ASSET_IDS_URL_PARAM,
-  ATTRIBUTE_KEY_PARAM,
-  ATTRIBUTE_VALUE_PARAM,
+  EXAGGERATION_PARAM,
   ION_TOKEN_URL_PARAM,
+  LAYERS_TIMESTAMP_URL_PARAM,
   LAYERS_TRANSPARENCY_URL_PARAM,
   LAYERS_URL_PARAM,
   LAYERS_VISIBILITY_URL_PARAM,
   MAP_TRANSPARENCY_URL_PARAM,
   MAP_URL_PARAM,
+  PROJECT_PARAM,
   SLICE_PARAM,
   TARGET_PARAM,
   TOPIC_PARAM,
-  PROJECT_PARAM,
   VIEW_PARAM,
   ZOOM_TO_PARAM,
-  EXAGGERATION_PARAM,
-  LAYERS_TIMESTAMP_URL_PARAM,
 } from './constants';
-import type { Cartographic, Camera } from 'cesium';
-import type { TopicParamSubject, ProjectParamSubject } from './store/dashboard';
+import type { ProjectParamSubject, TopicParamSubject } from './store/dashboard';
 
 import { LayerConfig } from './layertree';
 import { LayerService } from 'src/features/layer/layer.service';
@@ -212,16 +210,6 @@ export function syncMapOpacityParam(opacity) {
 export function getMapOpacityParam() {
   const params = getURLSearchParams();
   return 1 - Number(params.get(MAP_TRANSPARENCY_URL_PARAM));
-}
-
-export function getAttribute() {
-  const params = getURLSearchParams();
-  const attributeKey = params.get(ATTRIBUTE_KEY_PARAM);
-  const attributeValue = params.get(ATTRIBUTE_VALUE_PARAM);
-  if (!attributeKey || !attributeValue) {
-    return undefined;
-  }
-  return { attributeKey, attributeValue };
 }
 
 export function getZoomToPosition() {

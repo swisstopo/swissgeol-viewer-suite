@@ -16,9 +16,9 @@ export type AnyBaseServiceType<T extends BaseService = BaseService> =
   typeof BaseService & (new () => T);
 
 export abstract class BaseService {
-  private static bufferedInjections: Array<(element: LitElement) => void> = [];
-
-  constructor() {}
+  private static readonly bufferedInjections: Array<
+    (element: LitElement) => void
+  > = [];
 
   static context<T extends BaseService>(
     this: AnyBaseServiceType<T>,

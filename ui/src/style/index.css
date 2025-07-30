@@ -30,7 +30,6 @@
 @import "fomantic-ui-css/components/card.css";
 
 @import "search.css";
-@import "ngm-object-information.css";
 @import "ngm-modal.css";
 @import "keyboard-navigation.css";
 @import "layers.css";
@@ -59,7 +58,6 @@
 @import "ngm-voxel-simple-filter.css";
 @import "ngm-coordinate-popup.css";
 @import "ngm-ion-modal.css";
-@import "ngm-info-table.css";
 @import "../styles/index.css";
 
 * {

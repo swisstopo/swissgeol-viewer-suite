@@ -2,7 +2,6 @@ import { LitElementI18n } from 'src/i18n';
 import { html, PropertyValues } from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
-import './elements/ngm-object-information';
 import './elements/ngm-auth';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
@@ -45,7 +44,6 @@ import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
 import { setupI18n } from './i18n.js';
-import QueryManager from './query/QueryManager';
 
 import { initAnalytics } from './analytics.js';
 import MainStore from './store/main';
@@ -181,7 +179,6 @@ export class NgmApp extends LitElementI18n {
   }
 
   private sidebar: SideBar | null = null;
-  private queryManager: QueryManager | undefined;
   private waitForViewLoading = false;
   private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
   private disclaimer: CoreModal | null = null;
@@ -300,9 +297,6 @@ export class NgmApp extends LitElementI18n {
         this.backgroundLayerService.setBackground(id);
       }
     });
-
-    // Handle queries (local and Swisstopo)
-    this.queryManager = new QueryManager(viewer);
 
     this.sidebar = this.querySelector('ngm-side-bar') as SideBar | null;
   }
@@ -687,7 +681,6 @@ export class NgmApp extends LitElementI18n {
           </div>
         </div>
         <ngm-side-bar
-          .queryManager=${this.queryManager}
           .mobileView=${this.mobileView}
           @layeradded=${this.onLayerAdded}
           @showLayerLegend=${this.onShowLayerLegend}
@@ -702,9 +695,6 @@ export class NgmApp extends LitElementI18n {
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>
             <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
-            <ngm-object-information
-              class="ngm-floating-window"
-            ></ngm-object-information>
             <ngm-topo-profile-modal
               class="ngm-floating-window"
             ></ngm-topo-profile-modal>

@@ -1,4 +1,5 @@
 import {
+  Cartesian2,
   Cartesian3,
   Cartographic,
   ImageryLayer,
@@ -23,7 +24,7 @@ import { LayerInfoPickerForGeoadmin } from 'src/features/layer/info/pickers/laye
 export class LayerInfoService extends BaseService {
   private readonly infosSubject = new BehaviorSubject<LayerInfo[]>([]);
 
-  private pickers: LayerInfoPicker[] = [];
+  private readonly pickers: LayerInfoPicker[] = [];
 
   private viewer!: Viewer;
 
@@ -47,10 +48,7 @@ export class LayerInfoService extends BaseService {
         const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
         eventHandler.setInputAction(
           async (event: ScreenSpaceEventHandler.PositionedEvent) => {
-            const cartesian = viewer.scene.pickPosition(event.position);
-            if (cartesian) {
-              this.pick(cartesian);
-            }
+            this.pick2d(event.position);
           },
           ScreenSpaceEventType.LEFT_CLICK,
         );
@@ -61,7 +59,14 @@ export class LayerInfoService extends BaseService {
     return this.infosSubject.asObservable();
   }
 
-  pick(cartesian: Cartesian3): void {
+  pick2d(position: Cartesian2): void {
+    const cartesian = this.viewer.scene.pickPosition(position);
+    if (cartesian) {
+      this.pick3d(cartesian);
+    }
+  }
+
+  pick3d(cartesian: Cartesian3): void {
     if (this.isPicking) {
       this.nextPick = cartesian;
       return;
@@ -72,7 +77,7 @@ export class LayerInfoService extends BaseService {
       if (this.nextPick !== null) {
         const pick = this.nextPick;
         this.nextPick = null;
-        this.pick(pick);
+        this.pick3d(pick);
       }
     });
   }
