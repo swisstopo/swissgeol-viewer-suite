@@ -111,7 +111,7 @@ export class CoreWindow extends CoreElement {
       flex-direction: column;
 
       border-radius: 4px;
-      border: 1px solid var(--color-border--default);
+      border: 1px solid var(--sgc-color-bg--grey);
       overflow: hidden;
 
       ${applyEffect('overlay-shadow')}
@@ -123,8 +123,8 @@ export class CoreWindow extends CoreElement {
       align-items: center;
       padding: 9px 9px 9px 16px;
 
-      background-color: var(--color-bg--grey);
-      border-bottom: 1px solid var(--color-border--default);
+      background-color: var(--sgc-color-bg--grey);
+      border-bottom: 1px solid var(--sgc-color-border--default);
     }
 
     .title,
@@ -133,12 +133,13 @@ export class CoreWindow extends CoreElement {
     }
 
     .body {
+      position: relative;
       display: flex;
       flex-direction: column;
       gap: 8px;
       padding: 16px;
 
-      background-color: var(--color-bg--white);
+      background-color: var(--sgc-color-bg--white);
     }
   `;
 }

@@ -21,6 +21,7 @@
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": false,
     "experimentalDecorators": false,
+    "resolveJsonModule": true,
     "types": ["geojson"],
     "baseUrl": ".",
     "paths": {

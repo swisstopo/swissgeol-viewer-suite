@@ -119,7 +119,7 @@ export class LayerTiffController {
       customTags: {
         url: () => this.layer.url,
         bidx: () => band.index,
-        colormap: () => band.display!.colorMap,
+        colormap: () => band.display!.colorMap?.name,
         min: () => band.display!.bounds[0],
         max: () => band.display!.bounds[1],
         nodata: () => band.display!.noData,

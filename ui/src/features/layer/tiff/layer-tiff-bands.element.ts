@@ -41,9 +41,10 @@ export class LayerTiffBands extends CoreElement {
     <ul>
       ${repeat(this.layer.bands, (band) => band.index, this.renderBand)}
     </ul>
+    ${this.renderLegend()}
   `;
 
-  readonly renderBand = (band: GeoTIFFLayerBand) => html`
+  private readonly renderBand = (band: GeoTIFFLayerBand) => html`
     <li>
       <ngm-core-radio
         .isActive="${this.controller.activeBand === band}"
@@ -55,6 +56,19 @@ export class LayerTiffBands extends CoreElement {
     </li>
   `;
 
+  private readonly renderLegend = () => {
+    const band = this.controller.activeBand;
+    if (band.display === undefined) {
+      return null;
+    }
+    return html`
+      <ngm-layer-tiff-legend
+        .layer="${this.layer}"
+        .display="${band.display}"
+      ></ngm-layer-tiff-legend>
+    `;
+  };
+
   static readonly styles = css`
     :host,
     :host * {
@@ -63,8 +77,7 @@ export class LayerTiffBands extends CoreElement {
 
     :host {
       display: flex;
-      flex-direction: column;
-      width: 320px;
+      width: 388px;
     }
 
     ul {
@@ -78,6 +91,12 @@ export class LayerTiffBands extends CoreElement {
 
       ${applyTypography('body-2')};
       color: var(--color-primary);
+    }
+
+    ul > li {
+      display: flex;
+      height: 24px;
+      align-items: center;
     }
   `;
 }
