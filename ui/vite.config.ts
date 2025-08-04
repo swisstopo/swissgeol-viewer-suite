@@ -77,11 +77,11 @@ export default defineConfig({
         { src: 'manuals/style.css', dest: './manuals' },
         { src: 'manuals/images/**/*', dest: './manuals/images' },
         {
-          src: 'node_modules/@swisstopo/swissgeol-ui-core/dist/swissgeol-ui-core/assets/*',
+          src: 'node_modules/@swissgeol/ui-core/dist/swissgeol-ui-core/assets/*',
           dest: 'assets',
         },
         {
-          src: 'node_modules/@swisstopo/swissgeol-ui-core/dist/esm/*',
+          src: 'node_modules/@swissgeol/ui-core/dist/esm/*',
           dest: 'assets',
         },
       ],

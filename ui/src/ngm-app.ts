@@ -2,7 +2,6 @@ import { LitElementI18n } from 'src/i18n';
 import { html, PropertyValues } from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
-import './elements/ngm-object-information';
 import './elements/ngm-auth';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
@@ -45,7 +44,6 @@ import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
 import { setupI18n } from './i18n.js';
-import QueryManager from './query/QueryManager';
 
 import { initAnalytics } from './analytics.js';
 import MainStore from './store/main';
@@ -58,11 +56,11 @@ import { Event, FrameRateMonitor, Globe, ImageryLayer, Viewer } from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type { SideBar } from './elements/ngm-side-bar';
-import { LayerConfig } from './layertree';
+import { LayerConfig, LayerTreeNode } from './layertree';
 import { clientConfigContext, viewerContext } from './context';
 import { consume, provide } from '@lit/context';
 import { AppEnv, ClientConfig } from './api/client-config';
-import { CoreModal } from 'src/features/core';
+import { CoreModal, CoreWindow } from 'src/features/core';
 import { makeId } from 'src/models/id.model';
 import { BackgroundLayer } from 'src/features/layer/layer.model';
 import { distinctUntilKeyChanged } from 'rxjs';
@@ -70,6 +68,9 @@ import { addSwisstopoLayer } from 'src/swisstopoImagery';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
 import { ControlsService } from 'src/features/controls/controls.service';
+import { LayerService } from 'src/features/layer/layer.service';
+import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
+import { BaseService } from 'src/utils/base.service';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -145,11 +146,23 @@ export class NgmApp extends LitElementI18n {
   @consume({ context: BackgroundLayerService.context() })
   accessor backgroundLayerService!: BackgroundLayerService;
 
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
+  @consume({ context: LayerInfoService.context() })
+  accessor layerInfoService!: LayerInfoService;
+
   @provide({ context: viewerContext })
   accessor viewer: Viewer | null = null;
 
   @provide({ context: BackgroundLayerService.backgroundContext })
   accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
+
+  @provide({ context: LayerService.activeLayersContext })
+  accessor activeLayers: readonly LayerTreeNode[] = [];
+
+  @provide({ context: LayerService.queryableLayersContext })
+  accessor queryableLayers: readonly LayerTreeNode[] = [];
 
   constructor() {
     super();
@@ -166,7 +179,6 @@ export class NgmApp extends LitElementI18n {
   }
 
   private sidebar: SideBar | null = null;
-  private queryManager: QueryManager | undefined;
   private waitForViewLoading = false;
   private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
   private disclaimer: CoreModal | null = null;
@@ -185,6 +197,36 @@ export class NgmApp extends LitElementI18n {
 
   connectedCallback(): void {
     super.connectedCallback();
+
+    BaseService.initializeWith(this);
+
+    this.layerService.activeLayers$.subscribe((layers) => {
+      this.activeLayers = layers;
+    });
+
+    this.layerService.queryableLayers$.subscribe((layers) => {
+      this.queryableLayers = layers;
+    });
+
+    let infoWindow: CoreWindow | null = null;
+    this.layerInfoService.infos$.subscribe((layers) => {
+      if (layers.length === 0) {
+        infoWindow?.close();
+        infoWindow = null;
+        return;
+      } else if (infoWindow !== null) {
+        return;
+      }
+
+      infoWindow = CoreWindow.open({
+        title: () => i18next.t('layers:infoWindow.title'),
+        body: () => html`<ngm-layer-info-list></ngm-layer-info-list>`,
+        onClose: () => {
+          infoWindow = null;
+          this.layerInfoService.reset();
+        },
+      });
+    });
 
     if (shouldShowDisclaimer) {
       this.openDisclaimer();
@@ -255,9 +297,6 @@ export class NgmApp extends LitElementI18n {
         this.backgroundLayerService.setBackground(id);
       }
     });
-
-    // Handle queries (local and Swisstopo)
-    this.queryManager = new QueryManager(viewer);
 
     this.sidebar = this.querySelector('ngm-side-bar') as SideBar | null;
   }
@@ -642,7 +681,6 @@ export class NgmApp extends LitElementI18n {
           </div>
         </div>
         <ngm-side-bar
-          .queryManager=${this.queryManager}
           .mobileView=${this.mobileView}
           @layeradded=${this.onLayerAdded}
           @showLayerLegend=${this.onShowLayerLegend}
@@ -657,9 +695,6 @@ export class NgmApp extends LitElementI18n {
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>
             <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
-            <ngm-object-information
-              class="ngm-floating-window"
-            ></ngm-object-information>
             <ngm-topo-profile-modal
               class="ngm-floating-window"
             ></ngm-topo-profile-modal>
@@ -707,7 +742,6 @@ export class NgmApp extends LitElementI18n {
               .viewer=${this.viewer}
               hidden
             ></ngm-voxel-simple-filter>
-            <ngm-layer-tiff-picker></ngm-layer-tiff-picker>
             <ngm-coordinate-popup
               class="ngm-floating-window"
             ></ngm-coordinate-popup>

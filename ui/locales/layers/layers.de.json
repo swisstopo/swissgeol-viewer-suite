@@ -2,15 +2,15 @@
   "catalog": {
     "filter": "Filter öffnen"
   },
+  "infoWindow": {
+    "title": "Info",
+    "zoomToObject": "Auf Objekt zoomen"
+  },
   "geoTIFF": {
     "bandsWindow": {
       "title": "{{ layer }} - Bänder",
       "open": "Bänder anzeigen",
       "legend": "Legende"
-    },
-    "infoWindow": {
-      "title": "Info",
-      "zoomToObject": "Auf Objekt zoomen"
     },
     "noData": "kein Wert"
   },

@@ -1,4 +1,4 @@
-import '@swisstopo/swissgeol-ui-core/import';
+import '@swissgeol/ui-core/import';
 
 import './jquery.polyfill';
 import './style/index.css';

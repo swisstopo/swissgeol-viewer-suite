@@ -62,7 +62,7 @@ export class CoreWindow extends CoreElement {
 
     const coreWindow = container.querySelector('ngm-core-window') as CoreWindow;
     draggable(container, {
-      ignoreFrom: '.body',
+      allowFrom: '.title',
       context: coreWindow.shadowRoot,
     });
     setTimeout(() => {
@@ -138,6 +138,8 @@ export class CoreWindow extends CoreElement {
       flex-direction: column;
       gap: 8px;
       padding: 16px;
+      max-height: calc(100vh - 200px);
+      overflow-x: auto;
 
       background-color: var(--sgc-color-bg--white);
     }

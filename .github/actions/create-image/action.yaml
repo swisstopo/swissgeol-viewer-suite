@@ -35,6 +35,12 @@ runs:
         echo COMMITED_AT=$(git show -s --format=%cI ${{ github.sha }}) >> $GITHUB_ENV
         echo REVISION=$(git rev-parse --short HEAD) >> $GITHUB_ENV
 
+    - name: Set git identity
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
     - name: Collect docker image metadata
       id: meta-data
       uses: docker/metadata-action@v5

@@ -42,7 +42,7 @@ cd api && cargo fetch
 
 #### 2. Install UI Dependencies
 Configure a `GITHUB_TOKEN` as described [here](https://github.com/swisstopo/swissgeol-ui-core/blob/develop/README.md#getting-started)
-so you can install the `@swisstopo/swissgeol-ui-core` library.
+so you can install the `@swissgeol/ui-core` library.
 
 Afterward, you can install the UI's dependencies:
 ```bash

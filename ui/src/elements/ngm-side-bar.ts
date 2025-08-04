@@ -9,7 +9,6 @@ import { getDefaultLayerTree, LayerConfig } from '../layertree';
 import {
   addAssetId,
   getAssetIds,
-  getAttribute,
   getCesiumToolbarParam,
   getLayerParams,
   getSliceParam,
@@ -43,7 +42,6 @@ import ToolboxStore from 'src/store/toolbox';
 import { classMap } from 'lit/directives/class-map.js';
 import $ from 'jquery';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import type QueryManager from 'src/query/QueryManager';
 
 import DashboardStore from 'src/store/dashboard';
 import { getAssets } from 'src/api-ion';
@@ -51,6 +49,9 @@ import { LayerEvent, LayersEvent } from 'src/features/layer';
 import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { consume } from '@lit/context';
+import { LayerService } from 'src/features/layer/layer.service';
+import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
+import { skip, take } from 'rxjs';
 
 export type SearchLayer = SearchLayerWithLayer | SearchLayerWithSource;
 
@@ -70,9 +71,6 @@ export interface SearchLayerWithSource extends BaseSearchLayer {
 
 @customElement('ngm-side-bar')
 export class SideBar extends LitElementI18n {
-  @property({ type: Object })
-  accessor queryManager: QueryManager | null | undefined = null;
-
   @property({ type: Boolean })
   accessor mobileView = false;
 
@@ -82,14 +80,18 @@ export class SideBar extends LitElementI18n {
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
 
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
+  @consume({ context: LayerInfoService.context() })
+  accessor layerInfoService!: LayerInfoService;
+
   @state()
   accessor catalogLayers: LayerConfig[] | undefined;
 
   @state()
-  accessor activeLayers: LayerConfig[] = [];
-
-  @state()
   accessor numberOfVisibleGeometries = 0;
+
   @state()
   accessor activePanel: string | null = null;
 
@@ -128,6 +130,10 @@ export class SideBar extends LitElementI18n {
     this.handleDisplayLayersUpdate = this.handleDisplayLayersUpdate.bind(this);
     this.handleDisplayLayerUpdate = this.handleDisplayLayerUpdate.bind(this);
     this.handleDisplayLayerRemoval = this.handleDisplayLayerRemoval.bind(this);
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
 
     MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
@@ -138,31 +144,29 @@ export class SideBar extends LitElementI18n {
     });
 
     auth.user.subscribe((user) => {
-      if (!user && this.activeLayers) {
-        // user logged out, remove restricted layers.
-        const restricted = this.activeLayers.filter(
-          (config) => config.restricted?.length,
-        );
-        restricted.forEach((config) => {
-          const idx = this.activeLayers.indexOf(config);
-          this.activeLayers.splice(idx, 1);
-          this.removeLayer(config);
-        });
+      if (user) {
+        return;
+      }
+
+      // User logged out, remove restricted layers.
+      for (const layer of this.layerService.activeLayers) {
+        if (layer.restricted !== undefined && layer.restricted.length > 0) {
+          this.layerService.deactivate(layer);
+        }
       }
     });
+
     MainStore.setUrlLayersSubject.subscribe(async () => {
-      if (this.activeLayers) {
-        this.activeLayers.forEach((layer) =>
-          this.removeLayerWithoutSync(layer),
-        );
-      }
+      this.layerService.activeLayers.forEach((layer) =>
+        this.removeLayerWithoutSync(layer),
+      );
       await this.syncActiveLayers();
       this.requestUpdate();
       MainStore.nextLayersRemove();
     });
 
     MainStore.syncLayerParams.subscribe(() => {
-      syncLayersParam(this.activeLayers);
+      syncLayersParam(this.layerService);
     });
 
     MainStore.onIonAssetAdd.subscribe((asset) => {
@@ -186,30 +190,37 @@ export class SideBar extends LitElementI18n {
         customAsset: true,
       };
       layer.load = () => this.addLayer(layer);
-      this.activeLayers.push(layer);
+      this.layerService.activate(layer);
 
       if (layer.promise === undefined) {
         layer.promise = layer.load();
       }
       addAssetId(asset.id);
       showSnackbarSuccess(i18next.t('dtd_asset_added'));
-      this.activeLayers = [...this.activeLayers];
-      syncLayersParam(this.activeLayers);
+      this.requestUpdate();
+      syncLayersParam(this.layerService);
     });
 
     MainStore.onRemoveIonAssets.subscribe(async () => {
-      const assets = this.activeLayers.filter((l) => !!l.assetId);
+      const assets = this.layerService.activeLayers.filter((l) => !!l.assetId);
       for (const asset of assets) {
         await this.removeLayerWithoutSync(asset);
       }
       this.viewer!.scene.requestRender();
       this.requestUpdate();
-      syncLayersParam(this.activeLayers);
+      syncLayersParam(this.layerService);
     });
 
     const sliceOptions = getSliceParam();
     if (sliceOptions?.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
+
+    this.layerService.activeLayers$.subscribe((activeLayers) => {
+      if (this.layerActions == null) {
+        return;
+      }
+      this.layerActions!.reorderLayers(activeLayers as LayerConfig[]).then();
+    });
   }
 
   async togglePanel(panelName, showHeader = true) {
@@ -226,21 +237,15 @@ export class SideBar extends LitElementI18n {
   }
 
   async syncActiveLayers() {
-    const attributeParams = getAttribute();
-    const callback = attributeParams
-      ? this.getTileLoadCallback(
-          attributeParams.attributeKey,
-          attributeParams.attributeValue,
-        )
-      : undefined;
-    const flatLayers = this.getFlatLayers(this.catalogLayers, callback);
+    const flatLayers = this.getFlatLayers(this.catalogLayers);
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
     const ionToken = MainStore.ionToken.value;
 
     if (!urlLayers.length && !assetIds.length) {
-      this.activeLayers = flatLayers.filter((l) => l.displayed);
-      syncLayersParam(this.activeLayers);
+      const activeLayers = flatLayers.filter((l) => l.displayed);
+      this.layerService.set(activeLayers);
+      syncLayersParam(this.layerService);
       return;
     }
 
@@ -306,28 +311,13 @@ export class SideBar extends LitElementI18n {
       });
     }
 
-    this.activeLayers = activeLayers;
-    syncLayersParam(this.activeLayers);
-  }
-
-  getTileLoadCallback(attributeKey, attributeValue) {
-    return (tile, removeTileLoadListener) => {
-      const content = tile.content;
-      const featuresLength = content.featuresLength;
-      for (let i = 0; i < featuresLength; i++) {
-        const feature = content.getFeature(i);
-        if (feature.getProperty(attributeKey) === attributeValue) {
-          removeTileLoadListener();
-          this.queryManager!.selectTile(feature);
-          return;
-        }
-      }
-    };
+    this.layerService.set(activeLayers);
+    syncLayersParam(this.layerService);
   }
 
   async willUpdate(changedProperties) {
     if (this.viewer && !this.layerActions) {
-      this.layerActions = new LayersActions(this.viewer);
+      this.layerActions = new LayersActions(this.viewer, this.layerService);
       if (!this.catalogLayers) {
         this.catalogLayers = getDefaultLayerTree(this.clientConfig);
         await this.syncActiveLayers();
@@ -347,24 +337,19 @@ export class SideBar extends LitElementI18n {
   }
 
   updated(changedProperties) {
-    if (this.queryManager) {
-      !this.zoomedToPosition && this.zoomToPermalinkObject();
+    !this.zoomedToPosition && this.zoomToPermalinkObject();
 
-      if (!this.accordionInited && this.activePanel === 'data') {
-        const panelElement = this.querySelector('.ngm-layer-catalog');
+    if (!this.accordionInited && this.activePanel === 'data') {
+      const panelElement = this.querySelector('.ngm-layer-catalog');
 
-        if (panelElement) {
-          for (let i = 0; i < panelElement.childElementCount; i++) {
-            const element = panelElement.children.item(i);
-            if (element?.classList.contains('accordion')) {
-              $(element).accordion({ duration: 150 });
-            }
+      if (panelElement) {
+        for (let i = 0; i < panelElement.childElementCount; i++) {
+          const element = panelElement.children.item(i);
+          if (element?.classList.contains('accordion')) {
+            $(element).accordion({ duration: 150 });
           }
-          this.accordionInited = true;
         }
-      }
-      if (changedProperties.has('activeLayers')) {
-        this.layerActions!.reorderLayers(this.activeLayers);
+        this.accordionInited = true;
       }
     }
 
@@ -383,24 +368,22 @@ export class SideBar extends LitElementI18n {
       layer.add && (layer.add as () => void)();
       layer.visible = true;
       layer.displayed = true;
-      this.activeLayers.push(layer);
+      this.layerService.activate(layer);
       this.maybeShowVisibilityHint(layer);
     } else {
       if (layer.visible) {
         layer.displayed = false;
         layer.visible = false;
         layer.remove && layer.remove();
-        const idx = this.activeLayers.findIndex((l) => l.label === layer.label);
-        this.activeLayers.splice(idx, 1);
+        this.layerService.deactivate(layer);
       } else {
         layer.visible = true;
       }
     }
     layer.setVisibility && layer.setVisibility(layer.visible);
-    syncLayersParam(this.activeLayers);
+    syncLayersParam(this.layerService);
     const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
     this.catalogLayers = [...catalogLayers];
-    this.activeLayers = [...this.activeLayers];
     this.viewer!.scene.requestRender();
   }
 
@@ -421,16 +404,16 @@ export class SideBar extends LitElementI18n {
   async removeLayer(config: LayerConfig) {
     await this.removeLayerWithoutSync(config);
     this.viewer!.scene.requestRender();
-    syncLayersParam(this.activeLayers);
+    syncLayersParam(this.layerService);
     const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
     this.catalogLayers = [...catalogLayers];
   }
 
-  getFlatLayers(tree, tileLoadCallback): any[] {
+  getFlatLayers(tree): any[] {
     const flat: any[] = [];
     for (const layer of tree) {
       if (layer.children) {
-        flat.push(...this.getFlatLayers(layer.children, tileLoadCallback));
+        flat.push(...this.getFlatLayers(layer.children));
       } else {
         layer.load = () => this.addLayer(layer);
         flat.push(layer);
@@ -443,21 +426,22 @@ export class SideBar extends LitElementI18n {
   async addLayerFromSearch(searchLayer: SearchLayer) {
     let layer: LayerConfig | undefined;
     if ('dataSourceName' in searchLayer) {
-      layer = this.activeLayers.find(
+      layer = this.layerService.activeLayers.find(
         (l) => l.type === searchLayer.dataSourceName,
       ); // check for layers like earthquakes
     } else {
-      layer = this.activeLayers.find((l) => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
+      layer = this.layerService.activeLayers.find(
+        (l) => l.layer === searchLayer.layer,
+      ); // check for swisstopoWMTS layers
     }
 
     if (layer) {
       // for layers added before
       if (layer.type === LayerType.swisstopoWMTS) {
-        const index = this.activeLayers.indexOf(layer);
-        this.activeLayers.splice(index, 1);
+        this.layerService.deactivate(layer);
         layer.remove?.();
         layer.add?.(0);
-        this.activeLayers.push(layer);
+        this.layerService.activate(layer);
       }
       layer.setVisibility?.(true);
       layer.visible = true;
@@ -466,13 +450,12 @@ export class SideBar extends LitElementI18n {
     } else {
       // for new layers
       const newLayer = this.createSearchLayer(searchLayer);
-      this.activeLayers.push(newLayer);
+      this.layerService.activate(newLayer);
       if (newLayer.promise === undefined && newLayer.load !== undefined) {
         newLayer.promise = newLayer.load();
       }
     }
-    this.activeLayers = [...this.activeLayers];
-    syncLayersParam(this.activeLayers);
+    syncLayersParam(this.layerService);
     this.requestUpdate();
   }
 
@@ -499,8 +482,8 @@ export class SideBar extends LitElementI18n {
     }
     config.load = async () => {
       const layer = await this.addLayer(config);
-      this.activeLayers = [...this.activeLayers];
-      syncLayersParam(this.activeLayers);
+      this.layerService.set([...this.layerService.activeLayers]);
+      syncLayersParam(this.layerService);
       return layer;
     };
 
@@ -510,59 +493,65 @@ export class SideBar extends LitElementI18n {
   zoomToPermalinkObject() {
     this.zoomedToPosition = true;
     const zoomToPosition = getZoomToPosition();
-    if (zoomToPosition) {
-      let altitude = 0,
-        cartesianPosition: Cartesian3 | undefined,
-        windowPosition: Cartesian2 | undefined;
-      const updateValues = () => {
-        altitude =
-          this.viewer!.scene.globe.getHeight(
-            this.viewer!.scene.camera.positionCartographic,
-          ) ?? 0;
-        cartesianPosition = Cartesian3.fromDegrees(
-          zoomToPosition.longitude,
-          zoomToPosition.latitude,
-          zoomToPosition.height + altitude,
-        );
-        windowPosition =
-          this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
-      };
-      updateValues();
-      const completeCallback = () => {
-        if (windowPosition) {
-          let maxTries = 25;
-          let triesCounter = 0;
-          const eventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
-          eventHandler.setInputAction(
-            () => (maxTries = 0),
-            ScreenSpaceEventType.LEFT_DOWN,
-          );
-          // Waits while will be possible to select an object
-          const tryToSelect = () =>
-            setTimeout(() => {
-              updateValues();
-              this.zoomToObjectCoordinates(cartesianPosition);
-              windowPosition && this.queryManager!.pickObject(windowPosition);
-              triesCounter += 1;
-              if (
-                !this.queryManager!.objectSelector.selectedObj &&
-                triesCounter <= maxTries
-              ) {
+    if (!zoomToPosition) {
+      return;
+    }
+    let altitude = 0;
+    let cartesianPosition: Cartesian3 | undefined;
+    let windowPosition: Cartesian2 | undefined;
+    const updateValues = () => {
+      altitude =
+        this.viewer!.scene.globe.getHeight(
+          this.viewer!.scene.camera.positionCartographic,
+        ) ?? 0;
+      cartesianPosition = Cartesian3.fromDegrees(
+        zoomToPosition.longitude,
+        zoomToPosition.latitude,
+        zoomToPosition.height + altitude,
+      );
+      windowPosition =
+        this.viewer!.scene.cartesianToCanvasCoordinates(cartesianPosition);
+    };
+    updateValues();
+    this.zoomToObjectCoordinates(cartesianPosition, () => {
+      if (windowPosition == null) {
+        return;
+      }
+      let maxTries = 25;
+      let tryCount = 0;
+      const eventHandler = new ScreenSpaceEventHandler(this.viewer!.canvas);
+      eventHandler.setInputAction(
+        () => (maxTries = 0),
+        ScreenSpaceEventType.LEFT_DOWN,
+      );
+      // Waits while will be possible to select an object
+      const tryToSelect = () =>
+        setTimeout(() => {
+          updateValues();
+          this.zoomToObjectCoordinates(cartesianPosition);
+          if (windowPosition == null) {
+            return;
+          }
+
+          this.layerInfoService.infos$
+            .pipe(skip(1), take(1))
+            .subscribe((infos) => {
+              if (infos.length === 0 && tryCount <= maxTries) {
                 tryToSelect();
               } else {
                 eventHandler.destroy();
-                if (triesCounter > maxTries) {
+                if (tryCount > maxTries) {
                   showSnackbarError(
                     i18next.t('dtd_object_on_coordinates_not_found_warning'),
                   );
                 }
               }
-            }, 500);
-          tryToSelect();
-        }
-      };
-      this.zoomToObjectCoordinates(cartesianPosition, completeCallback);
-    }
+            });
+          this.layerInfoService.pick2d(windowPosition);
+          tryCount += 1;
+        }, 500);
+      tryToSelect();
+    });
   }
 
   zoomToObjectCoordinates(center, complete?) {
@@ -592,15 +581,14 @@ export class SideBar extends LitElementI18n {
   }
 
   private handleDisplayLayersUpdate(e: LayersEvent): void {
-    this.activeLayers = e.detail.layers;
+    this.layerService.set(e.detail.layers);
   }
 
   private handleDisplayLayerUpdate(e: LayerEvent): void {
-    this.queryManager!.hideObjectInformation();
     const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
     this.catalogLayers = [...catalogLayers];
-    this.activeLayers = [...this.activeLayers];
-    syncLayersParam(this.activeLayers);
+    this.layerService.set([...this.layerService.activeLayers]);
+    syncLayersParam(this.layerService);
     if (e.detail) {
       this.maybeShowVisibilityHint(e.detail.layer);
     }
@@ -644,17 +632,11 @@ export class SideBar extends LitElementI18n {
   }
 
   render() {
-    if (this.queryManager != null) {
-      this.queryManager.activeLayers = this.activeLayers.filter(
-        (config) => config.visible && !config.noQuery,
-      );
-    }
-
     const layerBtn = this.renderMenuItem(
       'layer',
       'menu_layers',
       'data',
-      this.activeLayers.length,
+      this.layerService.activeLayers.length,
     );
     const toolsBtn = this.renderMenuItem(
       'tools',
@@ -707,7 +689,6 @@ export class SideBar extends LitElementI18n {
       <ngm-layer-panel
         ?hidden="${this.activePanel !== 'data'}"
         .layers="${this.catalogLayers ?? []}"
-        .displayLayers="${this.activeLayers}"
         @close="${() => (this.activePanel = null)}"
         @layer-click=${(e: LayerEvent) =>
           this.onCatalogLayerClicked(e.detail.layer)}
