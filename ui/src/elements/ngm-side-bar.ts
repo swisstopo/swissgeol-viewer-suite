@@ -424,28 +424,30 @@ export class SideBar extends LitElementI18n {
 
   // adds layer from search to 'Displayed Layers'
   async addLayerFromSearch(searchLayer: SearchLayer) {
+    const flatLayers = this.getFlatLayers(this.catalogLayers);
+
     let layer: LayerConfig | undefined;
     if ('dataSourceName' in searchLayer) {
-      layer = this.layerService.activeLayers.find(
-        (l) => l.type === searchLayer.dataSourceName,
-      ); // check for layers like earthquakes
+      layer = flatLayers.find((l) => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
     } else {
-      layer = this.layerService.activeLayers.find(
-        (l) => l.layer === searchLayer.layer,
-      ); // check for swisstopoWMTS layers
+      layer = flatLayers.find((l) => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
     }
 
     if (layer) {
+      if (layer.displayed) {
+        return;
+      }
+
       // for layers added before
       if (layer.type === LayerType.swisstopoWMTS) {
         this.layerService.deactivate(layer);
         layer.remove?.();
         layer.add?.(0);
-        this.layerService.activate(layer);
       }
       layer.setVisibility?.(true);
       layer.visible = true;
       layer.displayed = true;
+      this.layerService.activate(layer);
       this.viewer!.scene.requestRender();
     } else {
       // for new layers
