@@ -1,1 +1,32 @@
-{}
+{
+  "catalog": {
+    "filter": "Aprire il filtro"
+  },
+  "geoTIFF": {
+    "bandsWindow": {
+      "title": "{{ layer }} - Bande",
+      "open": "Visualizzare le bande"
+    },
+    "infoWindow": {
+      "title": "Info",
+      "zoomToObject": "Zoom sull'oggetto"
+    },
+    "noData": "nessun valore"
+  },
+  "swissBEDROCK": {
+    "title": "swissBEDROCK",
+    "bands": {
+      "BEM": "Modello di altitudine del tetto del substrato roccioso [m s.l.m.]",
+      "TMUD": "Modello di spessore dei depositi sciolti [m]",
+      "Uncertainty": "Incertezza [m]",
+      "Version": "Numero di versione",
+      "Author": "ID numerico dell’autore",
+      "Change": "Modifica alla versione precedente [m]",
+      "prev_BEM": "Versione precedente del modello di altitudine del tetto del substrato roccioso [m s.l.m.]",
+      "prev_TMUD": "Versione precedente del modello di spessore dei depositi sciolti [m]",
+      "prev_Uncertainty": "Versione precedente dell’incertezza [m]",
+      "prev_Version": "Numero di versione precedente",
+      "prev_Author": "Versione precedente – ID numerico dell’autore"
+    }
+  }
+}
