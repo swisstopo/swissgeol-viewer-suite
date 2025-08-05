@@ -50,6 +50,17 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/ogc': {
+        target: 'https://ogc-api.gst-viewer.swissgeol.ch',
+        rewrite: (path) => path.replace(/^\/ogc/, ''),
+        changeOrigin: true,
+        secure: true,
+        configure: (proxy) => {
+          proxy.on('proxyRes', (proxyRes) => {
+            proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+          });
+        },
+      },
     },
   },
   plugins: [
