@@ -437,18 +437,8 @@ export class SideBar extends LitElementI18n {
       if (layer.displayed) {
         return;
       }
-
-      // for layers added before
-      if (layer.type === LayerType.swisstopoWMTS) {
-        this.layerService.deactivate(layer);
-        layer.remove?.();
-        layer.add?.(0);
-      }
-      layer.setVisibility?.(true);
-      layer.visible = true;
       layer.displayed = true;
-      this.layerService.activate(layer);
-      this.viewer!.scene.requestRender();
+      await this.applyLayerVisibility(layer);
     } else {
       // for new layers
       const newLayer = this.createSearchLayer(searchLayer);
@@ -456,8 +446,8 @@ export class SideBar extends LitElementI18n {
       if (newLayer.promise === undefined && newLayer.load !== undefined) {
         newLayer.promise = newLayer.load();
       }
+      syncLayersParam(this.layerService);
     }
-    syncLayersParam(this.layerService);
     this.requestUpdate();
   }
 
