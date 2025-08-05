@@ -67,7 +67,6 @@ import { distinctUntilKeyChanged } from 'rxjs';
 import { addSwisstopoLayer } from 'src/swisstopoImagery';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
-import { ControlsService } from 'src/features/controls/controls.service';
 import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { BaseService } from 'src/utils/base.service';
@@ -136,9 +135,6 @@ export class NgmApp extends LitElementI18n {
 
   @query('ngm-wmts-date-picker')
   accessor wmtsDatePickerElement;
-
-  @consume({ context: ControlsService.context() })
-  accessor controlsService!: ControlsService;
 
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
@@ -349,11 +345,8 @@ export class NgmApp extends LitElementI18n {
     setupI18n();
     rewriteParams();
     const cesiumContainer = this.querySelector('#cesium')!;
-    const viewer = await setupViewer(
-      cesiumContainer,
-      this.controlsService,
-      isLocalhost,
-    );
+    const viewer = await setupViewer(cesiumContainer, isLocalhost);
+
     if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
       this.setResolutionScale();
     }
