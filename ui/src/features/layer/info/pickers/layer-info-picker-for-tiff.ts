@@ -1,4 +1,3 @@
-import { GeoTIFFLayer, LayerConfig, LayerTreeNode } from 'src/layertree';
 import {
   LayerInfoPicker,
   LayerPickData,
@@ -31,17 +30,20 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
     private readonly controller: LayerTiffController,
   ) {}
 
-  get layer(): LayerConfig & GeoTIFFLayer {
-    return this.controller.layer;
+  get source(): LayerTiffController {
+    return this.controller;
   }
 
   async pick(pick: LayerPickData): Promise<LayerInfo[]> {
+    if (!this.controller.layer.visible) {
+      return [];
+    }
     const data = await this.controller.pick(pick.cartesian);
     if (data === null) {
       return [];
     }
-    const { layer } = this;
-    const attributes = this.layer.bands.map((band) => {
+    const { layer } = this.controller;
+    const attributes = this.controller.layer.bands.map((band) => {
       return {
         get key(): string {
           return i18next.t(`layers:${layer.id}.bands.${band.name}`);
@@ -56,7 +58,7 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
     return [
       new LayerInfoForTiff(this.viewer, {
         entity: this.createHighlight(data),
-        layer: this.layer,
+        source: this.source,
         get title(): string {
           return i18next.t(layer.label);
         },
@@ -122,16 +124,18 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
 
 class LayerInfoForTiff implements LayerInfo {
   public readonly entity: Entity;
-  public readonly layer: LayerTreeNode;
+  public readonly source: LayerTiffController;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
   constructor(
     private readonly viewer: Viewer,
-    data: Pick<LayerInfo, 'entity' | 'layer' | 'title' | 'attributes'>,
+    data: Pick<LayerInfo, 'entity' | 'source' | 'title' | 'attributes'> & {
+      source: LayerTiffController;
+    },
   ) {
     this.entity = data.entity;
-    this.layer = data.layer;
+    this.source = data.source;
     this.title = data.title;
     this.attributes = data.attributes;
     this.viewer.entities.add(this.entity);

@@ -1,5 +1,6 @@
 import { Entity } from 'cesium';
 import { LayerTreeNode } from 'src/layertree';
+import { LayerTiffController } from 'src/features/layer';
 
 /**
  * `LayerInfo` represents the current data of a specific object on a layer.
@@ -14,7 +15,7 @@ export interface LayerInfo {
   /**
    * The layer that was picked.
    */
-  layer: LayerTreeNode;
+  source: LayerInfoSource;
 
   /**
    * The (translated) name of the picked object.
@@ -47,3 +48,5 @@ export interface LayerInfoAttribute {
   key: string;
   value: string | number;
 }
+
+export type LayerInfoSource = LayerTreeNode | LayerTiffController;

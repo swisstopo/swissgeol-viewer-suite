@@ -7,16 +7,25 @@ import {
   ScreenSpaceEventType,
   Viewer,
 } from 'cesium';
-import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
+import {
+  BehaviorSubject,
+  delay,
+  Observable,
+  Subject,
+  withLatestFrom,
+} from 'rxjs';
 import { BaseService } from 'src/utils/base.service';
 import MainStore from 'src/store/main';
-import { isLayerTiffImagery } from 'src/features/layer';
+import { isLayerTiffImagery, LayerTiffController } from 'src/features/layer';
 import {
   LayerInfoPicker,
   LayerPickData,
 } from 'src/features/layer/info/pickers/layer-info-picker';
 import { LayerInfoPickerForTiff } from 'src/features/layer/info/pickers/layer-info-picker-for-tiff';
-import { LayerInfo } from 'src/features/layer/info/layer-info.model';
+import {
+  LayerInfo,
+  LayerInfoSource,
+} from 'src/features/layer/info/layer-info.model';
 import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
 import { LayerTreeNode } from 'src/layertree';
 import { LayerInfoPickerForGeoadmin } from 'src/features/layer/info/pickers/layer-info-picker-for-geoadmin';
@@ -31,6 +40,19 @@ export class LayerInfoService extends BaseService {
   private isPicking = false;
 
   private nextPick: Cartesian3 | null = null;
+
+  /**
+   * A set of modifications to the current sources.
+   * These are delayed so short-term additions/removals don't affect the view.
+   * @private
+   */
+  private queuedModifications: Modification[] = [];
+
+  /**
+   * A subject that emits whenever a new modification is queued.
+   * @private
+   */
+  private readonly modificationSubject = new Subject<void>();
 
   constructor() {
     super();
@@ -53,6 +75,18 @@ export class LayerInfoService extends BaseService {
           ScreenSpaceEventType.LEFT_CLICK,
         );
       });
+
+    this.modificationSubject.pipe(delay(200)).subscribe(() => {
+      let modifications = this.queuedModifications;
+      this.queuedModifications = [];
+      while (modifications.length > 0) {
+        const modification = modifications.pop()!;
+        modifications = modifications.filter(
+          (it) => !isSameSource(it.source, modification.source),
+        );
+        modification.action();
+      }
+    });
   }
 
   get infos$(): Observable<readonly LayerInfo[]> {
@@ -172,37 +206,66 @@ export class LayerInfoService extends BaseService {
   private readonly handleQueryableLayerAddition = (
     layer: LayerTreeNode,
   ): void => {
-    this.pickers.unshift(new LayerInfoPickerForGeoadmin(layer, this.viewer));
+    this.queueModification({
+      source: layer,
+      action: () =>
+        this.pickers.unshift(
+          new LayerInfoPickerForGeoadmin(layer, this.viewer),
+        ),
+    });
   };
 
   private readonly handleQueryableLayerRemoval = (
     layer: LayerTreeNode,
   ): void => {
-    this.removePickerByLayer(layer);
+    this.queueModification({
+      source: layer,
+      action: () => this.removePickerBySource(layer),
+    });
   };
 
   private readonly handleImageryLayerAddition = (layer: ImageryLayer): void => {
     if (!isLayerTiffImagery(layer)) {
       return;
     }
-    this.pickers.unshift(
-      new LayerInfoPickerForTiff(this.viewer, layer.controller),
-    );
+    this.queueModification({
+      source: layer.controller,
+      action: () => {
+        this.addPicker(
+          new LayerInfoPickerForTiff(this.viewer, layer.controller),
+        );
+      },
+    });
   };
 
   private readonly handleImageryLayerRemoval = (layer: ImageryLayer): void => {
     if (!isLayerTiffImagery(layer)) {
       return;
     }
-    this.removePickerByLayer(layer.controller.layer);
+    this.queueModification({
+      source: layer.controller,
+      action: () => this.removePickerBySource(layer.controller),
+    });
   };
 
-  private removePickerByLayer(layer: LayerTreeNode): void {
-    const i = this.pickers.findIndex((it) => isSameLayer(layer, it.layer));
+  private addPicker(picker: LayerInfoPicker): void {
+    const i = this.pickers.findIndex((info) =>
+      isSameSource(picker.source, info.source),
+    );
+    if (i >= 0) {
+      return;
+    }
+    this.pickers.push(picker);
+  }
+
+  private removePickerBySource(source: LayerInfoSource): void {
+    const i = this.pickers.findIndex((info) =>
+      isSameSource(source, info.source),
+    );
     if (i >= 0) {
       const [picker] = this.pickers.splice(i, 1);
       const newInfos = this.infosSubject.value.reduce((infos, info) => {
-        if (isSameLayer(layer, info.layer)) {
+        if (isSameSource(source, info.source)) {
           info.destroy();
         } else {
           infos.push(info);
@@ -214,4 +277,21 @@ export class LayerInfoService extends BaseService {
       this.viewer.scene.requestRender();
     }
   }
+
+  private queueModification(modification: Modification): void {
+    this.queuedModifications.push(modification);
+    this.modificationSubject.next();
+  }
+}
+
+const isSameSource = (a: LayerInfoSource, b: LayerInfoSource): boolean => {
+  if (a instanceof LayerTiffController || b instanceof LayerTiffController) {
+    return a === b;
+  }
+  return isSameLayer(a, b);
+};
+
+interface Modification {
+  source: LayerInfoSource;
+  action: () => void;
 }

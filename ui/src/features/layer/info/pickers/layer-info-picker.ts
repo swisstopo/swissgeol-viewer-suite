@@ -1,9 +1,12 @@
 import { Cartesian3, Cartographic } from 'cesium';
-import { LayerTreeNode } from 'src/layertree';
-import { LayerInfo } from 'src/features/layer/info/layer-info.model';
+
+import {
+  LayerInfo,
+  LayerInfoSource,
+} from 'src/features/layer/info/layer-info.model';
 
 export interface LayerInfoPicker {
-  readonly layer: LayerTreeNode;
+  readonly source: LayerInfoSource;
 
   /**
    * Picks a point on the layer and returns information about any hit objects.
