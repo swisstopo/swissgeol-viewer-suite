@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.5.0]
+
+### Added
+- The swissBEDROCK layer is now translated.
+- The tiff band window now contains a gradient legend for the currently active band.
+- The results of picking the active layers are now all shown in a shared window.
+
+### Changes
+- The abbreviator deployment is now integrated into the viewer Helm charts.
+- Moving the map with middle mouse button or control and left mouse button now uses the default cesium controller.
+  This fixes the snap-back effect when going under the terrain.
+  As a consequence of this, that type of control now only works when fully zoomed into the map.
+
+### Fixed
+- The highlight on voxel tiles is now removed when their layer's filter window is closed.
+- Adding layers from search that also exist in the catalog will also mark that layer as activated in the catalog itself.
+
 ## [1.4.0]
 
 ### Changed
