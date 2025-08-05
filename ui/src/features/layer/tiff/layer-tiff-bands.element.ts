@@ -45,17 +45,21 @@ export class LayerTiffBands extends CoreElement {
     ${this.renderLegend()}
   `;
 
-  private readonly renderBand = (band: GeoTIFFLayerBand) => html`
-    <li>
-      <ngm-core-radio
-        .isActive="${this.controller.activeBand === band}"
-        ?disabled="${band.display === undefined}"
-        @click="${() => this.handleBandClick(band)}"
-      >
-        ${i18next.t(`layers:${this.layer.id}.bands.${band.name}`)}
-      </ngm-core-radio>
-    </li>
-  `;
+  private readonly renderBand = (band: GeoTIFFLayerBand) => {
+    const name = i18next.t(`layers:${this.layer.id}.bands.${band.name}`);
+    return html`
+      <li>
+        <ngm-core-radio
+          title="${name}"
+          .isActive="${this.controller.activeBand === band}"
+          ?disabled="${band.display === undefined}"
+          @click="${() => this.handleBandClick(band)}"
+        >
+          <span class="text"> ${name} </span>
+        </ngm-core-radio>
+      </li>
+    `;
+  };
 
   private readonly renderLegend = () => {
     const band = this.controller.activeBand;
@@ -89,6 +93,7 @@ export class LayerTiffBands extends CoreElement {
       list-style: none;
       padding: 0;
       margin: 0;
+      width: calc(100% - 161px);
 
       ${applyTypography('body-2')};
       color: var(--color-primary);
@@ -98,6 +103,14 @@ export class LayerTiffBands extends CoreElement {
       display: flex;
       height: 24px;
       align-items: center;
+    }
+
+    .text {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 200px;
     }
   `;
 }
