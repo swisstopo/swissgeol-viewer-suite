@@ -102,6 +102,18 @@ export interface GeoTIFFDisplay {
     name: string;
     definition: GeoTIFFColorMap;
   };
+
+  /**
+   * Custom steps that are shown on the band's colored legend.
+   * If left out, these steps will be calculated from {@link bounds}.
+   */
+  steps?: number[];
+
+  /**
+   * The direction in which steps are ordered.
+   * If left out, this defaults to `asc`.
+   */
+  stepDirection?: 'asc' | 'desc';
 }
 
 export type GeoTIFFColorMap = Record<string, number[]>;
@@ -1219,6 +1231,8 @@ const subsurface: LayerTreeNode = {
               name: 'BEM',
               display: {
                 bounds: [-433, 4535],
+                steps: [-400, 500, 1000, 2500, 3000, 4500],
+                stepDirection: 'desc',
                 colorMap: {
                   name: 'swissBEDROCK_BEM',
                   definition: swissbedrockColorMapBEM as GeoTIFFColorMap,
@@ -1230,6 +1244,7 @@ const subsurface: LayerTreeNode = {
               name: 'TMUD',
               display: {
                 bounds: [0, 800],
+                steps: [3, 10, 50, 100, 200, 800],
                 noData: 0,
                 colorMap: {
                   name: 'swissBEDROCK_TMUD',
@@ -1273,6 +1288,8 @@ const subsurface: LayerTreeNode = {
               name: 'prev_BEM',
               display: {
                 bounds: [-433, 4535],
+                steps: [-400, 500, 1000, 2500, 3000, 4500],
+                stepDirection: 'desc',
                 colorMap: {
                   name: 'swissBEDROCK_BEM',
                   definition: swissbedrockColorMapBEM as GeoTIFFColorMap,
@@ -1284,6 +1301,7 @@ const subsurface: LayerTreeNode = {
               name: 'prev_TMUD',
               display: {
                 bounds: [0, 800],
+                steps: [3, 10, 50, 100, 200, 800],
                 noData: 0,
                 colorMap: {
                   name: 'swissBEDROCK_TMUD',
