@@ -16,6 +16,7 @@ export class Controls2dAction extends CoreElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+    this.role = 'button';
     this.addEventListener('click', this.toggle);
 
     this.controlsService.is2DActive$.subscribe((isActive) => {
@@ -33,7 +34,8 @@ export class Controls2dAction extends CoreElement {
     this.controlsService.set2DActive(!this.controlsService.is2DActive);
   };
 
-  readonly render = () => html` <ngm-core-icon icon="2d"></ngm-core-icon>`;
+  readonly render = () =>
+    html`<ngm-core-icon icon="${this.isActive ? '2d' : '3d'}"></ngm-core-icon>`;
 
   static readonly styles = css`
     :host {
