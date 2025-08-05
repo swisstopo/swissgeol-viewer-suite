@@ -108,7 +108,7 @@ export class LayerInfoItem extends CoreElement {
           ${repeat(
             this.info.attributes,
             (it) => it.key,
-            (it) => html`<li>${it.key}</li>`,
+            (it) => html`<li title="${it.key}">${it.key}</li>`,
           )}
         </ul>
         <div class="divider" @mousedown="${this.startResizing}"></div>
@@ -116,7 +116,7 @@ export class LayerInfoItem extends CoreElement {
           ${repeat(
             this.info.attributes,
             (it) => it.key,
-            (it) => html`<li>${it.value}</li>`,
+            (it) => html`<li title="${it.value}">${it.value}</li>`,
           )}
         </ul>
       </div>
