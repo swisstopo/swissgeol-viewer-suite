@@ -43,6 +43,9 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
   }
 
   async pick(pick: LayerPickData): Promise<LayerInfo[]> {
+    if (!this.layer.visible) {
+      return [];
+    }
     const geom2056 = radiansToLv95([
       pick.cartographic.longitude,
       pick.cartographic.latitude,

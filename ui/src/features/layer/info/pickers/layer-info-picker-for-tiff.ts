@@ -35,6 +35,9 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
   }
 
   async pick(pick: LayerPickData): Promise<LayerInfo[]> {
+    if (!this.controller.layer.visible) {
+      return [];
+    }
     const data = await this.controller.pick(pick.cartesian);
     if (data === null) {
       return [];
