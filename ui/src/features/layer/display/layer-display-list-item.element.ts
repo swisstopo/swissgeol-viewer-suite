@@ -11,6 +11,7 @@ import i18next from 'i18next';
 import { LayerService } from 'src/features/layer/layer.service';
 import { consume } from '@lit/context';
 import { LayerTiffController } from 'src/features/layer';
+import { OgcService } from 'src/features/ogc';
 
 @customElement('ngm-layer-display-list-item')
 export class LayerDisplayListItem extends CoreElement {
@@ -34,6 +35,9 @@ export class LayerDisplayListItem extends CoreElement {
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
+
+  @consume({ context: OgcService.context() })
+  accessor ogcService!: OgcService;
 
   @state()
   accessor isOpacityActive = false;
