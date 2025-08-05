@@ -1,15 +1,21 @@
 env:
 
+docker:
+  api_image:
+  ui_image:
+  titiler_image:
+  abbreviator_image:
+
 ui:
   host:
 
 api:
   host:
 
-docker:
-  api_image:
-  ui_image:
-  titiler_image:
+abbreviator:
+  host:
+  db_url:
+  host_whitelist:
 
 database:
   host:

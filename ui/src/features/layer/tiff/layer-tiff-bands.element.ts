@@ -5,6 +5,7 @@ import { GeoTIFFLayer, GeoTIFFLayerBand } from 'src/layertree';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
 import { LayerTiffController } from 'src/features/layer';
+import i18next from 'i18next';
 
 @customElement('ngm-layer-tiff-bands')
 export class LayerTiffBands extends CoreElement {
@@ -41,19 +42,37 @@ export class LayerTiffBands extends CoreElement {
     <ul>
       ${repeat(this.layer.bands, (band) => band.index, this.renderBand)}
     </ul>
+    ${this.renderLegend()}
   `;
 
-  readonly renderBand = (band: GeoTIFFLayerBand) => html`
-    <li>
-      <ngm-core-radio
-        .isActive="${this.controller.activeBand === band}"
-        ?disabled="${band.display === undefined}"
-        @click="${() => this.handleBandClick(band)}"
-      >
-        ${band.name}
-      </ngm-core-radio>
-    </li>
-  `;
+  private readonly renderBand = (band: GeoTIFFLayerBand) => {
+    const name = i18next.t(`layers:${this.layer.id}.bands.${band.name}`);
+    return html`
+      <li>
+        <ngm-core-radio
+          title="${name}"
+          .isActive="${this.controller.activeBand === band}"
+          ?disabled="${band.display === undefined}"
+          @click="${() => this.handleBandClick(band)}"
+        >
+          <span class="text"> ${name} </span>
+        </ngm-core-radio>
+      </li>
+    `;
+  };
+
+  private readonly renderLegend = () => {
+    const band = this.controller.activeBand;
+    if (band.display === undefined) {
+      return null;
+    }
+    return html`
+      <ngm-layer-tiff-legend
+        .layer="${this.layer}"
+        .display="${band.display}"
+      ></ngm-layer-tiff-legend>
+    `;
+  };
 
   static readonly styles = css`
     :host,
@@ -63,8 +82,7 @@ export class LayerTiffBands extends CoreElement {
 
     :host {
       display: flex;
-      flex-direction: column;
-      width: 320px;
+      width: 388px;
     }
 
     ul {
@@ -75,9 +93,24 @@ export class LayerTiffBands extends CoreElement {
       list-style: none;
       padding: 0;
       margin: 0;
+      width: calc(100% - 161px);
 
       ${applyTypography('body-2')};
       color: var(--color-primary);
+    }
+
+    ul > li {
+      display: flex;
+      height: 24px;
+      align-items: center;
+    }
+
+    .text {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 200px;
     }
   `;
 }

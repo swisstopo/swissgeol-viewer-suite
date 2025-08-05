@@ -28,3 +28,9 @@ spec:
       services:
         - name: {{ .Release.Name }}-titiler
           port: 8000
+    - kind: Rule
+      match: Host(`{{ .Values.abbreviator.host }}`)
+      priority: 160
+      services:
+        - name: {{ .Release.Name }}-abbreviator
+          port: 8000

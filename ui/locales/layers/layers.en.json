@@ -1,1 +1,32 @@
-{}
+{
+  "catalog": {
+    "filter": "Open filter"
+  },
+  "geoTIFF": {
+    "bandsWindow": {
+      "title": "{{ layer }} - Bands",
+      "open": "Show bands"
+    },
+    "infoWindow": {
+      "title": "Info",
+      "zoomToObject": "Zoom to object"
+    },
+    "noData": "no value"
+  },
+  "swissBEDROCK": {
+    "title": "swissBEDROCK",
+    "bands": {
+      "BEM": "Bedrock elevation model [m.a.s.l.]",
+      "TMUD": "Thickness model of unconsolidated deposits [m]",
+      "Uncertainty": "Uncertainty [m]",
+      "Version": "Version number",
+      "Author": "Numeric author ID",
+      "Change": "Change to previous version [m]",
+      "prev_BEM": "Previous version of the Bedrock elevation model [m]",
+      "prev_TMUD": "Previous version of the thickness model of unconsolidated deposits [m]",
+      "prev_Uncertainty": "Previous version of the uncertainty [m]",
+      "prev_Version": "Previous version number",
+      "prev_Author": "Previous version numeric author ID"
+    }
+  }
+}

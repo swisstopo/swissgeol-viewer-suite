@@ -13,9 +13,3 @@ export type QueryResult = {
   onhide?: () => void;
   zoom?: () => void;
 };
-
-export interface IdentifyResult {
-  layerBodId: string;
-  featureId: string;
-  geometry: { type: string; coordinates: number[] };
-}

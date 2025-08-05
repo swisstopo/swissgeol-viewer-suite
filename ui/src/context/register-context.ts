@@ -17,6 +17,9 @@ import {
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { GstService } from 'src/gst.service';
 import { ControlsService } from 'src/features/controls/controls.service';
+import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
+import { LayerService } from 'src/features/layer/layer.service';
+import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -60,17 +63,21 @@ export const registerAppContext = (
 
   contexts.push(makeProvider(BackgroundLayerService));
   contexts.push(makeProvider(ControlsService));
+  contexts.push(makeProvider(LayerService));
+  contexts.push(makeProvider(LayerInfoService));
+  contexts.push(makeProvider(GestureControlsService));
+
   return contexts;
 };
 
 interface MakeProvider {
-  <T extends typeof BaseService & (new () => InstanceType<T>)>(
+  <T extends typeof BaseService>(
     serviceType: T,
-  ): ContextProvider<ServiceContext<T>, LitElement>;
+  ): ContextProvider<ServiceContext<InstanceType<T>>, LitElement>;
 
   <T extends typeof BaseService>(
     service: InstanceType<T>,
-  ): ContextProvider<ServiceContext<T>, LitElement>;
+  ): ContextProvider<ServiceContext<InstanceType<T>>, LitElement>;
 }
 
 const makeProviderForElement =

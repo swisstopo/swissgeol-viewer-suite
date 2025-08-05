@@ -24,7 +24,6 @@ export class NgmAppBoot extends LitElement {
     args: () => [],
   });
 
-  // This deactivates shadow DOM. Because this is done for all other components, we have to add it for the time being.
   createRenderRoot() {
     return this;
   }
@@ -33,6 +32,7 @@ export class NgmAppBoot extends LitElement {
     return this.viewerInitialization.render({
       pending: () => html`<p>Loading</p>`,
       complete: () => html` <ngm-app></ngm-app>`,
+
       error: (e) => html`<p>Error: ${e}</p>`,
     });
   }

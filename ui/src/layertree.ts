@@ -8,6 +8,10 @@ import { PickableCesium3DTileset } from './layers/helpers';
 import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer';
 import { LayerTiffController } from 'src/features/layer';
 import { AppEnv, ClientConfig } from 'src/api/client-config';
+import swissbedrockColorMapBEM from '../../titiler/colormaps/swissBEDROCK_BEM.json';
+import swissbedrockColorMapChange from '../../titiler/colormaps/swissBEDROCK_Change.json';
+import swissbedrockColorMapTMUD from '../../titiler/colormaps/swissBEDROCK_TMUD.json';
+import swissbedrockColorMapUncertainty from '../../titiler/colormaps/swissBEDROCK_Uncertainty.json';
 
 export type LayerTreeNode =
   | UnspecificLayerTreeNode
@@ -88,12 +92,31 @@ export interface GeoTIFFLayer {
 export interface GeoTIFFLayerBand {
   index: number;
   name: string;
-  display?: {
-    bounds: [number, number];
-    colorMap: string;
-    noData?: number;
-  };
+  display?: GeoTIFFDisplay;
 }
+
+export interface GeoTIFFDisplay {
+  bounds: [number, number];
+  noData?: number;
+  colorMap: {
+    name: string;
+    definition: GeoTIFFColorMap;
+  };
+
+  /**
+   * Custom steps that are shown on the band's colored legend.
+   * If left out, these steps will be calculated from {@link bounds}.
+   */
+  steps?: number[];
+
+  /**
+   * The direction in which steps are ordered.
+   * If left out, this defaults to `asc`.
+   */
+  stepDirection?: 'asc' | 'desc';
+}
+
+export type GeoTIFFColorMap = Record<string, number[]>;
 
 type LayerInstances =
   | GeoJsonDataSource
@@ -1196,7 +1219,7 @@ const subsurface: LayerTreeNode = {
         },
         {
           type: LayerType.geoTIFF,
-          url: 'https://download.swissgeol.ch/swissbedrock/test2025-04-07/release1_EPSG3857.tif',
+          url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
           layer: 'ch.swisstopo.swissbedrock-geotiff',
           id: 'swissBEDROCK',
           label: t('layers:swissBEDROCK.title'),
@@ -1208,7 +1231,12 @@ const subsurface: LayerTreeNode = {
               name: 'BEM',
               display: {
                 bounds: [-433, 4535],
-                colorMap: 'swissBEDROCK_BEM',
+                steps: [-400, 500, 1000, 2500, 3000, 4500],
+                stepDirection: 'desc',
+                colorMap: {
+                  name: 'swissBEDROCK_BEM',
+                  definition: swissbedrockColorMapBEM as GeoTIFFColorMap,
+                },
               },
             },
             {
@@ -1216,8 +1244,12 @@ const subsurface: LayerTreeNode = {
               name: 'TMUD',
               display: {
                 bounds: [0, 800],
-                colorMap: 'swissBEDROCK_TMUD',
+                steps: [3, 10, 50, 100, 200, 800],
                 noData: 0,
+                colorMap: {
+                  name: 'swissBEDROCK_TMUD',
+                  definition: swissbedrockColorMapTMUD as GeoTIFFColorMap,
+                },
               },
             },
             {
@@ -1225,7 +1257,11 @@ const subsurface: LayerTreeNode = {
               name: 'Uncertainty',
               display: {
                 bounds: [0, 25],
-                colorMap: 'swissBEDROCK_Uncertainty',
+                colorMap: {
+                  name: 'swissBEDROCK_Uncertainty',
+                  definition:
+                    swissbedrockColorMapUncertainty as GeoTIFFColorMap,
+                },
               },
             },
             {
@@ -1241,7 +1277,10 @@ const subsurface: LayerTreeNode = {
               name: 'Change',
               display: {
                 bounds: [-30, 30],
-                colorMap: 'swissBEDROCK_Change',
+                colorMap: {
+                  name: 'swissBEDROCK_Change',
+                  definition: swissbedrockColorMapChange as GeoTIFFColorMap,
+                },
               },
             },
             {
@@ -1249,7 +1288,12 @@ const subsurface: LayerTreeNode = {
               name: 'prev_BEM',
               display: {
                 bounds: [-433, 4535],
-                colorMap: 'swissBEDROCK_BEM',
+                steps: [-400, 500, 1000, 2500, 3000, 4500],
+                stepDirection: 'desc',
+                colorMap: {
+                  name: 'swissBEDROCK_BEM',
+                  definition: swissbedrockColorMapBEM as GeoTIFFColorMap,
+                },
               },
             },
             {
@@ -1257,8 +1301,12 @@ const subsurface: LayerTreeNode = {
               name: 'prev_TMUD',
               display: {
                 bounds: [0, 800],
-                colorMap: 'swissBEDROCK_TMUD',
+                steps: [3, 10, 50, 100, 200, 800],
                 noData: 0,
+                colorMap: {
+                  name: 'swissBEDROCK_TMUD',
+                  definition: swissbedrockColorMapTMUD as GeoTIFFColorMap,
+                },
               },
             },
             {
@@ -1266,7 +1314,11 @@ const subsurface: LayerTreeNode = {
               name: 'prev_Uncertainty',
               display: {
                 bounds: [0, 25],
-                colorMap: 'swissBEDROCK_Uncertainty',
+                colorMap: {
+                  name: 'swissBEDROCK_Uncertainty',
+                  definition:
+                    swissbedrockColorMapUncertainty as GeoTIFFColorMap,
+                },
               },
             },
             {

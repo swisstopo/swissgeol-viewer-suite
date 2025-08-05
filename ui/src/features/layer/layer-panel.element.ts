@@ -16,9 +16,6 @@ export class LayerPanel extends CoreElement {
   @property()
   public accessor layers: LayerConfig[] = [];
 
-  @property()
-  public accessor displayLayers: LayerConfig[] | null = null;
-
   @query('section.layers')
   private accessor layersElement!: HTMLDivElement;
 
@@ -101,7 +98,6 @@ export class LayerPanel extends CoreElement {
 
   private readonly renderLayers = () => html`
     <ngm-layer-display-list
-      .layers=${this.displayLayers}
       @layers-update="${this.handleDisplayLayersUpdate}"
       @layer-update="${this.handleDisplayLayerUpdate}"
       @layer-removal="${this.handleDisplayLayerRemoval}"

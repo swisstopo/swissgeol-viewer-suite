@@ -78,8 +78,6 @@ export class CoreRadio extends LitElement {
 
     /* icon */
     .icon {
-      ${applyTransition('fade')}
-
       position: relative;
       display: flex;
       align-items: center;
@@ -100,6 +98,8 @@ export class CoreRadio extends LitElement {
       content: ' ';
       width: 40px;
       height: 40px;
+      max-width: 40px;
+      max-height: 40px;
       top: 0;
       bottom: 0;
       left: 50%;
@@ -123,8 +123,11 @@ export class CoreRadio extends LitElement {
       content: ' ';
       width: 12px;
       height: 12px;
-      top: 2px;
-      left: 2px;
+      max-width: 12px;
+      max-height: 12px;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
       background-color: transparent;
       border-radius: 50%;
 
@@ -138,6 +141,8 @@ export class CoreRadio extends LitElement {
 
     /* label */
     .label {
+      display: flex;
+      align-items: center;
       ${applyTypography('body-2')}
     }
   `;

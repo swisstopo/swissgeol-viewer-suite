@@ -1,4 +1,4 @@
-import { customElement, property } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { consume } from '@lit/context';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { css, html, PropertyValues } from 'lit';
@@ -21,11 +21,15 @@ import {
 } from 'src/features/layer';
 import LayersActions from 'src/layers/LayersActions';
 import { getVoxelShader } from 'src/layers/voxels-helper';
+import { LayerService } from 'src/features/layer/layer.service';
 
 @customElement('ngm-layer-display-list')
 export class LayerDisplayList extends CoreElement {
-  @property({ type: Array })
-  accessor layers: LayerConfig[] = [];
+  @consume({ context: LayerService.activeLayersContext, subscribe: true })
+  accessor layers!: LayerTreeNode[];
+
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
 
   @consume({ context: BackgroundLayerService.context() })
   accessor backgroundLayerService!: BackgroundLayerService;
@@ -44,13 +48,17 @@ export class LayerDisplayList extends CoreElement {
     super();
     this.attachShadow({ mode: 'open' });
 
+    this.handleLayerRemoval = this.handleLayerRemoval.bind(this);
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
     this.register(
       MainStore.viewer.subscribe((viewer) => {
-        this.actions = new LayersActions(viewer!);
+        this.actions = new LayersActions(viewer!, this.layerService);
       }),
     );
-
-    this.handleLayerRemoval = this.handleLayerRemoval.bind(this);
   }
 
   willUpdate(changedProperties: PropertyValues<this>) {
@@ -139,7 +147,9 @@ export class LayerDisplayList extends CoreElement {
   get visibleLayers(): LayerTreeNode[] {
     if (!DashboardStore.projectMode.value) {
       // Don't show KML assets in project view mode.
-      return this.layers.filter((layer) => !layer.topicKml).reverse();
+      return this.layers
+        .filter((layer) => !(layer as LayerConfig).topicKml)
+        .reverse();
     }
     return [...this.layers].reverse();
   }

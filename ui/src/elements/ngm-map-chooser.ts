@@ -15,11 +15,14 @@ export class NgmMapChooser extends LitElement {
 
   @property({ type: Boolean })
   accessor initiallyOpened = true;
+
   @state()
   accessor open = true;
 
   protected firstUpdated() {
-    this.open = this.initiallyOpened;
+    setTimeout(() => {
+      this.open = this.initiallyOpened;
+    });
   }
 
   createRenderRoot() {

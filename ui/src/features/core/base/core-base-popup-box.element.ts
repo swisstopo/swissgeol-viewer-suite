@@ -4,10 +4,20 @@ import { applyTransition } from 'src/styles/theme';
 export abstract class CoreBasePopupBox extends LitElement {
   private timeoutForToggle: unknown = null;
 
+  private _target: Element | null = null;
+
   protected constructor() {
     super();
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
+  }
+
+  get target(): Element | null {
+    return this._target;
+  }
+
+  setTarget(target: Element): void {
+    this._target = target;
   }
 
   show(): void {

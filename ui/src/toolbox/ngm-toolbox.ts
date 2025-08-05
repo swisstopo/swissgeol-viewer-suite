@@ -229,13 +229,14 @@ export class NgmToolbox extends LitElementI18n {
 
   updated() {
     if (!this.geometryController && this.viewer && this.toastPlaceholder) {
-      this.geometryController = new GeometryController(
+      const geometryController = new GeometryController(
         this.geometriesDataSource,
         this.toastPlaceholder,
       );
-      this.geometryController.setGeometries(
-        LocalStorageController.getStoredAoi(),
-      );
+      setTimeout(() => {
+        geometryController.setGeometries(LocalStorageController.getStoredAoi());
+        this.geometryController = geometryController;
+      });
     }
     if (
       !this.geometryControllerNoEdit &&

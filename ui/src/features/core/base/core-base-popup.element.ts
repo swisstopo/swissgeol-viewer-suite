@@ -55,6 +55,7 @@ export abstract class CoreBasePopup<
     if (target == null) {
       return;
     }
+    this.box.setTarget(target);
     this.enterEvents.forEach((event) =>
       target.addEventListener(event, this.show),
     );
