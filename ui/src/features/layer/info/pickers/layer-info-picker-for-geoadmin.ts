@@ -29,13 +29,17 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
   private readonly highlights: CustomDataSource;
 
   constructor(
-    readonly layer: LayerTreeNode,
+    private readonly layer: LayerTreeNode,
     private readonly viewer: Viewer,
   ) {
     this.highlights = new CustomDataSource(
       `LayerInfoPickerForGeoadmin.${layer.layer}`,
     );
     this.viewer.dataSources.add(this.highlights);
+  }
+
+  get source(): LayerTreeNode {
+    return this.layer;
   }
 
   async pick(pick: LayerPickData): Promise<LayerInfo[]> {
@@ -97,7 +101,7 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
     });
     return new LayerInfoForGeoadmin(this.highlights, {
       entity,
-      layer: this.layer,
+      source: this.layer,
       title: title,
       attributes,
     });
@@ -186,16 +190,18 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
 
 class LayerInfoForGeoadmin implements LayerInfo {
   public readonly entity: Entity;
-  public readonly layer: LayerTreeNode;
+  public readonly source: LayerTreeNode;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
   constructor(
     private readonly dataSource: CustomDataSource,
-    data: Pick<LayerInfo, 'entity' | 'layer' | 'title' | 'attributes'>,
+    data: Pick<LayerInfo, 'entity' | 'source' | 'title' | 'attributes'> & {
+      source: LayerTreeNode;
+    },
   ) {
     this.entity = data.entity;
-    this.layer = data.layer;
+    this.source = data.source;
     this.title = data.title;
     this.attributes = data.attributes;
     this.dataSource.entities.add(this.entity);

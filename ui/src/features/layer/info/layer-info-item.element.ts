@@ -8,7 +8,7 @@ import { applyTypography } from 'src/styles/theme';
 import { Cartesian3, Cartographic, JulianDate, Viewer } from 'cesium';
 import { viewerContext } from 'src/context';
 import { consume } from '@lit/context';
-import { LayerType } from 'src/layertree';
+import { LayerTiffController } from 'src/features/layer';
 
 @customElement('ngm-layer-info-item')
 export class LayerInfoItem extends CoreElement {
@@ -53,7 +53,7 @@ export class LayerInfoItem extends CoreElement {
   }
 
   private readonly zoomToData = (): void => {
-    if (this.info.layer.type === LayerType.geoTIFF) {
+    if (this.info.source instanceof LayerTiffController) {
       const coords = this.info.entity.position!.getValue(JulianDate.now())!;
       const position = Cartographic.fromCartesian(coords);
 
