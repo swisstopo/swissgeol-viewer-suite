@@ -22,6 +22,7 @@ import 'src/features/controls/controls.module';
 import 'src/features/layout/layout.module';
 import 'src/features/navigation/navigation.module';
 import 'src/features/session/session.module';
+import 'src/features/ogc/ogc.module';
 
 import { DEFAULT_VIEW } from './constants';
 
@@ -754,6 +755,8 @@ export class NgmApp extends LitElementI18n {
                 .initiallyOpened=${false}
               ></ngm-map-chooser>
             </div>
+
+            <ngm-ogc-queue></ngm-ogc-queue>
           </div>
           ${this.showCesiumToolbar
             ? html` <cesium-toolbar></cesium-toolbar>`
