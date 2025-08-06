@@ -1,4 +1,4 @@
-FROM ghcr.io/developmentseed/titiler:0.21.1
+FROM ghcr.io/developmentseed/titiler:0.22.4
 
 COPY colormaps/ /app/colormaps/
 

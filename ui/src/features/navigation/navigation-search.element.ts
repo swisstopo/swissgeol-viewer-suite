@@ -1,5 +1,4 @@
 import { customElement, property, state } from 'lit/decorators.js';
-import { LitElementI18n } from 'src/i18n';
 import { css, html, PropertyValues } from 'lit';
 import i18next from 'i18next';
 import { BBox, Feature, GeoJsonProperties } from 'geojson';
@@ -20,7 +19,11 @@ import { lv95ToDegrees } from 'src/projection';
 import { escapeRegExp } from 'src/utils';
 import { extractEntitiesAttributes } from 'src/query/objectInformation';
 import auth from 'src/store/auth';
-import { getDefaultLayerTree, LayerTreeNode } from 'src/layertree';
+import {
+  flattenLayers,
+  getDefaultLayerTree,
+  LayerTreeNode,
+} from 'src/layertree';
 import NavToolsStore from 'src/store/navTools';
 import {
   SearchLayer,
@@ -31,9 +34,10 @@ import { createRef, ref } from 'lit/directives/ref.js';
 import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { consume } from '@lit/context';
+import { CoreElement } from 'src/features/core';
 
 @customElement('ngm-navigation-search')
-export class NavigationSearch extends LitElementI18n {
+export class NavigationSearch extends CoreElement {
   @property()
   private accessor viewer: CesiumViewer | null = null;
 
@@ -46,9 +50,10 @@ export class NavigationSearch extends LitElementI18n {
   @state()
   private accessor isActive = false;
 
+  private readonly catalogLayers = new Map<string, LayerTreeNode>();
+
   constructor() {
     super();
-    this.initialize();
 
     // Bind `this` for callback methods.
     this.clear = this.clear.bind(this);
@@ -66,10 +71,28 @@ export class NavigationSearch extends LitElementI18n {
 
   private layerConfigs: SwisstopoImageryLayersConfig | null = null;
 
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    this.initialize();
+  }
+
+  willChangeLanguage() {
+    this.initialize();
+  }
+
   private initialize(): void {
     getLayersConfig().then((layersConfig) => {
       this.layerConfigs = layersConfig;
     });
+
+    this.catalogLayers.clear();
+    for (const layer of flattenLayers(getDefaultLayerTree(this.clientConfig))) {
+      if (layer.layer == null) {
+        continue;
+      }
+      this.catalogLayers.set(layer.layer, layer);
+    }
   }
 
   protected updated(changedProperties: PropertyValues<this>): void {
@@ -401,6 +424,18 @@ export class NavigationSearch extends LitElementI18n {
    * @private
    */
   private renderItem(item: SearchItem, label: string): string {
+    // Attempt to translate any cached search results.
+    // Note that we can only do this for items that we have in our layer catalog.
+    if (
+      isFeature(item) &&
+      item.properties != null &&
+      'layer' in item.properties
+    ) {
+      const layer = this.catalogLayers.get(item.properties.layer);
+      if (layer !== undefined) {
+        label = i18next.t(layer.label);
+      }
+    }
     const categorizedItem = categorizeSearchItem(item);
     const icon = getIconForCategory(categorizedItem.category);
     return `<img src='/images/${icon}.svg' alt=""/><b>${label}</b>`;

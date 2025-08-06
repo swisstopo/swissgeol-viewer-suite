@@ -4,7 +4,7 @@ import { type LayerTreeNode } from 'src/layertree';
 import { css, html, TemplateResult } from 'lit';
 import i18next from 'i18next';
 import { repeat } from 'lit/directives/repeat.js';
-import { getCategoryOrLayerTemplate } from 'src/features/layer/layer-catalog.element';
+import { getCategoryOrLayerTemplate } from 'src/features/layer/catalog/layer-catalog.element';
 import auth from 'src/store/auth';
 
 @customElement('ngm-layer-catalog-category')

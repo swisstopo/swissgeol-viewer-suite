@@ -1,7 +1,6 @@
 import { css, html, TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { LayerConfig } from 'src/layertree';
-import '../core';
 import { CoreElement } from 'src/features/core';
 import { repeat } from 'lit/directives/repeat.js';
 

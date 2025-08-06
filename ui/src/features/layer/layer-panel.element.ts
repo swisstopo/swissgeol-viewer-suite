@@ -5,8 +5,6 @@ import { LayerConfig } from 'src/layertree';
 import {
   LayerEvent,
   LayerEventDetail,
-  LayersEvent,
-  LayersEventDetail,
 } from 'src/features/layer/layer-event.model';
 import 'src/features/navigation/navigation.module';
 import { CoreElement } from 'src/features/core';
@@ -26,9 +24,6 @@ export class LayerPanel extends CoreElement {
     super();
 
     this.close = this.close.bind(this);
-    this.handleDisplayLayersUpdate = this.handleDisplayLayersUpdate.bind(this);
-    this.handleDisplayLayerUpdate = this.handleDisplayLayerUpdate.bind(this);
-    this.handleDisplayLayerRemoval = this.handleDisplayLayerRemoval.bind(this);
   }
 
   connectedCallback(): void {
@@ -49,33 +44,9 @@ export class LayerPanel extends CoreElement {
     this.dispatchEvent(new CustomEvent('close'));
   }
 
-  private handleDisplayLayersUpdate(e: LayersEvent): void {
-    this.dispatchEvent(
-      new CustomEvent<LayersEventDetail>('display-layers-update', {
-        detail: e.detail,
-      }),
-    );
-  }
-
   private handleDisplayLayerUpdate(e: LayerEvent): void {
     this.dispatchEvent(
       new CustomEvent<LayerEventDetail>('display-layer-update', {
-        detail: e.detail,
-      }),
-    );
-  }
-
-  private handleDisplayLayerRemoval(e: LayerEvent): void {
-    this.dispatchEvent(
-      new CustomEvent<LayerEventDetail>('display-layer-removal', {
-        detail: e.detail,
-      }),
-    );
-  }
-
-  private handleDisplayLayerClick(e: LayerEvent): void {
-    this.dispatchEvent(
-      new CustomEvent<LayerEventDetail>('display-layer-click', {
         detail: e.detail,
       }),
     );
@@ -98,10 +69,7 @@ export class LayerPanel extends CoreElement {
 
   private readonly renderLayers = () => html`
     <ngm-layer-display-list
-      @layers-update="${this.handleDisplayLayersUpdate}"
       @layer-update="${this.handleDisplayLayerUpdate}"
-      @layer-removal="${this.handleDisplayLayerRemoval}"
-      @layer-click="${this.handleDisplayLayerClick}"
     ></ngm-layer-display-list>
   `;
 

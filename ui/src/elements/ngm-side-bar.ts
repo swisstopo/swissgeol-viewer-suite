@@ -5,7 +5,7 @@ import 'src/elements/dashboard/ngm-dashboard';
 import 'src/elements/sidebar/ngm-menu-item';
 import LayersActions from '../layers/LayersActions';
 import { DEFAULT_LAYER_OPACITY, LayerType } from '../constants';
-import { getDefaultLayerTree, LayerConfig } from '../layertree';
+import { flattenLayers, getDefaultLayerTree, LayerConfig } from '../layertree';
 import {
   addAssetId,
   getAssetIds,
@@ -16,7 +16,6 @@ import {
   setCesiumToolbarParam,
   syncLayersParam,
 } from 'src/permalink';
-import { createCesiumObject } from 'src/layers/helpers';
 import i18next from 'i18next';
 import 'fomantic-ui-css/components/accordion.js';
 import type { Cartesian2, Viewer } from 'cesium';
@@ -45,13 +44,14 @@ import { customElement, property, query, state } from 'lit/decorators.js';
 
 import DashboardStore from 'src/store/dashboard';
 import { getAssets } from 'src/api-ion';
-import { LayerEvent, LayersEvent } from 'src/features/layer';
 import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { consume } from '@lit/context';
 import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { skip, take } from 'rxjs';
+import { run } from 'src/utils/fn.utils';
+import { getLayersConfig } from 'src/swisstopoImagery';
 
 export type SearchLayer = SearchLayerWithLayer | SearchLayerWithSource;
 
@@ -124,14 +124,6 @@ export class SideBar extends LitElementI18n {
 
   private viewer: Viewer | null = null;
 
-  constructor() {
-    super();
-
-    this.handleDisplayLayersUpdate = this.handleDisplayLayersUpdate.bind(this);
-    this.handleDisplayLayerUpdate = this.handleDisplayLayerUpdate.bind(this);
-    this.handleDisplayLayerRemoval = this.handleDisplayLayerRemoval.bind(this);
-  }
-
   connectedCallback(): void {
     super.connectedCallback();
 
@@ -189,12 +181,7 @@ export class SideBar extends LitElementI18n {
         pickable: true,
         customAsset: true,
       };
-      layer.load = () => this.addLayer(layer);
       this.layerService.activate(layer);
-
-      if (layer.promise === undefined) {
-        layer.promise = layer.load();
-      }
       addAssetId(asset.id);
       showSnackbarSuccess(i18next.t('dtd_asset_added'));
       this.requestUpdate();
@@ -215,11 +202,8 @@ export class SideBar extends LitElementI18n {
     if (sliceOptions?.type && sliceOptions.slicePoints)
       this.activePanel = 'tools';
 
-    this.layerService.activeLayers$.subscribe((activeLayers) => {
-      if (this.layerActions == null) {
-        return;
-      }
-      this.layerActions!.reorderLayers(activeLayers as LayerConfig[]).then();
+    this.layerService.layerActivated$.subscribe((layer) => {
+      this.maybeShowVisibilityHint(layer as LayerConfig);
     });
   }
 
@@ -237,7 +221,7 @@ export class SideBar extends LitElementI18n {
   }
 
   async syncActiveLayers() {
-    const flatLayers = this.getFlatLayers(this.catalogLayers);
+    const flatLayers = flattenLayers(this.catalogLayers!);
     const urlLayers = getLayerParams();
     const assetIds = getAssetIds();
     const ionToken = MainStore.ionToken.value;
@@ -257,26 +241,20 @@ export class SideBar extends LitElementI18n {
 
     const activeLayers: LayerConfig[] = [];
     for (const urlLayer of urlLayers) {
-      let layer = flatLayers.find((fl) => fl.layer === urlLayer.layer);
+      let layer = flatLayers.find((fl) => fl.layer === urlLayer.layer) as
+        | LayerConfig
+        | undefined;
       if (!layer) {
         // Layers from the search are not present in the flat layers.
-        layer = this.createSearchLayer({
+        layer = await this.createSearchLayer({
           layer: urlLayer.layer,
           label: urlLayer.layer,
         }); // the proper label will be taken from getCapabilities
-      } else {
-        await (layer.promise || this.addLayer(layer));
-        layer.add && layer.add();
       }
       layer.visible = urlLayer.visible;
       layer.opacity = urlLayer.opacity;
       layer.wmtsCurrentTime = urlLayer.timestamp ?? layer.wmtsCurrentTime;
-      layer.setOpacity && layer.setOpacity(layer.opacity);
-      layer.displayed = true;
-      layer.setVisibility && layer.setVisibility(layer.visible);
-      if (layer.promise === undefined && layer.load !== undefined) {
-        layer.promise = layer.load();
-      }
+      layer.setOpacity?.(layer.opacity);
       activeLayers.push(layer);
     }
 
@@ -303,16 +281,11 @@ export class SideBar extends LitElementI18n {
           pickable: true,
           customAsset: true,
         };
-        layer.load = () => this.addLayer(layer);
         activeLayers.push(layer);
-        if (layer.promise === undefined) {
-          layer.promise = layer.load();
-        }
       });
     }
 
     this.layerService.set(activeLayers);
-    syncLayersParam(this.layerService);
   }
 
   async willUpdate(changedProperties) {
@@ -356,75 +329,9 @@ export class SideBar extends LitElementI18n {
     super.updated(changedProperties);
   }
 
-  async onCatalogLayerClicked(layer) {
-    // toggle whether the layer is displayed or not (=listed in the side bar)
-    layer.displayed = !layer.displayed;
-    await this.applyLayerVisibility(layer);
-  }
-
-  private async applyLayerVisibility(layer: LayerConfig): Promise<void> {
-    if (layer.displayed) {
-      await (layer.promise || this.addLayer(layer));
-      layer.add && (layer.add as () => void)();
-      layer.visible = true;
-      layer.displayed = true;
-      this.layerService.activate(layer);
-      this.maybeShowVisibilityHint(layer);
-    } else {
-      if (layer.visible) {
-        layer.displayed = false;
-        layer.visible = false;
-        layer.remove && layer.remove();
-        this.layerService.deactivate(layer);
-      } else {
-        layer.visible = true;
-      }
-    }
-    layer.setVisibility && layer.setVisibility(layer.visible);
-    syncLayersParam(this.layerService);
-    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
-    this.catalogLayers = [...catalogLayers];
-    this.viewer!.scene.requestRender();
-  }
-
-  maybeShowVisibilityHint(config: LayerConfig) {
-    if (
-      this.displayUndergroundHint &&
-      config.visible &&
-      [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!) &&
-      !this.viewer?.scene.cameraUnderground
-    ) {
-      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {
-        displayTime: 20000,
-      });
-      this.displayUndergroundHint = false;
-    }
-  }
-
-  async removeLayer(config: LayerConfig) {
-    await this.removeLayerWithoutSync(config);
-    this.viewer!.scene.requestRender();
-    syncLayersParam(this.layerService);
-    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
-    this.catalogLayers = [...catalogLayers];
-  }
-
-  getFlatLayers(tree): any[] {
-    const flat: any[] = [];
-    for (const layer of tree) {
-      if (layer.children) {
-        flat.push(...this.getFlatLayers(layer.children));
-      } else {
-        layer.load = () => this.addLayer(layer);
-        flat.push(layer);
-      }
-    }
-    return flat;
-  }
-
   // adds layer from search to 'Displayed Layers'
   async addLayerFromSearch(searchLayer: SearchLayer) {
-    const flatLayers = this.getFlatLayers(this.catalogLayers);
+    const flatLayers = flattenLayers(this.catalogLayers!);
 
     let layer: LayerConfig | undefined;
     if ('dataSourceName' in searchLayer) {
@@ -433,52 +340,43 @@ export class SideBar extends LitElementI18n {
       layer = flatLayers.find((l) => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
     }
 
-    if (layer) {
-      if (layer.displayed) {
-        return;
+    if (layer === undefined) {
+      // Create new layer
+      layer = await this.createSearchLayer(searchLayer);
+      if (layer.promise === undefined && layer.load !== undefined) {
+        layer.promise = layer.load();
       }
-      layer.displayed = true;
-      await this.applyLayerVisibility(layer);
-    } else {
-      // for new layers
-      const newLayer = this.createSearchLayer(searchLayer);
-      this.layerService.activate(newLayer);
-      if (newLayer.promise === undefined && newLayer.load !== undefined) {
-        newLayer.promise = newLayer.load();
-      }
-      syncLayersParam(this.layerService);
     }
-    this.requestUpdate();
+    this.layerService.activate(layer);
   }
 
-  createSearchLayer(searchLayer: SearchLayer) {
-    let config: LayerConfig;
-    if ('dataSourceName' in searchLayer) {
-      config = searchLayer;
-      config.visible = true;
-      config.origin = 'layer';
-      config.label = searchLayer.title ?? searchLayer.label;
-      config.legend =
-        config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
-    } else {
-      config = {
-        type: LayerType.swisstopoWMTS,
-        label: searchLayer.title ?? searchLayer.label,
-        layer: searchLayer.layer,
-        visible: true,
-        displayed: true,
-        opacity: DEFAULT_LAYER_OPACITY,
-        queryType: 'geoadmin',
-        legend: searchLayer.layer,
-      };
+  async createSearchLayer(searchLayer: SearchLayer): Promise<LayerConfig> {
+    const config = run(() => {
+      if ('dataSourceName' in searchLayer) {
+        const config = searchLayer as LayerConfig;
+        config.visible = true;
+        config.origin = 'layer';
+        config.label = searchLayer.title ?? searchLayer.label;
+        config.legend =
+          config.type === LayerType.swisstopoWMTS ? config.layer : undefined;
+        return config;
+      } else {
+        return {
+          type: LayerType.swisstopoWMTS,
+          label: searchLayer.title ?? searchLayer.label,
+          layer: searchLayer.layer,
+          visible: true,
+          displayed: true,
+          opacity: DEFAULT_LAYER_OPACITY,
+          queryType: 'geoadmin',
+          legend: searchLayer.layer,
+        };
+      }
+    });
+    if (config.layer !== undefined) {
+      const layers = await getLayersConfig();
+      config.label = layers[config.layer]?.title ?? config.label;
     }
-    config.load = async () => {
-      const layer = await this.addLayer(config);
-      this.layerService.set([...this.layerService.activeLayers]);
-      syncLayersParam(this.layerService);
-      return layer;
-    };
-
     return config;
   }
 
@@ -560,35 +458,18 @@ export class SideBar extends LitElementI18n {
     });
   }
 
-  addLayer(layer: LayerConfig) {
-    layer.promise = createCesiumObject(this.viewer!, layer);
-    this.dispatchEvent(
-      new CustomEvent('layeradded', {
-        detail: {
-          layer,
-        },
-      }),
-    );
-    return layer.promise;
-  }
-
-  private handleDisplayLayersUpdate(e: LayersEvent): void {
-    this.layerService.set(e.detail.layers);
-  }
-
-  private handleDisplayLayerUpdate(e: LayerEvent): void {
-    const catalogLayers = this.catalogLayers ? this.catalogLayers : [];
-    this.catalogLayers = [...catalogLayers];
-    this.layerService.set([...this.layerService.activeLayers]);
-    syncLayersParam(this.layerService);
-    if (e.detail) {
-      this.maybeShowVisibilityHint(e.detail.layer);
+  maybeShowVisibilityHint(config: LayerConfig) {
+    if (
+      this.displayUndergroundHint &&
+      config.visible &&
+      [LayerType.tiles3d, LayerType.earthquakes].includes(config.type!) &&
+      !this.viewer?.scene.cameraUnderground
+    ) {
+      showSnackbarInfo(i18next.t('lyr_subsurface_hint'), {
+        displayTime: 20000,
+      });
+      this.displayUndergroundHint = false;
     }
-    this.requestUpdate();
-  }
-
-  private async handleDisplayLayerRemoval(e: LayerEvent): Promise<void> {
-    await this.removeLayer(e.detail.layer);
   }
 
   private async removeLayerWithoutSync(layer: LayerConfig): Promise<void> {
@@ -675,18 +556,11 @@ export class SideBar extends LitElementI18n {
         class="ngm-side-bar-panel ngm-large-panel"
         ?hidden=${this.activePanel !== 'dashboard'}
         @close=${() => (this.activePanel = null)}
-        @layerclick=${(e: LayerEvent) =>
-          this.onCatalogLayerClicked(e.detail.layer)}
       ></ngm-dashboard>
       <ngm-layer-panel
         ?hidden="${this.activePanel !== 'data'}"
         .layers="${this.catalogLayers ?? []}"
         @close="${() => (this.activePanel = null)}"
-        @layer-click=${(e: LayerEvent) =>
-          this.onCatalogLayerClicked(e.detail.layer)}
-        @display-layers-update="${this.handleDisplayLayersUpdate}"
-        @display-layer-update="${this.handleDisplayLayerUpdate}"
-        @display-layer-removal="${this.handleDisplayLayerRemoval}"
       ></ngm-layer-panel>
       <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
         <ngm-tools
