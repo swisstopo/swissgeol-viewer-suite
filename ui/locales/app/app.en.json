@@ -218,7 +218,7 @@
   "nav_info_zoom_label": "Zoom in/out",
   "nav_not_full_screen_view_hint": "Exit Full screen view",
   "nav_object_height_label": "Object elevation (m AMSL)",
-  "nav_target_point": "Target point",
+  "nav_target_point": "Switch 2D/3D mode",
   "nav_terrain_height_label": "Terrain elevation (m AMSL)",
   "nav_tools_out_glob_warn": "Position out of globe",
   "nav_zoom_in": "Zoom in",
