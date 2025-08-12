@@ -108,17 +108,14 @@ export class LayerTiffController {
   }
 
   private makeImagery(band: GeoTIFFLayerBand): LayerTiffImagery {
-    const noDataParam =
-      band.display?.noData === undefined ? '' : '&nodata={nodata}';
     const provider = new UrlTemplateImageryProvider({
-      url: `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url={url}&rescale={min},{max}&bidx={bidx}&colormap_name={colormap}${noDataParam}`,
+      url: `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url={url}&rescale={min},{max}&bidx={bidx}&colormap_name={colormap}`,
       customTags: {
         url: () => this.layer.url,
         bidx: () => band.index,
         colormap: () => band.display!.colorMap?.name,
         min: () => band.display!.bounds[0],
         max: () => band.display!.bounds[1],
-        nodata: () => band.display!.noData,
       },
       rectangle: SWITZERLAND_RECTANGLE,
       tilingScheme: new WebMercatorTilingScheme(),
