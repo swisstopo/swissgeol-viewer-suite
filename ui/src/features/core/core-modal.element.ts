@@ -36,12 +36,13 @@ export class CoreModal extends LitElement {
   static open(props: CoreModalProps, content: TemplateResult): CoreModal {
     const container = document.createElement('div');
     container.classList.add('ngm-core-modal-container');
-    document.body.appendChild(container);
+    const root = document.querySelector('ngm-app-boot')!;
+    root.appendChild(container);
 
     const close = () => {
       render(null, container);
       if (container.parentElement != null) {
-        document.body.removeChild(container);
+        root.removeChild(container);
       }
       if (props.onClose != null) {
         props.onClose();

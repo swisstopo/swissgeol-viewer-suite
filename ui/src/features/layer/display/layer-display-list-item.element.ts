@@ -197,18 +197,6 @@ export class LayerDisplayListItem extends CoreElement {
     );
   }
 
-  private readonly downloadOgcData = async (): Promise<void> => {
-    const job = await this.ogcService.start(
-      [this.layer!],
-      [7.74, 47.18, 7.76, 47.2],
-    );
-    await this.ogcService.resolve(job, (progress) => {
-      console.log(progress);
-    });
-    await this.ogcService.download(job);
-    await this.ogcService.delete(job);
-  };
-
   protected updated(_changedProperties: PropertyValues) {
     this.tiffFilterWindow?.rerender();
   }
@@ -339,17 +327,6 @@ export class LayerDisplayListItem extends CoreElement {
             >
               <ngm-core-icon icon="filter"></ngm-core-icon>
               ${i18next.t('layers:geoTIFF.bandsWindow.open')}
-            </ngm-core-dropdown-item>
-          `
-        : ''}
-      ${this.layer?.type === LayerType.swisstopoWMTS
-        ? html`
-            <ngm-core-dropdown-item
-              role="button"
-              @click="${this.downloadOgcData}"
-            >
-              <ngm-core-icon icon="download"></ngm-core-icon>
-              Download Ogc Data
             </ngm-core-dropdown-item>
           `
         : ''}

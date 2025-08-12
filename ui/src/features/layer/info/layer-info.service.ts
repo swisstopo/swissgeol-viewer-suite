@@ -73,6 +73,7 @@ export class LayerInfoService extends BaseService {
         const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
         eventHandler.setInputAction(
           async (event: ScreenSpaceEventHandler.PositionedEvent) => {
+            // Don't pick while drawing.
             if (DrawStore.drawStateValue) {
               return;
             }

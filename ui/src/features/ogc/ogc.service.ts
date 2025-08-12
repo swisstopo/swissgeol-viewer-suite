@@ -6,15 +6,31 @@ import {
   WebMapServiceImageryProvider,
 } from 'cesium';
 import { sleep } from 'src/utils/fn.utils';
-import * as fflate from 'fflate';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export class OgcService extends BaseService {
-  async start(layers: LayerTreeNode[], bbox: BBox): Promise<OgcJob> {
+  private readonly jobsSubject = new BehaviorSubject<OgcJob[]>([]);
+
+  get jobs$(): Observable<OgcJob[]> {
+    return this.jobsSubject.asObservable();
+  }
+
+  async isLayerSupported(layer: LayerTreeNode): Promise<boolean> {
+    return (await this.getInputForLayer(layer, [0, 0, 0, 0])) !== null;
+  }
+
+  async start(
+    title: string,
+    layers: LayerTreeNode[],
+    bbox: BBox,
+  ): Promise<OgcJob | null> {
     const inputs: object[] = [];
     const promises: Array<Promise<void>> = [];
     for (const layer of layers) {
       promises.push(
-        this.getInputForLayer(layer, bbox).then((input) => {
+        this.getInputForLayer(layer, bbox, {
+          shouldWarnIfNotAvailable: true,
+        }).then((input) => {
           if (input !== null) {
             inputs.push(input);
           }
@@ -23,7 +39,7 @@ export class OgcService extends BaseService {
     }
     await Promise.all(promises);
     if (promises.length === 0) {
-      return NO_SUCH_JOB;
+      return null;
     }
 
     const res = await fetch(
@@ -54,18 +70,19 @@ export class OgcService extends BaseService {
       );
     }
     const result: { jobId: string } = await res.json();
-    return {
+    const job: OgcJob = {
       id: result.jobId,
+      title,
+      layers,
     };
+    this.jobsSubject.next([...this.jobsSubject.value, job]);
+    return job;
   }
 
   async resolve(
     job: OgcJob,
-    report: (progress: number) => void,
+    report: (stage: OgcJobStage, progress: number | null) => void,
   ): Promise<void> {
-    if (job === NO_SUCH_JOB) {
-      return;
-    }
     while (true) {
       const res = await fetch(
         `http://localhost:8000/ogc/jobs/${job.id}?t=json`,
@@ -87,121 +104,156 @@ export class OgcService extends BaseService {
       const {
         status,
         message,
-        progress,
-      }: { status: JobStatus; message: string; progress: number } =
-        await res.json();
-      switch (status) {
-        case JobStatus.Accepted:
-        case JobStatus.Running:
-          report(progress / 1000);
+        progress: progressValue,
+      }: {
+        status: JobStatusFromApi;
+        message: string;
+        progress: number;
+      } = await res.json();
+      const progress = isNaN(Number(progressValue))
+        ? null
+        : Number(progressValue) / 1000;
+
+      let lastMessage: [OgcJobStage, number | null] | null = null;
+      const send = async (stage: OgcJobStage, progress: number | null) => {
+        if (
+          lastMessage === null ||
+          lastMessage[0] !== stage ||
+          lastMessage[1] !== progress
+        ) {
+          report(stage, progress);
+          lastMessage = [stage, progress];
           await sleep(500);
+        }
+      };
+
+      switch (status) {
+        case JobStatusFromApi.Accepted:
+          await send(OgcJobStage.Prepare, progress);
           continue;
-        case JobStatus.Successful:
+        case JobStatusFromApi.Running:
+          await send(OgcJobStage.Running, progress);
+          continue;
+        case JobStatusFromApi.Successful:
+          await send(OgcJobStage.Success, null);
           return;
-        case JobStatus.Failed:
-          throw new Error(`ogc job failed: ${message}`);
-        case JobStatus.Dismissed:
+        case JobStatusFromApi.Failed:
+          console.error(`ogc job failed: ${message}`);
+          await send(OgcJobStage.Failure, null);
+          return;
+        case JobStatusFromApi.Dismissed:
+          await send(OgcJobStage.Complete, null);
           return;
       }
     }
   }
 
   async download(job: OgcJob): Promise<void> {
-    if (job === NO_SUCH_JOB) {
-      return;
-    }
     const res = await fetch(`http://localhost:8000/ogc/jobs/${job.id}/results`);
-    const buf = new Uint8Array(await res.arrayBuffer());
+    const blob = await res.blob();
 
-    const data = await new Promise<fflate.Unzipped>((resolve, reject) => {
-      fflate.unzip(buf, (err, data) => {
-        if (err === null) {
-          resolve(data);
-        } else {
-          reject(err);
+    const a = document.createElement('a');
+    a.download = job.title
+      .split('')
+      .map((char) => {
+        if (/\s/.test(char)) {
+          return '_';
         }
-      });
-    });
-
-    for (const [filePath, fileData] of Object.entries(data)) {
-      const blob = new Blob([fileData]);
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      const lastSlashIndex = filePath.lastIndexOf('/');
-      a.download = filePath.slice(lastSlashIndex + 1);
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-    }
+        return /[A-Za-z0-9_\-.]/.test(char) ? char : '';
+      })
+      .join('');
+    a.href = URL.createObjectURL(blob);
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
   }
 
-  async delete(job: OgcJob): Promise<void> {
-    if (job === NO_SUCH_JOB) {
-      return;
-    }
+  async complete(job: OgcJob): Promise<void> {
     await fetch(`http://localhost:8000/ogc/jobs/${job.id}`, {
       method: 'DELETE',
     });
+    const i = this.jobsSubject.value.findIndex((it) => it.id === job.id);
+    if (i !== undefined) {
+      const newJobs = [...this.jobsSubject.value];
+      newJobs.splice(i, 1);
+      this.jobsSubject.next(newJobs);
+    }
   }
 
   private async getInputForLayer(
     layer: LayerTreeNode,
     bbox: BBox,
+    options: { shouldWarnIfNotAvailable?: boolean } = {},
   ): Promise<object | null> {
-    switch (layer.type) {
-      case LayerType.swisstopoWMTS: {
-        const { imageryProvider } = (await (layer as unknown as LayerConfig)
-          .promise) as ImageryLayer;
-        console.log(layer as unknown as ImageryLayer);
-        if (imageryProvider instanceof UrlTemplateImageryProvider) {
-          // It's a WMTS layer.
-          return {
-            type: 'wmts10',
-            identifier: 'wmts@swisstopo',
-            layer: layer.layer,
-            bbox: {
-              bbox,
-              epsg: 4326,
-            },
-          };
-        } else if (imageryProvider instanceof WebMapServiceImageryProvider) {
-          // It's a WMS layer.
-          return {
-            type: 'wms13',
-            identifier: 'wms@swisstopo',
-            layer: layer.layer,
+    if (layer.gstId != null) {
+      // TODO adjust this to the correct format
+      return {
+        type: 'gst',
+        identifier: '???',
+        layer: layer.gstId,
+      };
+    }
+
+    if (layer.type === LayerType.swisstopoWMTS) {
+      const { imageryProvider } = (await (layer as unknown as LayerConfig)
+        .promise) as ImageryLayer;
+      if (imageryProvider instanceof UrlTemplateImageryProvider) {
+        // It's a WMTS layer.
+        return {
+          type: 'wmts10',
+          identifier: 'wmts@swisstopo',
+          layer: layer.layer,
+          bbox: {
+            bbox,
             epsg: 4326,
-          };
-        } else {
+          },
+        };
+      } else if (imageryProvider instanceof WebMapServiceImageryProvider) {
+        // It's a WMS layer.
+        return {
+          type: 'wms13',
+          identifier: 'wms@swisstopo',
+          layer: layer.layer,
+          epsg: 4326,
+        };
+      } else {
+        if (options.shouldWarnIfNotAvailable) {
           console.warn(
             `Unable to query ogc service for ${layer.type} layer '${layer.layer ?? layer.label}'`,
           );
-          return null;
         }
-      }
-
-      default:
-        console.warn(
-          `Unable to query ogc service for ${layer.type} layer '${layer.layer ?? layer.label}'`,
-        );
         return null;
+      }
     }
+
+    if (options.shouldWarnIfNotAvailable) {
+      console.warn(
+        `Unable to query ogc service for ${layer.type} layer '${layer.layer ?? layer.label}'`,
+      );
+    }
+    return null;
   }
 }
 
-type BBox = [number, number, number, number];
+export type BBox = [number, number, number, number];
 
-export type OgcJob = AsyncOgcJob | typeof NO_SUCH_JOB;
-
-const NO_SUCH_JOB = Symbol('OGC/NoJob');
-
-interface AsyncOgcJob {
+export interface OgcJob {
   id: string;
+  layers: LayerTreeNode[];
+  title: string;
 }
 
-enum JobStatus {
+export enum OgcJobStage {
+  Prepare = 'Prepare',
+  Running = 'Running',
+  Success = 'Success',
+  Failure = 'Failure',
+  Complete = 'Complete',
+}
+
+enum JobStatusFromApi {
   Accepted = 'accepted',
   Running = 'running',
   Successful = 'successful',

@@ -1,0 +1,18 @@
+{
+  "actions": {
+    "export": "Daten exportieren"
+  },
+  "ogc": {
+    "layer-selection": {
+      "title": "Export",
+      "confirm": "Export"
+    },
+    "stage": {
+      "Prepare": "Vorbereitung Download auf dem Server",
+      "Running": "Durchführung Export",
+      "Success": "Export wurde erfolgreich durchgeführt",
+      "Failure": "Export ist fehlgeschlagen",
+      "Complete": "Export Abgeschlossen"
+    }
+  }
+}

@@ -1,4 +1,3 @@
-import { LitElementI18n } from '../i18n';
 import type { PropertyValues, TemplateResult } from 'lit';
 import { html } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
@@ -8,43 +7,77 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import type { GeometryTypes, NgmGeometry } from './interfaces';
 import $ from 'jquery';
 import { NgmConfirmationModal } from '../elements/ngm-confirmation-modal';
+import { Cartographic, Math as CesiumMath } from 'cesium';
+import { OgcService } from 'src/features/ogc';
+import { consume } from '@lit/context';
+import { CoreElement, CoreModal } from 'src/features/core';
+import { LayerService } from 'src/features/layer/layer.service';
 
 @customElement('ngm-geometries-simple-list')
-export default class NgmGeometriesSimpleList extends LitElementI18n {
+export default class NgmGeometriesSimpleList extends CoreElement {
   @property({ type: Array })
   accessor geometries: NgmGeometry[] = [];
+
   @property({ type: String })
   accessor selectedId = '';
+
   @property({ type: String })
   accessor listTitle: string | undefined;
+
   @property({ type: Object })
   accessor optionsTemplate:
     | ((geom: NgmGeometry, active: boolean) => TemplateResult)
     | undefined;
+
   @property({ type: Array })
   accessor disabledTypes: string[] = [];
+
   @property({ type: Object })
   accessor disabledCallback: ((geom: NgmGeometry) => boolean) | undefined;
+
   // in noEdit mode, editing of geometries will be disabled but it will be possible to interact with geometries on map
   @property({ type: Boolean })
   accessor noEditMode = false;
+
   // in view mode any actions with geometry will be disabled
   @property({ type: Boolean })
   accessor viewMode = false;
+
   // hides zoomTo, info, edit buttons from context menu
   @property({ type: Boolean })
   accessor hideMapInteractionButtons = false;
+
   // allows to edit geometry name directly in the list
   @property({ type: Boolean })
   accessor directNameEdit = false;
+
   @property({ type: Boolean })
   accessor editingEnabled = false;
+
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
   @state()
   accessor selectedFilter: GeometryTypes | undefined;
+
   @state()
   accessor nameEditIndex: number | undefined;
+
   @query('ngm-confirmation-modal')
   accessor deleteWarningModal!: NgmConfirmationModal;
+
+  @consume({ context: OgcService.context() })
+  accessor ogcService!: OgcService;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.register(
+      this.layerService.activeLayers$.subscribe(() => {
+        this.requestUpdate();
+      }),
+    );
+  }
 
   protected firstUpdated() {
     this.querySelectorAll('.ngm-action-menu').forEach((el) => $(el).dropdown());
@@ -58,6 +91,37 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
       );
     }
     super.updated(changedProperties);
+  }
+
+  export(geometry: NgmGeometry): void {
+    let west = Number.POSITIVE_INFINITY;
+    let south = Number.POSITIVE_INFINITY;
+    let east = Number.NEGATIVE_INFINITY;
+    let north = Number.NEGATIVE_INFINITY;
+
+    for (const position of geometry.positions) {
+      const carto = Cartographic.fromCartesian(position);
+      const lon = CesiumMath.toDegrees(carto.longitude);
+      const lat = CesiumMath.toDegrees(carto.latitude);
+
+      west = Math.min(west, lon);
+      south = Math.min(south, lat);
+      east = Math.max(east, lon);
+      north = Math.max(north, lat);
+    }
+
+    const modal = CoreModal.open(
+      {
+        isPersistent: true,
+        hasNoPadding: true,
+        size: 'small',
+      },
+      html`<ngm-ogc-layer-selection
+        .title="${geometry.name}"
+        .bbox="${[west, south, east, north]}"
+        @close="${() => modal.close()}"
+      ></ngm-ogc-layer-selection>`,
+    );
   }
 
   selectFilter(type?: GeometryTypes) {
@@ -129,7 +193,7 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
             `}
         ${copyButton}
         ${geom.type === 'line'
-          ? html` <div
+          ? html`<div
               class="item"
               @click=${() =>
                 ToolboxStore.nextGeometryAction({
@@ -140,6 +204,16 @@ export default class NgmGeometriesSimpleList extends LitElementI18n {
               ${i18next.t('tbx_profile_btn')}
             </div>`
           : html``}
+        ${geom.type === 'polygon' || geom.type === 'rectangle'
+          ? html` <div
+              class="item ${classMap({
+                disabled: this.layerService.activeLayers.length === 0,
+              })}"
+              @click=${() => this.export(geom)}
+            >
+              ${i18next.t('toolbox:actions.export')}
+            </div>`
+          : undefined}
         ${this.noEditMode
           ? ''
           : html` <div
