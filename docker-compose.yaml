@@ -37,6 +37,7 @@ services:
     volumes:
       - ./:/app
       - ui.node_modules:/app/ui/node_modules
+      - ./ui/node_modules/@swissgeol:/app/ui/node_modules_bkp/@swissgeol
     tmpfs:
       - /app/ui/dist
 
