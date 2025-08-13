@@ -17,10 +17,6 @@ export class LayerTiffLegend extends CoreElement {
   private gradientCss = '';
   private steps: Step[] = [];
 
-  connectedCallback() {
-    super.connectedCallback();
-  }
-
   willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has('display')) {
@@ -29,21 +25,9 @@ export class LayerTiffLegend extends CoreElement {
   }
 
   private initialize(): void {
-    const originalColors = Object.values(this.display.colorMap.definition);
-    const mappedColors =
-      this.display.steps === undefined
-        ? originalColors
-        : remapColors(originalColors, this.display.steps, this.display.bounds);
-
     // Compute the legend's background gradient.
-    const colors = mappedColors.map((rgba) => {
-      const args = rgba.join(',');
-      return rgba.length === 3 ? `rgb(${args})` : `rgba(${args})`;
-    });
-    if (this.display.stepDirection === 'desc') {
-      colors.reverse();
-    }
-    this.gradientCss = `linear-gradient(to bottom, ${colors.join(', ')})`;
+    this.gradientCss = this.makeGradient();
+    console.log(this.gradientCss);
 
     // Calculate the steps that will be shown on the legend.
     this.steps =
@@ -65,28 +49,77 @@ export class LayerTiffLegend extends CoreElement {
   }
 
   private makeCustomSteps(): Step[] {
-    const [min, max] = this.display.bounds;
-    const values = [...this.display.steps!];
-    const [minIndex, maxIndex] = run(() => {
-      if (this.display.stepDirection === 'desc') {
-        values.reverse();
-        return [values.length - 1, 0];
-      }
-      return [0, values.length - 1];
-    });
+    const values = [...this.display.steps!] as
+      | string[]
+      | Array<{ value: number; label: string } | number>;
+    if (this.display.stepDirection === 'desc') {
+      values.reverse();
+    }
 
-    const base = 1 / (values.length - 1);
-    const steps: Step[] = values.map((step, i) => ({
-      value: step,
-      percentage: base * i,
-    }));
-    if (values[minIndex] !== min) {
-      steps[minIndex].value = `< ${values[minIndex]}`;
+    const [base, offset] = run(() => {
+      const n = values.length;
+      if (this.display.isDiscrete) {
+        if (n === 1) return [1, 0.5]; // only step at center
+        const base = 1 / n;
+        return [base, base / 2];
+      }
+      return [1 / (n - 1), 0];
+    });
+    return values.map(
+      (
+        step: { value: number; label: string } | number | string,
+        i: number,
+      ): Step => ({
+        value: typeof step === 'object' ? step.label : step,
+        percentage: base * i + offset,
+      }),
+    );
+  }
+
+  private makeGradient(): string {
+    const originalColors = Object.values(this.display.colorMap.definition);
+    const mappedColors =
+      this.display.steps === undefined ||
+      typeof this.display.steps[0] === 'string'
+        ? originalColors
+        : remapColors(
+            originalColors,
+            this.display.steps as Array<
+              { value: number; label: string } | number
+            >,
+            this.display.bounds,
+          );
+
+    const colors = mappedColors.map((rgba) => {
+      const args = rgba.join(',');
+      return rgba.length === 3 ? `rgb(${args})` : `rgba(${args})`;
+    });
+    if (this.display.stepDirection === 'desc') {
+      colors.reverse();
     }
-    if (values[maxIndex] !== max) {
-      steps[maxIndex].value = `> ${values[maxIndex]}`;
+    if (this.display.isDiscrete) {
+      const feather = 10; // total blend width in percent
+      const round3 = (x: number) => Number(x.toFixed(3));
+
+      const percentage = 100 / colors.length;
+      const half = Math.min(feather / 2, percentage / 2); // avoid overlap
+
+      const stops = [] as string[];
+      stops.push(`${colors[0]} 0%`);
+
+      for (let i = 0; i < colors.length - 1; i++) {
+        const b = percentage * (i + 1); // boundary between i and i+1
+        const before = round3(b - half);
+        const after = round3(b + half);
+
+        stops.push(`${colors[i]} ${before}%`);
+        stops.push(`${colors[i + 1]} ${after}%`);
+      }
+
+      stops.push(`${colors[colors.length - 1]} 100%`);
+      return `linear-gradient(to bottom, ${stops.join(', ')})`;
     }
-    return steps;
+    return `linear-gradient(to bottom, ${colors.join(', ')})`;
   }
 
   readonly render = () => html`
@@ -114,7 +147,7 @@ export class LayerTiffLegend extends CoreElement {
       top: 0;
       right: 0;
       height: 100%;
-      width: 161px;
+      width: 200px;
       padding: 16px;
 
       display: flex;
@@ -182,16 +215,25 @@ interface Step {
 
 const remapColors = (
   originalColors: number[][],
-  steps: number[],
+  steps: Array<{ value: number; label: string } | number>,
   bounds: [number, number],
 ): number[][] => {
+  const getValue = (
+    value: { value: number; label: string } | number,
+  ): number => {
+    if (typeof value === 'number') {
+      return value;
+    }
+    return value.value;
+  };
+
   const segments = steps.length - 1;
   const colorsPerSegment = Math.floor(originalColors.length / segments);
   const newColors: number[][] = [];
 
   for (let i = 0; i < segments; i++) {
-    const start = steps[i];
-    const end = steps[i + 1];
+    const start = getValue(steps[i]);
+    const end = getValue(steps[i + 1]);
 
     for (let j = 0; j < colorsPerSegment; j++) {
       const t = j / (colorsPerSegment - 1);
