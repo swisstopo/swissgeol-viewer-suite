@@ -35,7 +35,7 @@ export class Controls2dAction extends CoreElement {
   };
 
   readonly render = () =>
-    html`<ngm-core-icon icon="${this.isActive ? '2d' : '3d'}"></ngm-core-icon>`;
+    html`<ngm-core-icon icon="${this.isActive ? '3d' : '2d'}"></ngm-core-icon>`;
 
   static readonly styles = css`
     :host {
