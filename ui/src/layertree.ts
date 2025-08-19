@@ -8,10 +8,12 @@ import { PickableCesium3DTileset } from './layers/helpers';
 import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer';
 import { LayerTiffController } from 'src/features/layer';
 import { AppEnv, ClientConfig } from 'src/api/client-config';
+import swissbedrockColorMapAuthor from '../../titiler/colormaps/swissBEDROCK_Author.json';
 import swissbedrockColorMapBEM from '../../titiler/colormaps/swissBEDROCK_BEM.json';
 import swissbedrockColorMapChange from '../../titiler/colormaps/swissBEDROCK_Change.json';
 import swissbedrockColorMapTMUD from '../../titiler/colormaps/swissBEDROCK_TMUD.json';
 import swissbedrockColorMapUncertainty from '../../titiler/colormaps/swissBEDROCK_Uncertainty.json';
+import swissbedrockColorMapVersion from '../../titiler/colormaps/swissBEDROCK_Version.json';
 
 export type LayerTreeNode =
   | UnspecificLayerTreeNode
@@ -78,6 +80,11 @@ export interface GeoTIFFLayer {
    */
   metadata: {
     /**
+     * The TIFF's internal coordinate system.
+     */
+    crs: string;
+
+    /**
      * The TIFF's transform matrix.
      */
     transform: [[number, number, number], [number, number, number]];
@@ -105,15 +112,26 @@ export interface GeoTIFFDisplay {
 
   /**
    * Custom steps that are shown on the band's colored legend.
+   *
    * If left out, these steps will be calculated from {@link bounds}.
+   *
+   * If this is string array, the steps will be separated out evenly, and then labeled with the array's elements.
    */
-  steps?: number[];
+  steps?: string[] | Array<{ value: number; label: string } | number>;
 
   /**
    * The direction in which steps are ordered.
    * If left out, this defaults to `asc`.
    */
   stepDirection?: 'asc' | 'desc';
+
+  /**
+   * Whether each of the band's values is discrete.
+   *
+   * When this is set to `true`, it is assumed that all values of the band are defined within {@link steps},
+   * and there is no interpolation necessary between steps.
+   */
+  isDiscrete?: boolean;
 }
 
 export type GeoTIFFColorMap = Record<string, number[]>;
@@ -1199,9 +1217,18 @@ const group_01: LayerTreeNode =
                     name: 'BEM',
                     display: {
                       bounds: [-433, 4535],
+                      steps: [
+                        { value: -400, label: '<-400' },
+                        500,
+                        1000,
+                        2500,
+                        3000,
+                        { value: 4500, label: '>4500' },
+                      ],
+                      stepDirection: 'desc',
                       colorMap: {
                         name: 'swissBEDROCK_BEM',
-                        definition: swissbedrockColorMapBEM,
+                        definition: swissbedrockColorMapBEM as GeoTIFFColorMap,
                       },
                     },
                   },
@@ -1209,11 +1236,12 @@ const group_01: LayerTreeNode =
                     index: 2,
                     name: 'TMUD',
                     display: {
-                      bounds: [0, 800],
+                      bounds: [-1, 800],
                       noData: 0,
+                      steps: [3, 10, 50, 100, 200, 800],
                       colorMap: {
                         name: 'swissBEDROCK_TMUD',
-                        definition: swissbedrockColorMapTMUD,
+                        definition: swissbedrockColorMapTMUD as GeoTIFFColorMap,
                       },
                     },
                   },
@@ -1224,17 +1252,36 @@ const group_01: LayerTreeNode =
                       bounds: [0, 25],
                       colorMap: {
                         name: 'swissBEDROCK_Uncertainty',
-                        definition: swissbedrockColorMapUncertainty,
+                        definition:
+                          swissbedrockColorMapUncertainty as GeoTIFFColorMap,
                       },
                     },
                   },
                   {
                     index: 4,
                     name: 'Version',
+                    display: {
+                      bounds: [221104, 250519],
+                      colorMap: {
+                        name: 'swissBEDROCK_Version',
+                        definition:
+                          swissbedrockColorMapVersion as GeoTIFFColorMap,
+                      },
+                    },
                   },
                   {
                     index: 5,
                     name: 'Author',
+                    display: {
+                      bounds: [1, 6],
+                      steps: ['swisstopo', 'BE', 'GE', 'GLAMOS', 'VD', 'ZG'],
+                      isDiscrete: true,
+                      colorMap: {
+                        name: 'swissBEDROCK_Author',
+                        definition:
+                          swissbedrockColorMapAuthor as GeoTIFFColorMap,
+                      },
+                    },
                   },
                   {
                     index: 6,
@@ -1243,7 +1290,8 @@ const group_01: LayerTreeNode =
                       bounds: [-30, 30],
                       colorMap: {
                         name: 'swissBEDROCK_Change',
-                        definition: swissbedrockColorMapChange,
+                        definition:
+                          swissbedrockColorMapChange as GeoTIFFColorMap,
                       },
                     },
                   },
@@ -1252,9 +1300,11 @@ const group_01: LayerTreeNode =
                     name: 'prev_BEM',
                     display: {
                       bounds: [-433, 4535],
+                      steps: [-400, 500, 1000, 2500, 3000, 4500],
+                      stepDirection: 'desc',
                       colorMap: {
                         name: 'swissBEDROCK_BEM',
-                        definition: swissbedrockColorMapBEM,
+                        definition: swissbedrockColorMapBEM as GeoTIFFColorMap,
                       },
                     },
                   },
@@ -1263,11 +1313,11 @@ const group_01: LayerTreeNode =
                     name: 'prev_TMUD',
                     display: {
                       bounds: [0, 800],
+                      steps: [3, 10, 50, 100, 200, 800],
                       colorMap: {
                         name: 'swissBEDROCK_TMUD',
-                        definition: swissbedrockColorMapTMUD,
+                        definition: swissbedrockColorMapTMUD as GeoTIFFColorMap,
                       },
-                      noData: 0,
                     },
                   },
                   {
@@ -1277,7 +1327,8 @@ const group_01: LayerTreeNode =
                       bounds: [0, 25],
                       colorMap: {
                         name: 'swissBEDROCK_Uncertainty',
-                        definition: swissbedrockColorMapUncertainty,
+                        definition:
+                          swissbedrockColorMapUncertainty as GeoTIFFColorMap,
                       },
                     },
                   },
@@ -1288,12 +1339,21 @@ const group_01: LayerTreeNode =
                   {
                     index: 11,
                     name: 'prev_Author',
+                    display: {
+                      bounds: [1, 6],
+                      colorMap: {
+                        name: 'swissBEDROCK_Author',
+                        definition:
+                          swissbedrockColorMapAuthor as GeoTIFFColorMap,
+                      },
+                    },
                   },
                 ],
                 metadata: {
+                  crs: 'EPSG:2056',
                   transform: [
-                    [14.58, 0.0, 657112.46],
-                    [0.0, -14.63, 6079035.06],
+                    [10.0, 0.0, 2485000.0],
+                    [0.0, -10.0, 1298000.0],
                   ],
                   cellSize: 10,
                 },

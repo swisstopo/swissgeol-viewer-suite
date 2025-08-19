@@ -27,7 +27,6 @@ export class LayerTiffLegend extends CoreElement {
   private initialize(): void {
     // Compute the legend's background gradient.
     this.gradientCss = this.makeGradient();
-    console.log(this.gradientCss);
 
     // Calculate the steps that will be shown on the legend.
     this.steps =
