@@ -110,8 +110,9 @@ export class LayerTiffController {
   private makeImagery(band: GeoTIFFLayerBand): LayerTiffImagery {
     const noDataParam =
       band.display?.noData === undefined ? '' : '&nodata={nodata}';
+    const rescaleParam = band.display?.isDiscrete ? '' : '&rescale={min},{max}';
     const provider = new UrlTemplateImageryProvider({
-      url: `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url={url}&rescale={min},{max}&bidx={bidx}&colormap_name={colormap}${noDataParam}`,
+      url: `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url={url}&bidx={bidx}&colormap_name={colormap}${rescaleParam}${noDataParam}`,
       customTags: {
         url: () => this.layer.url,
         bidx: () => band.index,
@@ -178,9 +179,8 @@ export class LayerTiffController {
    */
   private computeCellCenter(lon: number, lat: number): [number, number] {
     const wgs84 = 'EPSG:4326';
-    const targetCRS = 'EPSG:3857';
 
-    const [x, y] = proj4(wgs84, targetCRS, [lon, lat]);
+    const [x, y] = proj4(wgs84, this.layer.metadata.crs, [lon, lat]);
 
     const [[a, _b, c], [_d, e, f]] = this.layer.metadata.transform;
 
@@ -193,7 +193,7 @@ export class LayerTiffController {
     const centerX = a * centerPx + c + a / 2;
     const centerY = e * centerPy + f + e / 2;
 
-    const [centerLon, centerLat] = proj4('EPSG:3857', 'EPSG:4326', [
+    const [centerLon, centerLat] = proj4(this.layer.metadata.crs, wgs84, [
       centerX,
       centerY,
     ]);

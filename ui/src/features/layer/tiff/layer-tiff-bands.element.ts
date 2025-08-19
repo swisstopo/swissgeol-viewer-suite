@@ -82,7 +82,7 @@ export class LayerTiffBands extends CoreElement {
 
     :host {
       display: flex;
-      width: 388px;
+      width: 420px;
     }
 
     ul {
