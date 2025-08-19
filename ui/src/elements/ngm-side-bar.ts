@@ -49,7 +49,7 @@ import { ClientConfig } from 'src/api/client-config';
 import { consume } from '@lit/context';
 import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
-import { skip, take } from 'rxjs';
+import { distinctUntilChanged, map, skip, take } from 'rxjs';
 import { run } from 'src/utils/fn.utils';
 import { getLayersConfig } from 'src/swisstopoImagery';
 
@@ -205,6 +205,16 @@ export class SideBar extends LitElementI18n {
     this.layerService.layerActivated$.subscribe((layer) => {
       this.maybeShowVisibilityHint(layer as LayerConfig);
     });
+
+    // Rerender when layer counter changes.
+    this.layerService.activeLayers$
+      .pipe(
+        map((it) => it.length),
+        distinctUntilChanged(),
+      )
+      .subscribe(() => {
+        this.requestUpdate();
+      });
   }
 
   async togglePanel(panelName, showHeader = true) {
