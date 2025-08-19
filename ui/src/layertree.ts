@@ -3418,3 +3418,15 @@ const filterLayer = (layers: LayerTreeNode[], env: AppEnv): LayerTreeNode[] =>
     acc.push(filteredLayer);
     return acc;
   }, [] as LayerTreeNode[]);
+
+export const flattenLayers = (layers: LayerTreeNode[]): LayerTreeNode[] => {
+  const flat: LayerTreeNode[] = [];
+  for (const layer of layers) {
+    if (layer.children) {
+      flat.push(...flattenLayers(layer.children));
+    } else {
+      flat.push(layer);
+    }
+  }
+  return flat;
+};

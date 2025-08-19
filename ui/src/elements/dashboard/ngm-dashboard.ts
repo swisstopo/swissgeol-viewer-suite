@@ -32,12 +32,13 @@ import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
 import { isProject, isProjectOwnerOrEditor } from './helpers';
-import { LayerConfig } from '../../layertree';
+import { LayerConfig, LayerTreeNode } from '../../layertree';
 import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
 import { parseKml, renderWithDelay } from '../../cesiumutils';
 import { consume } from '@lit/context';
 import { apiClientContext } from '../../context';
 import { LayerTiffController } from 'src/features/layer';
+import { LayerService } from 'src/features/layer/layer.service';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -104,28 +105,43 @@ export type TabTypes = 'topics' | 'overview' | 'projects' | 'shared';
 export class NgmDashboard extends LitElementI18n {
   @property({ type: Boolean })
   accessor hidden = true;
+
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
   @state()
   accessor projects: Project[] = [];
+
   @state()
   accessor activeTab: TabTypes = 'overview';
+
   @state()
   accessor selectedTopicOrProject: Topic | Project | undefined;
+
   @state()
   accessor projectToCreate: CreateProject | undefined;
+
   @state()
   accessor topics: Topic[] | undefined;
+
   @state()
   accessor selectedViewIndx: number | undefined;
+
   @state()
   accessor projectTabState: 'edit' | 'create' | 'view' = 'view';
+
   @state()
   accessor saveOrCancelWarning = false;
+
   @state()
   accessor showCursorPreloader = false;
+
   @query('.ngm-toast-placeholder')
   accessor toastPlaceholder;
+
   @query('#overview-toast')
   accessor overviewToast;
+
   private viewer: Viewer | null = null;
   private assetConfigs: any = {};
   private assets: LayerConfig[] | undefined;
@@ -198,19 +214,20 @@ export class NgmDashboard extends LitElementI18n {
     MainStore.layersRemoved.subscribe(async () => {
       if (this.selectedViewIndx !== undefined && this.assets) {
         await Promise.all(
-          this.assets.map(async (layer) => {
-            const data = await layer.promise;
+          this.assets.map(async (asset) => {
+            const layer = await asset.promise;
+            if (layer === undefined) {
+              return;
+            }
             if (
-              data &&
-              !(data instanceof EarthquakeVisualizer) &&
-              !(data instanceof LayerTiffController)
-            )
-              data.show = true;
-            this.dispatchEvent(
-              new CustomEvent('layerclick', {
-                detail: { layer },
-              }),
-            );
+              !(layer instanceof EarthquakeVisualizer) &&
+              !(layer instanceof LayerTiffController)
+            ) {
+              layer.show = true;
+            }
+            if ('type' in layer && 'displayed' in layer) {
+              this.layerService.toggle(layer as unknown as LayerTreeNode);
+            }
           }),
         );
       }

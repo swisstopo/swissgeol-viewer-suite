@@ -3,35 +3,32 @@ import { CoreElement } from 'src/features/core';
 import { LayerConfig } from 'src/layertree';
 import { css, html } from 'lit';
 import i18next from 'i18next';
-import { LayerEventDetail } from 'src/features/layer/layer-event.model';
+import { LayerService } from 'src/features/layer/layer.service';
+import { consume } from '@lit/context';
 
 @customElement('ngm-layer-catalog-item')
 export class LayerCatalogItem extends CoreElement {
   @property() accessor layer!: LayerConfig;
 
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
   connectedCallback() {
     super.connectedCallback();
 
     let isActive: boolean | null = null;
-    const interval = setInterval(() => {
-      if (this.layer.displayed !== isActive) {
-        isActive = this.layer.displayed ?? null;
-        this.requestUpdate();
-      }
-    }, 1000);
-    this.register(() => clearInterval(interval));
+    this.register(
+      this.layerService.activeLayers$.subscribe(() => {
+        if (this.layer.displayed !== isActive) {
+          isActive = this.layer.displayed ?? null;
+          this.requestUpdate();
+        }
+      }),
+    );
   }
 
   private toggleLayer(layer: LayerConfig): void {
-    this.dispatchEvent(
-      new CustomEvent<LayerEventDetail>('layer-click', {
-        composed: true,
-        bubbles: true,
-        detail: {
-          layer,
-        },
-      }),
-    );
+    this.layerService.toggle(layer);
     this.requestUpdate();
   }
 

@@ -1,24 +1,23 @@
-import { syncLayersParam } from '../permalink';
 import {
   calculateBox,
   calculateRectangle,
   getBoxFromRectangle,
 } from './helpers';
-import { LayerType, MAP_RECTANGLE } from '../constants';
+import { MAP_RECTANGLE } from '../constants';
+import type { Viewer } from 'cesium';
 import {
   Cartesian3,
-  Rectangle,
   Cartographic,
-  Color,
   Cesium3DTileset,
-  ImageryLayer,
+  Color,
   CustomDataSource,
   GeoJsonDataSource,
+  ImageryLayer,
+  Rectangle,
   VoxelPrimitive,
 } from 'cesium';
-import type { Viewer } from 'cesium';
 
-import { GeoTIFFLayer, LayerConfig } from '../layertree';
+import { LayerConfig } from '../layertree';
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer';
 import { LayerService } from 'src/features/layer/layer.service';
 
@@ -150,30 +149,6 @@ export default class LayersAction {
       this.boundingBoxEntity.show = false;
       this.viewer.scene.requestRender();
     }
-  }
-
-  async reorderLayers(newLayers: LayerConfig[]) {
-    const imageries = this.viewer.scene.imageryLayers;
-    const dataSources = this.viewer.dataSources;
-    for (const config of newLayers) {
-      const layer = await config.promise;
-      if (
-        config.type === LayerType.swisstopoWMTS &&
-        layer instanceof ImageryLayer
-      ) {
-        imageries.raiseToTop(layer);
-      } else if (
-        layer instanceof CustomDataSource &&
-        dataSources.contains(layer)
-      ) {
-        dataSources.raiseToTop(layer);
-      } else if (config.type === LayerType.geoTIFF) {
-        const imagery = (config as GeoTIFFLayer).controller!.activeImagery;
-        imageries.raiseToTop(imagery);
-      }
-    }
-    this.viewer.scene.requestRender();
-    syncLayersParam(this.layerService);
   }
 
   listenForEvent(config: LayerConfig, eventName, callback) {

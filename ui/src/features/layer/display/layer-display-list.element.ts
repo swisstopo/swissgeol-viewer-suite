@@ -1,4 +1,4 @@
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { consume } from '@lit/context';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { css, html, PropertyValues } from 'lit';
@@ -14,20 +14,13 @@ import DashboardStore from 'src/store/dashboard';
 import Sortable from 'sortablejs';
 import { repeat } from 'lit/directives/repeat.js';
 import MainStore from 'src/store/main';
-import {
-  LayerEvent,
-  LayerEventDetail,
-  LayersEventDetail,
-} from 'src/features/layer';
 import LayersActions from 'src/layers/LayersActions';
 import { getVoxelShader } from 'src/layers/voxels-helper';
 import { LayerService } from 'src/features/layer/layer.service';
+import { syncLayersParam } from 'src/permalink';
 
 @customElement('ngm-layer-display-list')
 export class LayerDisplayList extends CoreElement {
-  @consume({ context: LayerService.activeLayersContext, subscribe: true })
-  accessor layers!: LayerTreeNode[];
-
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
 
@@ -40,6 +33,9 @@ export class LayerDisplayList extends CoreElement {
   })
   accessor background!: BackgroundLayer;
 
+  @state()
+  accessor layers!: readonly LayerTreeNode[];
+
   private actions!: LayersActions;
 
   private sortable: Sortable | null = null;
@@ -47,8 +43,6 @@ export class LayerDisplayList extends CoreElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-
-    this.handleLayerRemoval = this.handleLayerRemoval.bind(this);
   }
 
   connectedCallback(): void {
@@ -57,6 +51,12 @@ export class LayerDisplayList extends CoreElement {
     this.register(
       MainStore.viewer.subscribe((viewer) => {
         this.actions = new LayersActions(viewer!, this.layerService);
+      }),
+    );
+
+    this.register(
+      this.layerService.activeLayers$.subscribe((layers) => {
+        this.layers = layers;
       }),
     );
   }
@@ -134,16 +134,6 @@ export class LayerDisplayList extends CoreElement {
     }
   }
 
-  private changeLayer(layer: LayerConfig): void {
-    this.dispatchEvent(
-      new CustomEvent<LayerEventDetail>('layer-change', {
-        detail: {
-          layer,
-        },
-      }),
-    );
-  }
-
   get visibleLayers(): LayerTreeNode[] {
     if (!DashboardStore.projectMode.value) {
       // Don't show KML assets in project view mode.
@@ -192,7 +182,7 @@ export class LayerDisplayList extends CoreElement {
     }
     layer.visible = isVisible;
     await this.actions.changeVisibility(layer, isVisible);
-    this.changeLayer(layer);
+    syncLayersParam(this.layerService);
     this.requestUpdate();
   }
 
@@ -209,23 +199,13 @@ export class LayerDisplayList extends CoreElement {
 
     this.actions.changeOpacity(layer, opacity);
     await this.updateLayerVisibility(layer, opacity > 0);
-    this.changeLayer(layer);
+    syncLayersParam(this.layerService);
     this.requestUpdate();
-  }
-
-  private async handleLayerRemoval(event: LayerEvent): Promise<void> {
-    const newLayers = [...this.layers];
-    const i = this.layers.findIndex((layer) => layer === event.detail.layer);
-    // this.shadowRoot!.querySelector(`ngm-layer-display-list-item[data-id="${event.detail.layer.label}"]`)!.remove();
-    newLayers.splice(i, 1);
-    this.updateLayers(newLayers);
-    this.removeLayer(event.detail.layer);
   }
 
   private reorderLayer(oldIndex: number, newIndex: number): void {
     oldIndex = this.layers.length - 1 - oldIndex;
     newIndex = this.layers.length - 1 - newIndex;
-
     const newLayers = [...this.layers];
     const [layer] = newLayers.splice(oldIndex, 1);
     newLayers.splice(newIndex, 0, layer);
@@ -233,23 +213,7 @@ export class LayerDisplayList extends CoreElement {
   }
 
   private updateLayers(layers: LayerTreeNode[]): void {
-    this.dispatchEvent(
-      new CustomEvent<LayersEventDetail>('layers-update', {
-        detail: {
-          layers,
-        },
-      }),
-    );
-  }
-
-  private removeLayer(layer: LayerConfig): void {
-    this.dispatchEvent(
-      new CustomEvent('layer-removal', {
-        detail: {
-          layer,
-        },
-      }) satisfies LayerEvent,
-    );
+    this.layerService.set(layers);
   }
 
   readonly render = () => html`
@@ -269,7 +233,7 @@ export class LayerDisplayList extends CoreElement {
     <ul>
       ${repeat(
         this.visibleLayers,
-        (layer) => layer.label,
+        (layer) => layer.layer ?? layer.assetId ?? layer,
         (layer) => html`
           <ngm-layer-display-list-item
             role="listitem"
@@ -279,7 +243,6 @@ export class LayerDisplayList extends CoreElement {
             .opacity="${layer.opacity ?? 1}"
             draggable
             data-id="${layer.label}"
-            @layer-removed="${this.handleLayerRemoval}"
             @visibility-changed="${(e: VisibilityChangeEvent) =>
               this.updateLayerVisibility(layer, e.detail.isVisible)}"
             @opacity-changed="${(e: OpacityChangeEvent) =>
