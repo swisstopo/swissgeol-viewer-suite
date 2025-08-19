@@ -16,7 +16,13 @@ import {
 } from 'rxjs';
 import { syncLayersParam } from 'src/permalink';
 import { createCesiumObject } from 'src/layers/helpers';
-import { CustomDataSource, ImageryLayer, Viewer } from 'cesium';
+import {
+  Cesium3DTileset,
+  CustomDataSource,
+  GeoJsonDataSource,
+  ImageryLayer,
+  Viewer,
+} from 'cesium';
 import MainStore from 'src/store/main';
 
 export class LayerService extends BaseService {
@@ -135,6 +141,17 @@ export class LayerService extends BaseService {
   private mutateLayerToBeInactive(layer: LayerTreeNode): void {
     const config = layer as LayerConfig;
     if (layer.displayed) {
+      config.promise?.then((c) => {
+        if (c instanceof CustomDataSource || c instanceof GeoJsonDataSource) {
+          this.viewer!.dataSources.getByName(c.name)[0].show = false;
+        } else if (c instanceof Cesium3DTileset) {
+          c.show = false;
+        }
+      });
+      if (layer.ionToken && layer.assetId) {
+        MainStore.removeIonAssetId(layer.assetId);
+      }
+
       layer.displayed = false;
       layer.visible = false;
       config.remove?.();

@@ -176,7 +176,7 @@ export class SideBar extends LitElementI18n {
         label: asset.name,
         layer: asset.id.toString(),
         visible: true,
-        displayed: true,
+        displayed: false,
         opacityDisabled: true,
         pickable: true,
         customAsset: true,
@@ -487,19 +487,13 @@ export class SideBar extends LitElementI18n {
   }
 
   private async removeLayerWithoutSync(layer: LayerConfig): Promise<void> {
-    if (layer.setVisibility) {
-      layer.setVisibility(false);
-    } else {
+    if (!layer.setVisibility) {
       const c = await layer.promise;
       if (c instanceof CustomDataSource || c instanceof GeoJsonDataSource) {
         this.viewer!.dataSources.getByName(c.name)[0].show = false;
       }
     }
-    layer.visible = false;
-    layer.displayed = false;
-    if (layer.remove) {
-      layer.remove();
-    }
+    this.layerService.deactivate(layer);
     if (layer.ionToken && layer.assetId) {
       MainStore.removeIonAssetId(layer.assetId);
     }
