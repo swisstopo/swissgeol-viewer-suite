@@ -13,6 +13,8 @@ import {
   PolygonHierarchy,
   Viewer,
   ColorMaterialProperty,
+  Cartesian3,
+  JulianDate,
 } from 'cesium';
 import { LayerTiffController, PickData } from 'src/features/layer';
 import i18next from 'i18next';
@@ -123,14 +125,15 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
 }
 
 class LayerInfoForTiff implements LayerInfo {
-  public readonly entity: Entity;
   public readonly source: LayerTiffController;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
+  private readonly entity: Entity;
 
   constructor(
     private readonly viewer: Viewer,
-    data: Pick<LayerInfo, 'entity' | 'source' | 'title' | 'attributes'> & {
+    data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
+      entity: Entity;
       source: LayerTiffController;
     },
   ) {
@@ -139,6 +142,19 @@ class LayerInfoForTiff implements LayerInfo {
     this.title = data.title;
     this.attributes = data.attributes;
     this.viewer.entities.add(this.entity);
+  }
+
+  zoomToObject(): void {
+    const coords = this.entity.position!.getValue(JulianDate.now())!;
+    const position = Cartographic.fromCartesian(coords);
+
+    this.viewer.camera.setView({
+      destination: Cartesian3.fromRadians(
+        position.longitude,
+        position.latitude,
+        position.height + 1000,
+      ),
+    });
   }
 
   activateHighlight(): void {

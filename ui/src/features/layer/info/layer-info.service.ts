@@ -29,6 +29,7 @@ import {
 import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
 import { LayerTreeNode, LayerType } from 'src/layertree';
 import { LayerInfoPickerForGeoadmin } from 'src/features/layer/info/pickers/layer-info-picker-for-geoadmin';
+import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
 
 export class LayerInfoService extends BaseService {
   private readonly infosSubject = new BehaviorSubject<LayerInfo[]>([]);
@@ -206,14 +207,16 @@ export class LayerInfoService extends BaseService {
   private readonly handleQueryableLayerAddition = (
     layer: LayerTreeNode,
   ): void => {
-    if (layer.type === LayerType.geoTIFF) {
+    if (!layer.pickable || layer.type === LayerType.geoTIFF) {
       return;
     }
     this.queueModification({
       source: layer,
       action: () =>
         this.pickers.unshift(
-          new LayerInfoPickerForGeoadmin(layer, this.viewer),
+          layer.type === LayerType.voxels3dtiles
+            ? new LayerInfoPickerForVoxels(layer, this.viewer)
+            : new LayerInfoPickerForGeoadmin(layer, this.viewer),
         ),
     });
   };

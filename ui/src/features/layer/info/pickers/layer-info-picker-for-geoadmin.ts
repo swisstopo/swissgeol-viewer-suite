@@ -32,6 +32,7 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
     private readonly layer: LayerTreeNode,
     private readonly viewer: Viewer,
   ) {
+    console.log(this.layer);
     this.highlights = new CustomDataSource(
       `LayerInfoPickerForGeoadmin.${layer.layer}`,
     );
@@ -102,7 +103,7 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
         value,
       } satisfies LayerInfoAttribute;
     });
-    return new LayerInfoForGeoadmin(this.highlights, {
+    return new LayerInfoForGeoadmin(this.viewer, this.highlights, {
       entity,
       source: this.layer,
       title: title,
@@ -192,14 +193,17 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
 }
 
 class LayerInfoForGeoadmin implements LayerInfo {
-  public readonly entity: Entity;
   public readonly source: LayerTreeNode;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
+  private readonly entity: Entity;
+
   constructor(
+    private readonly viewer: Viewer,
     private readonly dataSource: CustomDataSource,
-    data: Pick<LayerInfo, 'entity' | 'source' | 'title' | 'attributes'> & {
+    data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
+      entity: Entity;
       source: LayerTreeNode;
     },
   ) {
@@ -208,6 +212,10 @@ class LayerInfoForGeoadmin implements LayerInfo {
     this.title = data.title;
     this.attributes = data.attributes;
     this.dataSource.entities.add(this.entity);
+  }
+
+  zoomToObject(): void {
+    this.viewer.zoomTo(this.entity);
   }
 
   activateHighlight(): void {

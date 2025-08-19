@@ -5,10 +5,9 @@ import { LayerInfo } from 'src/features/layer/info/layer-info.model';
 import i18next from 'i18next';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
-import { Cartesian3, Cartographic, JulianDate, Viewer } from 'cesium';
+import { Viewer } from 'cesium';
 import { viewerContext } from 'src/context';
 import { consume } from '@lit/context';
-import { LayerTiffController } from 'src/features/layer';
 
 @customElement('ngm-layer-info-item')
 export class LayerInfoItem extends CoreElement {
@@ -52,21 +51,8 @@ export class LayerInfoItem extends CoreElement {
     }
   }
 
-  private readonly zoomToData = (): void => {
-    if (this.info.source instanceof LayerTiffController) {
-      const coords = this.info.entity.position!.getValue(JulianDate.now())!;
-      const position = Cartographic.fromCartesian(coords);
-
-      this.viewer.camera.setView({
-        destination: Cartesian3.fromRadians(
-          position.longitude,
-          position.latitude,
-          position.height + 1000,
-        ),
-      });
-    } else {
-      this.viewer.zoomTo(this.info.entity);
-    }
+  private readonly zoomToObject = (): void => {
+    this.info.zoomToObject();
   };
 
   private readonly startResizing = (event: MouseEvent) => {
@@ -99,7 +85,7 @@ export class LayerInfoItem extends CoreElement {
       <sgc-icon name="chevronDown"></sgc-icon>
     </label>
     <div class="content">
-      <sgc-button color="secondary" @click="${this.zoomToData}">
+      <sgc-button color="secondary" @click="${this.zoomToObject}">
         ${i18next.t('layers:infoWindow.zoomToObject')}
         <ngm-core-icon icon="zoomPlus"></ngm-core-icon>
       </sgc-button>
