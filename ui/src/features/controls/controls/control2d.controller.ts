@@ -115,7 +115,7 @@ export class Control2dController {
 
   private disableTiltGestures(): void {
     this.tiltEventTypesBackup = this.cameraController.tiltEventTypes;
-    this.lookEventTypesBackup = this.cameraController.tiltEventTypes;
+    this.lookEventTypesBackup = this.cameraController.lookEventTypes;
     this.cameraController.tiltEventTypes = [];
     this.cameraController.lookEventTypes = [];
   }
