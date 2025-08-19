@@ -85,6 +85,13 @@ export class LayerService extends BaseService {
   }
 
   activate(layer: LayerTreeNode): void {
+    const i = this.layersSubject.value.findIndex((it) =>
+      isSameLayer(layer, it),
+    );
+    if (i >= 0) {
+      return;
+    }
+
     layer.visible = true;
     this.mutateLayerToBeActive(layer);
     this.layersSubject.next([...this.layersSubject.value, layer]);

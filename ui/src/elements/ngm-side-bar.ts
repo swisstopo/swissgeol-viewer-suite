@@ -47,7 +47,7 @@ import { getAssets } from 'src/api-ion';
 import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { consume } from '@lit/context';
-import { LayerService } from 'src/features/layer/layer.service';
+import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { distinctUntilChanged, map, skip, take } from 'rxjs';
 import { run } from 'src/utils/fn.utils';
@@ -347,8 +347,12 @@ export class SideBar extends LitElementI18n {
     if ('dataSourceName' in searchLayer) {
       layer = flatLayers.find((l) => l.type === searchLayer.dataSourceName); // check for layers like earthquakes
     } else {
-      layer = flatLayers.find((l) => l.layer === searchLayer.layer); // check for swisstopoWMTS layers
+      layer = flatLayers.find((l) => isSameLayer(l, searchLayer)); // check for swisstopoWMTS layers
     }
+
+    layer ??= this.layerService.activeLayers.find((l) =>
+      isSameLayer(l, searchLayer),
+    );
 
     if (layer === undefined) {
       // Create new layer
@@ -376,7 +380,7 @@ export class SideBar extends LitElementI18n {
           label: searchLayer.title ?? searchLayer.label,
           layer: searchLayer.layer,
           visible: true,
-          displayed: true,
+          displayed: false,
           opacity: DEFAULT_LAYER_OPACITY,
           queryType: 'geoadmin',
           legend: searchLayer.layer,
