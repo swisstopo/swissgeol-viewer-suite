@@ -1195,7 +1195,7 @@ const group_01: LayerTreeNode =
               {
                 // Layer Top Bedrock Geotiff
                 type: LayerType.geoTIFF,
-                url: 'https://download.swissgeol.ch/swissbedrock/test2025-04-07/release1_EPSG3857.tif',
+                url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
                 layer: 'ch.swisstopo.swissbedrock-geotiff',
                 id: 'swissBEDROCK',
                 label: t('layers:swissBEDROCK.title'),
