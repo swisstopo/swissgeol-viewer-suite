@@ -58,9 +58,7 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
     ];
   }
 
-  destroy(): void {
-    throw new Error('Method not implemented.');
-  }
+  destroy(): void {}
 }
 
 class LayerInfoForVoxels implements LayerInfo {

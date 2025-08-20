@@ -106,7 +106,7 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
     return new LayerInfoForGeoadmin(this.viewer, this.highlights, {
       entity,
       source: this.layer,
-      title: title,
+      title,
       attributes,
     });
   }

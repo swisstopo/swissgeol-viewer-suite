@@ -30,6 +30,7 @@ import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
 import { LayerTreeNode, LayerType } from 'src/layertree';
 import { LayerInfoPickerForGeoadmin } from 'src/features/layer/info/pickers/layer-info-picker-for-geoadmin';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
+import { LayerInfoPickerFor3dTiles } from 'src/features/layer/info/pickers/layer-info-picker-for-3dtiles';
 
 export class LayerInfoService extends BaseService {
   private readonly infosSubject = new BehaviorSubject<LayerInfo[]>([]);
@@ -210,14 +211,27 @@ export class LayerInfoService extends BaseService {
     if (!layer.pickable || layer.type === LayerType.geoTIFF) {
       return;
     }
+    console.log(layer);
     this.queueModification({
       source: layer,
-      action: () =>
-        this.pickers.unshift(
-          layer.type === LayerType.voxels3dtiles
-            ? new LayerInfoPickerForVoxels(layer, this.viewer)
-            : new LayerInfoPickerForGeoadmin(layer, this.viewer),
-        ),
+      action: () => {
+        switch (layer.type) {
+          case LayerType.voxels3dtiles:
+            this.pickers.unshift(
+              new LayerInfoPickerForVoxels(layer, this.viewer),
+            );
+            break;
+          case LayerType.tiles3d:
+            this.pickers.unshift(
+              new LayerInfoPickerFor3dTiles(layer, this.viewer),
+            );
+            break;
+          default:
+            this.pickers.unshift(
+              new LayerInfoPickerForGeoadmin(layer, this.viewer),
+            );
+        }
+      },
     });
   };
 

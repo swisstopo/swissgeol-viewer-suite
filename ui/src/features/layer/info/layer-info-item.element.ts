@@ -81,7 +81,7 @@ export class LayerInfoItem extends CoreElement {
   readonly render = () => html`
     <label class="toggle">
       <input type="checkbox" />
-      ${this.info.title}
+      ${i18next.t(this.info.title)}
       <sgc-icon name="chevronDown"></sgc-icon>
     </label>
     <div class="content">
@@ -94,7 +94,10 @@ export class LayerInfoItem extends CoreElement {
           ${repeat(
             this.info.attributes,
             (it) => it.key,
-            (it) => html`<li title="${it.key}">${it.key}</li>`,
+            (it) =>
+              html`<li title="${i18next.t(`${it.key}`)}">
+                ${i18next.t(`${it.key}`)}
+              </li>`,
           )}
         </ul>
         <div class="divider" @mousedown="${this.startResizing}"></div>
@@ -102,7 +105,10 @@ export class LayerInfoItem extends CoreElement {
           ${repeat(
             this.info.attributes,
             (it) => it.key,
-            (it) => html`<li title="${it.value}">${it.value}</li>`,
+            (it) =>
+              html`<li title="${i18next.t(`${it.value}`)}">
+                ${i18next.t(`${it.value}`)}
+              </li>`,
           )}
         </ul>
       </div>
