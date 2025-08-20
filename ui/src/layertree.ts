@@ -80,16 +80,6 @@ export interface GeoTIFFLayer {
    */
   metadata: {
     /**
-     * The TIFF's internal coordinate system.
-     */
-    crs: string;
-
-    /**
-     * The TIFF's transform matrix.
-     */
-    transform: [[number, number, number], [number, number, number]];
-
-    /**
      * The width and height of each of the TIFF's cells, in meters.
      */
     cellSize: number;
@@ -1350,11 +1340,6 @@ const group_01: LayerTreeNode =
                   },
                 ],
                 metadata: {
-                  crs: 'EPSG:3857',
-                  transform: [
-                    [14.58, 0.0, 657114.8],
-                    [0.0, -14.63, 6079036.3],
-                  ],
                   cellSize: 10,
                 },
               } satisfies GeoTIFFLayer,

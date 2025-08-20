@@ -27,7 +27,7 @@ import {
   LayerInfoSource,
 } from 'src/features/layer/info/layer-info.model';
 import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
-import { LayerTreeNode } from 'src/layertree';
+import { LayerTreeNode, LayerType } from 'src/layertree';
 import { LayerInfoPickerForGeoadmin } from 'src/features/layer/info/pickers/layer-info-picker-for-geoadmin';
 
 export class LayerInfoService extends BaseService {
@@ -206,6 +206,9 @@ export class LayerInfoService extends BaseService {
   private readonly handleQueryableLayerAddition = (
     layer: LayerTreeNode,
   ): void => {
+    if (layer.type === LayerType.geoTIFF) {
+      return;
+    }
     this.queueModification({
       source: layer,
       action: () =>
