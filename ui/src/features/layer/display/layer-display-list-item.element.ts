@@ -10,6 +10,7 @@ import { Entity, Viewer } from 'cesium';
 import i18next from 'i18next';
 import { LayerService } from 'src/features/layer/layer.service';
 import { consume } from '@lit/context';
+import { LayerTiffController } from 'src/features/layer';
 
 @customElement('ngm-layer-display-list-item')
 export class LayerDisplayListItem extends CoreElement {
@@ -113,6 +114,10 @@ export class LayerDisplayListItem extends CoreElement {
       return;
     }
     const entity = await this.layer.promise;
+    if (entity instanceof LayerTiffController) {
+      entity.zoomIntoView();
+      return;
+    }
     await this.viewer.flyTo(entity as unknown as Entity);
   }
 

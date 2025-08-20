@@ -1,12 +1,13 @@
 import {
   Cartesian3,
-  Cartographic,
+  Ellipsoid,
   ImageryLayer,
   Math as CesiumMath,
   Resource,
   UrlTemplateImageryProvider,
   Viewer,
   WebMercatorTilingScheme,
+  Rectangle,
 } from 'cesium';
 import { GeoTIFFLayer, GeoTIFFLayerBand, LayerConfig } from 'src/layertree';
 import { SWITZERLAND_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
@@ -14,6 +15,8 @@ import proj4 from 'proj4';
 
 export class LayerTiffController {
   private active!: ActiveBand;
+
+  private metadata!: TiffMetadata;
 
   constructor(
     readonly layer: LayerConfig & GeoTIFFLayer,
@@ -35,6 +38,8 @@ export class LayerTiffController {
       remove: this.removeFromViewer,
     });
     this.activateBand(layer.bands[0].index);
+
+    this.fetchMetadata().then((info) => (this.metadata = info));
   }
 
   get activeImagery(): ImageryLayer {
@@ -71,7 +76,7 @@ export class LayerTiffController {
       return null;
     }
 
-    const coords = Cartographic.fromCartesian(cartesian);
+    const coords = Ellipsoid.WGS84.cartesianToCartographic(cartesian);
     const longitude = CesiumMath.toDegrees(coords.longitude);
     const latitude = CesiumMath.toDegrees(coords.latitude);
 
@@ -105,6 +110,31 @@ export class LayerTiffController {
       console.error(`failed to pick geoTIFF ${this.layer.id}`, e);
       return null;
     }
+  }
+
+  zoomIntoView(): void {
+    const bounds = this.metadata.bounds;
+
+    const cornersSrc = [
+      [bounds[0], bounds[1]], // SW
+      [bounds[0], bounds[3]], // NW
+      [bounds[2], bounds[1]], // SE
+      [bounds[2], bounds[3]], // NE
+    ];
+
+    const cornersWgs84 = cornersSrc.map(([x, y]) =>
+      proj4(this.metadata.crs, 'EPSG:4326', [x, y]),
+    );
+
+    const lons = cornersWgs84.map((c) => c[0]);
+    const lats = cornersWgs84.map((c) => c[1]);
+    const west = Math.min(...lons);
+    const east = Math.max(...lons);
+    const south = Math.min(...lats);
+    const north = Math.max(...lats);
+
+    const rect = Rectangle.fromDegrees(west, south, east, north);
+    this.viewer.camera.flyTo({ destination: rect });
   }
 
   private makeImagery(band: GeoTIFFLayerBand): LayerTiffImagery {
@@ -168,6 +198,32 @@ export class LayerTiffController {
     this.active.imagery.alpha = opacity;
   };
 
+  private async fetchMetadata(): Promise<TiffMetadata> {
+    interface Json {
+      bounds: [number, number, number, number];
+      crs: `http://www.opengis.net/def/crs/EPSG/0/${number}`;
+      width: number;
+      height: number;
+    }
+
+    const url = `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/info?url=${this.layer.url}`;
+    const json: Json = await Resource.fetchJson({ url });
+
+    const [minX, minY, maxX, maxY] = json.bounds;
+    const widthInCrs = maxX - minX;
+    const heightInCrs = maxY - minY;
+
+    const cellWidth = widthInCrs / json.width;
+    const cellHeight = heightInCrs / json.height;
+
+    return {
+      bounds: json.bounds,
+      crs: `EPSG:${json.crs.slice(json.crs.lastIndexOf('/') + 1)}`,
+      dimension: [json.width, json.height],
+      cellDimension: [cellWidth, cellHeight],
+    };
+  }
+
   /**
    * Given a 2d coordinate, this method calculates in which of the TIFF's cells that coordinate falls.
    *
@@ -180,20 +236,21 @@ export class LayerTiffController {
   private computeCellCenter(lon: number, lat: number): [number, number] {
     const wgs84 = 'EPSG:4326';
 
-    const [x, y] = proj4(wgs84, this.layer.metadata.crs, [lon, lat]);
+    const [x, y] = proj4(wgs84, this.metadata.crs, [lon, lat]);
 
-    const [[a, _b, c], [_d, e, f]] = this.layer.metadata.transform;
+    const [originX, _y, _x, originY] = this.metadata.bounds;
+    const [cellWidth, cellHeight] = this.metadata.cellDimension;
 
-    const px = Math.floor((x - c) / a);
-    const py = Math.floor((y - f) / e);
+    const px = Math.floor((x - originX) / cellWidth);
+    const py = Math.floor((y - originY) / cellHeight);
 
     const centerPx = px;
     const centerPy = py;
 
-    const centerX = a * centerPx + c + a / 2;
-    const centerY = e * centerPy + f + e / 2;
+    const centerX = cellWidth * centerPx + originX + cellWidth / 2;
+    const centerY = cellHeight * centerPy + originY + cellHeight / 2;
 
-    const [centerLon, centerLat] = proj4(this.layer.metadata.crs, wgs84, [
+    const [centerLon, centerLat] = proj4(this.metadata.crs, wgs84, [
       centerX,
       centerY,
     ]);
@@ -215,6 +272,29 @@ export interface PickData {
   layer: GeoTIFFLayer;
   coordinates: Cartesian3;
   bands: Array<number | null>;
+}
+
+interface TiffMetadata {
+  /**
+   * The TIFF's coordinate system (e.g. "EPSG:4326").
+   */
+  crs: string;
+
+  /**
+   * The TIFF's bounding rectangle in the format `[minX, minY, maxX, maxY]`.
+   * The units correspond to the TIFF's {@link crs coordinate system}.
+   */
+  bounds: [number, number, number, number];
+
+  /**
+   * The amount of cells (i.e. pixels) the TIFF contains on its x- and y-axis, respectively.
+   */
+  dimension: [number, number];
+
+  /**
+   * The size of each of the TIFF's cells (i.e. pixels) inside the TIFF's {@link crs coordinate system}.
+   */
+  cellDimension: [number, number];
 }
 
 export const isLayerTiffImagery = (
