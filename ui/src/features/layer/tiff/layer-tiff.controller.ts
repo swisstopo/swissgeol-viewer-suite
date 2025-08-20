@@ -7,6 +7,7 @@ import {
   UrlTemplateImageryProvider,
   Viewer,
   WebMercatorTilingScheme,
+  Rectangle,
 } from 'cesium';
 import { GeoTIFFLayer, GeoTIFFLayerBand, LayerConfig } from 'src/layertree';
 import { SWITZERLAND_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
@@ -109,6 +110,31 @@ export class LayerTiffController {
       console.error(`failed to pick geoTIFF ${this.layer.id}`, e);
       return null;
     }
+  }
+
+  zoomIntoView(): void {
+    const bounds = this.metadata.bounds;
+
+    const cornersSrc = [
+      [bounds[0], bounds[1]], // SW
+      [bounds[0], bounds[3]], // NW
+      [bounds[2], bounds[1]], // SE
+      [bounds[2], bounds[3]], // NE
+    ];
+
+    const cornersWgs84 = cornersSrc.map(([x, y]) =>
+      proj4(this.metadata.crs, 'EPSG:4326', [x, y]),
+    );
+
+    const lons = cornersWgs84.map((c) => c[0]);
+    const lats = cornersWgs84.map((c) => c[1]);
+    const west = Math.min(...lons);
+    const east = Math.max(...lons);
+    const south = Math.min(...lats);
+    const north = Math.max(...lats);
+
+    const rect = Rectangle.fromDegrees(west, south, east, north);
+    this.viewer.camera.flyTo({ destination: rect });
   }
 
   private makeImagery(band: GeoTIFFLayerBand): LayerTiffImagery {
