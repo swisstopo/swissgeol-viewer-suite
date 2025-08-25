@@ -75,6 +75,9 @@ export interface GeoTIFFLayer {
 
   controller?: LayerTiffController;
 
+  downloadUrl?: string;
+  geocatId?: string;
+
   /**
    * Information about what the TIFF's contents represent.
    */
