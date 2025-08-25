@@ -1252,6 +1252,7 @@ const group_01: LayerTreeNode =
                     name: 'Version',
                     display: {
                       bounds: [221104, 250519],
+                      isDiscrete: true,
                       colorMap: {
                         name: 'swissBEDROCK_Version',
                         definition:
@@ -1331,6 +1332,8 @@ const group_01: LayerTreeNode =
                     name: 'prev_Author',
                     display: {
                       bounds: [1, 6],
+                      steps: ['swisstopo', 'BE', 'GE', 'GLAMOS', 'VD', 'ZG'],
+                      isDiscrete: true,
                       colorMap: {
                         name: 'swissBEDROCK_Author',
                         definition:

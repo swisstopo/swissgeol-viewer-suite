@@ -38,6 +38,14 @@ export class LayerTiffLegend extends CoreElement {
   }
 
   private makeStepsFromBounds(): Step[] {
+    if (this.display.isDiscrete) {
+      const keys = Object.keys(this.display.colorMap.definition);
+      const base = 1 / keys.length;
+      return keys.map((key, i) => ({
+        percentage: base * i + base / 2,
+        value: key,
+      }));
+    }
     const [min, max] = this.display.bounds;
     const step = (max - min) / 5;
     const base = 1 / 5;
@@ -58,7 +66,9 @@ export class LayerTiffLegend extends CoreElement {
     const [base, offset] = run(() => {
       const n = values.length;
       if (this.display.isDiscrete) {
-        if (n === 1) return [1, 0.5]; // only step at center
+        if (n === 1) {
+          return [1, 0.5];
+        }
         const base = 1 / n;
         return [base, base / 2];
       }
@@ -97,7 +107,7 @@ export class LayerTiffLegend extends CoreElement {
       colors.reverse();
     }
     if (this.display.isDiscrete) {
-      const feather = 10; // total blend width in percent
+      const feather = 0; // total blend width in percent
       const round3 = (x: number) => Number(x.toFixed(3));
 
       const percentage = 100 / colors.length;
