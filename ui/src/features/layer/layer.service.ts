@@ -24,6 +24,7 @@ import {
   Viewer,
 } from 'cesium';
 import MainStore from 'src/store/main';
+import EarthquakeVisualizer from 'src/earthquakeVisualization/earthquakeVisualizer';
 
 export class LayerService extends BaseService {
   private readonly layersSubject = new BehaviorSubject<
@@ -146,6 +147,8 @@ export class LayerService extends BaseService {
           this.viewer!.dataSources.getByName(c.name)[0].show = false;
         } else if (c instanceof Cesium3DTileset) {
           c.show = false;
+        } else if (c instanceof EarthquakeVisualizer) {
+          c.setVisible(false);
         }
       });
       if (layer.ionToken && layer.assetId) {

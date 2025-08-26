@@ -8,6 +8,7 @@ import { applyTypography } from 'src/styles/theme';
 import { Viewer } from 'cesium';
 import { viewerContext } from 'src/context';
 import { consume } from '@lit/context';
+import { run } from 'src/utils/fn.utils';
 
 @customElement('ngm-layer-info-item')
 export class LayerInfoItem extends CoreElement {
@@ -94,10 +95,18 @@ export class LayerInfoItem extends CoreElement {
           ${repeat(
             this.info.attributes,
             (it) => it.key,
-            (it) =>
-              html`<li title="${i18next.t(`${it.key}`)}">
-                ${i18next.t(`${it.key}`)}
-              </li>`,
+            (it) => {
+              const key = run(() => {
+                if (/^\w+:/.test(it.key)) {
+                  // Translation keys with spaces can't be translated with the `ns:key` syntax.
+                  // Do support them, we split the namespace from the key and pass it in the options object.
+                  const [ns, key] = it.key.split(':', 2);
+                  return i18next.t(key, { ns });
+                }
+                return i18next.t(it.key);
+              });
+              return html`<li title="${key}">${key}</li>`;
+            },
           )}
         </ul>
         <div class="divider" @mousedown="${this.startResizing}"></div>
@@ -105,10 +114,25 @@ export class LayerInfoItem extends CoreElement {
           ${repeat(
             this.info.attributes,
             (it) => it.key,
-            (it) =>
-              html`<li title="${i18next.t(`${it.value}`)}">
+            (it) => {
+              if (
+                typeof it.value === 'string' &&
+                (it.value.startsWith('https://') ||
+                  it.value.startsWith('http://'))
+              ) {
+                return html`<li>
+                  <a
+                    href="${it.value}"
+                    rel="external noopener nofollow"
+                    target="_blank"
+                    >${it.value}</a
+                  >
+                </li>`;
+              }
+              return html`<li title="${i18next.t(`${it.value}`)}">
                 ${i18next.t(`${it.value}`)}
-              </li>`,
+              </li>`;
+            },
           )}
         </ul>
       </div>

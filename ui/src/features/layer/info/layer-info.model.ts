@@ -1,5 +1,6 @@
 import { LayerTreeNode } from 'src/layertree';
 import { LayerTiffController } from 'src/features/layer';
+import { TemplateResult } from 'lit';
 
 /**
  * `LayerInfo` represents the current data of a specific object on a layer.
@@ -45,7 +46,7 @@ export interface LayerInfo {
 
 export interface LayerInfoAttribute {
   key: string;
-  value: string | number;
+  value: string | number | TemplateResult;
 }
 
 export type LayerInfoSource = LayerTreeNode | LayerTiffController;

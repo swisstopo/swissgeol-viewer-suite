@@ -2929,6 +2929,7 @@ const group_07: LayerTreeNode =
             layer: 'earthquakes',
             visible: false,
             displayed: false,
+            pickable: true,
             opacity: DEFAULT_LAYER_OPACITY,
             propsOrder: EARTHQUAKES_PROP_ORDER,
             downloadUrl:
@@ -2944,6 +2945,7 @@ const group_07: LayerTreeNode =
             layer: 'historical_earthquakes',
             visible: false,
             displayed: false,
+            pickable: true,
             opacity: DEFAULT_LAYER_OPACITY,
             propsOrder: EARTHQUAKES_PROP_ORDER,
             downloadUrl:

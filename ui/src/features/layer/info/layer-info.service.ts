@@ -208,10 +208,9 @@ export class LayerInfoService extends BaseService {
   private readonly handleQueryableLayerAddition = (
     layer: LayerTreeNode,
   ): void => {
-    if (!layer.pickable || layer.type === LayerType.geoTIFF) {
+    if (layer.pickable === false || layer.type === LayerType.geoTIFF) {
       return;
     }
-    console.log(layer);
     this.queueModification({
       source: layer,
       action: () => {
@@ -222,6 +221,7 @@ export class LayerInfoService extends BaseService {
             );
             break;
           case LayerType.tiles3d:
+          case LayerType.earthquakes:
             this.pickers.unshift(
               new LayerInfoPickerFor3dTiles(layer, this.viewer),
             );
