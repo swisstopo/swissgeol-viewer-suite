@@ -14,6 +14,7 @@ import swissbedrockColorMapChange from '../../titiler/colormaps/swissBEDROCK_Cha
 import swissbedrockColorMapTMUD from '../../titiler/colormaps/swissBEDROCK_TMUD.json';
 import swissbedrockColorMapUncertainty from '../../titiler/colormaps/swissBEDROCK_Uncertainty.json';
 import swissbedrockColorMapVersion from '../../titiler/colormaps/swissBEDROCK_Version.json';
+import i18next from 'i18next';
 
 export type LayerTreeNode =
   | UnspecificLayerTreeNode
@@ -1017,36 +1018,6 @@ const group_01: LayerTreeNode =
             geocatId: '11836d3b-181e-4078-b83f-f55fc44b5776',
             legend: 'ch.swisstopo.geologie-geologische_3dmodelle',
           },
-          // Layer - Thickness of unconsolidated deposits - WMTS
-          {
-            type: LayerType.swisstopoWMTS,
-            label: t(
-              'lyr_ch_swisstopo_geologie_lockergestein_maechtigkeitsmodell_label',
-            ),
-            layer: 'ch.swisstopo.geologie-lockergestein_maechtigkeitsmodell',
-            maximumLevel: 18,
-            visible: false,
-            displayed: false,
-            opacity: 0.7,
-            queryType: 'geoadmin',
-            geocatId: '99eb4571-4c34-48cc-bd6a-32fd9decc2a7',
-            legend: 'ch.swisstopo.geologie-lockergestein_maechtigkeitsmodell',
-          },
-          // Layer - Bedrock elevation model - WMTS
-          {
-            type: LayerType.swisstopoWMTS,
-            label: t(
-              'lyr_ch_swisstopo_geologie_felsoberflaeche_hoehenmodell_label',
-            ),
-            layer: 'ch.swisstopo.geologie-felsoberflaeche_hoehenmodell',
-            maximumLevel: 18,
-            visible: false,
-            displayed: false,
-            opacity: 0.7,
-            queryType: 'geoadmin',
-            geocatId: '133b54a9-60d1-481c-85e8-e1a222d6ac3f',
-            legend: 'ch.swisstopo.geologie-felsoberflaeche_hoehenmodell',
-          },
           {
             // Sub-Group II "Unconsolidated rocks"
             label: t('lyr_unconsolidated_rocks_label'),
@@ -1183,19 +1154,6 @@ const group_01: LayerTreeNode =
             label: t('lyr_top_bedrock_surface_label'),
             children: [
               {
-                // Layer Top Bedrock Mesh
-                type: LayerType.tiles3d,
-                assetId: 267898,
-                label: t('lyr_top_bedrock_label'),
-                layer: 'top_bedrock',
-                opacity: DEFAULT_LAYER_OPACITY,
-                pickable: true,
-                propsOrder: CENOZOIC_BEDROCK_ORDER,
-                downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-Bedrock.zip',
-                geocatId: '133b54a9-60d1-481c-85e8-e1a222d6ac3f',
-                previewColor: '#dbdb22',
-              },
-              {
                 // Layer Top Bedrock Geotiff
                 type: LayerType.geoTIFF,
                 url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
@@ -1203,7 +1161,10 @@ const group_01: LayerTreeNode =
                 id: 'swissBEDROCK',
                 label: t('layers:swissBEDROCK.title'),
                 opacity: 0.5,
-                env: [AppEnv.Local, AppEnv.Dev],
+                get downloadUrl(): string {
+                  return `https://www.swisstopo.admin.ch/${i18next.language}/swissbedrock-${i18next.language}`;
+                },
+                geocatId: 'f7836146-3f9a-4807-9011-618800409236',
                 bands: [
                   {
                     index: 1,
