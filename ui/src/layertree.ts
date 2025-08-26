@@ -14,6 +14,7 @@ import swissbedrockColorMapChange from '../../titiler/colormaps/swissBEDROCK_Cha
 import swissbedrockColorMapTMUD from '../../titiler/colormaps/swissBEDROCK_TMUD.json';
 import swissbedrockColorMapUncertainty from '../../titiler/colormaps/swissBEDROCK_Uncertainty.json';
 import swissbedrockColorMapVersion from '../../titiler/colormaps/swissBEDROCK_Version.json';
+import i18next from 'i18next';
 
 export type LayerTreeNode =
   | UnspecificLayerTreeNode
@@ -1203,7 +1204,10 @@ const group_01: LayerTreeNode =
                 id: 'swissBEDROCK',
                 label: t('layers:swissBEDROCK.title'),
                 opacity: 0.5,
-                env: [AppEnv.Local, AppEnv.Dev],
+                get downloadUrl(): string {
+                  return `https://www.swisstopo.admin.ch/${i18next.language}/swissbedrock-${i18next.language}`;
+                },
+                geocatId:'f7836146-3f9a-4807-9011-618800409236',
                 bands: [
                   {
                     index: 1,
