@@ -2,14 +2,15 @@
   "catalog": {
     "filter": "Ouvrir le filtre"
   },
+  "infoWindow": {
+    "title": "Info",
+    "zoomToObject": "Zoom sur l'objet"
+  },
   "geoTIFF": {
     "bandsWindow": {
       "title": "{{ layer }} - Bandes",
-      "open": "Afficher les bandes"
-    },
-    "infoWindow": {
-      "title": "Info",
-      "zoomToObject": "Zoom sur l'objet"
+      "open": "Afficher les bandes",
+      "legend": "Légende"
     },
     "noData": "aucune valeur"
   },

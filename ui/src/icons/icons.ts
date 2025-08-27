@@ -28,9 +28,11 @@ import { infoIcon } from 'src/icons/i_info';
 import { plusIcon } from 'src/icons/i_plus';
 import { documentationIcon } from 'src/icons/i_documentation';
 import { the2dDIcon } from 'src/icons/i_2d';
+import { the3dDIcon } from 'src/icons/i_3d';
 
 export const icons = {
   '2d': the2dDIcon,
+  '3d': the3dDIcon,
   cesium: cesiumIcon,
   checkmark: checkmarkIcon,
   close: closeIcon,

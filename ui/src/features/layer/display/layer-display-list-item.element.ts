@@ -8,7 +8,9 @@ import { LayerConfig, LayerType } from 'src/layertree';
 import MainStore from 'src/store/main';
 import { Entity, Viewer } from 'cesium';
 import i18next from 'i18next';
-import { LayerEventDetail } from 'src/features/layer';
+import { LayerService } from 'src/features/layer/layer.service';
+import { consume } from '@lit/context';
+import { LayerTiffController } from 'src/features/layer';
 
 @customElement('ngm-layer-display-list-item')
 export class LayerDisplayListItem extends CoreElement {
@@ -29,6 +31,9 @@ export class LayerDisplayListItem extends CoreElement {
 
   @property({ type: Number })
   accessor opacity = 1;
+
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
 
   @state()
   accessor isOpacityActive = false;
@@ -56,6 +61,16 @@ export class LayerDisplayListItem extends CoreElement {
     this.register(
       MainStore.viewer.subscribe((viewer) => {
         this.viewer = viewer!;
+      }),
+    );
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    this.register(
+      this.layerService.activeLayers$.subscribe(() => {
+        this.requestUpdate();
       }),
     );
   }
@@ -99,6 +114,10 @@ export class LayerDisplayListItem extends CoreElement {
       return;
     }
     const entity = await this.layer.promise;
+    if (entity instanceof LayerTiffController) {
+      entity.zoomIntoView();
+      return;
+    }
     await this.viewer.flyTo(entity as unknown as Entity);
   }
 
@@ -106,13 +125,7 @@ export class LayerDisplayListItem extends CoreElement {
     if (this.layer == null) {
       return;
     }
-    this.dispatchEvent(
-      new CustomEvent<LayerEventDetail>('layer-removed', {
-        detail: {
-          layer: this.layer,
-        },
-      }),
-    );
+    this.layerService.deactivate(this.layer);
   }
 
   private get geocatUrl(): string | null {

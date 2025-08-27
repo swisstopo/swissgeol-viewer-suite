@@ -56,7 +56,7 @@ import { Event, FrameRateMonitor, Globe, ImageryLayer, Viewer } from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type { SideBar } from './elements/ngm-side-bar';
-import { LayerConfig, LayerTreeNode } from './layertree';
+import { LayerConfig } from './layertree';
 import { clientConfigContext, viewerContext } from './context';
 import { consume, provide } from '@lit/context';
 import { AppEnv, ClientConfig } from './api/client-config';
@@ -154,12 +154,6 @@ export class NgmApp extends LitElementI18n {
   @provide({ context: BackgroundLayerService.backgroundContext })
   accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
 
-  @provide({ context: LayerService.activeLayersContext })
-  accessor activeLayers: readonly LayerTreeNode[] = [];
-
-  @provide({ context: LayerService.queryableLayersContext })
-  accessor queryableLayers: readonly LayerTreeNode[] = [];
-
   constructor() {
     super();
 
@@ -196,12 +190,19 @@ export class NgmApp extends LitElementI18n {
 
     BaseService.initializeWith(this);
 
-    this.layerService.activeLayers$.subscribe((layers) => {
-      this.activeLayers = layers;
+    this.layerService.activeLayers$.subscribe(() => {
+      this.viewer?.scene.requestRender();
     });
 
-    this.layerService.queryableLayers$.subscribe((layers) => {
-      this.queryableLayers = layers;
+    this.layerService.layerActivated$.subscribe((layer) => {
+      const config = layer as LayerConfig;
+      if (
+        this.slicer_ &&
+        this.slicer_!.active &&
+        config.promise !== undefined
+      ) {
+        this.slicer_!.applyClippingPlanesToTileset(config.promise);
+      }
     });
 
     let infoWindow: CoreWindow | null = null;
@@ -226,18 +227,6 @@ export class NgmApp extends LitElementI18n {
 
     if (shouldShowDisclaimer) {
       this.openDisclaimer();
-    }
-  }
-
-  /**
-   * @param {CustomEvent} evt
-   */
-  onLayerAdded(evt) {
-    const layer = evt.detail.layer;
-    if (this.slicer_ && this.slicer_!.active) {
-      if (layer && layer.promise) {
-        this.slicer_!.applyClippingPlanesToTileset(layer.promise);
-      }
     }
   }
 
@@ -675,7 +664,6 @@ export class NgmApp extends LitElementI18n {
         </div>
         <ngm-side-bar
           .mobileView=${this.mobileView}
-          @layeradded=${this.onLayerAdded}
           @showLayerLegend=${this.onShowLayerLegend}
           @showVoxelFilter=${this.onShowVoxelFilter}
           @showWmtsDatePicker=${this.onShowWmtsDatePicker}

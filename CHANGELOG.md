@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.0]
+
+### Added
+- The 2d mode toggle now switches between a 3d and 2d icon.
+- The swissBEDROCK layer is now visible on all environments.
+
+### Changes
+- The layer tree has been restructured to more closely resemble the structure of map.geo.admin.
+
+### Fixed
+- The swissBEDROCK legend is now customized for each band.
+- The swissBEDROCK TMUD band is now showing all data >3.
+- Sorting and removing specific layers from search does no longer put the viewer into an invalid state.
+
 ## [1.5.0]
 
 ### Added

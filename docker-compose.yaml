@@ -79,7 +79,7 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -95,8 +95,8 @@ services:
       TITILER_API_DEBUG: "1"
     volumes:
       - ./titiler:/app:ro
-    mem_limit: 2g
-    cpus: 0.5
+    mem_limit: 10g
+    cpus: 2
 
 volumes:
   minio:
