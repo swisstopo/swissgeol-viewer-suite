@@ -13,6 +13,7 @@ import {
   LabelStyle,
   Matrix3,
   Matrix4,
+  MetadataClass,
   Rectangle,
   Viewer,
   VoxelPrimitive,
@@ -153,6 +154,9 @@ export async function create3DTilesetFromConfig(
     },
   );
 
+  const metadata = tileset['metadata'];
+  console.log(metadata);
+
   if (config.style) {
     if (config.layer === 'ch.swisstopo.swissnames3d.3d') {
       // for performance testing
@@ -194,7 +198,8 @@ export async function create3DTilesetFromConfig(
     );
   }
 
-  if (config.propsOrder) {
+  console.log(tileset);
+  if (config.propsOrder && tileset.properties !== undefined) {
     tileset.properties.propsOrder = config.propsOrder;
   }
   if (config.heightOffset) {

@@ -679,6 +679,47 @@ const group_01: LayerTreeNode =
   {
     label: t('grp_1786_label'),
     children: [
+      {
+        // TUSM
+        type: LayerType.tiles3d,
+        assetId: 3669308,
+        label: t('lyr_top_usm_label'),
+        layer: 'top_usm',
+        opacity: DEFAULT_LAYER_OPACITY,
+        pickable: true,
+        propsOrder: CONSOLIDATED_ORDER,
+        downloadUrl:
+          DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerFreshwaterMolasse.zip',
+        geocatId: '2d7a0729-dd29-40fa-ad4f-b09f94b7fb00',
+        previewColor: '#cdd0d0',
+      },
+      {
+        // TUMM
+        type: LayerType.tiles3d,
+        assetId: 3564204,
+        label: t('lyr_top_umm_label'),
+        layer: 'top_umm',
+        opacity: DEFAULT_LAYER_OPACITY,
+        pickable: true,
+        propsOrder: CONSOLIDATED_ORDER,
+        downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-LowerMarineMolasse.zip',
+        geocatId: 'fedb8d24-a000-4b78-9e6e-fb90305ad3ea',
+        previewColor: '#d3cfc0',
+      },
+      {
+        // BCen
+        type: LayerType.tiles3d,
+        assetId: 3564229,
+        label: t('lyr_base_cenozoic_label'),
+        layer: 'base_cenozoic',
+        opacity: DEFAULT_LAYER_OPACITY,
+        pickable: true,
+        propsOrder: CENOZOIC_BEDROCK_ORDER,
+        downloadUrl: DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Base-Cenozoic.zip',
+        geocatId: '0e780e6c-18e2-4014-ad16-b35124706580',
+        previewColor: '#d6d91a',
+      },
+
       // Topic - Geological maps
       {
         label: t('grp_1787_label'),
