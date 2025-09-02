@@ -5,10 +5,10 @@ import { LayerInfo } from 'src/features/layer/info/layer-info.model';
 import i18next from 'i18next';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
-import { Cartesian3, Cartographic, JulianDate, Viewer } from 'cesium';
+import { Viewer } from 'cesium';
 import { viewerContext } from 'src/context';
 import { consume } from '@lit/context';
-import { LayerTiffController } from 'src/features/layer';
+import { run } from 'src/utils/fn.utils';
 
 @customElement('ngm-layer-info-item')
 export class LayerInfoItem extends CoreElement {
@@ -52,21 +52,8 @@ export class LayerInfoItem extends CoreElement {
     }
   }
 
-  private readonly zoomToData = (): void => {
-    if (this.info.source instanceof LayerTiffController) {
-      const coords = this.info.entity.position!.getValue(JulianDate.now())!;
-      const position = Cartographic.fromCartesian(coords);
-
-      this.viewer.camera.setView({
-        destination: Cartesian3.fromRadians(
-          position.longitude,
-          position.latitude,
-          position.height + 1000,
-        ),
-      });
-    } else {
-      this.viewer.zoomTo(this.info.entity);
-    }
+  private readonly zoomToObject = (): void => {
+    this.info.zoomToObject();
   };
 
   private readonly startResizing = (event: MouseEvent) => {
@@ -95,11 +82,11 @@ export class LayerInfoItem extends CoreElement {
   readonly render = () => html`
     <label class="toggle">
       <input type="checkbox" />
-      ${this.info.title}
+      ${i18next.t(this.info.title)}
       <sgc-icon name="chevronDown"></sgc-icon>
     </label>
     <div class="content">
-      <sgc-button color="secondary" @click="${this.zoomToData}">
+      <sgc-button color="secondary" @click="${this.zoomToObject}">
         ${i18next.t('layers:infoWindow.zoomToObject')}
         <ngm-core-icon icon="zoomPlus"></ngm-core-icon>
       </sgc-button>
@@ -108,7 +95,18 @@ export class LayerInfoItem extends CoreElement {
           ${repeat(
             this.info.attributes,
             (it) => it.key,
-            (it) => html`<li title="${it.key}">${it.key}</li>`,
+            (it) => {
+              const key = run(() => {
+                if (/^\w+:/.test(it.key)) {
+                  // Translation keys with spaces can't be translated with the `ns:key` syntax.
+                  // Do support them, we split the namespace from the key and pass it in the options object.
+                  const [ns, key] = it.key.split(':', 2);
+                  return i18next.t(key, { ns });
+                }
+                return i18next.t(it.key);
+              });
+              return html`<li title="${key}">${key}</li>`;
+            },
           )}
         </ul>
         <div class="divider" @mousedown="${this.startResizing}"></div>
@@ -116,7 +114,25 @@ export class LayerInfoItem extends CoreElement {
           ${repeat(
             this.info.attributes,
             (it) => it.key,
-            (it) => html`<li title="${it.value}">${it.value}</li>`,
+            (it) => {
+              if (
+                typeof it.value === 'string' &&
+                (it.value.startsWith('https://') ||
+                  it.value.startsWith('http://'))
+              ) {
+                return html`<li>
+                  <a
+                    href="${it.value}"
+                    rel="external noopener nofollow"
+                    target="_blank"
+                    >${it.value}</a
+                  >
+                </li>`;
+              }
+              return html`<li title="${i18next.t(`${it.value}`)}">
+                ${i18next.t(`${it.value}`)}
+              </li>`;
+            },
           )}
         </ul>
       </div>
