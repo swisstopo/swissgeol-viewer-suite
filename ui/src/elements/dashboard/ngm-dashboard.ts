@@ -1,4 +1,4 @@
-import { LitElementI18n, translated } from '../../i18n';
+import { LitElementI18n, translated } from 'src/i18n';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
@@ -13,32 +13,31 @@ import {
   setPermalink,
   syncStoredView,
   syncTargetParam,
-} from '../../permalink';
+} from 'src/permalink';
 import NavToolsStore from '../../store/navTools';
 import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
 import type { Viewer } from 'cesium';
 import { CustomDataSource } from 'cesium';
-import { showSnackbarError } from '../../notifications';
+import { showSnackbarError } from 'src/notifications';
 import {
   DEFAULT_LAYER_OPACITY,
   DEFAULT_PROJECT_COLOR,
   PROJECT_ASSET_URL,
 } from '../../constants';
-import type { NgmGeometry } from '../../toolbox/interfaces';
-import { ApiClient } from '../../api/api-client';
-import AuthStore from '../../store/auth';
+import type { NgmGeometry } from 'src/toolbox/interfaces';
+import { ApiClient } from 'src/api/api-client';
 import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
 import { isProject, isProjectOwnerOrEditor } from './helpers';
-import { LayerConfig, LayerTreeNode } from '../../layertree';
+import { LayerConfig, LayerTreeNode } from 'src/layertree';
 import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
-import { parseKml, renderWithDelay } from '../../cesiumutils';
+import { parseKml, renderWithDelay } from 'src/cesiumutils';
 import { consume } from '@lit/context';
-import { apiClientContext } from '../../context';
 import { LayerTiffController } from 'src/features/layer';
 import { LayerService } from 'src/features/layer/layer.service';
+import { SessionService, User } from 'src/features/session';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -142,18 +141,23 @@ export class NgmDashboard extends LitElementI18n {
   @query('#overview-toast')
   accessor overviewToast;
 
+  @state()
+  private accessor user: User | null = null;
+
   private viewer: Viewer | null = null;
   private assetConfigs: any = {};
   private assets: LayerConfig[] | undefined;
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
-  private userEmail: string | undefined;
   private readonly tempKmlDataSource = new CustomDataSource(
     'tempKmlDataSource',
   );
 
-  @consume({ context: apiClientContext })
+  @consume({ context: ApiClient.context() })
   accessor apiClient!: ApiClient;
+
+  @consume({ context: SessionService.context() })
+  accessor sessionService!: SessionService;
 
   constructor() {
     super();
@@ -201,7 +205,7 @@ export class NgmDashboard extends LitElementI18n {
     DashboardStore.selectedTopicOrProject.subscribe((topicOrProject) => {
       this.selectedTopicOrProject = topicOrProject;
       if (isProject(topicOrProject)) {
-        if (topicOrProject.owner.email === this.userEmail) {
+        if (topicOrProject.owner.email === this.user?.email) {
           this.activeTab = 'projects';
         } else {
           this.activeTab = 'shared';
@@ -232,9 +236,6 @@ export class NgmDashboard extends LitElementI18n {
         );
       }
     });
-    AuthStore.user.subscribe(() => {
-      this.userEmail = AuthStore.userEmail;
-    });
     DashboardStore.geometriesUpdate.subscribe((geometries) => {
       if (this.selectedTopicOrProject) {
         this.selectTopicOrProject({
@@ -250,6 +251,14 @@ export class NgmDashboard extends LitElementI18n {
       if (this.projectTabState !== 'view') {
         this.saveOrCancelWarning = show;
       }
+    });
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    this.sessionService.user$.subscribe((user) => {
+      this.user = user;
     });
   }
 
@@ -410,7 +419,9 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   onProjectCreate() {
-    if (!this.userEmail) return;
+    if (this.user === null) {
+      return;
+    }
     this.projectToCreate = {
       color: DEFAULT_PROJECT_COLOR,
       description: '',
@@ -425,8 +436,8 @@ export class NgmDashboard extends LitElementI18n {
         },
       ],
       owner: {
-        email: this.userEmail,
-        name: this.userEmail.split('@')[0],
+        email: this.user.email,
+        name: this.user.email.split('@')[0],
         surname: '',
       },
       editors: [],
@@ -499,7 +510,7 @@ export class NgmDashboard extends LitElementI18n {
   get projectMode() {
     let mode: 'viewEdit' | 'viewOnly' | undefined = undefined;
     if (this.selectedViewIndx !== undefined && this.selectedTopicOrProject) {
-      mode = isProjectOwnerOrEditor(this.selectedTopicOrProject)
+      mode = isProjectOwnerOrEditor(this.user, this.selectedTopicOrProject)
         ? 'viewEdit'
         : 'viewOnly';
     }
@@ -645,7 +656,7 @@ export class NgmDashboard extends LitElementI18n {
             }}
           >
             ${i18next.t('dashboard_my_projects')}
-            (${this.projects.filter((p) => p.owner.email === this.userEmail)
+            (${this.projects.filter((p) => p.owner.email === this.user?.email)
               .length})
           </div>
           <div
@@ -659,7 +670,7 @@ export class NgmDashboard extends LitElementI18n {
             }}
           >
             ${i18next.t('dashboard_shared_projects')}
-            (${this.projects.filter((p) => p.owner.email !== this.userEmail)
+            (${this.projects.filter((p) => p.owner.email !== this.user?.email)
               .length})
           </div>
         </div>
@@ -697,7 +708,7 @@ export class NgmDashboard extends LitElementI18n {
           </div>
           <div class="ngm-projects-list">
             ${this.projects
-              .filter((p) => p.owner.email === this.userEmail)
+              .filter((p) => p.owner.email === this.user?.email)
               .map((data) => this.previewTemplate(data))}
             <div
               class="ngm-proj-preview ngm-proj-create"
@@ -714,7 +725,7 @@ export class NgmDashboard extends LitElementI18n {
           </div>
           <div class="ngm-projects-list">
             ${this.projects
-              .filter((p) => p.owner.email !== this.userEmail)
+              .filter((p) => p.owner.email !== this.user?.email)
               .map((data) => this.previewTemplate(data))}
           </div>
         </div>
@@ -726,7 +737,7 @@ export class NgmDashboard extends LitElementI18n {
                   : this.selectedTopicOrProject}"
                 .saveOrCancelWarning="${this.saveOrCancelWarning}"
                 .createMode="${this.projectTabState === 'create'}"
-                .userEmail="${this.userEmail}"
+                .userEmail="${this.user?.email}"
                 .tempKmlDataSource="${this.tempKmlDataSource}"
                 @onBack=${this.deselectTopicOrProject}
                 @onSave="${async (evt: { detail: { project: Project } }) =>
@@ -738,7 +749,7 @@ export class NgmDashboard extends LitElementI18n {
                 .toastPlaceholder="${this.toastPlaceholder}"
                 .activeTab="${this.activeTab}"
                 .selectedViewIndx="${this.selectedViewIndx}"
-                .userEmail="${this.userEmail}"
+                .userEmail="${this.user?.email}"
                 @onDeselect="${this.deselectTopicOrProject}"
                 @onEdit="${this.onProjectEdit}"
                 @onProjectDuplicated="${(evt: {

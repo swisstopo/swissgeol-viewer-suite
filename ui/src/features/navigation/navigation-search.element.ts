@@ -18,7 +18,6 @@ import {
 import { lv95ToDegrees } from 'src/projection';
 import { escapeRegExp } from 'src/utils';
 import { extractEntitiesAttributes } from 'src/query/objectInformation';
-import auth from 'src/store/auth';
 import {
   flattenLayers,
   getDefaultLayerTree,
@@ -35,6 +34,7 @@ import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { consume } from '@lit/context';
 import { CoreElement } from 'src/features/core';
+import { SessionService } from 'src/features/session';
 
 @customElement('ngm-navigation-search')
 export class NavigationSearch extends CoreElement {
@@ -46,6 +46,9 @@ export class NavigationSearch extends CoreElement {
 
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
+
+  @consume({ context: SessionService.context() })
+  accessor sessionService!: SessionService;
 
   @state()
   private accessor isActive = false;
@@ -218,7 +221,7 @@ export class NavigationSearch extends CoreElement {
     layerTree: LayerTreeNode[],
   ): AdditionalItem[] {
     const results: AdditionalItem[] = [];
-    const user = auth.user.getValue();
+    const user = this.sessionService.user;
     for (const layer of layerTree) {
       if (layer.children) {
         results.push(
@@ -228,7 +231,7 @@ export class NavigationSearch extends CoreElement {
         layer.label = `${i18next.t(layer.label)}`;
         if (
           !layer.restricted?.length ||
-          layer.restricted.some((g) => user?.['cognito:groups'].includes(g))
+          layer.restricted.some((g) => user?.groups.includes(g))
         ) {
           results.push(layer);
         }

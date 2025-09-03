@@ -1,26 +1,28 @@
-import AuthService from '../authService';
-import AuthStore from '../store/auth';
 import { API_BY_PAGE_HOST } from '../constants';
 import type {
   CreateProject,
   Project,
 } from '../elements/dashboard/ngm-dashboard';
-import { Subject } from 'rxjs';
+import { Subject, switchMap } from 'rxjs';
 import { NgmGeometry } from '../toolbox/interfaces';
+import { BaseService } from 'src/utils/base.service';
+import { SessionService } from 'src/features/session';
 
-export class ApiClient {
+export class ApiClient extends BaseService {
   projectsChange = new Subject<Project[]>();
   token: string | null = null;
   private readonly apiUrl: string;
 
-  constructor(private readonly authService: AuthService) {
+  constructor() {
+    super();
     this.apiUrl = API_BY_PAGE_HOST[window.location.host];
-    this.token = this.authService.getAccessToken();
 
-    AuthStore.user.subscribe(() => {
-      this.token = this.authService.getAccessToken();
-      this.refreshProjects();
-    });
+    this.inject(SessionService)
+      .pipe(switchMap((service) => service.token$))
+      .subscribe(async (token) => {
+        this.token = token;
+        await this.refreshProjects();
+      });
   }
 
   async refreshProjects() {
