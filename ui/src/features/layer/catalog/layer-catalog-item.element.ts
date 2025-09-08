@@ -25,6 +25,9 @@ export class LayerCatalogItem extends CoreElement {
         }
       }),
     );
+
+    this.dataset['cy'] =
+      `layer-${this.layer.layer ?? this.layer.assetId ?? this.layer.label}`;
   }
 
   private toggleLayer(layer: LayerConfig): void {
