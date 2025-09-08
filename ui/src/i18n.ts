@@ -1,23 +1,30 @@
-import i18next from 'i18next';
+import i18next, {
+  LanguageDetectorModule,
+  InitOptions,
+  Services,
+  FallbackLng,
+} from 'i18next';
 import locI18next from 'loc-i18next';
 import Backend from 'i18next-http-backend';
 import { LitElement } from 'lit';
 import { SUPPORTED_LANGUAGES } from './constants';
 import { getURLSearchParams, setURLSearchParams } from './utils';
 
-class LanguageDetector {
-  constructor() {
-    this.async = false;
-    this.type = 'languageDetector';
-  }
+class LanguageDetector implements LanguageDetectorModule {
+  readonly async = false;
+  readonly type = 'languageDetector';
+  static readonly type = 'languageDetector';
 
-  init(services, _, i18nextOptions) {
+  private languageUtils!: any;
+  private fallbackLng!: false | FallbackLng | undefined;
+
+  init(services: Services, _options: object, i18nextOptions: InitOptions) {
     this.languageUtils = services.languageUtils;
     this.fallbackLng = i18nextOptions.fallbackLng;
   }
 
   detect() {
-    let language = this.fallbackLng;
+    let language: false | FallbackLng | undefined | null = this.fallbackLng;
 
     const lang = getURLSearchParams().get('lang');
     // get language from url
@@ -25,7 +32,7 @@ class LanguageDetector {
       language = lang;
     } else {
       // fallback to browser's language
-      const languages = [];
+      const languages: string[] = [];
       if (navigator.languages) {
         languages.push(...navigator.languages);
       } else if (navigator.language) {
@@ -47,7 +54,6 @@ class LanguageDetector {
     setURLSearchParams(params);
   }
 }
-LanguageDetector.type = 'languageDetector';
 
 export function setupI18n() {
   const promise = i18next
@@ -57,10 +63,9 @@ export function setupI18n() {
       ns: ['app', 'assets', 'layers'],
       defaultNS: 'app',
       supportedLngs: SUPPORTED_LANGUAGES,
-      nonExplicitWhitelist: true,
+      nonExplicitSupportedLngs: true,
       returnEmptyString: false,
       fallbackLng: 'en',
-      //load: 'languageOnly',
       debug: false,
       backend: {
         loadPath: 'locales/{{ns}}/{{ns}}.{{lng}}.json',
@@ -80,6 +85,8 @@ export function setupI18n() {
  * @param {import('lit-element').LitElement} Base
  */
 export class LitElementI18n extends LitElement {
+  private i18nLanguageChangedCallback_?: () => void;
+
   connectedCallback() {
     this.i18nLanguageChangedCallback_ = () => this.requestUpdate();
     i18next.on('languageChanged', this.i18nLanguageChangedCallback_);
@@ -92,11 +99,7 @@ export class LitElementI18n extends LitElement {
   }
 }
 
-/**
- * @param {string} dateString
- * @return {string}
- */
-export function toLocaleDateString(dateString) {
+export function toLocaleDateString(dateString: string): string {
   const date = new Date(dateString);
 
   return date.toLocaleDateString(`${i18next.language}-CH`, {
@@ -106,10 +109,6 @@ export function toLocaleDateString(dateString) {
   });
 }
 
-/**
- * @param {any} property
- * @return string
- */
-export function translated(property) {
+export function translated(property: string | object): string {
   return typeof property === 'string' ? property : property[i18next.language];
 }

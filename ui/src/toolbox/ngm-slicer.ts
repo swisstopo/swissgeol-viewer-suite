@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import i18next from 'i18next';
-import { LitElementI18n } from '../i18n.js';
+import { LitElementI18n } from '../i18n';
 import { getSliceParam, syncSliceParam } from '../permalink';
 import 'fomantic-ui-css/components/checkbox';
 import ToolboxStore from '../store/toolbox';

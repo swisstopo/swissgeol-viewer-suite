@@ -1,4 +1,4 @@
-import { LitElementI18n } from '../i18n.js';
+import { LitElementI18n } from '../i18n';
 import { html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import i18next from 'i18next';

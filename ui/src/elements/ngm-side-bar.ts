@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import { LitElementI18n } from 'src/i18n.js';
+import { LitElementI18n } from 'src/i18n';
 import 'src/toolbox/ngm-toolbox';
 import 'src/elements/dashboard/ngm-dashboard';
 import 'src/elements/sidebar/ngm-menu-item';
