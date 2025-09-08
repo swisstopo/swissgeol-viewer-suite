@@ -33,7 +33,6 @@ export interface NgmGeometry {
   website?: string;
   pointSymbol?: string;
   color?: Color;
-  clampPoint?: boolean;
   showSlicingBox?: boolean;
   volumeShowed?: boolean;
   volumeHeightLimits?: { lowerLimit: number; height: number };
