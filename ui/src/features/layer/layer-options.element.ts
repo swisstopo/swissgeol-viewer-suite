@@ -102,6 +102,7 @@ export class LayerOptions extends LitElementI18n {
     <hr />
     <div class="group">
       <ngm-core-slider
+        data-cy="exaggeration-slider"
         .min="${1}"
         .max="${10}"
         .step="${0.5}"
@@ -110,7 +111,9 @@ export class LayerOptions extends LitElementI18n {
         @done="${debounce(() => this.updateExaggerationForKmls(), 300)}"
       ></ngm-core-slider>
       <div class="chip-container">
-        <ngm-core-chip>${this.exaggeration}x</ngm-core-chip>
+        <ngm-core-chip data-cy="exaggeration-factor"
+          >${this.exaggeration}x</ngm-core-chip
+        >
       </div>
     </div>
   `;
