@@ -12,7 +12,7 @@ Feature: Change background map
       Then the background switcher opens below the layer
       And the three options are displayed
 
-      When the user clicks on the orthographic thumpnail
+      When the user clicks on the orthographic thumbnail
       Then the background map changes to swissimage orthophoto
 
       When the user clicks on the topographic thumbnail
