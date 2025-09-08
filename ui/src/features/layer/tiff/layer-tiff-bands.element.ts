@@ -47,15 +47,27 @@ export class LayerTiffBands extends CoreElement {
 
   private readonly renderBand = (band: GeoTIFFLayerBand) => {
     const name = i18next.t(`layers:${this.layer.id}.bands.${band.name}`);
+    const [unitSymbol, unitName] =
+      band.unit === undefined
+        ? [null, null]
+        : [
+            `[${i18next.t(`layers:units.${band.unit}.symbol`)}]`,
+            i18next.t(`layers:units.${band.unit}.name`),
+          ];
     return html`
       <li>
         <ngm-core-radio
-          title="${name}"
+          title="${unitSymbol === null ? name : `${name} ${unitSymbol}`}"
           .isActive="${this.controller.activeBand === band}"
           ?disabled="${band.display === undefined}"
           @click="${() => this.handleBandClick(band)}"
         >
-          <span class="text"> ${name} </span>
+          <span class="text">
+            ${name}
+            ${unitSymbol === null
+              ? ''
+              : html` <span title="${unitName}">${unitSymbol}</span> `}
+          </span>
         </ngm-core-radio>
       </li>
     `;
@@ -69,6 +81,7 @@ export class LayerTiffBands extends CoreElement {
     return html`
       <ngm-layer-tiff-legend
         .layer="${this.layer}"
+        .band="${band}"
         .display="${band.display}"
       ></ngm-layer-tiff-legend>
     `;

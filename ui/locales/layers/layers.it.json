@@ -17,17 +17,27 @@
   "swissBEDROCK": {
     "title": "swissBEDROCK",
     "bands": {
-      "BEM": "Modello di altitudine del tetto del substrato roccioso [m s.l.m.]",
-      "TMUD": "Modello di spessore dei depositi sciolti [m]",
-      "Uncertainty": "Incertezza [m]",
+      "BEM": "Modello di altitudine del tetto del substrato roccioso",
+      "TMUD": "Modello di spessore dei depositi sciolti",
+      "Uncertainty": "Incertezza",
       "Version": "Numero di versione",
       "Author": "ID numerico dell’autore",
-      "Change": "Modifica alla versione precedente [m]",
-      "prev_BEM": "Versione precedente del modello di altitudine del tetto del substrato roccioso [m s.l.m.]",
-      "prev_TMUD": "Versione precedente del modello di spessore dei depositi sciolti [m]",
-      "prev_Uncertainty": "Versione precedente dell’incertezza [m]",
+      "Change": "Modifica alla versione precedente",
+      "prev_BEM": "Versione precedente del modello di altitudine del tetto del substrato roccioso",
+      "prev_TMUD": "Versione precedente del modello di spessore dei depositi sciolti",
+      "prev_Uncertainty": "Versione precedente dell’incertezza",
       "prev_Version": "Numero di versione precedente",
       "prev_Author": "Versione precedente – ID numerico dell’autore"
+    }
+  },
+  "units": {
+    "Meters": {
+      "name": "metri",
+      "symbol": "m"
+    },
+    "MetersAboveSeaLevel": {
+      "name": "metri sul livello del mare ",
+      "symbol": "m s.l.m."
     }
   }
 }

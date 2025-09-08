@@ -94,6 +94,12 @@ export interface GeoTIFFLayerBand {
   index: number;
   name: string;
   display?: GeoTIFFDisplay;
+  unit?: GeoTIFFUnit;
+}
+
+export enum GeoTIFFUnit {
+  Meters = 'Meters',
+  MetersAboveSeaLevel = 'MetersAboveSeaLevel',
 }
 
 export interface GeoTIFFDisplay {
@@ -1169,6 +1175,7 @@ const group_01: LayerTreeNode =
                   {
                     index: 1,
                     name: 'BEM',
+                    unit: GeoTIFFUnit.MetersAboveSeaLevel,
                     display: {
                       bounds: [-433, 4535],
                       steps: [
@@ -1189,6 +1196,7 @@ const group_01: LayerTreeNode =
                   {
                     index: 2,
                     name: 'TMUD',
+                    unit: GeoTIFFUnit.Meters,
                     display: {
                       bounds: [-1, 800],
                       noData: 0,
@@ -1202,6 +1210,7 @@ const group_01: LayerTreeNode =
                   {
                     index: 3,
                     name: 'Uncertainty',
+                    unit: GeoTIFFUnit.Meters,
                     display: {
                       bounds: [0, 25],
                       colorMap: {
@@ -1241,6 +1250,7 @@ const group_01: LayerTreeNode =
                   {
                     index: 6,
                     name: 'Change',
+                    unit: GeoTIFFUnit.Meters,
                     display: {
                       bounds: [-30, 30],
                       colorMap: {
@@ -1253,6 +1263,7 @@ const group_01: LayerTreeNode =
                   {
                     index: 7,
                     name: 'prev_BEM',
+                    unit: GeoTIFFUnit.MetersAboveSeaLevel,
                     display: {
                       bounds: [-433, 4535],
                       steps: [-400, 500, 1000, 2500, 3000, 4500],
@@ -1266,6 +1277,7 @@ const group_01: LayerTreeNode =
                   {
                     index: 8,
                     name: 'prev_TMUD',
+                    unit: GeoTIFFUnit.Meters,
                     display: {
                       bounds: [0, 800],
                       steps: [3, 10, 50, 100, 200, 800],
@@ -1278,6 +1290,7 @@ const group_01: LayerTreeNode =
                   {
                     index: 9,
                     name: 'prev_Uncertainty',
+                    unit: GeoTIFFUnit.Meters,
                     display: {
                       bounds: [0, 25],
                       colorMap: {

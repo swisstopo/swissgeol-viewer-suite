@@ -17,17 +17,27 @@
   "swissBEDROCK": {
     "title": "swissBEDROCK",
     "bands": {
-      "BEM": "Bedrock elevation model [m.a.s.l.]",
-      "TMUD": "Thickness model of unconsolidated deposits [m]",
-      "Uncertainty": "Uncertainty [m]",
+      "BEM": "Bedrock elevation model",
+      "TMUD": "Thickness model of unconsolidated deposits",
+      "Uncertainty": "Uncertainty",
       "Version": "Version number",
       "Author": "Numeric author ID",
-      "Change": "Change to previous version [m]",
-      "prev_BEM": "Previous version of the Bedrock elevation model [m]",
-      "prev_TMUD": "Previous version of the thickness model of unconsolidated deposits [m]",
-      "prev_Uncertainty": "Previous version of the uncertainty [m]",
+      "Change": "Change to previous version",
+      "prev_BEM": "Previous version of the Bedrock elevation model",
+      "prev_TMUD": "Previous version of the thickness model of unconsolidated deposits",
+      "prev_Uncertainty": "Previous version of the uncertainty",
       "prev_Version": "Previous version number",
       "prev_Author": "Previous version numeric author ID"
+    }
+  },
+  "units": {
+    "Meters": {
+      "name": "meters",
+      "symbol": "m"
+    },
+    "MetersAboveSeaLevel": {
+      "name": "meters above sea level",
+      "symbol": "m.a.s.l."
     }
   }
 }
