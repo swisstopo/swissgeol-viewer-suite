@@ -1,7 +1,7 @@
 import { customElement, property } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { css, html, PropertyValues } from 'lit';
-import { GeoTIFFDisplay, GeoTIFFLayer } from 'src/layertree';
+import { GeoTIFFDisplay, GeoTIFFLayer, GeoTIFFLayerBand } from 'src/layertree';
 import i18next from 'i18next';
 import { applyTypography } from 'src/styles/theme';
 import { run } from 'src/utils/fn.utils';
@@ -10,6 +10,9 @@ import { run } from 'src/utils/fn.utils';
 export class LayerTiffLegend extends CoreElement {
   @property({ type: Object })
   accessor layer!: GeoTIFFLayer;
+
+  @property({ type: Object })
+  accessor band!: GeoTIFFLayerBand;
 
   @property({ type: Object })
   accessor display!: GeoTIFFDisplay;
@@ -132,7 +135,16 @@ export class LayerTiffLegend extends CoreElement {
   }
 
   readonly render = () => html`
-    <div class="title">${i18next.t('layers:geoTIFF.bandsWindow.legend')}</div>
+    <div class="title">
+      ${i18next.t('layers:geoTIFF.bandsWindow.legend')}
+      ${this.band.unit === undefined
+        ? ''
+        : html`
+            <span title="${i18next.t(`layers:units.${this.band.unit}.name`)}">
+              [${i18next.t(`layers:units.${this.band.unit}.symbol`)}]
+            </span>
+          `}
+    </div>
     <div class="range">
       <div class="gradient" style="background: ${this.gradientCss}"></div>
       ${this.steps.map(
