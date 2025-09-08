@@ -9,9 +9,8 @@ import {
   VoxelPrimitive,
 } from 'cesium';
 import { css, html, PropertyValues } from 'lit';
-import { state, customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { formatCartographicAs2DLv95 } from 'src/projection';
-import { getValueOrUndefined } from 'src/cesiumutils';
 import i18next from 'i18next';
 import { applyTypography } from 'src/styles/theme';
 
@@ -61,13 +60,15 @@ export class LayoutCursorInfo extends CoreElement {
 
     const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
     eventHandler.setInputAction(
-      this.handleMouseMove.bind(this),
+      this.handleMouseMove,
       ScreenSpaceEventType.MOUSE_MOVE,
     );
     this.register(() => eventHandler.destroy());
   }
 
-  private handleMouseMove(event: ScreenSpaceEventHandler.MotionEvent): void {
+  private readonly handleMouseMove = (
+    event: ScreenSpaceEventHandler.MotionEvent,
+  ): void => {
     const { viewer } = this;
     if (viewer === null) {
       return;
@@ -89,17 +90,14 @@ export class LayoutCursorInfo extends CoreElement {
     const position = Cartographic.fromCartesian(cartesian);
     this.height = position.height / viewer.scene.verticalExaggeration;
 
-    const lineOrPolygon =
-      getValueOrUndefined(feature?.id?.polyline?.show) ||
-      getValueOrUndefined(feature?.id?.polygon?.show);
-    this.heightType = lineOrPolygon == null ? 'terrain' : 'object';
-  }
+    this.heightType = feature == null ? 'terrain' : 'object';
+  };
 
   readonly render = () => html`
     ${this.coordinates.length === 0
       ? ''
       : html`
-          <div class="section">
+          <div class="section" data-cy="coordinates-info">
             <label>${i18next.t('camera_position_coordinates_label')}</label>
             <span class="value">${this.coordinates[0]}</span>
             <span class="value">${this.coordinates[1]}</span>
@@ -108,7 +106,7 @@ export class LayoutCursorInfo extends CoreElement {
     ${this.height === null
       ? ''
       : html`
-          <div class="section">
+          <div class="section" data-cy="height-info">
             <label>
               ${this.heightType === 'terrain'
                 ? i18next.t('nav_terrain_height_label')
