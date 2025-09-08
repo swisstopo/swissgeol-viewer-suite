@@ -29,6 +29,7 @@ const setupNodeEvents = async (
 };
 
 export default defineConfig({
+  projectId: '8rsv1p',
   viewportWidth: 1920,
   viewportHeight: 1280,
   experimentalSourceRewriting: true,
