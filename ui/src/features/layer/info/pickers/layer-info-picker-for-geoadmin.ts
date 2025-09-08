@@ -94,39 +94,68 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
       .textContent!.trim();
 
     const rows = [...doc.querySelectorAll('.htmlpopup-content table tr')];
-    const attributes = rows.map((row) => {
-      const [key, val] = row.querySelectorAll('td');
+
+    let savedTitle: string | null = null;
+    const attributes = rows.reduce((attributes, row) => {
+      const [key, val, addition] = row.querySelectorAll('td');
+      const keyValue = key.textContent?.trim();
+
+      // Ignore rows that only contain a single value.
+      if (val === undefined) {
+        if (keyValue) {
+          savedTitle = keyValue;
+        }
+        return attributes;
+      }
+
+      // Some rows contain three columns.
+      // The first one is a colored rectangle, the second is a buffer, and the third is the layer's name.
+      if (
+        !keyValue?.length &&
+        !val.textContent?.trim().length &&
+        addition !== undefined
+      ) {
+        attributes.push({
+          key: savedTitle ?? '',
+          value: addition.textContent!.trim(),
+        });
+        return attributes;
+      }
+
+      // The rest are normal key-value rows.
       const value = val.textContent!.trim();
-      return {
-        key: key.textContent!.trim(),
+      attributes.push({
+        key: keyValue!,
         value,
-      } satisfies LayerInfoAttribute;
-    });
-    return new LayerInfoForGeoadmin(this.highlights, {
+      });
+      return attributes;
+    }, [] as LayerInfoAttribute[]);
+    return new LayerInfoForGeoadmin(this.viewer, this.highlights, {
       entity,
       source: this.layer,
-      title: title,
+      title,
       attributes,
     });
   }
 
   private createEntityForGeometry(geometry: IdentifiedGeometry): Entity {
     switch (geometry.type) {
-      case 'MultiPolygon':
-        return this.createMultiPolygonEntity(
-          geometry.coordinates as number[][][][],
-        );
       case 'Polygon':
         return this.createPolygonEntity(
           (geometry.coordinates as number[][][])[0],
         );
+      case 'MultiPolygon':
+        return this.createMultiPolygonEntity(
+          geometry.coordinates as number[][][][],
+        );
+      case 'LineString':
+        return this.createLineEntity(geometry.coordinates as number[][]);
       case 'MultiLineString':
-        return this.createLineEntity(geometry.coordinates as number[][][]);
+        return this.createLineEntity((geometry.coordinates as number[][][])[0]);
+      case 'Point':
+        return this.createPointEntity(geometry.coordinates as number[]);
       case 'MultiPoint':
         return this.createPointEntity((geometry.coordinates as number[][])[0]);
-      case 'Point': {
-        return this.createPointEntity(geometry.coordinates as number[]);
-      }
       default:
         throw new Error(`Unsupported geometry type '${geometry.type}'`);
     }
@@ -153,7 +182,7 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
     return entity;
   }
 
-  private createLineEntity([nestedCoordinates]: number[][][]) {
+  private createLineEntity(nestedCoordinates: number[][]) {
     const coordinates = nestedCoordinates.map((coords) => {
       const degrees = lv95ToDegrees(coords);
       return Cartesian3.fromDegrees(degrees[0], degrees[1]);
@@ -192,14 +221,17 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
 }
 
 class LayerInfoForGeoadmin implements LayerInfo {
-  public readonly entity: Entity;
   public readonly source: LayerTreeNode;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
+  private readonly entity: Entity;
+
   constructor(
+    private readonly viewer: Viewer,
     private readonly dataSource: CustomDataSource,
-    data: Pick<LayerInfo, 'entity' | 'source' | 'title' | 'attributes'> & {
+    data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
+      entity: Entity;
       source: LayerTreeNode;
     },
   ) {
@@ -208,6 +240,10 @@ class LayerInfoForGeoadmin implements LayerInfo {
     this.title = data.title;
     this.attributes = data.attributes;
     this.dataSource.entities.add(this.entity);
+  }
+
+  zoomToObject(): void {
+    this.viewer.zoomTo(this.entity);
   }
 
   activateHighlight(): void {

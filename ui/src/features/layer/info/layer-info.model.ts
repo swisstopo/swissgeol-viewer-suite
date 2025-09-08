@@ -1,17 +1,12 @@
-import { Entity } from 'cesium';
 import { LayerTreeNode } from 'src/layertree';
 import { LayerTiffController } from 'src/features/layer';
+import { TemplateResult } from 'lit';
 
 /**
  * `LayerInfo` represents the current data of a specific object on a layer.
  * It contains metadata about that object, and is able to highlight it on the viewer.
  */
 export interface LayerInfo {
-  /**
-   * The entity that represents the picked object.
-   */
-  entity: Entity;
-
   /**
    * The layer that was picked.
    */
@@ -26,6 +21,11 @@ export interface LayerInfo {
    * The picked object's attributes.
    */
   attributes: LayerInfoAttribute[];
+
+  /**
+   * Zooms to the picked object.
+   */
+  zoomToObject(): void;
 
   /**
    * Highlights the picked object.
@@ -46,7 +46,7 @@ export interface LayerInfo {
 
 export interface LayerInfoAttribute {
   key: string;
-  value: string | number;
+  value: string | number | TemplateResult;
 }
 
 export type LayerInfoSource = LayerTreeNode | LayerTiffController;

@@ -29,6 +29,8 @@ import {
 import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
 import { LayerTreeNode, LayerType } from 'src/layertree';
 import { LayerInfoPickerForGeoadmin } from 'src/features/layer/info/pickers/layer-info-picker-for-geoadmin';
+import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
+import { LayerInfoPickerFor3dTiles } from 'src/features/layer/info/pickers/layer-info-picker-for-3dtiles';
 
 export class LayerInfoService extends BaseService {
   private readonly infosSubject = new BehaviorSubject<LayerInfo[]>([]);
@@ -206,15 +208,30 @@ export class LayerInfoService extends BaseService {
   private readonly handleQueryableLayerAddition = (
     layer: LayerTreeNode,
   ): void => {
-    if (layer.type === LayerType.geoTIFF) {
+    if (layer.pickable === false || layer.type === LayerType.geoTIFF) {
       return;
     }
     this.queueModification({
       source: layer,
-      action: () =>
-        this.pickers.unshift(
-          new LayerInfoPickerForGeoadmin(layer, this.viewer),
-        ),
+      action: () => {
+        switch (layer.type) {
+          case LayerType.voxels3dtiles:
+            this.pickers.unshift(
+              new LayerInfoPickerForVoxels(layer, this.viewer),
+            );
+            break;
+          case LayerType.tiles3d:
+          case LayerType.earthquakes:
+            this.pickers.unshift(
+              new LayerInfoPickerFor3dTiles(layer, this.viewer),
+            );
+            break;
+          default:
+            this.pickers.unshift(
+              new LayerInfoPickerForGeoadmin(layer, this.viewer),
+            );
+        }
+      },
     });
   };
 
