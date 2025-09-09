@@ -6,7 +6,6 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   Viewer,
-  VoxelPrimitive,
 } from 'cesium';
 import { css, html, PropertyValues } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
@@ -77,9 +76,8 @@ export class LayoutCursorInfo extends CoreElement {
     this.height = null;
     this.coordinates.length = 0;
 
-    const feature = viewer.scene.pick(event.endPosition);
     const cartesian = viewer.scene.pickPosition(event.endPosition);
-    if (cartesian == null || feature?.primitive instanceof VoxelPrimitive) {
+    if (cartesian == null) {
       return;
     }
 
@@ -90,6 +88,7 @@ export class LayoutCursorInfo extends CoreElement {
     const position = Cartographic.fromCartesian(cartesian);
     this.height = position.height / viewer.scene.verticalExaggeration;
 
+    const feature = viewer.scene.pick(event.endPosition);
     this.heightType = feature == null ? 'terrain' : 'object';
   };
 
