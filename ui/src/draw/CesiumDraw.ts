@@ -146,7 +146,7 @@ export class CesiumDraw extends EventTarget {
       heightReference:
         typeof heightReference === 'number' && !isNaN(heightReference)
           ? heightReference
-          : HeightReference.CLAMP_TO_GROUND,
+          : HeightReference.NONE,
     };
   }
 
@@ -380,9 +380,7 @@ export class CesiumDraw extends EventTarget {
         clampToGround: this.lineClampToGround,
         width: this.strokeWidth_,
         material: this.strokeColor_,
-        classificationType: this.lineClampToGround
-          ? ClassificationType.TERRAIN
-          : ClassificationType.BOTH,
+        classificationType: ClassificationType.BOTH,
       },
     });
   }
@@ -397,9 +395,8 @@ export class CesiumDraw extends EventTarget {
           outlineWidth: 2,
           outlineColor: this.strokeColor_,
           pixelSize: this.strokeWidth_,
-          heightReference: this.lineClampToGround
-            ? HeightReference.CLAMP_TO_GROUND
-            : HeightReference.NONE,
+          heightReference: HeightReference.NONE,
+          disableDepthTestDistance: 0,
         },
       });
     } else if (this.type === 'line' && Array.isArray(positions)) {
@@ -426,6 +423,8 @@ export class CesiumDraw extends EventTarget {
           hierarchy: positions,
           material: this.fillColor_,
           classificationType: ClassificationType.TERRAIN,
+          heightReference: HeightReference.NONE,
+          extrudedHeightReference: HeightReference.NONE,
         },
         label: getDimensionLabel(this.type, this.activeDistances_),
       });
@@ -514,49 +513,51 @@ export class CesiumDraw extends EventTarget {
     this.renderSceneIfTranslucent();
     if (!event?.position) return;
     const pickedPosition = this.viewer_.scene.pickPosition(event.position);
-    if (pickedPosition) {
-      const position = Cartesian3.clone(pickedPosition);
-      if (!this.sketchPoint_) {
-        this.dispatchEvent(new CustomEvent('drawstart'));
-        this.sketchPoint_ = this.createSketchPoint_(position, { label: true });
-        this.activePoint_ = position;
+    if (pickedPosition == null) {
+      return;
+    }
 
-        this.createSketchLine_(this.dynamicSketLinePositions());
-        this.viewer_.scene.requestRender();
-        if (this.type === 'point') {
-          this.activePoints_.push(position);
-          this.finishDrawing();
-          return;
-        }
-      } else if (!this.activeDistances_.includes(this.activeDistance_)) {
-        this.activeDistances_.push(this.activeDistance_);
-      }
-      this.activePoints_.push(Cartesian3.clone(this.activePoint_!));
-      this.segmentsInfo = this.getSegmentsInfo();
-      const shouldForceFinish =
-        this.minPointsStop &&
-        ((this.type === 'polygon' && this.activePoints_.length === 3) ||
-          (this.type === 'line' && this.activePoints_.length === 2));
-      if (
-        (this.type === 'rectangle' && this.activePoints_.length === 3) ||
-        shouldForceFinish
-      ) {
+    const position = Cartesian3.clone(pickedPosition);
+    if (!this.sketchPoint_) {
+      this.dispatchEvent(new CustomEvent('drawstart'));
+      this.sketchPoint_ = this.createSketchPoint_(position, { label: true });
+      this.activePoint_ = position;
+
+      this.createSketchLine_(this.dynamicSketLinePositions());
+      this.viewer_.scene.requestRender();
+      if (this.type === 'point') {
+        this.activePoints_.push(position);
         this.finishDrawing();
-      } else if (this.type === 'line') {
-        if (!this.isDoubleClick) {
-          if (this.singleClickTimer) {
-            clearTimeout(this.singleClickTimer);
+        return;
+      }
+    } else if (!this.activeDistances_.includes(this.activeDistance_)) {
+      this.activeDistances_.push(this.activeDistance_);
+    }
+    this.activePoints_.push(Cartesian3.clone(this.activePoint_!));
+    this.segmentsInfo = this.getSegmentsInfo();
+    const shouldForceFinish =
+      this.minPointsStop &&
+      ((this.type === 'polygon' && this.activePoints_.length === 3) ||
+        (this.type === 'line' && this.activePoints_.length === 2));
+    if (
+      (this.type === 'rectangle' && this.activePoints_.length === 3) ||
+      shouldForceFinish
+    ) {
+      this.finishDrawing();
+    } else if (this.type === 'line') {
+      if (!this.isDoubleClick) {
+        if (this.singleClickTimer) {
+          clearTimeout(this.singleClickTimer);
+          this.singleClickTimer = null;
+        } else {
+          this.singleClickTimer = setTimeout(() => {
+            this.isDoubleClick = false;
+            const prevPoint = Cartesian3.clone(
+              this.activePoints_[this.activePoints_.length - 1],
+            );
+            this.sketchPoints_.push(this.createSketchPoint_(prevPoint));
             this.singleClickTimer = null;
-          } else {
-            this.singleClickTimer = setTimeout(() => {
-              this.isDoubleClick = false;
-              const prevPoint = Cartesian3.clone(
-                this.activePoints_[this.activePoints_.length - 1],
-              );
-              this.sketchPoints_.push(this.createSketchPoint_(prevPoint));
-              this.singleClickTimer = null;
-            }, 250);
-          }
+          }, 250);
         }
       }
     }

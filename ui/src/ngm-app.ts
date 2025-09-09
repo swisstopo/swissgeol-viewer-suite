@@ -454,6 +454,7 @@ export class NgmApp extends LitElementI18n {
         this.requestViewerRender();
       });
 
+    let isVisible = true;
     this.backgroundLayerService.background$
       .pipe(distinctUntilKeyChanged('isVisible'))
       .subscribe((background) => {
@@ -463,10 +464,20 @@ export class NgmApp extends LitElementI18n {
             background.hasAlphaChannel,
           );
           syncMapParam(background.id);
+
+          if (isVisible !== background.isVisible) {
+            activeLayers.forEach((layer) => (layer.show = true));
+          }
         } else {
           this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
           syncMapParam('empty_map');
+
+          if (isVisible !== background.isVisible) {
+            activeLayers.forEach((layer) => (layer.show = false));
+          }
         }
+
+        isVisible = background.isVisible;
         this.requestViewerRender();
       });
   }
@@ -544,9 +555,11 @@ export class NgmApp extends LitElementI18n {
     if (opacity === 1) {
       translucency.enabled = hasAlphaChannel;
       translucency.backFaceAlpha = 1;
+      this.viewer!.scene.globe.show = true;
     } else {
       translucency.backFaceAlpha = 0;
       translucency.enabled = true;
+      this.viewer!.scene.globe.show = false;
     }
   }
 

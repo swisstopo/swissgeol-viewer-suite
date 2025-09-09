@@ -134,6 +134,7 @@ export async function create3DTilesetFromConfig(
     {
       show: !!config.visible,
       backFaceCulling: false,
+      enableCollision: true,
       maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
     },
   );

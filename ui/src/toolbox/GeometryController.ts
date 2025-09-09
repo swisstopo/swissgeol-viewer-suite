@@ -165,7 +165,6 @@ export class GeometryController {
           : undefined,
       numberOfSegments: measurements.numberOfSegments,
       type: type,
-      clampPoint: true,
     };
     this.increaseGeometriesCounter(type);
     this.addGeometry(attributes);
@@ -394,7 +393,6 @@ export class GeometryController {
           ? entity.position.getValue(new Date())
           : entity.position;
         attributes.positions = [position];
-        attributes.clampPoint = true;
         const billboard = entity.billboard;
         if (billboard) {
           attributes.color = billboard.color
@@ -618,11 +616,6 @@ export class GeometryController {
     const color = attributes.color;
     if (type === 'point') {
       entityAttrs.position = attributes.positions[0];
-      if (attributes.clampPoint) {
-        const cartPosition = Cartographic.fromCartesian(entityAttrs.position);
-        cartPosition.height = 0;
-        entityAttrs.position = Cartographic.toCartesian(cartPosition);
-      }
       entityAttrs.billboard = {
         image: attributes.pointSymbol ?? `/images/${POINT_SYMBOLS[0]}`,
         color: color
@@ -631,7 +624,7 @@ export class GeometryController {
         scale: 0.5,
         verticalOrigin: VerticalOrigin.BOTTOM,
         disableDepthTestDistance: 0,
-        heightReference: HeightReference.RELATIVE_TO_GROUND,
+        heightReference: HeightReference.NONE,
       };
       entityAttrs.properties!.swissforagesId = attributes.swissforagesId;
       attributes.depth = attributes.depth ?? 400;
@@ -646,8 +639,8 @@ export class GeometryController {
         semiMajorAxis: attributes.diameter,
         extrudedHeight: height,
         height: height - attributes.depth,
-        heightReference: HeightReference.RELATIVE_TO_GROUND,
-        extrudedHeightReference: HeightReference.RELATIVE_TO_GROUND,
+        heightReference: HeightReference.NONE,
+        extrudedHeightReference: HeightReference.NONE,
       };
     } else {
       const material = color
@@ -658,14 +651,14 @@ export class GeometryController {
           show: true,
           hierarchy: <any>attributes.positions,
           material: material,
-          classificationType: ClassificationType.TERRAIN,
+          classificationType: ClassificationType.BOTH,
         };
         entityAttrs.properties!.showSlicingBox = attributes.showSlicingBox;
       } else if (type === 'line') {
         entityAttrs.polyline = {
           show: true,
           positions: attributes.positions,
-          clampToGround: true,
+          clampToGround: false,
           width: 4,
           material: color
             ? new Color(color.red, color.green, color.blue, GEOMETRY_LINE_ALPHA)
