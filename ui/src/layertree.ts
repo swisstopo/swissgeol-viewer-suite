@@ -2870,19 +2870,6 @@ const group_07: LayerTreeNode =
       {
         label: t('grp_1865_label'),
         children: [
-          // Layer - Recent earthquakes - WMS
-          {
-            type: LayerType.swisstopoWMTS,
-            label: t('lyr_ch_bafu_gefahren_aktuelle_erdbeben_label'),
-            layer: 'ch.bafu.gefahren-aktuelle_erdbeben',
-            maximumLevel: 18,
-            visible: false,
-            displayed: false,
-            opacity: 0.7,
-            queryType: 'geoadmin',
-            geocatId: '85b7cf2d-0feb-4e75-81d7-9e245ec4bf24',
-            legend: 'ch.bafu.gefahren-aktuelle_erdbeben',
-          },
           // Layer - Historical earthquakes - WMTS
           {
             type: LayerType.swisstopoWMTS,
