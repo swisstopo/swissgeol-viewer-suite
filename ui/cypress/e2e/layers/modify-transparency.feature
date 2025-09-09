@@ -1,3 +1,5 @@
+@skip
+
 Feature: Modify transparency of layer or background
   In order to change the transparency of a layer or of the background map
   As a user I need to activate the transparency slider

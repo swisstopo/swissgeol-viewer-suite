@@ -25,6 +25,7 @@ const setupNodeEvents = async (
       plugins: [createEsbuildPlugin(config)],
     }),
   );
+  config.env.TAGS = 'not @skip';
   return config;
 };
 

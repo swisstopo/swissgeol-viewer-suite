@@ -17,7 +17,7 @@ beforeEach(() => {
 });
 
 Given(/^the viewer is fully loaded$/, () => {
-  cy.visit('/');
+  cy.visit('/?lang=en');
   cy.get('.cesium-widget > canvas', { timeout: 10_000 }).should('be.visible');
   cy.get('.ngm-menu', { timeout: 60_000 }).should('be.visible');
 });

@@ -414,6 +414,7 @@ jobs:
         run: |
           cd ui
           nohup npm run start > ../ui.log 2>&1 &
+          echo $! > ../ui.pid
           chmod +x ../.github/scripts/wait_for_port.sh
           ../.github/scripts/wait_for_port.sh localhost 3000
       - name: Cypress run
@@ -428,6 +429,11 @@ jobs:
           wait-on: "http://localhost:8000"
           wait-on-timeout: 120
           working-directory: ./ui
+      - name: Read application logs on failure
+        if: ${{ failure() }}
+        run: |
+          cat api.log
+          cat ui.log
       - name: Stop UI
         if: ${{ always() && steps.start-ui.conclusion == 'success' }}
         run: |
@@ -435,7 +441,6 @@ jobs:
       - name: Stop API
         if: ${{ always() && steps.start-api.conclusion == 'success' }}
         run: |
-          cat api.log
           kill $(cat api.pid)
       - name: Stop services
         if: ${{ always() && steps.start-services.conclusion == 'success' }}

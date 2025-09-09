@@ -1,23 +1,14 @@
 import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 
 Given(/^one layer is being displayed$/, () => {
-  const level1 = cy
-    .get('ngm-layer-catalog')
-    .shadow()
-    .get('ngm-layer-catalog-category')
-    .first();
-  level1.click();
-
-  const level2 = level1.shadow().find('ngm-layer-catalog-category').first();
-  level2.click();
-
-  level2
-    .shadow()
-    .find('ngm-layer-catalog-item')
-    .first()
+  cy.get(
+    'ngm-layer-catalog-item[data-cy="layer-ch.swisstopo.geologie-geocover"]',
+  )
     .shadow()
     .find('ngm-core-checkbox')
-    .click();
+    .shadow()
+    .find('label')
+    .click({ force: true });
 
   cy.get('ngm-layer-display-list-item[data-id]')
     .first()
