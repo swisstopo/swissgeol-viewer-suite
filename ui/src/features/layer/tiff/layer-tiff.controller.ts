@@ -60,15 +60,21 @@ export class LayerTiffController {
     if (this.active != null) {
       oldImageryIndex =
         this.viewer.scene.imageryLayers.indexOf(this.active.imagery) ?? -1;
-      this.viewer.scene.imageryLayers.remove(this.active.imagery);
+      this.viewer.scene.imageryLayers.remove(this.active.imagery, false);
     }
 
     const imagery = this.makeImagery(band);
+    const oldImagery = this.active;
     this.active = { imagery, band };
     if (oldImageryIndex !== -1) {
       this.addToViewer(oldImageryIndex);
     }
     this.viewer.scene.requestRender();
+    if (oldImagery != null) {
+      setTimeout(() => {
+        oldImagery.imagery.destroy();
+      });
+    }
   }
 
   async pick(cartesian: Cartesian3): Promise<PickData | null> {
