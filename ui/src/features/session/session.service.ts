@@ -28,6 +28,8 @@ export class SessionService extends BaseService {
 
   private state = readOrMakeState();
 
+  private sessionExpiryTimeout: number | null = null;
+
   constructor() {
     super();
 
@@ -36,6 +38,11 @@ export class SessionService extends BaseService {
     });
 
     this.sessionSubject.pipe(skip(1)).subscribe((session) => {
+      if (this.sessionExpiryTimeout !== null) {
+        clearTimeout(this.sessionExpiryTimeout);
+        this.sessionExpiryTimeout = null;
+      }
+
       if (session === null) {
         localStorage.removeItem(STORAGE_STATE_KEY);
         localStorage.removeItem(STORAGE_TOKEN_KEY);
@@ -45,10 +52,18 @@ export class SessionService extends BaseService {
         localStorage.setItem(STORAGE_STATE_KEY, this.state);
         localStorage.setItem(STORAGE_TOKEN_KEY, session.token);
         localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(session.user));
+
+        this.sessionExpiryTimeout = setTimeout(() => {
+          this.signOut();
+        }, session.user.expiresAt.getTime() - Date.now()) as unknown as number;
       }
     });
 
     this.onReady(() => this.initialize());
+  }
+
+  get session(): Session | null {
+    return this.sessionSubject.value;
   }
 
   get token$(): Observable<string | null> {
@@ -71,6 +86,10 @@ export class SessionService extends BaseService {
 
   get cognitoIdentityCredentials(): CognitoIdentityCredentials | null {
     return this.sessionSubject.value?.cognitoIdentityCredentials ?? null;
+  }
+
+  setSession(session: Session): void {
+    this.sessionSubject.next(session);
   }
 
   signIn(): void {

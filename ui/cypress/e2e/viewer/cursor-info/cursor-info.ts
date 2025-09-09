@@ -35,14 +35,14 @@ When(/^the terrain is hidden$/, () => {
 });
 
 Then(/^the (terrain|object) height is shown$/, (terrainOrObject) => {
-  cy.get('ngm-layout-cursor-info').as('info').should('be.visible');
-
-  cy.get('@info').shadow().find('[data-cy="height-info"]').as('height-info');
-
   // The canvas doesn't render correctly in headless mode, which makes this test impossible to pass.
   if (Cypress.browser.isHeadless) {
     return;
   }
+
+  cy.get('ngm-layout-cursor-info').as('info').should('be.visible');
+
+  cy.get('@info').shadow().find('[data-cy="height-info"]').as('height-info');
 
   const expectedText =
     terrainOrObject === 'terrain'

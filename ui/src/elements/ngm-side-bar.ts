@@ -52,6 +52,7 @@ import { distinctUntilChanged, map, skip, take } from 'rxjs';
 import { run } from 'src/utils/fn.utils';
 import { getLayersConfig } from 'src/swisstopoImagery';
 import { SessionService } from 'src/features/session';
+import { initializeLayerHelpers } from 'src/layers/helpers';
 
 export type SearchLayer = SearchLayerWithLayer | SearchLayerWithSource;
 
@@ -130,6 +131,7 @@ export class SideBar extends LitElementI18n {
   connectedCallback(): void {
     super.connectedCallback();
 
+    initializeLayerHelpers(this.sessionService);
     DashboardStore.initialize({ sessionService: this.sessionService });
 
     MainStore.viewer.subscribe((viewer) => {
