@@ -21,6 +21,7 @@ import { extractEntitiesAttributes } from 'src/query/objectInformation';
 import {
   flattenLayers,
   getDefaultLayerTree,
+  LayerConfig,
   LayerTreeNode,
 } from 'src/layertree';
 import NavToolsStore from 'src/store/navTools';
@@ -210,31 +211,21 @@ export class NavigationSearch extends CoreElement {
   }
 
   private searchAdditionalItemsByCatalog(query: RegExp): AdditionalItem[] {
-    return this.searchAdditionalItemsByLayerTree(
-      query,
-      getDefaultLayerTree(this.clientConfig),
-    );
-  }
-
-  private searchAdditionalItemsByLayerTree(
-    query: RegExp,
-    layerTree: LayerTreeNode[],
-  ): AdditionalItem[] {
-    const results: AdditionalItem[] = [];
+    const layers = flattenLayers(getDefaultLayerTree(this.clientConfig));
     const user = this.sessionService.user;
-    for (const layer of layerTree) {
-      if (layer.children) {
-        results.push(
-          ...this.searchAdditionalItemsByLayerTree(query, layer.children),
-        );
-      } else if (query.test(layer.label)) {
-        layer.label = `${i18next.t(layer.label)}`;
-        if (
-          !layer.restricted?.length ||
-          layer.restricted.some((g) => user?.groups.includes(g))
-        ) {
-          results.push(layer);
-        }
+    const results: AdditionalItem[] = [];
+    for (const layer of layers) {
+      const label = i18next.t(layer.label);
+      const hasMatched =
+        (!layer.restricted?.length ||
+          layer.restricted.some((g) => user?.groups.includes(g))) &&
+        query.test(label);
+
+      if (hasMatched) {
+        results.push({
+          ...layer,
+          label,
+        });
       }
     }
     return results;
@@ -441,7 +432,11 @@ export class NavigationSearch extends CoreElement {
     }
     const categorizedItem = categorizeSearchItem(item);
     const icon = getIconForCategory(categorizedItem.category);
-    return `<img src='/images/${icon}.svg' alt=""/><b>${label}</b>`;
+    const name =
+      categorizedItem.category === SearchItemCategory.NgmLayer
+        ? `<b data-cy="${(item as unknown as { result: LayerConfig }).result.layer}">${label}</b>`
+        : `<b>${label}</b>`;
+    return `<img src='/images/${icon}.svg' alt=""/>${name}`;
   }
 
   static readonly styles = css`
