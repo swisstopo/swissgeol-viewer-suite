@@ -40,12 +40,12 @@ export default defineConfig({
     open: false,
     proxy: {
       '/api': {
-        target: 'http://api:3000',
+        target: process.env['API_HOST'] ?? 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
       },
       '/abbr': {
-        target: 'http://abbreviator:8080',
+        target: process.env['ABBREVIATOR_HOST'] ?? 'http://localhost:8001',
         rewrite: (path) => path.replace(/^\/abbr/, ''),
         changeOrigin: true,
         secure: false,

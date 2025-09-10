@@ -44,7 +44,7 @@ export const DEFAULT_VIEW = {
   },
 };
 
-export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'];
+export const SUPPORTED_LANGUAGES = ['de', 'fr', 'it', 'en'] as const;
 export const DRILL_PICK_LIMIT = 2;
 export const DRILL_PICK_LENGTH = 1;
 

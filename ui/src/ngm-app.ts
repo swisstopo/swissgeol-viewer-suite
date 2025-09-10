@@ -43,7 +43,7 @@ import {
 import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
-import { setupI18n } from './i18n.js';
+import { setupI18n } from './i18n';
 
 import { initAnalytics } from './analytics.js';
 import MainStore from './store/main';

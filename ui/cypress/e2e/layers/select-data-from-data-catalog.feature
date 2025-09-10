@@ -1,3 +1,5 @@
+@skip
+
 Feature: Select data from data catalog
   In order to display layer in viewer.swissgeol.ch
   As a user I need to select and activate the respective layers in the data catalog

@@ -3,7 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { cartesianToLv95, round } from '../projection';
 import { showSnackbarError, showSnackbarInfo } from '../notifications';
 import i18next from 'i18next';
-import { LitElementI18n } from '../i18n.js';
+import { LitElementI18n } from '../i18n';
 import type { Viewer } from 'cesium';
 import {
   Cartographic,

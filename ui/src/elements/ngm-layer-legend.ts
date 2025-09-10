@@ -3,7 +3,7 @@ import { until } from 'lit/directives/until.js';
 import { customElement, state } from 'lit/decorators.js';
 import draggable from './draggable';
 import i18next from 'i18next';
-import { LitElementI18n } from '../i18n.js';
+import { LitElementI18n } from '../i18n';
 
 import { LayerConfig, LayerType } from '../layertree';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';

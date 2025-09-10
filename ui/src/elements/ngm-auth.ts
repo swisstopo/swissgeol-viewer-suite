@@ -1,7 +1,7 @@
 import { css, html } from 'lit';
 import type { AuthUser } from '../authService';
 import AuthService from '../authService';
-import { LitElementI18n } from '../i18n.js';
+import { LitElementI18n } from '../i18n';
 import auth from '../store/auth';
 import { customElement, property, state } from 'lit/decorators.js';
 import DashboardStore from '../store/dashboard';

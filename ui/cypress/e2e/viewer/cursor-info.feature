@@ -11,9 +11,8 @@ Feature: Cursor Info
     When the cursor is moved over the map
     Then the terrain height is shown
 
-  Scenario: Show terrain height
+  Scenario: Show object height
     When the top_omm layer has been activated
     And the terrain is hidden
-    And the map has been loaded in
     When the cursor is moved over the map
     Then the object height is shown

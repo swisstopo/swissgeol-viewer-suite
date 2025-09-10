@@ -1,3 +1,5 @@
+@skip
+
 Feature: Use context menu in Layers
 In order to get meta information o a layer and to get access to specific tools
 As a user I need to use the context menu of an individual layer

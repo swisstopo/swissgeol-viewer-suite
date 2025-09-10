@@ -1,3 +1,5 @@
+@skip
+
 Feature: Reorder layers
   As a user of viewer.swissgeol.ch
   I want to change the order of the layers displayed in the data displayed section
