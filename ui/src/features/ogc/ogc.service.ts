@@ -1,9 +1,12 @@
 import { BaseService } from 'src/utils/base.service';
 import { LayerConfig, LayerTreeNode, LayerType } from 'src/layertree';
 import {
+  Cartesian3,
+  Cartographic,
   ImageryLayer,
   UrlTemplateImageryProvider,
   WebMapServiceImageryProvider,
+  Math as CesiumMath,
 } from 'cesium';
 import { sleep } from 'src/utils/fn.utils';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -16,19 +19,19 @@ export class OgcService extends BaseService {
   }
 
   async isLayerSupported(layer: LayerTreeNode): Promise<boolean> {
-    return (await this.getInputForLayer(layer, [0, 0, 0, 0])) !== null;
+    return (await this.getInputForLayer(layer, [])) !== null;
   }
 
   async start(
     title: string,
     layers: LayerTreeNode[],
-    bbox: BBox,
+    shape: Cartesian3[],
   ): Promise<OgcJob | null> {
     const inputs: object[] = [];
     const promises: Array<Promise<void>> = [];
     for (const layer of layers) {
       promises.push(
-        this.getInputForLayer(layer, bbox, {
+        this.getInputForLayer(layer, shape, {
           shouldWarnIfNotAvailable: true,
         }).then((input) => {
           if (input !== null) {
@@ -69,9 +72,9 @@ export class OgcService extends BaseService {
         `Failed to access ogc api: [${res.status} ${res.statusText}] ${await res.text()}`,
       );
     }
-    const result: { jobId: string } = await res.json();
+    const result: { jobID: string } = await res.json();
     const job: OgcJob = {
-      id: result.jobId,
+      id: result.jobID,
       title,
       layers,
     };
@@ -184,18 +187,39 @@ export class OgcService extends BaseService {
 
   private async getInputForLayer(
     layer: LayerTreeNode,
-    bbox: BBox,
+    shape: Cartesian3[],
     options: { shouldWarnIfNotAvailable?: boolean } = {},
   ): Promise<object | null> {
-    if (layer.gstId != null) {
-      // TODO adjust this to the correct format
-      return {
-        type: 'gst',
-        identifier: '???',
-        layer: layer.gstId,
-      };
+    const points = shape.map((position) => {
+      const carto = Cartographic.fromCartesian(position);
+      const lon = CesiumMath.toDegrees(carto.longitude);
+      const lat = CesiumMath.toDegrees(carto.latitude);
+      return [lat, lon];
+    });
+    if (points.length !== 0) {
+      points.push(points[0]);
     }
 
+    const requestArea = {
+      epsg: 4326,
+      polygon: points,
+    };
+    if (layer.gstId != null) {
+      // It's a GST layer.
+      return {
+        type: 'gst',
+        id: Number(layer.gstId),
+        requestedFormat: 'tiles3d',
+        requestVolume: {
+          ...requestArea,
+          polygon: {
+            points,
+            zMax: 100_000,
+            zMin: -100_000,
+          },
+        },
+      };
+    }
     if (layer.type === LayerType.swisstopoWMTS) {
       const { imageryProvider } = (await (layer as unknown as LayerConfig)
         .promise) as ImageryLayer;
@@ -205,10 +229,9 @@ export class OgcService extends BaseService {
           type: 'wmts10',
           identifier: 'wmts@swisstopo',
           layer: layer.layer,
-          bbox: {
-            bbox,
-            epsg: 4326,
-          },
+          requestArea,
+          width: 4_000,
+          height: 4_000,
         };
       } else if (imageryProvider instanceof WebMapServiceImageryProvider) {
         // It's a WMS layer.
@@ -216,7 +239,9 @@ export class OgcService extends BaseService {
           type: 'wms13',
           identifier: 'wms@swisstopo',
           layer: layer.layer,
-          epsg: 4326,
+          requestArea,
+          width: 4_000,
+          height: 4_000,
         };
       } else {
         if (options.shouldWarnIfNotAvailable) {

@@ -1346,6 +1346,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267961,
+                gstId: '267961',
                 label: t('lyr_top_usm_label'),
                 layer: 'top_usm',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -2253,6 +2254,7 @@ const group_04: LayerTreeNode =
             // Layer "Temperature TOMM"
             type: LayerType.tiles3d,
             assetId: 251747,
+            gstId: '267959',
             label: t('lyr_temperature_horizon_tomm_label'),
             layer: 'temperature_horizon_tomm',
             propsOrder: TEMPERATURE_HORIZON_ORDER,

@@ -8,6 +8,7 @@ import { consume } from '@lit/context';
 import { LayerTreeNode } from 'src/layertree';
 import { repeat } from 'lit/directives/repeat.js';
 import i18next from 'i18next';
+import { Cartesian3 } from 'cesium';
 
 @customElement('ngm-ogc-layer-selection')
 export class OgcLayerSelection extends CoreElement {
@@ -15,7 +16,7 @@ export class OgcLayerSelection extends CoreElement {
   accessor title: string = '';
 
   @property({ type: Object })
-  accessor bbox: BBox | null = null;
+  accessor shape: Cartesian3[] = [];
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
@@ -70,7 +71,7 @@ export class OgcLayerSelection extends CoreElement {
     const job = await this.ogcService.start(
       this.title,
       [...this.activeLayers],
-      this.bbox!,
+      this.shape!,
     );
     if (job === null) {
       console.warn(
