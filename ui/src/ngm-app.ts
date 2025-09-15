@@ -2,7 +2,6 @@ import { LitElementI18n } from 'src/i18n';
 import { html, PropertyValues } from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
-import './elements/ngm-auth';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
 import './toolbox/ngm-topo-profile-modal';
@@ -23,6 +22,7 @@ import 'src/features/background/background.module';
 import 'src/features/controls/controls.module';
 import 'src/features/layout/layout.module';
 import 'src/features/navigation/navigation.module';
+import 'src/features/session/session.module';
 
 import { DEFAULT_VIEW } from './constants';
 

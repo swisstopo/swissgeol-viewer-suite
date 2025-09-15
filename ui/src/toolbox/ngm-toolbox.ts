@@ -34,7 +34,6 @@ import { showSnackbarInfo } from '../notifications';
 import DashboardStore from '../store/dashboard';
 import { pairwise } from 'rxjs';
 import { consume } from '@lit/context';
-import { apiClientContext } from '../context';
 import { ApiClient } from '../api/api-client';
 
 @customElement('ngm-tools')
@@ -68,7 +67,7 @@ export class NgmToolbox extends LitElementI18n {
   private geometryControllerNoEdit: GeometryController | undefined;
   private forceSlicingToolOpen = false;
 
-  @consume({ context: apiClientContext })
+  @consume({ context: ApiClient.context() })
   accessor apiClient!: ApiClient;
 
   constructor() {

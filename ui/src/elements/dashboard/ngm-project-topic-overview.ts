@@ -1,5 +1,5 @@
 import { customElement, property, query } from 'lit/decorators.js';
-import { LitElementI18n, toLocaleDateString, translated } from '../../i18n';
+import { LitElementI18n, toLocaleDateString, translated } from 'src/i18n';
 import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
 import { classMap } from 'lit/directives/class-map.js';
@@ -12,19 +12,18 @@ import {
   Topic,
   type View,
 } from './ngm-dashboard';
-import { ApiClient } from '../../api/api-client';
-import { showBannerSuccess } from '../../notifications';
+import { ApiClient } from 'src/api/api-client';
+import { showBannerSuccess } from 'src/notifications';
 import $ from 'jquery';
-import { DEFAULT_PROJECT_COLOR } from '../../constants';
+import { DEFAULT_PROJECT_COLOR } from 'src/constants';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
 import '../ngm-confirmation-modal';
 import './ngm-project-members-section';
 import { isProject } from './helpers';
 import { NgmConfirmationModal } from '../ngm-confirmation-modal';
-import { getPermalink } from '../../permalink';
+import { getPermalink } from 'src/permalink';
 import { consume } from '@lit/context';
-import { apiClientContext } from '../../context';
 
 @customElement('ngm-project-topic-overview')
 export class NgmProjectTopicOverview extends LitElementI18n {
@@ -41,7 +40,7 @@ export class NgmProjectTopicOverview extends LitElementI18n {
   @query('ngm-confirmation-modal')
   accessor deleteWarningModal!: NgmConfirmationModal;
 
-  @consume({ context: apiClientContext })
+  @consume({ context: ApiClient.context() })
   accessor apiClient!: ApiClient;
 
   shouldUpdate(_changedProperties: PropertyValues): boolean {

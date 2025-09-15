@@ -3,21 +3,22 @@ import { customElement } from 'lit/decorators.js';
 
 @customElement('hide-overflow')
 export class HideOverflow extends LitElement {
-  private readonly observer: IntersectionObserver;
+  declare private readonly observer: IntersectionObserver;
 
   constructor() {
     super();
-    const options = {
-      root: this,
-      threshold: [0.0, 1.0],
-    };
-    const callback = (entries) => {
-      entries.forEach((entry) => {
-        entry.target.style.visibility =
-          entry.intersectionRatio < 1 ? 'hidden' : 'visible';
-      });
-    };
-    this.observer = new IntersectionObserver(callback, options);
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          (entry.target as HTMLElement).style.visibility =
+            entry.intersectionRatio < 1 ? 'hidden' : 'visible';
+        });
+      },
+      {
+        root: this,
+        threshold: [0.0, 1.0],
+      },
+    );
   }
 
   slotReady(event: Event) {
@@ -26,6 +27,7 @@ export class HideOverflow extends LitElement {
   }
 
   disconnectedCallback() {
+    super.disconnectedCallback();
     this.observer.disconnect();
   }
 

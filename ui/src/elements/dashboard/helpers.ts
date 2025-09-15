@@ -1,5 +1,5 @@
 import { CreateProject, Project, Topic } from './ngm-dashboard';
-import AuthStore from '../../store/auth';
+import { User } from 'src/features/session';
 
 export function isProject(
   projectOrTopic: Project | CreateProject | Topic | undefined,
@@ -9,13 +9,13 @@ export function isProject(
 }
 
 export function isProjectOwnerOrEditor(
+  user: User | null,
   projectOrTopic: Project | Topic,
 ): boolean {
   const isOwner =
-    isProject(projectOrTopic) &&
-    projectOrTopic.owner.email === AuthStore.userEmail;
+    isProject(projectOrTopic) && projectOrTopic.owner.email === user?.email;
   const isEditor =
     isProject(projectOrTopic) &&
-    !!projectOrTopic.editors?.find((e) => e.email === AuthStore.userEmail);
+    !!projectOrTopic.editors?.find((e) => e.email === user?.email);
   return isOwner || isEditor;
 }

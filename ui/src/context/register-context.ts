@@ -2,13 +2,10 @@ import { LitElement } from 'lit';
 import { Context, ContextProvider } from '@lit/context';
 import { ClientConfig } from '../api/client-config';
 import {
-  apiClientContext,
-  authServiceContext,
   clientConfigContext,
   gstServiceContext,
 } from './client-config.context';
 import { ApiClient } from '../api/api-client';
-import AuthService from '../authService';
 import {
   AnyBaseServiceType,
   BaseService,
@@ -20,6 +17,7 @@ import { ControlsService } from 'src/features/controls/controls.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { LayerService } from 'src/features/layer/layer.service';
 import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
+import { SessionService } from 'src/features/session/session.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -30,26 +28,10 @@ export const registerAppContext = (
 
   const contexts: AppContext[] = [];
 
-  const authService = new AuthService();
-  authService.clientConfig = clientConfig;
-  authService.initialize();
-
   contexts.push(
     new ContextProvider(element, {
       context: clientConfigContext,
       initialValue: clientConfig,
-    }),
-    new ContextProvider(element, {
-      context: authServiceContext,
-      initialValue: authService,
-    }),
-  );
-
-  const apiClient = new ApiClient(authService);
-  contexts.push(
-    new ContextProvider(element, {
-      context: apiClientContext,
-      initialValue: apiClient,
     }),
   );
 
@@ -61,6 +43,8 @@ export const registerAppContext = (
     }),
   );
 
+  contexts.push(makeProvider(ApiClient));
+  contexts.push(makeProvider(SessionService));
   contexts.push(makeProvider(BackgroundLayerService));
   contexts.push(makeProvider(ControlsService));
   contexts.push(makeProvider(LayerService));

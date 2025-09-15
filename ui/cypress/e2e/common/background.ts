@@ -1,5 +1,5 @@
 import { Given } from '@badeball/cypress-cucumber-preprocessor';
-import { ClientConfig } from '../../../src/api/client-config';
+import type { ClientConfig } from '../../../src/api/client-config';
 import type { Viewer } from 'cesium';
 
 let cachedConfig: ClientConfig | null = null;
