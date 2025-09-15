@@ -94,22 +94,6 @@ export default class NgmGeometriesSimpleList extends CoreElement {
   }
 
   export(geometry: NgmGeometry): void {
-    let west = Number.POSITIVE_INFINITY;
-    let south = Number.POSITIVE_INFINITY;
-    let east = Number.NEGATIVE_INFINITY;
-    let north = Number.NEGATIVE_INFINITY;
-
-    for (const position of geometry.positions) {
-      const carto = Cartographic.fromCartesian(position);
-      const lon = CesiumMath.toDegrees(carto.longitude);
-      const lat = CesiumMath.toDegrees(carto.latitude);
-
-      west = Math.min(west, lon);
-      south = Math.min(south, lat);
-      east = Math.max(east, lon);
-      north = Math.max(north, lat);
-    }
-
     const modal = CoreModal.open(
       {
         isPersistent: true,
@@ -118,7 +102,7 @@ export default class NgmGeometriesSimpleList extends CoreElement {
       },
       html`<ngm-ogc-layer-selection
         .title="${geometry.name}"
-        .bbox="${[west, south, east, north]}"
+        .shape="${geometry.positions}"
         @close="${() => modal.close()}"
       ></ngm-ogc-layer-selection>`,
     );

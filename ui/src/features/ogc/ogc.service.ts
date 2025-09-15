@@ -1,9 +1,12 @@
 import { BaseService } from 'src/utils/base.service';
 import { LayerConfig, LayerTreeNode, LayerType } from 'src/layertree';
 import {
+  Cartesian3,
+  Cartographic,
   ImageryLayer,
   UrlTemplateImageryProvider,
   WebMapServiceImageryProvider,
+  Math as CesiumMath,
 } from 'cesium';
 import { sleep } from 'src/utils/fn.utils';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -16,19 +19,19 @@ export class OgcService extends BaseService {
   }
 
   async isLayerSupported(layer: LayerTreeNode): Promise<boolean> {
-    return (await this.getInputForLayer(layer, [0, 0, 0, 0])) !== null;
+    return (await this.getInputForLayer(layer, [])) !== null;
   }
 
   async start(
     title: string,
     layers: LayerTreeNode[],
-    bbox: BBox,
+    shape: Cartesian3[],
   ): Promise<OgcJob | null> {
     const inputs: object[] = [];
     const promises: Array<Promise<void>> = [];
     for (const layer of layers) {
       promises.push(
-        this.getInputForLayer(layer, bbox, {
+        this.getInputForLayer(layer, shape, {
           shouldWarnIfNotAvailable: true,
         }).then((input) => {
           if (input !== null) {
@@ -43,7 +46,7 @@ export class OgcService extends BaseService {
     }
 
     const res = await fetch(
-      'http://localhost:8000/ogc/processes/FeaturesInBoundingBox/execution',
+      'https://ogc-api.gst-viewer.swissgeol.ch/processes/FeaturesWithinBounds/execution',
       {
         method: 'POST',
         headers: {
@@ -69,9 +72,9 @@ export class OgcService extends BaseService {
         `Failed to access ogc api: [${res.status} ${res.statusText}] ${await res.text()}`,
       );
     }
-    const result: { jobId: string } = await res.json();
+    const result: { jobID: string } = await res.json();
     const job: OgcJob = {
-      id: result.jobId,
+      id: result.jobID,
       title,
       layers,
     };
@@ -85,7 +88,7 @@ export class OgcService extends BaseService {
   ): Promise<void> {
     while (true) {
       const res = await fetch(
-        `http://localhost:8000/ogc/jobs/${job.id}?t=json`,
+        `https://ogc-api.gst-viewer.swissgeol.ch/jobs/${job.id}?t=json`,
         {
           method: 'GET',
           headers: {
@@ -149,7 +152,9 @@ export class OgcService extends BaseService {
   }
 
   async download(job: OgcJob): Promise<void> {
-    const res = await fetch(`http://localhost:8000/ogc/jobs/${job.id}/results`);
+    const res = await fetch(
+      `https://ogc-api.gst-viewer.swissgeol.ch/jobs/${job.id}/results`,
+    );
     const blob = await res.blob();
 
     const a = document.createElement('a');
@@ -171,7 +176,7 @@ export class OgcService extends BaseService {
   }
 
   async complete(job: OgcJob): Promise<void> {
-    await fetch(`http://localhost:8000/ogc/jobs/${job.id}`, {
+    await fetch(`https://ogc-api.gst-viewer.swissgeol.ch/jobs/${job.id}`, {
       method: 'DELETE',
     });
     const i = this.jobsSubject.value.findIndex((it) => it.id === job.id);
@@ -184,18 +189,50 @@ export class OgcService extends BaseService {
 
   private async getInputForLayer(
     layer: LayerTreeNode,
-    bbox: BBox,
+    shape: Cartesian3[],
     options: { shouldWarnIfNotAvailable?: boolean } = {},
   ): Promise<object | null> {
-    if (layer.gstId != null) {
-      // TODO adjust this to the correct format
-      return {
-        type: 'gst',
-        identifier: '???',
-        layer: layer.gstId,
-      };
+    const points = shape.map((position) => {
+      const carto = Cartographic.fromCartesian(position);
+      const lon = CesiumMath.toDegrees(carto.longitude);
+      const lat = CesiumMath.toDegrees(carto.latitude);
+      return [lon, lat];
+    });
+    if (points.length !== 0) {
+      points.push(points[0]);
     }
 
+    const requestArea = {
+      // The coordinate system used by the input polygon.
+      srs: {
+        epsg: 4326,
+      },
+      polygon: points,
+    };
+    if (layer.ogcId != null) {
+      // A layer from the gst service, most likely a 3dtile.
+      return {
+        type: 'gst',
+        id: layer.ogcId,
+        requestedFormat: 'tiles3d',
+
+        // The coordinate system used in the output file.
+        requestSrs: {
+          epsg: 4326,
+        },
+
+        // The volume that the output should take up.
+        // Unlike this WM(T)S layers, this is 3d.
+        requestVolume: {
+          ...requestArea,
+          polygon: {
+            points,
+            zMax: 100_000,
+            zMin: -100_000,
+          },
+        },
+      };
+    }
     if (layer.type === LayerType.swisstopoWMTS) {
       const { imageryProvider } = (await (layer as unknown as LayerConfig)
         .promise) as ImageryLayer;
@@ -205,10 +242,7 @@ export class OgcService extends BaseService {
           type: 'wmts10',
           identifier: 'wmts@swisstopo',
           layer: layer.layer,
-          bbox: {
-            bbox,
-            epsg: 4326,
-          },
+          requestArea,
         };
       } else if (imageryProvider instanceof WebMapServiceImageryProvider) {
         // It's a WMS layer.
@@ -216,7 +250,7 @@ export class OgcService extends BaseService {
           type: 'wms13',
           identifier: 'wms@swisstopo',
           layer: layer.layer,
-          epsg: 4326,
+          requestArea,
         };
       } else {
         if (options.shouldWarnIfNotAvailable) {
