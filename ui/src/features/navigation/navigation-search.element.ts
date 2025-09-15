@@ -21,6 +21,7 @@ import { extractEntitiesAttributes } from 'src/query/objectInformation';
 import {
   flattenLayers,
   getDefaultLayerTree,
+  LayerConfig,
   LayerTreeNode,
 } from 'src/layertree';
 import NavToolsStore from 'src/store/navTools';
@@ -54,6 +55,8 @@ export class NavigationSearch extends CoreElement {
   private accessor isActive = false;
 
   private readonly catalogLayers = new Map<string, LayerTreeNode>();
+
+  private lastQuery: RegExp | null = null;
 
   constructor() {
     super();
@@ -138,22 +141,36 @@ export class NavigationSearch extends CoreElement {
    * @private
    */
   private matchFeature(feature: Feature): boolean {
-    if (
-      this.layerConfigs == null ||
-      feature.properties == null ||
-      feature.properties.origin !== 'layer'
-    ) {
-      return true;
+    if (feature.properties?.origin === 'layer') {
+      const layerName: string = feature.properties.layer;
+
+      // If the layer is not in the swisstopo layerConfigs, we don't show it.
+      const hasLayerConfig =
+        layerName != null && this.layerConfigs?.[layerName] != null;
+      if (!hasLayerConfig) {
+        return false;
+      }
+
+      // Filter out layers that are also in our catalog.
+      // These should be included as additional items, not as WMTS layers.
+      if (this.catalogLayers.has(layerName)) {
+        return false;
+      }
     }
-    const layerName: string = feature.properties.layer;
-    const layerConfig = layerName != null && this.layerConfigs[layerName];
-    return (
-      layerConfig && (layerConfig.type === 'wmts' || layerConfig.type === 'wms')
-    );
+
+    // We only want to display features that actually match the current query.
+    if (
+      this.lastQuery !== null &&
+      typeof feature.properties?.label === 'string'
+    ) {
+      return this.lastQuery.test(feature.properties.label);
+    }
+    return true;
   }
 
   private searchAdditionalItems(query: string): Promise<AdditionalItem[]> {
     const regexQuery = new RegExp(escapeRegExp(query), 'i');
+    this.lastQuery = regexQuery;
     return Promise.resolve([
       ...this.searchAdditionalItemsByCoordinates(query),
       ...this.searchAdditionalItemsByRegex(regexQuery),
@@ -210,31 +227,20 @@ export class NavigationSearch extends CoreElement {
   }
 
   private searchAdditionalItemsByCatalog(query: RegExp): AdditionalItem[] {
-    return this.searchAdditionalItemsByLayerTree(
-      query,
-      getDefaultLayerTree(this.clientConfig),
-    );
-  }
-
-  private searchAdditionalItemsByLayerTree(
-    query: RegExp,
-    layerTree: LayerTreeNode[],
-  ): AdditionalItem[] {
-    const results: AdditionalItem[] = [];
     const user = this.sessionService.user;
-    for (const layer of layerTree) {
-      if (layer.children) {
-        results.push(
-          ...this.searchAdditionalItemsByLayerTree(query, layer.children),
-        );
-      } else if (query.test(layer.label)) {
-        layer.label = `${i18next.t(layer.label)}`;
-        if (
-          !layer.restricted?.length ||
-          layer.restricted.some((g) => user?.groups.includes(g))
-        ) {
-          results.push(layer);
-        }
+    const results: AdditionalItem[] = [];
+    for (const layer of this.catalogLayers.values()) {
+      const label = i18next.t(layer.label);
+      const hasMatched =
+        (!layer.restricted?.length ||
+          layer.restricted.some((g) => user?.groups.includes(g))) &&
+        query.test(label);
+
+      if (hasMatched) {
+        results.push({
+          ...layer,
+          label,
+        });
       }
     }
     return results;
@@ -253,13 +259,13 @@ export class NavigationSearch extends CoreElement {
       case SearchItemCategory.Location:
         this.selectLocation(categorized.item);
         break;
-      case SearchItemCategory.GeoAdminLayer:
+      case SearchItemCategory.LayerFromGeoadmin:
         if (options.allowLayerChanges) {
-          this.selectGeoadminLayer(categorized.item);
+          this.selectLayerFromGeoadmin(categorized.item);
         }
         break;
-      case SearchItemCategory.NgmLayer:
-        this.selectNgmLayer(categorized.item);
+      case SearchItemCategory.LayerFromCatalog:
+        this.selectLayerFromCatalog(categorized.item);
         break;
     }
     if (!options.keepFocus) {
@@ -271,14 +277,14 @@ export class NavigationSearch extends CoreElement {
     this.flyToBBox(item.bbox);
   }
 
-  private selectGeoadminLayer(feature: Feature): void {
+  private selectLayerFromGeoadmin(feature: Feature): void {
     if (this.sidebar == null) {
       return;
     }
     this.sidebar.addLayerFromSearch(feature.properties as SearchLayer).then();
   }
 
-  private selectNgmLayer(item: EntityItem | LayerTreeNode): void {
+  private selectLayerFromCatalog(item: EntityItem | LayerTreeNode): void {
     if (this.sidebar == null) {
       return;
     }
@@ -441,7 +447,12 @@ export class NavigationSearch extends CoreElement {
     }
     const categorizedItem = categorizeSearchItem(item);
     const icon = getIconForCategory(categorizedItem.category);
-    return `<img src='/images/${icon}.svg' alt=""/><b>${label}</b>`;
+    const className = `is-${categorizedItem.category.toLocaleLowerCase()}`;
+    const name =
+      categorizedItem.category === SearchItemCategory.LayerFromCatalog
+        ? `<b class="${className}" data-cy="${(item as unknown as { result: LayerConfig }).result.layer}">${label}</b>`
+        : `<b class="${className}">${label}</b>`;
+    return `<img src='/images/${icon}.svg' alt=""/>${name}`;
   }
 
   static readonly styles = css`
@@ -625,6 +636,10 @@ export class NavigationSearch extends CoreElement {
         display: none;
       }
     }
+
+    /* results icon */
+    ul img {
+    }
   `;
 }
 
@@ -693,9 +708,9 @@ interface SearchEvent extends SubmitEvent {
 }
 
 enum SearchItemCategory {
-  Location,
-  GeoAdminLayer,
-  NgmLayer,
+  Location = 'location',
+  LayerFromGeoadmin = 'geoadmin-layer',
+  LayerFromCatalog = 'catalog-layer',
 }
 
 type CategorizedSearchItem =
@@ -704,11 +719,11 @@ type CategorizedSearchItem =
       item: FeatureWithLocation | CoordinateItem;
     }
   | {
-      category: SearchItemCategory.GeoAdminLayer;
+      category: SearchItemCategory.LayerFromGeoadmin;
       item: Feature;
     }
   | {
-      category: SearchItemCategory.NgmLayer;
+      category: SearchItemCategory.LayerFromCatalog;
       item: EntityItem | LayerTreeNode;
     };
 
@@ -738,21 +753,21 @@ const categorizeSearchItem = (item: SearchItem): CategorizedSearchItem => {
     if (isFeatureWithLocation(item)) {
       return { category: SearchItemCategory.Location, item };
     }
-    return { category: SearchItemCategory.GeoAdminLayer, item };
+    return { category: SearchItemCategory.LayerFromGeoadmin, item };
   }
   if (isCoordinateItem(item)) {
     return { category: SearchItemCategory.Location, item };
   }
-  return { category: SearchItemCategory.NgmLayer, item };
+  return { category: SearchItemCategory.LayerFromCatalog, item };
 };
 
 const getIconForCategory = (category: SearchItemCategory): string => {
   switch (category) {
     case SearchItemCategory.Location:
       return 'i_place';
-    case SearchItemCategory.GeoAdminLayer:
+    case SearchItemCategory.LayerFromGeoadmin:
       return 'i_layer';
-    case SearchItemCategory.NgmLayer:
+    case SearchItemCategory.LayerFromCatalog:
       return 'i_extrusion';
   }
 };
