@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.7.0]
+
+### Added
+- The currently signed-in user is now visible in a dropdown.
+
+### Changes
+- The units of measurement of swissBEDROCK bands are now standalone and directly integrated into the legend.
+- The exaggeration slider has been changed to a range of `1` to `10` with a step size of `0.5`.
+- The sign in mask now opens in the same window as the viewer.
+- The search now matches by name only, sorts the result items and excludes duplicates.
+
+### Fixed
+- The object info in the navigation correctly reacts to hovering over objects and layers.
+- Drawings can now be placed directly on layers without clamping to the terrain.
+- Resolved some issues with voxel and earthquake layers not disappearing after removal.
+
+## [1.6.1]
+
+### Fixed
+- Picking is now once again supported on all layer types.
+
 ## [1.6.0]
 
 ### Added
