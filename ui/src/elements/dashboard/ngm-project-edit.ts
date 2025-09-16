@@ -1,9 +1,9 @@
-import { LitElementI18n, toLocaleDateString } from '../../i18n';
+import { LitElementI18n, toLocaleDateString } from 'src/i18n';
 import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { COLORS_WITH_BLACK_TICK, PROJECT_COLORS } from '../../constants';
+import { COLORS_WITH_BLACK_TICK, PROJECT_COLORS } from 'src/constants';
 import {
   Asset,
   CreateProject,
@@ -14,12 +14,12 @@ import {
 import { customElement, property, query } from 'lit/decorators.js';
 import $ from 'jquery';
 import '../../toolbox/ngm-geometries-list';
-import { ApiClient } from '../../api/api-client';
+import { ApiClient } from 'src/api/api-client';
 import {
-  showSnackbarError,
-  showBannerWarning,
   isBannerShown,
-} from '../../notifications';
+  showBannerWarning,
+  showSnackbarError,
+} from 'src/notifications';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
 import { MemberToAdd } from './ngm-add-member-form';
@@ -27,10 +27,9 @@ import { isProject } from './helpers';
 import DashboardStore from '../../store/dashboard';
 import { CustomDataSource } from 'cesium';
 import MainStore from '../../store/main';
-import { parseKml } from '../../cesiumutils';
-import { getPermalink } from '../../permalink';
+import { parseKml } from 'src/cesiumutils';
+import { getPermalink } from 'src/permalink';
 import { consume } from '@lit/context';
-import { apiClientContext } from '../../context';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
@@ -47,7 +46,7 @@ export class NgmProjectEdit extends LitElementI18n {
   @query('.ngm-toast-placeholder')
   accessor toastPlaceholder;
 
-  @consume({ context: apiClientContext })
+  @consume({ context: ApiClient.context() })
   accessor apiClient!: ApiClient;
 
   async onKmlUpload(file: File, clampToGround: boolean) {

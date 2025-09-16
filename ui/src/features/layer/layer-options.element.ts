@@ -102,15 +102,18 @@ export class LayerOptions extends LitElementI18n {
     <hr />
     <div class="group">
       <ngm-core-slider
+        data-cy="exaggeration-slider"
         .min="${1}"
-        .max="${20}"
-        .step="${1}"
+        .max="${10}"
+        .step="${0.5}"
         .value="${this.exaggeration}"
         @change=${this.updateExaggeration}
         @done="${debounce(() => this.updateExaggerationForKmls(), 300)}"
       ></ngm-core-slider>
       <div class="chip-container">
-        <ngm-core-chip>${this.exaggeration.toFixed()}x</ngm-core-chip>
+        <ngm-core-chip data-cy="exaggeration-factor"
+          >${this.exaggeration}x</ngm-core-chip
+        >
       </div>
     </div>
   `;
@@ -151,6 +154,10 @@ export class LayerOptions extends LitElementI18n {
       min-width: 48px;
       display: flex;
       justify-content: flex-end;
+    }
+
+    .chip-container > ngm-core-chip {
+      min-width: 40px;
     }
   `;
 }

@@ -20,11 +20,12 @@ import {
 import { getSwisstopoImagery } from '../swisstopoImagery';
 import { LayerType } from '../constants';
 import { isLabelOutlineEnabled } from '../permalink';
-import AmazonS3Resource from '../AmazonS3Resource.js';
+import AmazonS3Resource from '../AmazonS3Resource';
 import { getVoxelShader } from './voxels-helper';
 import MainStore from '../store/main';
 import { GeoTIFFLayer, LayerConfig } from '../layertree';
 import { LayerTiffController } from 'src/features/layer';
+import { SessionService } from 'src/features/session';
 
 export interface PickableCesium3DTileset extends Cesium3DTileset {
   pickable?: boolean;
@@ -110,6 +111,18 @@ export async function create3DVoxelsTilesetFromConfig(
   primitive.customShader = getVoxelShader(config);
   return primitive;
 }
+
+// We would ideally inject this, however,
+// as we can't change the signatures of these functions, we can't do this yet.
+// If we ever get to refactor this file, this service should no longer be handled like this.
+let sessionService: SessionService;
+
+export const initializeLayerHelpers = (
+  sessionService_: SessionService,
+): void => {
+  sessionService = sessionService_;
+};
+
 export async function create3DTilesetFromConfig(
   viewer: Viewer,
   config: LayerConfig,
@@ -118,6 +131,7 @@ export async function create3DTilesetFromConfig(
   let resource: string | IonResource | AmazonS3Resource;
   if (config.aws_s3_bucket && config.aws_s3_key) {
     resource = new AmazonS3Resource({
+      sessionService,
       bucket: config.aws_s3_bucket,
       url: config.aws_s3_key,
     });
@@ -134,6 +148,7 @@ export async function create3DTilesetFromConfig(
     {
       show: !!config.visible,
       backFaceCulling: false,
+      enableCollision: true,
       maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
     },
   );

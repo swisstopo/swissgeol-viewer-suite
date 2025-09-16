@@ -43,7 +43,7 @@ Then(/^the three options are displayed$/, () => {
   getBackgroundSelector(LAKES_AND_RIVERS_LAYER).should('be.visible');
 });
 
-When(/^the user clicks on the orthographic thumpnail$/, () => {
+When(/^the user clicks on the orthographic thumbnail$/, () => {
   getBackgroundSelector(ORTHOGRAPHIC_LAYER).click();
 });
 

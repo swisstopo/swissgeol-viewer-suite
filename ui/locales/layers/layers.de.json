@@ -17,17 +17,27 @@
   "swissBEDROCK": {
     "title": "swissBEDROCK",
     "bands": {
-      "BEM": "Höhenmodell der Felsoberfläche [m.ü.M]",
-      "TMUD": "Mächtigkeitsmodell des Lockergesteins [m]",
-      "Uncertainty": "Unsicherheit [m]",
+      "BEM": "Höhenmodell der Felsoberfläche",
+      "TMUD": "Mächtigkeitsmodell des Lockergesteins",
+      "Uncertainty": "Unsicherheit",
       "Version": "Versionsnummer",
       "Author": "Numerische Autoren-ID",
-      "Change": "Änderung zur vorherigen Version [m]",
-      "prev_BEM": "Vorherige Version des Höhenmodells der Felsoberfläche [m ü. M.]",
-      "prev_TMUD": "Vorherige Version des Mächtigkeitsmodells des Lockergesteins [m]",
+      "Change": "Änderung zur vorherigen Version",
+      "prev_BEM": "Vorherige Version des Höhenmodells der Felsoberfläche",
+      "prev_TMUD": "Vorherige Version des Mächtigkeitsmodells des Lockergesteins",
       "prev_Uncertainty": "Vorherige Version der Unsicherheit",
       "prev_Version": "Vorherige Versionsnummer",
       "prev_Author": "Vorherige Version – numerische Autoren-ID"
+    }
+  },
+  "units": {
+    "Meters": {
+      "name": "Meter",
+      "symbol": "m"
+    },
+    "MetersAboveSeaLevel": {
+      "name": "Meter über dem Meer",
+      "symbol": "m.ü.M"
     }
   }
 }

@@ -5,7 +5,8 @@ import { css, html, TemplateResult } from 'lit';
 import i18next from 'i18next';
 import { repeat } from 'lit/directives/repeat.js';
 import { getCategoryOrLayerTemplate } from 'src/features/layer/catalog/layer-catalog.element';
-import auth from 'src/store/auth';
+import { SessionService } from 'src/features/session';
+import { consume } from '@lit/context';
 
 @customElement('ngm-layer-catalog-category')
 export class LayerCatalogCategory extends CoreElement {
@@ -15,11 +16,14 @@ export class LayerCatalogCategory extends CoreElement {
   @state()
   private accessor userGroups: string[] = [];
 
+  @consume({ context: SessionService.context() })
+  accessor sessionService!: SessionService;
+
   connectedCallback() {
     super.connectedCallback();
     this.register(
-      auth.user.subscribe((user) => {
-        this.userGroups = user?.['cognito:groups'] ?? [];
+      this.sessionService.user$.subscribe((user) => {
+        this.userGroups = user?.groups ?? [];
       }),
     );
 

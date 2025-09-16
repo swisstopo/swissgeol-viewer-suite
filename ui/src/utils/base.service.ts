@@ -20,6 +20,8 @@ export abstract class BaseService {
     (element: LitElement) => void
   > = [];
 
+  private static readonly initializers: Array<() => void> = [];
+
   static context<T extends BaseService>(
     this: AnyBaseServiceType<T>,
   ): ServiceContext<T> {
@@ -35,24 +37,43 @@ export abstract class BaseService {
     return context;
   }
 
+  protected inject<T>(context: Context<unknown, T>): Subject<T>;
+
   protected inject<T extends BaseService>(
     service: AnyBaseServiceType<T>,
+  ): Subject<T>;
+
+  protected inject<T>(
+    serviceOrContext: AnyBaseServiceType | Context<unknown, T>,
   ): Subject<T> {
     const subject = new Subject<T>();
+    const context: Context<unknown, T> | ServiceContext<BaseService> =
+      typeof serviceOrContext === 'object' &&
+      'prototype' in serviceOrContext &&
+      serviceOrContext.prototype instanceof BaseService
+        ? (serviceOrContext as unknown as AnyBaseServiceType).context()
+        : (serviceOrContext as Context<unknown, T>);
     BaseService.bufferedInjections.push((host) => {
       new ContextConsumer(host, {
-        context: service.context(),
+        context,
         callback: (instance) => {
-          subject.next(instance);
+          subject.next(instance as T);
         },
       });
     });
     return subject;
   }
 
+  protected onReady(callback: () => void): void {
+    BaseService.initializers.push(callback);
+  }
+
   static initializeWith(host: LitElement): void {
     for (const injection of BaseService.bufferedInjections) {
       injection(host);
+    }
+    for (const initialize of BaseService.initializers) {
+      initialize();
     }
   }
 }

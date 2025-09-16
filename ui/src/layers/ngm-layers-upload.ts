@@ -1,6 +1,6 @@
 import { html } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { LitElementI18n } from '../i18n.js';
+import { LitElementI18n } from '../i18n';
 import i18next from 'i18next';
 import { showBannerError, showSnackbarInfo } from '../notifications';
 import $ from 'jquery';

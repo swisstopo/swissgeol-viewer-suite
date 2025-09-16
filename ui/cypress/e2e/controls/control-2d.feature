@@ -3,7 +3,7 @@ Feature: Use 2D Control
   Background:
     Given the viewer is fully loaded
     Then the map is in 3d mode
-    And the 2d control shows the 3d icon
+    And the 2d control shows the 2d icon
 
     Scenario: Switch to 2D mode
       When the user clicks on the 2d control

@@ -1,6 +1,6 @@
 import { html } from 'lit';
 import i18next from 'i18next';
-import { LitElementI18n } from '../i18n.js';
+import { LitElementI18n } from '../i18n.ts';
 
 class NgmI18nDiv extends LitElementI18n {
   static get properties() {

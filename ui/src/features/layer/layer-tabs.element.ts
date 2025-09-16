@@ -49,15 +49,15 @@ export class LayerTabs extends LitElementI18n {
       ${this.renderTabSeparator(Tab.Upload, Tab.Options)}
       ${this.renderTabButton(Tab.Options)}
     </div>
-    <div ?hidden="${this.activeTab !== Tab.Catalog}">
+    <div ?hidden="${this.activeTab !== Tab.Catalog}" data-cy="${Tab.Catalog}">
       ${this.renderCatalog()}
     </div>
-    <div ?hidden="${this.activeTab !== Tab.Upload}">
+    <div ?hidden="${this.activeTab !== Tab.Upload}" data-cy="${Tab.Upload}">
       <ngm-layer-upload
         .toastPlaceholder=${this.toastPlaceholder}
       ></ngm-layer-upload>
     </div>
-    <div ?hidden="${this.activeTab !== Tab.Options}">
+    <div ?hidden="${this.activeTab !== Tab.Options}" data-cy="${Tab.Options}">
       <ngm-layer-options></ngm-layer-options>
     </div>
   `;
@@ -66,6 +66,7 @@ export class LayerTabs extends LitElementI18n {
     <button
       @click="${() => (this.activeTab = tab)}"
       class="${classMap({ 'is-active': this.activeTab === tab })}"
+      data-cy="${tab}"
     >
       ${i18next.t(`dtd_tab_labels.${tab}`)}
     </button>

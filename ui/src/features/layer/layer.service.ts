@@ -22,6 +22,7 @@ import {
   GeoJsonDataSource,
   ImageryLayer,
   Viewer,
+  VoxelPrimitive,
 } from 'cesium';
 import MainStore from 'src/store/main';
 import EarthquakeVisualizer from 'src/earthquakeVisualization/earthquakeVisualizer';
@@ -134,6 +135,12 @@ export class LayerService extends BaseService {
       config.promise ??= createCesiumObject(this.viewer, layer);
       config.add && (config.add as () => void)();
       // this.maybeShowVisibilityHint(layer); TODO
+
+      config.promise.then((c) => {
+        if (c instanceof Cesium3DTileset || c instanceof VoxelPrimitive) {
+          c.show = true;
+        }
+      });
     }
     layer.displayed = true;
     config.setVisibility?.(layer.visible ?? true);
@@ -145,7 +152,10 @@ export class LayerService extends BaseService {
       config.promise?.then((c) => {
         if (c instanceof CustomDataSource || c instanceof GeoJsonDataSource) {
           this.viewer!.dataSources.getByName(c.name)[0].show = false;
-        } else if (c instanceof Cesium3DTileset) {
+        } else if (
+          c instanceof Cesium3DTileset ||
+          c instanceof VoxelPrimitive
+        ) {
           c.show = false;
         } else if (c instanceof EarthquakeVisualizer) {
           c.setVisible(false);
@@ -179,6 +189,9 @@ export class LayerService extends BaseService {
       } else if (config.type === LayerType.geoTIFF) {
         const imagery = (config as GeoTIFFLayer).controller!.activeImagery;
         imageries.raiseToTop(imagery);
+      } else if (config.type === LayerType.voxels3dtiles) {
+        const primitive = (await config.promise) as VoxelPrimitive;
+        this.viewer.scene.primitives.raiseToTop(primitive);
       }
     }
   }

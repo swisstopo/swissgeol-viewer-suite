@@ -31,6 +31,7 @@ import { LayerTreeNode, LayerType } from 'src/layertree';
 import { LayerInfoPickerForGeoadmin } from 'src/features/layer/info/pickers/layer-info-picker-for-geoadmin';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
 import { LayerInfoPickerFor3dTiles } from 'src/features/layer/info/pickers/layer-info-picker-for-3dtiles';
+import DrawStore from 'src/store/draw';
 
 export class LayerInfoService extends BaseService {
   private readonly infosSubject = new BehaviorSubject<LayerInfo[]>([]);
@@ -72,6 +73,9 @@ export class LayerInfoService extends BaseService {
         const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
         eventHandler.setInputAction(
           async (event: ScreenSpaceEventHandler.PositionedEvent) => {
+            if (DrawStore.drawStateValue) {
+              return;
+            }
             this.pick2d(event.position);
           },
           ScreenSpaceEventType.LEFT_CLICK,

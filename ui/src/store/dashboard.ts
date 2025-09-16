@@ -2,6 +2,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import type { Project, Topic } from '../elements/dashboard/ngm-dashboard';
 import { NgmGeometry } from '../toolbox/interfaces';
 import { isProjectOwnerOrEditor } from '../elements/dashboard/helpers';
+import { SessionService } from 'src/features/session';
 
 export type TopicParam = { topicId: string; viewId?: string | null };
 export type ProjectParam = { projectId: string; viewId?: string | null };
@@ -38,6 +39,15 @@ export default class DashboardStore {
   private static readonly showSaveOrCancelWarningSubject =
     new Subject<boolean>();
 
+  // We would ideally inject this, however,
+  // as this class is static, we do not really have a way to do that.
+  // If we ever get to refactor this class, this service should no longer be handled like this.
+  private static sessionService: SessionService;
+
+  static initialize(options: { sessionService: SessionService }): void {
+    this.sessionService = options.sessionService;
+  }
+
   static get selectedTopicOrProject(): BehaviorSubject<
     Topic | Project | undefined
   > {
@@ -52,7 +62,10 @@ export default class DashboardStore {
   static setViewIndex(value: number | undefined): void {
     const projectOrTopic = this.selectedTopicOrProjectSubject.value;
     if (value !== undefined && projectOrTopic) {
-      const mode = isProjectOwnerOrEditor(projectOrTopic)
+      const mode = isProjectOwnerOrEditor(
+        this.sessionService.user,
+        projectOrTopic,
+      )
         ? 'viewEdit'
         : 'viewOnly';
       if (this.projectMode.value !== mode) this.setProjectMode(mode);

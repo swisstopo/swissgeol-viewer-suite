@@ -149,7 +149,7 @@ export async function setupViewer(
     skyBox: false,
     baseLayer: false,
     useBrowserRecommendedResolution: true,
-    terrainProvider: terrainProvider,
+    terrainProvider,
     requestRenderMode: shouldRequestRenderMode,
     // maximumRenderTimeChange: 10,
   });

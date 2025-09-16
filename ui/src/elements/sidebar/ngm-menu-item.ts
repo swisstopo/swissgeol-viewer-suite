@@ -1,5 +1,5 @@
 import { customElement, property } from 'lit/decorators.js';
-import { LitElementI18n } from '../../i18n.js';
+import { LitElementI18n } from '../../i18n';
 import { css, html } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { IconKey } from '../../icons/icons';

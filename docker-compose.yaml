@@ -29,7 +29,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - GITHUB_TOKEN
+      API_HOST: http://api:3000
+      ABBREVIATOR_HOST: http://abbreviator:8080
     depends_on:
       - api
       - abbreviator

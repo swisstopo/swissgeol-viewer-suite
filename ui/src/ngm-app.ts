@@ -2,7 +2,6 @@ import { LitElementI18n } from 'src/i18n';
 import { html, PropertyValues } from 'lit';
 import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
-import './elements/ngm-auth';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
 import './toolbox/ngm-topo-profile-modal';
@@ -23,6 +22,7 @@ import 'src/features/background/background.module';
 import 'src/features/controls/controls.module';
 import 'src/features/layout/layout.module';
 import 'src/features/navigation/navigation.module';
+import 'src/features/session/session.module';
 
 import { DEFAULT_VIEW } from './constants';
 
@@ -43,7 +43,7 @@ import {
 import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
-import { setupI18n } from './i18n.js';
+import { setupI18n } from './i18n';
 
 import { initAnalytics } from './analytics.js';
 import MainStore from './store/main';
@@ -454,6 +454,7 @@ export class NgmApp extends LitElementI18n {
         this.requestViewerRender();
       });
 
+    let isVisible = true;
     this.backgroundLayerService.background$
       .pipe(distinctUntilKeyChanged('isVisible'))
       .subscribe((background) => {
@@ -463,10 +464,20 @@ export class NgmApp extends LitElementI18n {
             background.hasAlphaChannel,
           );
           syncMapParam(background.id);
+
+          if (isVisible !== background.isVisible) {
+            activeLayers.forEach((layer) => (layer.show = true));
+          }
         } else {
           this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
           syncMapParam('empty_map');
+
+          if (isVisible !== background.isVisible) {
+            activeLayers.forEach((layer) => (layer.show = false));
+          }
         }
+
+        isVisible = background.isVisible;
         this.requestViewerRender();
       });
   }
@@ -544,9 +555,11 @@ export class NgmApp extends LitElementI18n {
     if (opacity === 1) {
       translucency.enabled = hasAlphaChannel;
       translucency.backFaceAlpha = 1;
+      this.viewer!.scene.globe.show = true;
     } else {
       translucency.backFaceAlpha = 0;
       translucency.enabled = true;
+      this.viewer!.scene.globe.show = false;
     }
   }
 

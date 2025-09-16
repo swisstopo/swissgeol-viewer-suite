@@ -1,7 +1,7 @@
 import { html, PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import $ from 'jquery';
-import { LitElementI18n } from '../i18n.js';
+import { LitElementI18n } from '../i18n';
 
 import 'fomantic-ui-css/components/dimmer.js';
 import 'fomantic-ui-css/components/modal.js';

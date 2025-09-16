@@ -25,10 +25,12 @@ const setupNodeEvents = async (
       plugins: [createEsbuildPlugin(config)],
     }),
   );
+  config.env.TAGS = 'not @skip';
   return config;
 };
 
 export default defineConfig({
+  projectId: '8rsv1p',
   viewportWidth: 1920,
   viewportHeight: 1280,
   experimentalSourceRewriting: true,
