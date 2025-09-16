@@ -60,7 +60,9 @@ export class LayerTiffController {
     if (this.active != null) {
       oldImageryIndex =
         this.viewer.scene.imageryLayers.indexOf(this.active.imagery) ?? -1;
-      this.viewer.scene.imageryLayers.remove(this.active.imagery, false);
+      if (oldImageryIndex >= 0) {
+        this.viewer.scene.imageryLayers.remove(this.active.imagery, false);
+      }
     }
 
     const imagery = this.makeImagery(band);
