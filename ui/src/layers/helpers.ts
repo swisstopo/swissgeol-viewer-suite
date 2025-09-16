@@ -155,7 +155,14 @@ export async function create3DTilesetFromConfig(
   );
 
   const metadata = tileset['metadata'];
-  console.log(metadata);
+  const properties = metadata.getPropertyIds().reduce(
+    (acc: Record<string, unknown>, id: string) => ({
+      ...acc,
+      [id]: metadata.getProperty(id)[0],
+    }),
+    {},
+  );
+  console.log(properties);
 
   if (config.style) {
     if (config.layer === 'ch.swisstopo.swissnames3d.3d') {

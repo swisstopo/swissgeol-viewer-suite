@@ -682,9 +682,9 @@ const group_01: LayerTreeNode =
       {
         // TUSM
         type: LayerType.tiles3d,
-        assetId: 3669308,
-        label: t('lyr_top_usm_label'),
-        layer: 'top_usm',
+        assetId: 3725918,
+        label: 'Test-Layer',
+        layer: 'test-layer',
         opacity: DEFAULT_LAYER_OPACITY,
         pickable: true,
         propsOrder: CONSOLIDATED_ORDER,
