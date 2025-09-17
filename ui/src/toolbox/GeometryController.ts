@@ -658,7 +658,7 @@ export class GeometryController {
         entityAttrs.polyline = {
           show: true,
           positions: attributes.positions,
-          clampToGround: false,
+          clampToGround: true,
           width: 4,
           material: color
             ? new Color(color.red, color.green, color.blue, GEOMETRY_LINE_ALPHA)
