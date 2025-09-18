@@ -1342,17 +1342,20 @@ const group_01: LayerTreeNode =
                 geocatId: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
                 previewColor: '#cad0c3',
               },
+              // NEW-GST-Export: Layer "TOMM"
               {
-          // NEW-GST-Export: Layer "Temperature TOMM"
                 type: LayerType.tiles3d,
-                assetId:  3725918,
-                label: t('lyr_temperature_horizon_TEST_tomm_label'),
-                layer: 'temperature_horizon_tomm',
-                propsOrder: TEMPERATURE_HORIZON_ORDER,
+                assetId: 3725918,
+                label: t('lyr_top_omm_TEST_label'),
+                layer: 'top_omm_TEST',
+                opacity: DEFAULT_LAYER_OPACITY,
                 pickable: true,
-                geocatId: '4f9e3f59-891e-434b-bba5-40db1b9495e0',
-                legend: 'ch.swisstopo.geologie-geomol-temperatur_top_omm',
-                env: [AppEnv.Local, AppEnv.Dev]
+                propsOrder: CONSOLIDATED_ORDER,
+                downloadUrl:
+                  DOWNLOAD_ROOT_GEOMOL + 'GeoMol-Top-UpperMarineMolasse.zip',
+                geocatId: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
+                previewColor: '#cad0c3',
+                //env: [AppEnv.Local, AppEnv.Dev],
               },
               {
                 type: LayerType.tiles3d,
