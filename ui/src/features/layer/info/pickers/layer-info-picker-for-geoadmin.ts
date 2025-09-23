@@ -247,6 +247,8 @@ class LayerInfoForGeoadmin implements LayerInfo {
   }
 
   activateHighlight(): void {
+    this.viewer.scene.requestRender();
+
     const { entity } = this;
     if (entity.polygon !== undefined) {
       entity.polygon.material = new ColorMaterialProperty(
@@ -266,6 +268,8 @@ class LayerInfoForGeoadmin implements LayerInfo {
   }
 
   deactivateHighlight(): void {
+    this.viewer.scene.requestRender();
+
     const { entity } = this;
     if (entity.polygon !== undefined) {
       entity.polygon.material = new ColorMaterialProperty(
