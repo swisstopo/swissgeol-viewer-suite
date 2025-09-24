@@ -6,7 +6,11 @@ export function getURLSearchParams(): URLSearchParams {
 }
 
 export function setURLSearchParams(params: URLSearchParams) {
-  window.history.replaceState({}, '', `${location.pathname}?${params}`);
+  window.history.replaceState(
+    {},
+    '',
+    `${location.pathname}?${params}${window.location.hash}`,
+  );
 }
 
 export function clickOnElement(id: string) {
