@@ -1,5 +1,5 @@
-use axum::body::Body;
 use axum::Router;
+use axum::body::Body;
 use clap::Parser;
 use hyper::{Request, StatusCode};
 use tower::ServiceExt;

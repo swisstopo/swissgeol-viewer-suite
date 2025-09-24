@@ -1,8 +1,8 @@
 [package]
 name = "api"
 version = "0.1.1"
-edition = "2021"
-rust-version = "1.82"
+edition = "2024"
+rust-version = "1.90"
 publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -29,12 +29,13 @@ tower-http = { version = "0.6.1", features = ["cors", "trace", "set-header"] }
 sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres", "uuid", "time"] }
 
 # AWS
-aws-config = "1.5"
-aws-sdk-s3 = "1.61"
+aws-config = "1.8"
+aws-sdk-s3 = "1.106"
 
 # Serialization
 serde = {version = "1.0", features = ["derive"]}
 serde_json = "1.0"
+json5 = "0.4"
 
 # Logging
 tracing = "0.1.40"
@@ -52,3 +53,6 @@ url = "2.5"
 uuid = { version = "1.11", features = ["serde", "v4"] }
 jsonwebtoken = "9.3"
 rand = "0.8.0"
+
+# Enum extension macros
+strum = { version = "0.27", features = ["derive"] }
