@@ -62,15 +62,19 @@ export class LayerTabs extends LitElementI18n {
     </div>
   `;
 
-  readonly renderTabButton = (tab: Tab) => html`
-    <button
-      @click="${() => (this.activeTab = tab)}"
-      class="${classMap({ 'is-active': this.activeTab === tab })}"
-      data-cy="${tab}"
-    >
-      ${i18next.t(`dtd_tab_labels.${tab}`)}
-    </button>
-  `;
+  readonly renderTabButton = (tab: Tab) => {
+    const title = i18next.t(`dtd_tab_labels.${tab}`);
+    return html`
+      <button
+        @click="${() => (this.activeTab = tab)}"
+        class="${classMap({ 'is-active': this.activeTab === tab })}"
+        data-cy="${tab}"
+        title="${title}"
+      >
+        ${title}
+      </button>
+    `;
+  };
 
   readonly renderTabSeparator = (a: Tab, b: Tab) => html`
     <div
@@ -113,6 +117,10 @@ export class LayerTabs extends LitElementI18n {
       cursor: pointer;
       border-radius: 4px;
       flex: 1;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .tabs > button.is-active {
