@@ -1,6 +1,6 @@
-use axum::http::{header::WWW_AUTHENTICATE, StatusCode};
-use axum::response::{IntoResponse, Response};
 use axum::Json;
+use axum::http::{StatusCode, header::WWW_AUTHENTICATE};
+use axum::response::{IntoResponse, Response};
 use serde_json::json;
 
 #[derive(thiserror::Error, Debug)]
