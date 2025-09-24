@@ -3,6 +3,9 @@ use serde::Serialize;
 
 #[derive(clap::Parser)]
 pub struct Config {
+    #[clap(long, env)]
+    pub layers_file: String,
+
     #[clap(flatten)]
     pub database: Database,
 

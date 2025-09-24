@@ -9,13 +9,14 @@ use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
 use crate::auth::Claims;
-use crate::{Error, Result};
+use crate::{Error, LayerGroup, Result};
 use anyhow::Context;
 use axum_macros::debug_handler;
 use clap::Parser;
 use rand::{distributions::Alphanumeric, Rng};
 use serde_json::Number;
 use std::collections::HashSet;
+use std::sync::Arc;
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct ProjectQuery {
@@ -144,6 +145,11 @@ pub struct UploadResponse {
 #[debug_handler]
 pub async fn get_client_config() -> Json<crate::config::ClientConfig> {
     Json(crate::config::ClientConfig::parse())
+}
+
+#[debug_handler]
+pub async fn list_layers(Extension(groups): Extension<Arc<Vec<LayerGroup>>>) -> Json<Arc<Vec<LayerGroup>>> {
+    Json(groups)
 }
 
 // Health check endpoint

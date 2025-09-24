@@ -24,6 +24,10 @@ mod database;
 mod error;
 mod handlers;
 mod s3;
+mod data;
+
+mod layers;
+pub use layers::*;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -71,6 +75,7 @@ pub async fn app(pool: PgPool) -> Router {
 
     Router::new()
         .route("/api/client-config", get(handlers::get_client_config))
+        .route("/api/layers", get(handlers::list_layers))
         .route("/api/health_check", get(handlers::health_check))
         .route(
             "/api/projects",

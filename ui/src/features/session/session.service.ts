@@ -7,9 +7,11 @@ import { Role } from '@swissgeol/ui-core';
 import {
   BehaviorSubject,
   distinctUntilChanged,
+  filter,
   map,
   Observable,
   skip,
+  take,
 } from 'rxjs';
 import {
   CognitoIdentityCredentials,
@@ -29,6 +31,10 @@ export class SessionService extends BaseService {
   private state = readOrMakeState();
 
   private sessionExpiryTimeout: number | null = null;
+
+  private readonly subjectForIsInitialized = new BehaviorSubject<boolean>(
+    false,
+  );
 
   constructor() {
     super();
@@ -66,6 +72,10 @@ export class SessionService extends BaseService {
     return this.sessionSubject.value;
   }
 
+  get token(): string | null {
+    return this.sessionSubject.value?.token ?? null;
+  }
+
   get token$(): Observable<string | null> {
     return this.sessionSubject.pipe(
       map((session) => session?.token ?? null),
@@ -81,6 +91,18 @@ export class SessionService extends BaseService {
     return this.sessionSubject.pipe(
       map((session) => session?.user ?? null),
       distinctUntilChanged(),
+    );
+  }
+
+  get isInitialized$(): Observable<boolean> {
+    return this.subjectForIsInitialized.asObservable();
+  }
+
+  get initialized$(): Observable<void> {
+    return this.isInitialized$.pipe(
+      filter((it) => it),
+      map(() => {}),
+      take(1),
     );
   }
 
@@ -121,6 +143,8 @@ export class SessionService extends BaseService {
     if (this.user === null) {
       this.signOut();
     }
+
+    this.subjectForIsInitialized.next(true);
   }
 
   private async initializeFromUrl(): Promise<void> {

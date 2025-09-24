@@ -150,7 +150,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@1.82
+        uses: dtolnay/rust-toolchain@1.90
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -203,7 +203,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@1.82
+        uses: dtolnay/rust-toolchain@1.90
       - name: Restore cargo registry
         uses: actions/cache/restore@v4
         with:
@@ -234,7 +234,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@1.82
+        uses: dtolnay/rust-toolchain@1.90
         with:
           components: clippy, rustfmt
       - name: Restore cargo registry
@@ -274,7 +274,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@1.82
+        uses: dtolnay/rust-toolchain@1.90
       - name: Restore cargo registry
         uses: actions/cache/restore@v4
         with:
@@ -330,7 +330,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@1.82
+        uses: dtolnay/rust-toolchain@1.90
         with:
           toolchain: ${{ env.RUST_VERSION }}
           components: clippy, rustfmt
