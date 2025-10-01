@@ -30,7 +30,6 @@ import { addMantelEllipsoid, setupViewer } from './viewer';
 
 import {
   getCameraView,
-  getCesiumToolbarParam,
   getMapParam,
   getTopicOrProject,
   getZoomToPosition,
@@ -525,7 +524,7 @@ export class NgmApp extends LitElementI18n {
           class: 'ngm-cam-lock-info',
           actions: [
             {
-              text: i18next.t('app_cancel_btn_label'),
+              text: i18next.t('cancel'),
               click: () => this.camConfigElement.disableLock(),
             },
           ],

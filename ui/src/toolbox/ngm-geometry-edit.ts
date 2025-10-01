@@ -445,7 +445,7 @@ export class NgmGeometryEdit extends LitElementI18n {
           @click="${() => this.endEditing()}"
           class="ui button ngm-action-btn ngm-cancel-btn"
         >
-          ${i18next.t('app_cancel_btn_label')}
+          ${i18next.t('cancel')}
         </button>
       </div>
     `;

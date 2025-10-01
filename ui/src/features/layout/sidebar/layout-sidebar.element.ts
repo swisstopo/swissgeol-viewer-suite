@@ -19,6 +19,9 @@ export class LayoutSidebar extends CoreElement {
     event: CustomEvent<{ panel: SidebarPanel }>,
   ) => {
     this.activePanel = event.detail.panel;
+    if (this.activePanel === SidebarPanel.Layers) {
+      import('src/features/catalog/catalog.module').then();
+    }
   };
 
   private readonly handlePanelDeactivation = (
@@ -129,7 +132,12 @@ export class LayoutSidebar extends CoreElement {
 
     switch (this.activePanel) {
       case SidebarPanel.Layers:
-        return staticPanels;
+        return html`
+          <div class="content">
+            <ngm-catalog></ngm-catalog>
+          </div>
+          ${staticPanels}
+        `;
       case SidebarPanel.Share:
         return html`
           <div class="content">
@@ -184,6 +192,8 @@ export class LayoutSidebar extends CoreElement {
 
     ngm-navigation-panel > .content {
       padding: 16px;
+
+      height: calc(var(--panel-height) - var(--panel-header-height));
     }
   `;
 

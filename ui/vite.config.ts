@@ -34,6 +34,7 @@ export default defineConfig({
     },
     watch: {
       usePolling: true,
+      ignored: ['dist/**', 'cypress/**', 'node_modules/**'],
     },
     host: '0.0.0.0',
     port: 8000,
@@ -51,6 +52,24 @@ export default defineConfig({
         secure: false,
       },
     },
+  },
+  optimizeDeps: {
+    include: [
+      'lit',
+      'i18next',
+      'i18next-http-backend',
+      'loc-i18next',
+      '@aws-sdk/client-s3',
+      '@aws-sdk/credential-provider-cognito-identity',
+      'fomantic-ui-css/components/dropdown.js',
+      'fomantic-ui-css/components/accordion.js',
+      'fomantic-ui-css/components/toast.js',
+      'fomantic-ui-css/components/transition.js',
+      'fomantic-ui-css/components/dimmer.js',
+      'fomantic-ui-css/components/modal.js',
+      'fomantic-ui-css/components/popup.js',
+      'fomantic-ui-css/components/checkbox.js',
+    ],
   },
   plugins: [
     process.env.ANALYZE === 'true' ? analyzer({ analyzerPort: 8883 }) : null,

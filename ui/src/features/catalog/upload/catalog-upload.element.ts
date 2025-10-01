@@ -1,55 +1,31 @@
-import { customElement, property, state } from 'lit/decorators.js';
-import { LitElementI18n } from 'src/i18n';
+import { customElement } from 'lit/decorators.js';
 import { css, html, unsafeCSS } from 'lit';
 import i18next from 'i18next';
-import type { KmlUploadEvent } from './layer-upload-kml.element';
+import type { KmlUploadEvent } from './catalog-upload-kml.element';
 import { CustomDataSource, Viewer } from 'cesium';
 import { parseKml, renderWithDelay } from 'src/cesiumutils';
 import MainStore from '../../../store/main';
 import { DEFAULT_LAYER_OPACITY, LayerConfig } from 'src/layertree';
-import { Subscription } from 'rxjs';
 import fomanticButtonCss from 'fomantic-ui-css/components/button.css?raw';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
-import { CoreModal } from 'src/features/core';
+import { CoreElement, CoreModal } from 'src/features/core';
 import { LayerService } from 'src/features/layer/layer.service';
 import { consume } from '@lit/context';
+import { viewerContext } from 'src/context';
 
-@customElement('ngm-layer-upload')
-export class LayerUpload extends LitElementI18n {
-  @property({ type: Object })
-  accessor toastPlaceholder!: HTMLElement;
-
+@customElement('ngm-catalog-upload')
+export class CatalogUpload extends CoreElement {
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
 
-  @state()
-  private accessor viewer: Viewer | null = null;
+  @consume({ context: viewerContext })
+  accessor viewer!: Viewer;
 
   private modal: CoreModal | null = null;
-
-  private readonly subscription = new Subscription();
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.subscription.add(
-      MainStore.viewer.subscribe((viewer) => {
-        this.viewer = viewer;
-      }),
-    );
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this.subscription.unsubscribe();
-  }
 
   // TODO Cleanup/Refactor this function.
   // As of now, this function remains unchanged to before the navigation-catalog refactoring.
   private async handleKmlUpload(e: KmlUploadEvent): Promise<void> {
-    if (this.viewer == null) {
-      return;
-    }
-
     const dataSource = new CustomDataSource();
     const name = await parseKml(
       this.viewer,
@@ -92,11 +68,9 @@ export class LayerUpload extends LitElementI18n {
   }
 
   readonly render = () => html`
-    <ngm-layer-upload-kml
-      .toastPlaceholder=${this.toastPlaceholder}
+    <ngm-catalog-upload-kml
       @upload=${this.handleKmlUpload}
-    >
-    </ngm-layer-upload-kml>
+    ></ngm-catalog-upload-kml>
     <ngm-core-button
       variant="tertiary"
       shape="large"
@@ -104,7 +78,7 @@ export class LayerUpload extends LitElementI18n {
       @click=${this.openIonModal}
     >
       <ngm-core-icon icon="cesium"></ngm-core-icon>
-      ${i18next.t('dtd_add_ion_token')}
+      ${i18next.t('catalog:add_content_from_cesium_ion')}
     </ngm-core-button>
   `;
 

@@ -12,6 +12,7 @@ export class NavigationPanel extends LitElementI18n {
   static readonly styles = css`
     :host {
       --panel-height: calc(100vh - var(--ngm-header-height));
+      --panel-header-height: 64px;
 
       box-sizing: border-box;
       position: absolute;

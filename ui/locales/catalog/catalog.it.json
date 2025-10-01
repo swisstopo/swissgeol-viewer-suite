@@ -1,0 +1,26 @@
+{
+  "tabs": {
+    "Catalog": "Catalogo di dati",
+    "Upload": "Upload",
+    "Options": "Impostazioni"
+  },
+  "exaggeration": {
+    "title": "Esagerazione verticale",
+    "show": "Mostra l'esagerazione",
+    "hide": "Nascondere l'esagerazione"
+  },
+  "upload": {
+    "select_file": "Caricare dati KML",
+    "select_file_hint": "Fare clic per sfogliare o trascinare un file qui",
+    "file_not_selected": "Nessun file da scaricare",
+    "file_not_kml": "Il formato non è supportato. Solo KML supportato.",
+    "file_too_large": "La dimensione massima del file è {{limit}}",
+    "file_upload_error": "Errore nel download di KML",
+    "modal": {
+      "title": "Upload",
+      "should_clamp_to_ground": "Fixation au terrain",
+      "confirm": "Ajouter"
+    }
+  },
+  "add_content_from_cesium_ion": "Aggiunta di contenuti da cesium ion"
+}

@@ -1,45 +1,20 @@
-import { customElement, property, query, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { css, html } from 'lit';
-import { LitElementI18n } from 'src/i18n';
-import { LayerConfig } from 'src/layertree';
 import { Viewer } from 'cesium';
-import MainStore from '../../store/main';
-import { Subscription } from 'rxjs';
 import { classMap } from 'lit/directives/class-map.js';
 import i18next from 'i18next';
 import { applyTypography, hostStyles } from 'src/styles/theme';
+import { CoreElement } from 'src/features/core';
+import { viewerContext } from 'src/context';
+import { consume } from '@lit/context';
 
-@customElement('ngm-layer-tabs')
-export class LayerTabs extends LitElementI18n {
-  @property()
-  public accessor layers: LayerConfig[] = [];
-
-  @property({ type: Function })
-  accessor onKmlUpload!: (
-    file: File,
-    clampToGround: boolean,
-  ) => Promise<void> | void;
-
+@customElement('ngm-catalog-tabs')
+export class CatalogTabs extends CoreElement {
   @state()
   private accessor activeTab: Tab = Tab.Catalog;
 
-  @state()
-  private accessor viewer: Viewer | null = null;
-
-  private readonly subscription = new Subscription();
-
-  //TODO: where is this from exactly?
-  @query('.ngm-toast-placeholder')
-  accessor toastPlaceholder!: HTMLElement;
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.subscription.add(
-      MainStore.viewer.subscribe((viewer) => {
-        this.viewer = viewer;
-      }),
-    );
-  }
+  @consume({ context: viewerContext })
+  accessor viewer!: Viewer;
 
   readonly render = () => html`
     <div class="tabs">
@@ -53,12 +28,10 @@ export class LayerTabs extends LitElementI18n {
       ${this.renderCatalog()}
     </div>
     <div ?hidden="${this.activeTab !== Tab.Upload}" data-cy="${Tab.Upload}">
-      <ngm-layer-upload
-        .toastPlaceholder=${this.toastPlaceholder}
-      ></ngm-layer-upload>
+      <ngm-catalog-upload></ngm-catalog-upload>
     </div>
     <div ?hidden="${this.activeTab !== Tab.Options}" data-cy="${Tab.Options}">
-      <ngm-layer-options></ngm-layer-options>
+      <ngm-catalog-settings></ngm-catalog-settings>
     </div>
   `;
 
@@ -68,7 +41,7 @@ export class LayerTabs extends LitElementI18n {
       class="${classMap({ 'is-active': this.activeTab === tab })}"
       data-cy="${tab}"
     >
-      ${i18next.t(`dtd_tab_labels.${tab}`)}
+      ${i18next.t(`catalog:tabs.${tab}`)}
     </button>
   `;
 
@@ -80,9 +53,7 @@ export class LayerTabs extends LitElementI18n {
     ></div>
   `;
 
-  private readonly renderCatalog = () => html`
-    <ngm-layer-catalog .layers=${this.layers}></ngm-layer-catalog>
-  `;
+  private readonly renderCatalog = () => html``;
 
   static readonly styles = css`
     ${hostStyles}
@@ -132,7 +103,7 @@ export class LayerTabs extends LitElementI18n {
 }
 
 enum Tab {
-  Catalog = 'catalog',
-  Upload = 'upload',
-  Options = 'options',
+  Catalog = 'Catalog',
+  Upload = 'Upload',
+  Options = 'Options',
 }

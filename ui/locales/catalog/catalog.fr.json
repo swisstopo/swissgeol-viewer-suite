@@ -1,0 +1,26 @@
+{
+  "tabs": {
+    "Catalog": "Catalogue de données",
+    "Upload": "Upload",
+    "Options": "Réglages"
+  },
+  "exaggeration": {
+    "title": "Exagération verticale",
+    "show": "Montrer l'exagération",
+    "hide": "Cacher l'exagération"
+  },
+  "upload": {
+    "select_file": "Télécharger des données KML",
+    "select_file_hint": "Cliquez pour naviguer, ou glissez-déposez un fichier ici",
+    "file_not_selected": "Aucun fichier à télécharger",
+    "file_not_kml": "Format pas pris en charge. Seulement en format KML.",
+    "file_too_large": "La taille maximale du fichier est de {{limit}}",
+    "file_upload_error": "Erreur lors du téléchargement de KML",
+    "modal": {
+      "title": "Upload",
+      "should_clamp_to_ground": "Clamp to terrain",
+      "confirm": "Add"
+    }
+  },
+  "add_content_from_cesium_ion": "Ajouter du contenu à propos de l'ion césium"
+}

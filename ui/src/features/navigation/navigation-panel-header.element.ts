@@ -50,7 +50,7 @@ export class NavigationPanelHeader extends LitElementI18n {
       align-items: center;
       justify-content: space-between;
       padding: 14px 12px 14px 16px;
-      height: 64px;
+      height: var(--panel-header-height);
       border-bottom: 1px solid #e0e2e6;
     }
   `;
