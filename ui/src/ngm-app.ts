@@ -675,16 +675,7 @@ export class NgmApp extends LitElementI18n {
             >
           </div>
         </div>
-        <ngm-side-bar
-          .mobileView=${this.mobileView}
-          @showLayerLegend=${this.onShowLayerLegend}
-          @showVoxelFilter=${this.onShowVoxelFilter}
-          @showWmtsDatePicker=${this.onShowWmtsDatePicker}
-          @toggleDebugTools=${(evt) => {
-            this.showCesiumToolbar = evt.detail.active;
-          }}
-        >
-        </ngm-side-bar>
+        <ngm-layout-sidebar></ngm-layout-sidebar>
         <div class="map" oncontextmenu="return false;">
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>

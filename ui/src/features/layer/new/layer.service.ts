@@ -1,10 +1,18 @@
 import { BaseService } from 'src/utils/base.service';
 import { SessionService } from 'src/features/session';
-import { switchMap } from 'rxjs';
+import { BehaviorSubject, switchMap } from 'rxjs';
 import { LayerApiService } from 'src/features/layer/new/layer-api.service';
+import { Id } from 'src/models/id.model';
+import { Layer } from 'src/features/layer';
 
 export class LayerService extends BaseService {
   private layerApiService!: LayerApiService;
+
+  private layerDefinitions = new Map<Id<Layer>, Layer>();
+
+  private layers = new Map<Id<Layer>, BehaviorSubject<Layer>>();
+
+  private tree = new BehaviorSubject();
 
   constructor() {
     super();
