@@ -21,5 +21,8 @@ COPY ./titiler/colormaps /app/colormaps
 
 RUN chmod +x start.sh
 
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -f http://localhost:3000/api/health_check || exit 1
+
 # Make sure the start.sh script has LF line endings!
 CMD ["./start.sh"]
