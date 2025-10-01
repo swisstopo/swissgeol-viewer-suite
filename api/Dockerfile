@@ -22,12 +22,13 @@ FROM alpine:3.17
 ARG APP_VERSION
 ENV APP_VERSION=${APP_VERSION}
 
-RUN apk add --no-cache util-linux
+RUN apk add --no-cache util-linux curl
 
 WORKDIR /app
 
 COPY --from=build /app/target/x86_64-unknown-linux-musl/release/api ./
 
 EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -f http://localhost:3000/api/health_check || exit 1
 
 CMD ["/app/api"]
