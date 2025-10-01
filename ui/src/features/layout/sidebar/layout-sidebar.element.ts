@@ -4,15 +4,29 @@ import { customElement, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { SidebarPanel } from 'src/features/layout/layout.model';
 import 'src/ngm-app-settings';
+import { LayerService } from 'src/features/layer/new/layer.service';
+import { consume } from '@lit/context';
 
 @customElement('ngm-layout-sidebar')
 export class LayoutSidebar extends CoreElement {
   @state()
   accessor activePanel: SidebarPanel | null = null;
 
+  @state()
+  accessor countOfLayers = 0;
+
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
   connectedCallback(): void {
     super.connectedCallback();
     this.role = 'navigation';
+
+    this.register(
+      this.layerService.activeLayers$.subscribe((layers) => {
+        this.countOfLayers = layers.length;
+      }),
+    );
   }
 
   private readonly handlePanelActivation = (
@@ -68,7 +82,7 @@ export class LayoutSidebar extends CoreElement {
         ${this.renderItem({
           panel: SidebarPanel.Layers,
           icon: 'layer',
-          counter: 0, // TODO
+          counter: this.countOfLayers,
         })}
         ${this.renderItem({
           panel: SidebarPanel.Tools,

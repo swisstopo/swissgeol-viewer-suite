@@ -7,6 +7,7 @@ import { applyTypography, hostStyles } from 'src/styles/theme';
 import { CoreElement } from 'src/features/core';
 import { viewerContext } from 'src/context';
 import { consume } from '@lit/context';
+import { choose } from 'lit/directives/choose.js';
 
 @customElement('ngm-catalog-tabs')
 export class CatalogTabs extends CoreElement {
@@ -24,15 +25,11 @@ export class CatalogTabs extends CoreElement {
       ${this.renderTabSeparator(Tab.Upload, Tab.Options)}
       ${this.renderTabButton(Tab.Options)}
     </div>
-    <div ?hidden="${this.activeTab !== Tab.Catalog}" data-cy="${Tab.Catalog}">
-      ${this.renderCatalog()}
-    </div>
-    <div ?hidden="${this.activeTab !== Tab.Upload}" data-cy="${Tab.Upload}">
-      <ngm-catalog-upload></ngm-catalog-upload>
-    </div>
-    <div ?hidden="${this.activeTab !== Tab.Options}" data-cy="${Tab.Options}">
-      <ngm-catalog-settings></ngm-catalog-settings>
-    </div>
+    ${choose(this.activeTab, [
+      [Tab.Catalog, () => html`<ngm-catalog-tree></ngm-catalog-tree>`],
+      [Tab.Upload, () => html`<ngm-catalog-upload></ngm-catalog-upload>`],
+      [Tab.Options, () => html`<ngm-catalog-settings></ngm-catalog-settings>`],
+    ])}
   `;
 
   readonly renderTabButton = (tab: Tab) => html`
@@ -52,8 +49,6 @@ export class CatalogTabs extends CoreElement {
       })}"
     ></div>
   `;
-
-  private readonly renderCatalog = () => html``;
 
   static readonly styles = css`
     ${hostStyles}
@@ -97,7 +92,7 @@ export class CatalogTabs extends CoreElement {
     }
 
     .tabs > .separator:not(.is-active) {
-      display: none;
+      border-color: transparent;
     }
   `;
 }

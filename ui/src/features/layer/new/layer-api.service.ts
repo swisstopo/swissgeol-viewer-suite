@@ -254,7 +254,6 @@ class DynamicObject {
 
   get<T>(key: string): T {
     if (!(key in this.object)) {
-      console.log(this.object);
       throw new Error(`Missing key "${key}" at ${this.path ?? '<root>'}.`);
     }
     return this.object[key] as T;
