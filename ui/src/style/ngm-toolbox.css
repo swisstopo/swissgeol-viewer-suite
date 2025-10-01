@@ -1,5 +1,5 @@
-ngm-tools {
-  height: 100%;
+ngm-tools[hidden] {
+  display: none;
 }
 
 ngm-draw-tool,
@@ -38,7 +38,7 @@ ngm-geometries-simple-list {
     normal normal bold 14px/20px Inter,
     sans-serif;
   letter-spacing: 0;
-  padding: 14px 0;
+  padding: 14px 14px;
 }
 
 .ngm-draw-list-item div:nth-child(2),

@@ -1,9 +1,12 @@
 import { LitElementI18n } from 'src/i18n';
 import { css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 
 @customElement('ngm-navigation-panel')
 export class NavigationPanel extends LitElementI18n {
+  @property({ type: String, reflect: true })
+  accessor size: 'normal' | 'large' = 'normal';
+
   readonly render = () => html`<slot></slot>`;
 
   static readonly styles = css`
@@ -26,6 +29,10 @@ export class NavigationPanel extends LitElementI18n {
       z-index: 5;
 
       background-color: var(--color-bg--dark);
+    }
+
+    :host([size='large']) {
+      width: 860px;
     }
   `;
 }

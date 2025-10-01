@@ -1,6 +1,6 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Viewer } from 'cesium';
-import { getIonToken, setIonToken } from '../permalink';
+import { getCesiumToolbarParam, getIonToken, setIonToken } from '../permalink';
 import { IonAsset } from '../api-ion';
 
 export default class MainStore {
@@ -22,6 +22,8 @@ export default class MainStore {
   private static readonly removeIonAssetsSubject = new Subject<void>();
   static readonly setUrlLayersSubject = new Subject<void>();
   static readonly syncLayerParams = new Subject<void>();
+
+  static readonly isDebugActive$ = new BehaviorSubject(getCesiumToolbarParam());
   /**
    * List of uploaded KML dataSource names. Required to get list of uploaded layers and update properties in batch (e.g. exaggeration)
    * @private

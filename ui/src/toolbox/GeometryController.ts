@@ -461,6 +461,7 @@ export class GeometryController {
   }
 
   handleActions(options: GeometryAction) {
+    console.log('handle', options);
     switch (options.action) {
       case 'show':
       case 'hide':

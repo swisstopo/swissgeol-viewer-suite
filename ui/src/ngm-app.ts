@@ -35,6 +35,7 @@ import {
   getTopicOrProject,
   getZoomToPosition,
   rewriteParams,
+  setCesiumToolbarParam,
   syncCamera,
   syncMapOpacityParam,
   syncMapParam,
@@ -122,7 +123,7 @@ export class NgmApp extends LitElementI18n {
   accessor showProjectSelector = false;
 
   @state()
-  accessor showCesiumToolbar = getCesiumToolbarParam();
+  accessor showCesiumToolbar = false;
 
   @query('ngm-cam-configuration')
   accessor camConfigElement;
@@ -165,6 +166,11 @@ export class NgmApp extends LitElementI18n {
     window.addEventListener('resize', () => {
       const boundingRect = document.body.getBoundingClientRect();
       this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
+    });
+
+    MainStore.isDebugActive$.subscribe((isDebugActive) => {
+      this.showCesiumToolbar = isDebugActive;
+      setCesiumToolbarParam(isDebugActive);
     });
   }
 
@@ -675,7 +681,7 @@ export class NgmApp extends LitElementI18n {
             >
           </div>
         </div>
-        <ngm-layout-sidebar></ngm-layout-sidebar>
+        ${this.viewer && html`<ngm-layout-sidebar></ngm-layout-sidebar>`}
         <div class="map" oncontextmenu="return false;">
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>
