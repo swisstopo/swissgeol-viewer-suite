@@ -1029,6 +1029,68 @@ const group_01: LayerTreeNode =
             label: t('lyr_unconsolidated_rocks_label'),
             children: [
               {
+                type: LayerType.voxels3dtiles,
+                assetId: 3882543,
+                voxelDataName: 'Index',
+                voxelColors: aaretalIndexVoxelColors,
+                voxelFilter: aaretalVoxelFilter,
+                label: t('2025-10-08--ion--new'),
+                layer: '2025-10-08--ion--new',
+                opacityDisabled: true,
+                pickable: true,
+                downloadUrl:
+                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
+                geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+              },
+              {
+                type: LayerType.voxels3dtiles,
+                assetId: 3882886,
+                voxelDataName: 'Index',
+                voxelColors: aaretalIndexVoxelColors,
+                voxelFilter: aaretalVoxelFilter,
+                label: t('2025-10-08_04--ion--new'),
+                layer: '2025-10-08_04--ion--new',
+                opacityDisabled: true,
+                pickable: true,
+                downloadUrl:
+                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
+                geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+              },
+
+              {
+                // Layer "Voxel-Aaretal"
+                type: LayerType.voxels3dtiles,
+                // url: 'http://localhost:8000/aaretal/tileset.json',
+                url: 'http://localhost:3002/layers/2025-10-08/output/tileset.json',
+                voxelDataName: 'Index',
+                voxelColors: aaretalIndexVoxelColors,
+                voxelFilter: aaretalVoxelFilter,
+                label: t('lyr_voxel_aaretal_litho_label--1'),
+                layer: 'voxel_aaretal_litho--new1',
+                opacityDisabled: true,
+                pickable: true,
+                downloadUrl:
+                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
+                geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+              },
+              {
+                // Layer "Voxel-Aaretal"
+                type: LayerType.voxels3dtiles,
+                // url: 'http://localhost:8000/aaretal/tileset.json',
+                url: 'http://localhost:3002/layers/2025-10-08_04/2025-10-08/output/tileset.json',
+                voxelDataName: 'Index',
+                voxelColors: aaretalIndexVoxelColors,
+                voxelFilter: aaretalVoxelFilter,
+                label: t('lyr_voxel_aaretal_litho_label--2'),
+                layer: 'voxel_aaretal_litho--new2',
+                opacityDisabled: true,
+                pickable: true,
+                downloadUrl:
+                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
+                geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+              },
+
+              {
                 // Layer "Voxel-Aaretal"
                 type: LayerType.voxels3dtiles,
                 url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-Aaretal-Combined/tileset.json',
@@ -1057,6 +1119,22 @@ const group_01: LayerTreeNode =
                   DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
                 geocatId: '9471ee1b-5811-489d-b050-612c011f9d57',
               },
+
+              {
+                type: LayerType.voxels3dtiles,
+                url: 'http://localhost:8000/birr/tileset.json',
+                voxelDataName: 'Index',
+                voxelColors: birrIndexVoxelColors,
+                voxelFilter: birrIndexVoxelFilter,
+                label: t('lyr_voxel_birrfeld_litho_label--new'),
+                layer: 'voxel_birrfeld_litho--new',
+                opacityDisabled: true,
+                pickable: true,
+                downloadUrl:
+                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
+                geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
+              },
+
               {
                 type: LayerType.voxels3dtiles,
                 url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-BIRR-Combined/tileset.json',

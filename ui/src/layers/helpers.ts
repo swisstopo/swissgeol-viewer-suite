@@ -26,6 +26,7 @@ import MainStore from '../store/main';
 import { GeoTIFFLayer, LayerConfig } from '../layertree';
 import { LayerTiffController } from 'src/features/layer';
 import { SessionService } from 'src/features/session';
+import { run } from 'src/utils/fn.utils';
 
 export interface PickableCesium3DTileset extends Cesium3DTileset {
   pickable?: boolean;
@@ -74,7 +75,16 @@ export async function create3DVoxelsTilesetFromConfig(
   config: LayerConfig,
   _,
 ): Promise<VoxelPrimitive> {
-  const provider = await Cesium3DTilesVoxelProvider.fromUrl(config.url!);
+  const resource = await run(async () => {
+    if (config.assetId) {
+      return await IonResource.fromAssetId(config.assetId, {
+        accessToken: config.ionToken,
+      });
+    }
+    return config.url!;
+  });
+
+  const provider = await Cesium3DTilesVoxelProvider.fromUrl(resource);
 
   const primitive: PickableVoxelPrimitive = new VoxelPrimitive({
     provider: provider,
