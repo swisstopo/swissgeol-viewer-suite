@@ -21,6 +21,18 @@ export interface BaseLayer extends Model {
   id: Id<this>;
 
   /**
+   * A fixed name for this label.
+   *
+   * This value is mainly set for layers that are imported by the user,
+   * and thus do not have a translated name available.
+   *
+   * Note that if there are locale-dependent versions of this value,
+   * it is the responsibility of whatever part of the application that has
+   * imported the layer to ensure that the value gets updated when the language changes.
+   */
+  label: string | null;
+
+  /**
    * The layer's opacity, ranging from 0 to 1.
    *
    * If the value is 0, {@link BaseLayer.isVisible isVisible} will be  `false`.

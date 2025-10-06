@@ -15,14 +15,44 @@ export interface SwisstopoLayer extends BaseLayer {
    */
   id: Id<this>;
 
+  source: SwisstopoLayerSource;
+
   /**
    * The zoom level (zoomed in) from which on no higher resolution tiles will be fetched.
    * Instead, this level's tiles will be scaled up to fit higher zoom levels.
    */
-  maxLevel: number;
+  maxLevel: number | null;
 
   /**
    * Whether the WMTS provides a legend for the layer.
    */
   hasLegend: boolean;
+
+  /**
+   * The dimension are the time travel variants available on this layer.
+   * For layers with only a single representation, this is `null`.
+   */
+  dimension: SwisstopoLayerDimension | null;
+
+  // TODO find out what this is
+  format: string;
+
+  credit: string;
+}
+
+export interface SwisstopoLayerDimension {
+  /**
+   * The currently selected dimension.
+   */
+  current: string;
+
+  /**
+   * The dimensions available to the layer.
+   */
+  all: string[];
+}
+
+export enum SwisstopoLayerSource {
+  WMS = 'WMS',
+  WMTS = 'WMTS',
 }
