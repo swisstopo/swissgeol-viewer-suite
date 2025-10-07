@@ -2,7 +2,12 @@ import { LayerController } from 'src/features/layer/new/controller/layer.control
 import { SwisstopoLayer, SwisstopoLayerSource } from 'src/features/layer';
 import { firstValueFrom } from 'rxjs';
 import { WmtsService } from 'src/services/wmts.service';
-import { Credit, ImageryProvider, WebMapServiceImageryProvider } from 'cesium';
+import {
+  Credit,
+  ImageryLayer,
+  ImageryProvider,
+  WebMapServiceImageryProvider,
+} from 'cesium';
 import {
   SWITZERLAND_RECTANGLE,
   WEB_MERCATOR_TILING_SCHEME,
@@ -10,13 +15,42 @@ import {
 import i18next from 'i18next';
 
 export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
-  protected async addToViewer() {
-    const wmtsService = await firstValueFrom(WmtsService.inject());
+  private imagery: ImageryLayer | null = null;
 
-    const layer = await firstValueFrom(wmtsService.layer$(this.layer.id));
-    if (layer === null) {
-      throw new Error(`Unknown WMS/WMTS layer: ${this.layer.id}`);
+  protected register() {
+    this.watch(this.layer.id);
+    this.watch(this.layer.format);
+    this.watch(this.layer.maxLevel);
+    this.watch(this.layer.credit);
+    this.watch(this.layer.dimension);
+
+    this.watch(this.layer.opacity, (opacity) => {
+      this.imagery!.alpha = opacity;
+    });
+  }
+
+  protected addToViewer() {
+    const provider = this.makeProvider();
+    const imagery = new ImageryLayer(provider, {
+      alpha: this.layer.opacity,
+    });
+
+    if (this.imagery === null) {
+      this.viewer.imageryLayers.add(imagery);
+    } else {
+      const i = this.viewer.imageryLayers.indexOf(this.imagery);
+      this.removeFromViewer();
+      this.viewer.imageryLayers.add(i, imagery);
     }
+    this.imagery = imagery;
+  }
+
+  protected removeFromViewer() {
+    if (this.imagery === null) {
+      return;
+    }
+    this.viewer.imageryLayers.remove(this.imagery, true);
+    this.imagery = null;
   }
 
   private makeProvider(): ImageryProvider {

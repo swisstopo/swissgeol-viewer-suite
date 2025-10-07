@@ -3,7 +3,8 @@ import { SessionService } from 'src/features/session';
 import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
 import { LayerApiService } from 'src/features/layer/new/layer-api.service';
 import { Id } from 'src/models/id.model';
-import { Layer, LayerGroup } from 'src/features/layer';
+import { Layer, LayerGroup, SwisstopoLayer } from 'src/features/layer';
+import { WmtsService } from 'src/services/wmts.service';
 
 export class LayerService extends BaseService {
   private layerApiService!: LayerApiService;
@@ -25,17 +26,40 @@ export class LayerService extends BaseService {
   constructor() {
     super();
 
-    this.inject(LayerApiService).subscribe((service) => {
+    LayerApiService.inject().subscribe((service) => {
       this.layerApiService = service;
     });
 
-    this.inject(SessionService)
+    SessionService.inject()
       .pipe(
         switchMap((service) =>
           service.initialized$.pipe(switchMap(() => service.user$)),
         ),
       )
       .subscribe(() => this.loadLayers());
+
+    WmtsService.inject()
+      .pipe(switchMap((wmtsService) => wmtsService.layers$))
+      .subscribe((layers) => this.syncWmtsLayers(layers));
+  }
+
+  private syncWmtsLayers(layers: SwisstopoLayer[]) {
+    for (const layer of layers) {
+      const existing$ = this.layers.get(layer.id);
+      if (existing$ === undefined) {
+        continue;
+      }
+      const existing = {
+        ...existing$.value,
+        format: layer.format,
+        credit: layer.credit,
+        dimension: layer.dimension,
+      };
+      if (existing.label !== null) {
+        existing.label = layer.label;
+      }
+      existing$.next(existing);
+    }
   }
 
   private async loadLayers() {

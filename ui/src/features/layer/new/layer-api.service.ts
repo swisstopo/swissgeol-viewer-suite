@@ -22,15 +22,23 @@ import {
   VoxelLayerFilter,
   VoxelLayerMapping,
 } from 'src/features/layer';
+import { Id } from 'src/models/id.model';
+import { firstValueFrom, Observable } from 'rxjs';
+import { WmtsService } from 'src/services/wmts.service';
 
 export class LayerApiService extends BaseService {
   private sessionService!: SessionService;
+  private wmtsService!: WmtsService;
 
   constructor() {
     super();
 
-    this.inject(SessionService.context()).subscribe((sessionService) => {
+    SessionService.inject().subscribe((sessionService) => {
       this.sessionService = sessionService;
+    });
+
+    WmtsService.inject().subscribe((wmtsService) => {
+      this.wmtsService = wmtsService;
     });
   }
 
@@ -49,12 +57,13 @@ export class LayerApiService extends BaseService {
       },
     );
     const groups: object[] = await response.json();
+    await firstValueFrom(this.wmtsService.ready$);
     return groups.map((group, i) =>
       this.mapConfigToGroup(new DynamicObject(group, `${i}`)),
     );
   }
 
-  private mapConfigToGroup(config: DynamicObject): LayerGroup {
+  private mapConfigToGroup(config: DynamicObject) {
     return {
       id: config.take('id'),
       children: config.takeAll('children', (child) =>
@@ -65,12 +74,13 @@ export class LayerApiService extends BaseService {
     };
   }
 
-  private mapConfigToLayer(config: DynamicObject): Layer {
+  private mapConfigToLayer(config: DynamicObject): Layer | null {
     const type: LayerType = config.take('type');
     const opacity: number | 'Disabled' = config.take('opacity');
     const canUpdateOpacity = opacity !== 'Disabled';
     const base: BaseLayer = {
       type,
+      label: null,
       id: config.take('id'),
       opacity: canUpdateOpacity ? opacity : 1,
       canUpdateOpacity,
@@ -85,28 +95,33 @@ export class LayerApiService extends BaseService {
         throw new Error(
           'Background layers are currently not defined via API config',
         );
-      case LayerType.Swisstopo:
+      case LayerType.Swisstopo: {
+        const specifics = config.apply(this.mapConfigToSwisstopoLayer);
+        if (specifics === null) {
+          return null;
+        }
         return {
+          ...specifics,
           ...base,
-          ...config.apply(this.mapConfigToSwisstopoLayer),
           type,
         } satisfies SwisstopoLayer;
+      }
       case LayerType.Tiles3d:
         return {
-          ...base,
           ...config.apply(this.mapConfigToTiles3dLayer),
+          ...base,
           type,
         } satisfies Tiles3dLayer;
       case LayerType.Voxel:
         return {
-          ...base,
           ...config.apply(this.mapConfigToVoxelLayer),
+          ...base,
           type,
         } satisfies VoxelLayer;
       case LayerType.Tiff:
         return {
-          ...base,
           ...config.apply(this.mapConfigToTiffLayer),
+          ...base,
           type,
         } satisfies TiffLayer;
     }
@@ -114,8 +129,20 @@ export class LayerApiService extends BaseService {
 
   private readonly mapConfigToSwisstopoLayer = (
     config: DynamicObject,
-  ): Specific<SwisstopoLayer> =>
-    config.takeKeys<SwisstopoLayer>()('maxLevel', 'hasLegend');
+  ): Specific<SwisstopoLayer> | null => {
+    const id: Id<Layer> = config.get('id');
+    const def = this.wmtsService.layer(id);
+    if (def === null) {
+      console.error(
+        `Swisstopo layer not found in WMS/WMTS (layer will be ignored): ${id}`,
+      );
+      return null;
+    }
+    return {
+      ...def,
+      ...config.takeKeys<SwisstopoLayer>()('maxLevel', 'hasLegend'),
+    };
+  };
 
   private readonly mapConfigToTiles3dLayer = (
     config: DynamicObject,
@@ -233,13 +260,17 @@ class DynamicObject {
     return new DynamicObject(value, this.joinPath(key));
   }
 
-  takeAll<T>(key: string, transform: (object: DynamicObject) => T): T[] {
+  takeAll<T>(key: string, transform: (object: DynamicObject) => T | null): T[] {
     const values = this.get<object[]>(key);
     this.unusedKeys.delete(key);
-    return values.map((value, i) => {
+    return values.reduce((acc: T[], value, i) => {
       const object = new DynamicObject(value, this.joinPath(`${key}.${i}`));
-      return object.apply(transform);
-    });
+      const item = object.apply(transform);
+      if (item !== null) {
+        acc.push(item);
+      }
+      return acc;
+    }, [] as T[]);
   }
 
   readonly takeKeys =
@@ -272,4 +303,19 @@ class DynamicObject {
   private joinPath(suffix: string): string {
     return this.path === null ? suffix : `${this.path}.${suffix}`;
   }
+}
+
+export interface DefinedLayers {
+  groups: LayerGroupDefinition[];
+  layers: Array<Observable<LayerDefinition>>;
+}
+
+export interface LayerGroupDefinition {
+  id: Id<LayerGroup>;
+  parentId: Id<LayerGroup> | null;
+}
+
+export interface LayerDefinition {
+  layer: Layer;
+  groupId: Id<LayerGroup>;
 }

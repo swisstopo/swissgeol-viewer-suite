@@ -7,24 +7,34 @@ import {
 } from 'src/features/layer';
 import i18next from 'i18next';
 import { Id, makeId } from 'src/models/id.model';
-import { map, Observable, shareReplay, switchMap } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, switchMap } from 'rxjs';
 
 export class WmtsService extends BaseService {
-  private readonly _layers$: Observable<
-    Map<Id<SwisstopoLayer>, SwisstopoLayer>
-  >;
+  private readonly _layers$ = new BehaviorSubject(
+    new Map<Id<SwisstopoLayer>, SwisstopoLayer>(),
+  );
 
   constructor() {
     super();
 
-    this._layers$ = language$.pipe(
-      switchMap(() => this.load()),
-      shareReplay(1),
+    language$
+      .pipe(switchMap(() => this.load()))
+      .subscribe((mapping) => this._layers$.next(mapping));
+  }
+
+  get ready$(): Observable<void> {
+    return this._layers$.pipe(
+      filter((it) => it.size !== 0),
+      map(() => {}),
     );
   }
 
   get layers$(): Observable<SwisstopoLayer[]> {
     return this._layers$.pipe(map((layers) => [...layers.values()]));
+  }
+
+  layer(id: Id<SwisstopoLayer>): SwisstopoLayer | null {
+    return this._layers$.value.get(id) ?? null;
   }
 
   layer$(id: Id<SwisstopoLayer>): Observable<SwisstopoLayer | null> {
