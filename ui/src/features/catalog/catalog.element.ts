@@ -24,7 +24,10 @@ export class Catalog extends CoreElement {
   }
 
   readonly render = () => html`
-    <section class="layers"></section>
+    <section class="layers">
+      <ngm-catalog-display-list></ngm-catalog-display-list>
+    </section>
+    <hr />
     <section class="tabs">
       <ngm-catalog-tabs></ngm-catalog-tabs>
     </section>
@@ -36,13 +39,21 @@ export class Catalog extends CoreElement {
       box-sizing: border-box;
     }
 
+    :host {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      height: calc(var(--panel-height) - 64px);
+    }
+
     /* sections */
-    .content > section {
+    section {
       position: relative;
       overflow-y: auto;
     }
 
-    .content > section.layers {
+    section.layers {
       /*
        * Layers can take up half of the available space,
        * minus half the space reserved by the header and padding/gap.
@@ -50,8 +61,15 @@ export class Catalog extends CoreElement {
       max-height: calc(50% - var(--header-height) / 2 - 16px);
     }
 
-    .content > section.tabs {
+    section.tabs {
       max-height: calc(100% - var(--header-height) - var(--layers-height, 0));
+    }
+
+    hr {
+      height: 1px;
+      margin: 0 12px;
+      border: 0;
+      background-color: var(--color-border--emphasis-high);
     }
   `;
 }

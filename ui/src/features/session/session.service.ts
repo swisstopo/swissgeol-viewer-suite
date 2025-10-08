@@ -39,7 +39,7 @@ export class SessionService extends BaseService {
   constructor() {
     super();
 
-    this.inject(clientConfigContext).subscribe((clientConfig) => {
+    BaseService.inject(clientConfigContext).subscribe((clientConfig) => {
       this.clientConfig = clientConfig;
     });
 
@@ -65,7 +65,7 @@ export class SessionService extends BaseService {
       }
     });
 
-    this.onReady(() => this.initialize());
+    BaseService.onReady(() => this.initialize());
   }
 
   get session(): Session | null {

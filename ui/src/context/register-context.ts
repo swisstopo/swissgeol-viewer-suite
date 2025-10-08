@@ -20,6 +20,7 @@ import { GestureControlsService } from 'src/features/controls/gestures/gesture-c
 import { SessionService } from 'src/features/session/session.service';
 import { LayerApiService } from 'src/features/layer/new/layer-api.service';
 import { LayerService as LayerService2 } from 'src/features/layer/new/layer.service';
+import { WmtsService } from 'src/services/wmts.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -46,6 +47,7 @@ export const registerAppContext = (
   );
 
   contexts.push(makeProvider(ApiClient));
+  contexts.push(makeProvider(WmtsService));
   contexts.push(makeProvider(LayerApiService));
   contexts.push(makeProvider(LayerService2));
   contexts.push(makeProvider(SessionService));

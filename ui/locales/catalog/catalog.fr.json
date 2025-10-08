@@ -4,6 +4,15 @@
     "Upload": "Upload",
     "Options": "Réglages"
   },
+  "display": {
+    "background": "Fond",
+    "opacity": "Opacité",
+    "legend": "Légende",
+    "download": "Télécharger / Légende",
+    "filter": "Ouvrir le filtre",
+    "timeTravel": "Voyage dans le temps",
+    "remove": "Enlever"
+  },
   "exaggeration": {
     "title": "Exagération verticale",
     "show": "Montrer l'exagération",
@@ -22,5 +31,10 @@
       "confirm": "Add"
     }
   },
-  "add_content_from_cesium_ion": "Ajouter du contenu à propos de l'ion césium"
+  "add_content_from_cesium_ion": "Ajouter du contenu à propos de l'ion césium",
+  "tiffBandsWindow": {
+    "title": "{{ layer }} - Bandes",
+    "open": "Afficher les bandes",
+    "legend": "Légende"
+  }
 }

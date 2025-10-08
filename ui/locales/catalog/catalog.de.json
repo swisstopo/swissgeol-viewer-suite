@@ -4,6 +4,15 @@
     "Upload": "Upload",
     "Options": "Einstellungen"
   },
+  "display": {
+    "background": "Hintergrund",
+    "opacity": "Deckkraft",
+    "legend": "Legende",
+    "download": "Herunterladen / Legende",
+    "filter": "Filter öffnen",
+    "timeTravel": "Zeitreise",
+    "remove": "Entfernen"
+  },
   "exaggeration": {
     "title": "Vertikale Überhöhung",
     "show": "Vertikale Überhöhung anzeigen",
@@ -22,5 +31,10 @@
       "confirm": "Hinzufügen"
     }
   },
-  "add_content_from_cesium_ion": "Inhalte von Cesium ion hinzufügen"
+  "add_content_from_cesium_ion": "Inhalte von Cesium ion hinzufügen",
+  "tiffBandsWindow": {
+    "title": "{{ layer }} - Bänder",
+    "open": "Bänder anzeigen",
+    "legend": "Legende"
+  }
 }

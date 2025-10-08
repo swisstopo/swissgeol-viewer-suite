@@ -3,6 +3,7 @@ import { language$ } from 'src/i18n';
 import {
   LayerType,
   SwisstopoLayer,
+  SwisstopoLayerDimension,
   SwisstopoLayerSource,
 } from 'src/features/layer';
 import i18next from 'i18next';
@@ -86,9 +87,8 @@ export class WmtsService extends BaseService {
         continue;
       }
 
-      const defaultTimestamp = layer
-        .querySelector('Dimension')
-        ?.getAttribute('default');
+      const defaultTimestamp =
+        layer.querySelector('Dimension')?.getAttribute('default') ?? null;
 
       const timestamps =
         layer.querySelector('Dimension')?.textContent?.split(',') || [];
@@ -107,14 +107,7 @@ export class WmtsService extends BaseService {
         hasLegend: false,
         format,
         credit: layerName.split('.')[1],
-        dimension:
-          defaultTimestamp == null &&
-          (timestamps == null || timestamps.length === 0)
-            ? null
-            : {
-                current: defaultTimestamp ?? timestamps[0],
-                all: timestamps ?? [defaultTimestamp],
-              },
+        dimension: this.makeDimension(defaultTimestamp, timestamps),
       });
     }
     return configs;
@@ -150,9 +143,8 @@ export class WmtsService extends BaseService {
         }
 
         const layerName = identifier.textContent;
-        const defaultTimestamp = layer.querySelector(
-          'Dimension > Default',
-        )?.textContent;
+        const defaultTimestamp =
+          layer.querySelector('Dimension > Default')?.textContent ?? null;
         const format = layer.querySelector('Format')?.textContent;
         const tileMatrixSet = layer
           .querySelector('TileMatrixSet')
@@ -182,14 +174,7 @@ export class WmtsService extends BaseService {
           hasLegend: false,
           format: format.split('/')[1],
           credit: layerName.split('.')[1],
-          dimension:
-            defaultTimestamp == null &&
-            (timestamps == null || timestamps.length === 0)
-              ? null
-              : {
-                  current: defaultTimestamp ?? timestamps[0],
-                  all: timestamps,
-                },
+          dimension: this.makeDimension(defaultTimestamp, timestamps),
         });
       });
     }
@@ -210,5 +195,24 @@ export class WmtsService extends BaseService {
 
     const parser = new DOMParser();
     return parser.parseFromString(await res.text(), 'text/xml');
+  }
+
+  private makeDimension(
+    current: string | null,
+    all: string[] | null,
+  ): SwisstopoLayerDimension | null {
+    const isDefaultCurrent = current === null || current === 'current';
+    const isDefaultAll =
+      all === null ||
+      all.length === 0 ||
+      (all.length === 1 && all[0] === 'current');
+    if (isDefaultAll && isDefaultCurrent) {
+      return null;
+    }
+    const currentValue = current ?? all?.[0] ?? 'current';
+    return {
+      current: currentValue,
+      all: all ?? [currentValue],
+    };
   }
 }

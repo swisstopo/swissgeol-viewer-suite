@@ -2,25 +2,57 @@ import { Viewer } from 'cesium';
 import { Layer } from 'src/features/layer';
 
 export abstract class LayerController<T extends Layer = Layer> {
-  private readonly watches: Array<unknown>;
+  private readonly watches: unknown[] = [];
+  private requestedChanges: Array<() => void> = [];
+
   private currentWatchIndex = 0;
   private hasChanged = false;
 
   private isInitialized = false;
 
+  private _layer: T;
+
   constructor(
-    readonly layer: T,
+    layer: T,
     protected readonly viewer: Viewer,
   ) {
+    this._layer = layer;
     this.register();
     this.isInitialized = true;
+    this.currentWatchIndex = 0;
+
+    this.addToViewer();
   }
 
-  protected abstract addToViewer();
+  get layer(): T {
+    return this._layer;
+  }
+
+  update(layer: T): void {
+    this._layer = layer;
+    this.register();
+    if (this.hasChanged) {
+      this.addToViewer();
+    }
+    for (const change of this.requestedChanges) {
+      change();
+    }
+    this.hasChanged = false;
+    this.currentWatchIndex = 0;
+    this.requestedChanges = [];
+  }
+
+  remove(): void {
+    this.removeFromViewer();
+  }
+
+  abstract zoomIntoView(): void;
+
+  protected abstract register(): void;
+
+  protected abstract addToViewer(): void;
 
   protected abstract removeFromViewer(): void;
-
-  protected abstract register();
 
   protected watch<T>(value: T, action?: (value: T) => void): void {
     if (!this.isInitialized) {
@@ -34,7 +66,7 @@ export abstract class LayerController<T extends Layer = Layer> {
       if (action === undefined) {
         this.hasChanged = true;
       } else {
-        action(value);
+        this.requestedChanges.push(() => action(value));
       }
     }
   }
@@ -55,6 +87,4 @@ export abstract class LayerController<T extends Layer = Layer> {
     }
     return false;
   }
-
-  protected update(layer: T) {}
 }
