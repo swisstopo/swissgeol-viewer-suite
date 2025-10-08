@@ -7,8 +7,4 @@ pub struct SwisstopoLayer {
     /// Instead, this level's tiles will be scaled up to fit higher zoom levels.
     #[serde(default)]
     pub max_level: Option<u32>,
-
-    /// Whether the WMTS provides a legend for the layer.
-    #[serde(default)]
-    pub has_legend: bool,
 }

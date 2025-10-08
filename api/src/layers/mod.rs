@@ -36,6 +36,11 @@ pub struct Layer {
     #[serde(default)]
     pub download_url: Option<TranslatedString>,
 
+    /// Where the legend for the layer can found.
+    /// If absent, then the layer doesn't have any such legend.
+    #[serde(default)]
+    pub legend: Option<LayerLegend>,
+
     /// Details depending on the actual type of layer.
     #[serde(flatten)]
     pub detail: LayerDetail
@@ -46,6 +51,14 @@ pub struct Layer {
 pub enum LayerOpacity {
     Default(f32),
     Disabled,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum LayerLegend {
+    #[serde(rename = "id")]
+    Id,
+    CustomId(String),
 }
 
 impl Default for LayerOpacity {

@@ -13,7 +13,7 @@
           max_level: 18,
           opacity: 0.7,
           geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
-          has_legend: true,
+          legend: 'id',
         },
 
         // Layer - Geological Atlas GA25 - WMTS
@@ -23,7 +23,7 @@
           max_level: 18,
           opacity: 0.7,
           geocat_id: '258814a5-8fcf-47df-b0c6-160602b0078c',
-          has_legend: true,
+          legend: 'id'
         },
       ],
     },
@@ -39,7 +39,7 @@
           max_level: 18,
           opacity: 0.7,
           geocat_id: '345d02a3-9628-46d7-9e57-e0ab1d9faf8a',
-          has_legend: true
+          legend: 'id'
         },
 
         // Layer - Cross sections GeoMol
@@ -70,6 +70,7 @@
             "CS-AAT-Report",
           ],
           geocat_id: "ab34eb52-30c4-4b69-840b-ef41f47f9e9a",
+          legend: "some-custom-id"
         },
       ],
     },

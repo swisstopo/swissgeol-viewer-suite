@@ -287,7 +287,7 @@ export class LayerDisplayListItem extends CoreElement {
         : html`
             <ngm-core-dropdown-item role="button" @click="${this.openLegend}">
               <ngm-core-icon icon="legend"></ngm-core-icon>
-              ${i18next.t('dtd_legend')}
+              ${i18next.t('catalog:display.legend')}
             </ngm-core-dropdown-item>
           `}
       ${this.layer?.downloadUrl == null

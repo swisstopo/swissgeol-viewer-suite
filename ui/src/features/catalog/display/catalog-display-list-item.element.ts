@@ -1,6 +1,12 @@
 import { consume } from '@lit/context';
 import { customElement, property, state } from 'lit/decorators.js';
-import { CoreElement, CoreWindow, dropdown, tooltip } from 'src/features/core';
+import {
+  CoreElement,
+  CoreWindow,
+  CoreWindowProps,
+  dropdown,
+  tooltip,
+} from 'src/features/core';
 import { LayerService } from 'src/features/layer/new/layer.service';
 import { Layer, LayerType } from 'src/features/layer';
 import { css, html } from 'lit';
@@ -29,7 +35,10 @@ export class CatalogDisplayList extends CoreElement {
   @state()
   accessor isBackgroundActive = false;
 
-  private tiffFilterWindow: CoreWindow | null = null;
+  private readonly windows = {
+    legend: null as CoreWindow | null,
+    tiffFilter: null as CoreWindow | null,
+  } satisfies Record<string, unknown>;
 
   connectedCallback() {
     super.connectedCallback();
@@ -41,7 +50,11 @@ export class CatalogDisplayList extends CoreElement {
       }),
     );
 
-    this.register(() => this.tiffFilterWindow?.close());
+    this.register(() => {
+      for (const window of Object.values(this.windows)) {
+        window?.close();
+      }
+    });
   }
 
   private readonly toggleVisibility = (): void => {
@@ -72,21 +85,6 @@ export class CatalogDisplayList extends CoreElement {
     this.layerService.deactivate(this.layer.id);
   };
 
-  private readonly openLegend = (): void => {
-    if (this.layer.type !== LayerType.Swisstopo) {
-      return;
-    }
-    this.dispatchEvent(
-      new CustomEvent('showLayerLegend', {
-        composed: true,
-        bubbles: true,
-        detail: {
-          config: this.layer,
-        },
-      }),
-    );
-  };
-
   private readonly openDimensionPicker = (): void => {
     this.dispatchEvent(
       new CustomEvent('showWmtsDatePicker', {
@@ -111,21 +109,40 @@ export class CatalogDisplayList extends CoreElement {
     );
   };
 
-  private readonly openTiffFilter = (): void => {
-    if (this.tiffFilterWindow !== null) {
+  private openWindow(
+    name: keyof typeof this.windows,
+    options: Omit<CoreWindowProps, 'onClose'>,
+  ): void {
+    if (this.windows[name] !== null) {
       return;
     }
-    this.tiffFilterWindow = CoreWindow.open({
+    this.windows[name] = CoreWindow.open({
+      ...options,
+      onClose: () => {
+        this.windows[name] = null;
+      },
+    });
+  }
+
+  private readonly openTiffFilter = (): void =>
+    this.openWindow('tiffFilter', {
       title: () =>
         i18next.t('catalog:tiffBandsWindow.title', { layer: this.title }),
       body: () => html`
         <ngm-layer-tiff-bands .layer="${this.layer}"></ngm-layer-tiff-bands>
       `,
-      onClose: () => {
-        this.tiffFilterWindow = null;
-      },
     });
-  };
+
+  private readonly openLegend = (): void =>
+    this.openWindow('legend', {
+      title: () =>
+        this.layer.label ?? i18next.t(`layers:layer.${this.layer.id}`),
+      body: () => html`
+        <ngm-catalog-display-legend
+          .layer=${this.layer}
+        ></ngm-catalog-display-legend>
+      `,
+    });
 
   private readonly handleOpacityChangeEvent = throttle(
     (event: SliderChangeEvent): void => {
@@ -219,7 +236,7 @@ export class CatalogDisplayList extends CoreElement {
         `,
       )}
       ${when(
-        this.layer.type === LayerType.Swisstopo && this.layer.hasLegend,
+        this.layer.legend !== null,
         () => html`
           <ngm-core-dropdown-item role="button" @click="${this.openLegend}">
             <ngm-core-icon icon="legend"></ngm-core-icon>

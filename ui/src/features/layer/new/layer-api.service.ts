@@ -25,6 +25,7 @@ import {
 import { Id } from 'src/models/id.model';
 import { firstValueFrom, Observable } from 'rxjs';
 import { WmtsService } from 'src/services/wmts.service';
+import { run } from 'src/utils/fn.utils';
 
 export class LayerApiService extends BaseService {
   private sessionService!: SessionService;
@@ -78,6 +79,13 @@ export class LayerApiService extends BaseService {
     const type: LayerType = config.take('type');
     const opacity: number | 'Disabled' = config.take('opacity');
     const canUpdateOpacity = opacity !== 'Disabled';
+    const legend = run(() => {
+      const legendValue: string | null = config.take('legend');
+      if (legendValue === null) {
+        return null;
+      }
+      return legendValue === 'id' ? true : legendValue;
+    });
     const base: BaseLayer = {
       type,
       label: null,
@@ -87,6 +95,7 @@ export class LayerApiService extends BaseService {
       isVisible: opacity !== 0,
       geocatId: config.take('geocatId'),
       downloadUrl: config.take('downloadUrl'),
+      legend,
     };
 
     switch (type) {
@@ -140,7 +149,7 @@ export class LayerApiService extends BaseService {
     }
     return {
       ...def,
-      ...config.takeKeys<SwisstopoLayer>()('maxLevel', 'hasLegend'),
+      ...config.takeKeys<SwisstopoLayer>()('maxLevel'),
     };
   };
 

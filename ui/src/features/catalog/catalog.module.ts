@@ -1,3 +1,4 @@
+import './display/catalog-display-legend.element';
 import './display/catalog-display-list.element';
 import './display/catalog-display-list-item.element';
 

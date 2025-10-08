@@ -3384,3 +3384,9 @@ export const flattenLayers = (layers: LayerTreeNode[]): LayerTreeNode[] => {
   }
   return flat;
 };
+
+const ls = flattenLayers(filterLayer(defaultLayerTree, AppEnv.Dev));
+const l = ls.find(
+  (it) => it.legend !== undefined && it.type !== LayerType.swisstopoWMTS,
+);
+console.log(l);

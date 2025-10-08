@@ -3,8 +3,6 @@ import { SwisstopoLayer, SwisstopoLayerSource } from 'src/features/layer';
 import {
   Credit,
   ImageryLayer,
-  ImageryLayerCollection,
-  ImageryProvider,
   UrlTemplateImageryProvider,
   WebMapServiceImageryProvider,
 } from 'cesium';
@@ -14,57 +12,95 @@ import {
 } from 'src/constants';
 import i18next from 'i18next';
 
+/**
+ * {@link SwisstopoLayerController} is the {@link LayerController} implementation for {@link SwisstopoLayer} instances.
+ *
+ * This controller's layer are displayed using {@link ImageryLayer},
+ * which are added to `viewer.scene.imageryLayers`.
+ */
 export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
-  private imagery!: ImageryLayer;
-  private index!: number;
+  /**
+   * The imagery provider.
+   *
+   * This provider is responsible for fetching data for {@link layer}.
+   *
+   * @private
+   */
+  private provider!: SwisstopoImageryProvider;
 
-  protected override register(): void {
+  /**
+   * The imagery layer created from {@link provider}.
+   *
+   * This is the value responsible for displaying the layer on the viewer.
+   *
+   * @private
+   */
+  private imagery!: ImageryLayer;
+
+  protected override reactToChanges(): void {
+    // These are the values that are statically references by the `provider`.
+    // They can't be changed after the provider has been created, and require reinitialization.
     this.watch(this.layer.id);
     this.watch(this.layer.maxLevel);
     this.watch(this.layer.credit);
     this.watch(this.layer.format);
 
+    // Apply opacity to the Cesium layer.
     this.watch(this.layer.opacity, (opacity) => {
       this.imagery.alpha = opacity;
     });
 
+    // Show or hide the Cesium layer.
     this.watch(this.layer.isVisible, (isVisible) => {
-      const { imageryLayers } = this.viewer.scene;
-      if (isVisible) {
-        if (this.index > imageryLayers.length) {
-          this.index = imageryLayers.length;
-        }
-        imageryLayers.add(this.imagery, this.index);
-      } else {
-        this.refreshIndex();
-        imageryLayers.remove(this.imagery, false);
-      }
+      // Hiding the layer via `show = false` or removing it often leads to render errors,
+      // probably due to some tile objects not being removed cleanly.
+      // Instead, we simply make the layer fully opaque and disable its picking.
 
-      // Hiding a layer has some destructive effects, which can cause render errors.
-      // To fix this, we ensure that the layer is toggled outside the render itself.
+      if (isVisible) {
+        this.imagery.alpha = this.layer.opacity;
+        this.provider.enablePickFeatures = true;
+      } else {
+        this.imagery.alpha = 0;
+        this.provider.enablePickFeatures = false;
+      }
     });
   }
 
   protected override addToViewer(): void {
-    const provider = this.makeProvider();
-    const imagery = new ImageryLayer(provider, {
-      show: true,
+    // Create new instances of both the provider and layer.
+    this.provider = this.makeProvider();
+    const imagery = new ImageryLayer(this.provider, {
+      show: this.layer.isVisible,
       alpha: this.layer.opacity,
     });
 
     const { imageryLayers } = this.viewer.scene;
     if (this.imagery === undefined) {
-      this.index = imageryLayers.length;
+      // Add a new Cesium layer.
       imageryLayers.add(imagery);
     } else {
-      this.refreshIndex();
+      // Replace an existing Cesium layer.
+      const i = imageryLayers.indexOf(this.imagery);
       this.removeFromViewer();
-      imageryLayers.add(imagery, this.index);
+      imageryLayers.add(imagery, i);
     }
     this.imagery = imagery;
   }
 
+  /**
+   * Remove both the {@link imagery} and the {@link provider} from the viewer.
+   * @protected
+   */
   protected override removeFromViewer(): void {
+    this.removeLayerFromViewer();
+    this.provider = undefined as unknown as SwisstopoImageryProvider;
+  }
+
+  /**
+   * Remove the Cesium layer, but keep the {@link provider} intact.
+   * @private
+   */
+  private removeLayerFromViewer(): void {
     const imagery = this.imagery;
     if (imagery === undefined) {
       return;
@@ -86,7 +122,11 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
     this.viewer.flyTo(this.imagery);
   }
 
-  private makeProvider(): ImageryProvider {
+  /**
+   * Creates a provider instance based on the layer's source type.
+   * @private
+   */
+  private makeProvider(): SwisstopoImageryProvider {
     switch (this.layer.source) {
       case SwisstopoLayerSource.WMS:
         return this.makeProviderForWms();
@@ -95,7 +135,7 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
     }
   }
 
-  private makeProviderForWms(): ImageryProvider {
+  private makeProviderForWms(): SwisstopoImageryProvider {
     return new WebMapServiceImageryProvider({
       url: 'https://wms{s}.geo.admin.ch?version=1.3.0',
       crs: 'EPSG:4326',
@@ -113,7 +153,7 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
     });
   }
 
-  private makeProviderForWmts(): ImageryProvider {
+  private makeProviderForWmts(): SwisstopoImageryProvider {
     return new UrlTemplateImageryProvider({
       url: 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}',
       maximumLevel: this.layer.maxLevel ?? undefined,
@@ -126,11 +166,8 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
       },
     });
   }
-
-  private refreshIndex(): void {
-    const i = this.viewer.scene.imageryLayers.indexOf(this.imagery);
-    if (i !== this.index) {
-      this.index = 1;
-    }
-  }
 }
+
+type SwisstopoImageryProvider =
+  | WebMapServiceImageryProvider
+  | UrlTemplateImageryProvider;

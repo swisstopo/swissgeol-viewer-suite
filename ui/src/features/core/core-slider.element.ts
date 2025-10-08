@@ -48,7 +48,7 @@ export class CoreSlider extends LitElement {
       min=${this.min}
       max=${this.max}
       step=${this.step}
-      value=${live(isNaN(this.value) ? 1 : this.value)}
+      .value=${live(isNaN(this.value) ? 1 : this.value)}
       @input=${this.handleInputChange}
       @pointerdown="${stopEvent}"
       @pointerup=${this.handlePointerUp}
