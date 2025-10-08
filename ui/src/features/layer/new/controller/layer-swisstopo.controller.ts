@@ -13,22 +13,10 @@ import {
   WEB_MERCATOR_TILING_SCHEME,
 } from 'src/constants';
 import i18next from 'i18next';
-// Who calls destroy()?
-const _destroy = ImageryLayer.prototype.destroy;
-ImageryLayer.prototype.destroy = function () {
-  console.log('[ImageryLayer.destroy]', this);
-  return _destroy.apply(this, arguments);
-};
-
-// Who removes from the collection?
-const _remove = ImageryLayerCollection.prototype.remove;
-ImageryLayerCollection.prototype.remove = function (layer, destroy) {
-  console.log('[ImageryLayerCollection.remove]', layer, { destroy });
-  return _remove.apply(this, arguments);
-};
 
 export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
   private imagery!: ImageryLayer;
+  private index!: number;
 
   protected override register(): void {
     this.watch(this.layer.id);
@@ -41,31 +29,37 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
     });
 
     this.watch(this.layer.isVisible, (isVisible) => {
-      const off = this.viewer.scene.postRender.addEventListener(() => {
-        off();
-        if (
-          !this.imagery.isDestroyed() &&
-          this.viewer.scene.imageryLayers.contains(this.imagery)
-        ) {
-          this.imagery.show = isVisible;
+      const { imageryLayers } = this.viewer.scene;
+      if (isVisible) {
+        if (this.index > imageryLayers.length) {
+          this.index = imageryLayers.length;
         }
-      });
-      this.viewer.scene.requestRender();
+        imageryLayers.add(this.imagery, this.index);
+      } else {
+        this.refreshIndex();
+        imageryLayers.remove(this.imagery, false);
+      }
+
+      // Hiding a layer has some destructive effects, which can cause render errors.
+      // To fix this, we ensure that the layer is toggled outside the render itself.
     });
   }
 
   protected override addToViewer(): void {
     const provider = this.makeProvider();
     const imagery = new ImageryLayer(provider, {
+      show: true,
       alpha: this.layer.opacity,
     });
 
+    const { imageryLayers } = this.viewer.scene;
     if (this.imagery === undefined) {
-      this.viewer.scene.imageryLayers.add(imagery);
+      this.index = imageryLayers.length;
+      imageryLayers.add(imagery);
     } else {
-      const i = this.viewer.imageryLayers.indexOf(this.imagery);
+      this.refreshIndex();
       this.removeFromViewer();
-      this.viewer.imageryLayers.add(imagery, i);
+      imageryLayers.add(imagery, this.index);
     }
     this.imagery = imagery;
   }
@@ -131,5 +125,12 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
         timestamp: () => this.layer.dimension?.current ?? 'current',
       },
     });
+  }
+
+  private refreshIndex(): void {
+    const i = this.viewer.scene.imageryLayers.indexOf(this.imagery);
+    if (i !== this.index) {
+      this.index = 1;
+    }
   }
 }
