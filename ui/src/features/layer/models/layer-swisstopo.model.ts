@@ -24,11 +24,6 @@ export interface SwisstopoLayer extends BaseLayer {
   maxLevel: number | null;
 
   /**
-   * Whether the WMTS provides a legend for the layer.
-   */
-  hasLegend: boolean;
-
-  /**
    * The dimension are the time travel variants available on this layer.
    * For layers with only a single representation, this is `null`.
    */

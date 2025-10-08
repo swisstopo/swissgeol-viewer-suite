@@ -1,19 +1,17 @@
 import type { Id } from 'src/models/id.model';
 import type { Model } from 'src/models/model.model';
-import { BackgroundLayer, SwisstopoLayer, TiffLayer } from 'src/features/layer';
+import { SwisstopoLayer, TiffLayer } from 'src/features/layer';
 import { Tiles3dLayer } from 'src/features/layer/models/layer-tiles3d.model';
 import { VoxelLayer } from 'src/features/layer/models/layer-voxel.model';
 import { TranslatedString } from 'src/models/translated-string.model';
 
-export type Layer =
-  | BackgroundLayer
-  | SwisstopoLayer
-  | Tiles3dLayer
-  | VoxelLayer
-  | TiffLayer;
+/**
+ * All possible layer types, except for {@link BackgroundLayer}.
+ */
+export type Layer = SwisstopoLayer | Tiles3dLayer | VoxelLayer | TiffLayer;
 
 export interface BaseLayer extends Model {
-  type: LayerType;
+  type: LayerType | 'Background';
 
   /**
    * A unique identifier for the layer. Will also be used as part of the translation key for the layer's display name.
@@ -77,7 +75,6 @@ export interface BaseLayer extends Model {
 }
 
 export enum LayerType {
-  Background = 'Background',
   Swisstopo = 'Swisstopo',
   Tiles3d = 'Tiles3d',
   Voxel = 'Voxel',

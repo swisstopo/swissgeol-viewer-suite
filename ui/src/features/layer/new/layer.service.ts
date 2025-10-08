@@ -4,6 +4,7 @@ import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
 import { LayerApiService } from 'src/features/layer/new/layer-api.service';
 import { Id } from 'src/models/id.model';
 import {
+  BACKGROUND_LAYERS,
   Layer,
   LayerGroup,
   LayerType,
@@ -19,6 +20,8 @@ export class LayerService extends BaseService {
   private viewer!: Viewer;
 
   private layerApiService!: LayerApiService;
+
+  private background$ = new BehaviorSubject(BACKGROUND_LAYERS[0]);
 
   private layers: IdMapping<Layer, LayerEntry> = new Map();
 
@@ -250,6 +253,9 @@ export class LayerService extends BaseService {
     entry.controller!.remove();
     entry.controller = null;
 
+    // Reset the state after removal.
+    entry.state$.next(entry.definition);
+
     const updatedActiveLayers = [...activeLayers];
     updatedActiveLayers.splice(i, 1);
     this._activeLayerIds$.next(updatedActiveLayers);
@@ -280,7 +286,6 @@ export class LayerService extends BaseService {
       case LayerType.Swisstopo:
         return new SwisstopoLayerController(layer, this.viewer);
       case LayerType.Tiles3d:
-      case LayerType.Background:
       case LayerType.Voxel:
       case LayerType.Tiff:
         throw new Error('nyi');

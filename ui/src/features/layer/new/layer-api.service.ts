@@ -99,11 +99,6 @@ export class LayerApiService extends BaseService {
     };
 
     switch (type) {
-      case LayerType.Background:
-        // TODO move background config into API
-        throw new Error(
-          'Background layers are currently not defined via API config',
-        );
       case LayerType.Swisstopo: {
         const specifics = config.apply(this.mapConfigToSwisstopoLayer);
         if (specifics === null) {
