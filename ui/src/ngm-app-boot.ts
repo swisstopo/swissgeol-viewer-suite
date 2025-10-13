@@ -6,6 +6,7 @@ import { Task } from '@lit/task';
 import { ClientConfig } from './api/client-config';
 import { registerAppContext } from './context';
 import { ConfigService } from './api/config.service';
+import { setupI18n } from 'src/i18n';
 
 @customElement('ngm-app-boot')
 export class NgmAppBoot extends LitElement {
@@ -26,6 +27,11 @@ export class NgmAppBoot extends LitElement {
 
   createRenderRoot() {
     return this;
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    setupI18n();
   }
 
   render() {

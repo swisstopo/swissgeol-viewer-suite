@@ -5,6 +5,7 @@ Given(/^no cursor info is shown$/, () => {
 });
 
 When(/^the cursor is moved over the map$/, () => {
+  cy.wait(1000);
   cy.get('.cesium-viewer')
     .find('canvas')
     .realHover({
@@ -17,12 +18,16 @@ When(/^the cursor is moved over the map$/, () => {
 });
 
 When(/^the (.+) layer has been activated$/, (layer: string) => {
+  cy.get('[data-cy="menu-item--data"]').click();
+
   cy.get(`[data-cy="layer-${layer}"]`, { timeout: 10_000 })
     .shadow()
     .find('ngm-core-checkbox')
     .shadow()
     .find('label')
     .click({ force: true });
+
+  cy.get('[data-cy="menu-item--data"]').click();
 });
 
 When(/^the terrain is hidden$/, () => {

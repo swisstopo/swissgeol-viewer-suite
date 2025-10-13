@@ -43,8 +43,6 @@ import {
 import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
-import { setupI18n } from './i18n';
-
 import { initAnalytics } from './analytics.js';
 import MainStore from './store/main';
 import ToolboxStore from './store/toolbox';
@@ -331,7 +329,6 @@ export class NgmApp extends LitElementI18n {
 
   async firstUpdated() {
     setTimeout(() => (this.determinateLoading = true), 3000);
-    setupI18n();
     rewriteParams();
     const cesiumContainer = this.querySelector('#cesium')!;
     const viewer = await setupViewer(cesiumContainer, isLocalhost);
