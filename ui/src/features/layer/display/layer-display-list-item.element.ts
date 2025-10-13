@@ -200,7 +200,7 @@ export class LayerDisplayListItem extends CoreElement {
   readonly render = () => html`
     ${this.isDraggable ? this.renderDragHandle() : ''}
 
-    <div class="main">
+    <div class="main" title="${this.title}">
       <ngm-core-button
         transparent
         variant="tertiary"
@@ -441,8 +441,11 @@ export class LayerDisplayListItem extends CoreElement {
 
     .title {
       ${applyTypography('body-2')};
-
       flex-grow: 1;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* label */

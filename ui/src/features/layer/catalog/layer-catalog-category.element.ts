@@ -62,6 +62,8 @@ export class LayerCatalogCategory extends CoreElement {
     if (this.node == null) {
       return html``;
     }
+    const title = i18next.t(this.node.label);
+
     // if it is a restricted layer, the user must be logged in to see it
     const children = this.node.children?.filter(
       (node) =>
@@ -78,7 +80,7 @@ export class LayerCatalogCategory extends CoreElement {
       const activeLayers = this.findNumberOfActiveLayersForCategory(this.node);
       header = html`
         <div class="header-title">
-          <span>${i18next.t(this.node.label)}</span>
+          <span class="label">${title}</span>
           ${activeLayers > 0
             ? html`<ngm-core-chip>${activeLayers}</ngm-core-chip>`
             : html``}
@@ -88,7 +90,9 @@ export class LayerCatalogCategory extends CoreElement {
     } else {
       header = html`
         <ngm-core-icon icon="dropdown"></ngm-core-icon>
-        <label>${i18next.t(this.node.label)}</label>
+        <div class="header-title">
+          <label class="label">${title}</label>
+        </div>
       `;
     }
     return html`
@@ -96,6 +100,7 @@ export class LayerCatalogCategory extends CoreElement {
         <div
           slot="header"
           class="header ${this.isTopLevel ? 'is-top-level' : 'is-low-level'}"
+          title="${title}"
         >
           ${header}
         </div>
@@ -120,6 +125,7 @@ export class LayerCatalogCategory extends CoreElement {
       ngm-core-icon {
         transition: ease-in-out 250ms transform;
       }
+
       &:not(.active) > ngm-core-icon {
         transform: rotate(-90deg);
       }
@@ -161,6 +167,22 @@ export class LayerCatalogCategory extends CoreElement {
     .header.is-low-level + .body {
       padding-left: 12px;
       padding-top: 0;
+    }
+
+    .header-title {
+      max-width: calc(100% - 36px);
+    }
+
+    .header-title,
+    .header-title > .label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    ngm-core-icon[icon='dropdown'] {
+      min-width: 24px;
+      max-width: 24px;
     }
   `;
 }

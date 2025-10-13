@@ -36,14 +36,15 @@ export class LayerCatalogItem extends CoreElement {
   }
 
   render() {
+    const title = i18next.t(this.layer.label);
     return html`
-      <div class="layer">
+      <div class="layer" title="${title}">
         <ngm-core-icon icon="layerIndicator"></ngm-core-icon>
         <ngm-core-checkbox
           .isActive="${this.layer.displayed}"
           @update="${() => this.toggleLayer(this.layer)}"
         ></ngm-core-checkbox>
-        <label>${i18next.t(this.layer.label)}</label>
+        <label>${title}</label>
       </div>
     `;
   }
@@ -57,10 +58,17 @@ export class LayerCatalogItem extends CoreElement {
 
       ngm-core-icon {
         height: 12px;
-        width: 12px;
+        min-width: 12px;
+        max-width: 12px;
         align-self: start;
         margin-top: 4px;
       }
+    }
+
+    label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   `;
 }
