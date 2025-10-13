@@ -7,12 +7,75 @@ import {
   UrlTemplateImageryProvider,
   WebMapServiceImageryProvider,
   Math as CesiumMath,
+  GeoJsonDataSource,
+  Cesium3DTileset,
+  Resource,
 } from 'cesium';
 import { sleep } from 'src/utils/fn.utils';
 import { BehaviorSubject, Observable } from 'rxjs';
+import MainStore from 'src/store/main';
 
 export class OgcService extends BaseService {
   private readonly jobsSubject = new BehaviorSubject<OgcJob[]>([]);
+
+  constructor() {
+    super();
+    MainStore.viewer.subscribe(async (viewer) => {
+      if (!viewer) {
+        return;
+      }
+      // this.loadGeoJsonLayer('13325').then((layer) => {
+      //   viewer.dataSources.add(layer);
+      //   viewer.zoomTo(layer);
+      // });
+      this.loadTiles3dLayerStyles('13327', '5').then((layer) => {
+        viewer.scene.primitives.add(layer);
+        viewer.zoomTo(layer);
+      });
+      // this.loadTiles3dLayer('10486').then((layer) => {
+      //   viewer.scene.primitives.add(layer);
+      //   viewer.zoomTo(layer);
+      // });
+    });
+  }
+
+  async loadGeoJsonLayer(id: string): Promise<GeoJsonDataSource> {
+    const res = await fetch(
+      `http://localhost:8000/ogc/collections/${id}/items`,
+      {
+        headers: {
+          Authorization: 'Basic ' + btoa('OGC-Seismics:pw'),
+        },
+      },
+    );
+    const geojson = await res.json();
+    return await GeoJsonDataSource.load(geojson);
+  }
+
+  async loadTiles3dLayer(id: string): Promise<Cesium3DTileset> {
+    const resource = new Resource({
+      url: `http://localhost:8000/ogc/collections/${id}/download_format/tiles3d`,
+      headers: {
+        Authorization: 'Basic ' + btoa('OGC-Seismics:pw'),
+      },
+    });
+
+    return Cesium3DTileset.fromUrl(resource);
+  }
+
+  async loadTiles3dLayerStyles(
+    id: string,
+    styleId: string,
+  ): Promise<Cesium3DTileset> {
+    const resource = new Resource({
+      url: `https://ogc-api.gst-viewer.swissgeol.ch/collections/${id}/styles/${styleId}/download_format/tiles3d`,
+      headers: {
+        Authorization: 'Basic ' + btoa('OGC-Seismics:pw'),
+      },
+    });
+
+    return Cesium3DTileset.fromUrl(resource);
+  }
 
   get jobs$(): Observable<OgcJob[]> {
     return this.jobsSubject.asObservable();
