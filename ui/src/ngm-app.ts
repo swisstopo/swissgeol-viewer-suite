@@ -452,6 +452,17 @@ export class NgmApp extends LitElementI18n {
       });
 
     let isVisible = true;
+    const setLayerVisibility = (isVisible: boolean) => {
+      const off = this.viewer!.scene.postRender.addEventListener(() => {
+        off();
+        activeLayers.forEach((layer) => {
+          if (this.viewer!.scene.imageryLayers.contains(layer)) {
+            layer.show = isVisible;
+          }
+        });
+      });
+    };
+
     this.backgroundLayerService.background$
       .pipe(distinctUntilKeyChanged('isVisible'))
       .subscribe((background) => {
@@ -463,14 +474,14 @@ export class NgmApp extends LitElementI18n {
           syncMapParam(background.id);
 
           if (isVisible !== background.isVisible) {
-            activeLayers.forEach((layer) => (layer.show = true));
+            setLayerVisibility(true);
           }
         } else {
           this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
           syncMapParam('empty_map');
 
           if (isVisible !== background.isVisible) {
-            activeLayers.forEach((layer) => (layer.show = false));
+            setLayerVisibility(false);
           }
         }
 
@@ -552,11 +563,9 @@ export class NgmApp extends LitElementI18n {
     if (opacity === 1) {
       translucency.enabled = hasAlphaChannel;
       translucency.backFaceAlpha = 1;
-      this.viewer!.scene.globe.show = true;
     } else {
       translucency.backFaceAlpha = 0;
       translucency.enabled = true;
-      this.viewer!.scene.globe.show = false;
     }
   }
 
