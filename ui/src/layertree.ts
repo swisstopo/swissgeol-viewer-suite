@@ -2390,6 +2390,21 @@ const group_05: LayerTreeNode =
             geocatId: '258c7ccf-5e7f-4759-9c09-519d41ba4d02',
             legend: 'ch.swisstopo.geologie-hartsteinvorkommen',
           },
+          // Layer - Sand and Gravel - WMTS
+          {
+            type: LayerType.swisstopoWMTS,
+            label: t(
+              'lyr_ch.swisstopo.geologie-rohstoffe-kies_abbau_verarbeitung_label',
+            ),
+            layer: 'ch.swisstopo.geologie-rohstoffe-kies_abbau_verarbeitung',
+            maximumLevel: 18,
+            visible: false,
+            displayed: false,
+            opacity: 0.7,
+            queryType: 'geoadmin',
+            geocatId: '734f4f95-2d81-459b-b8fc-1b1b8a249d14',
+            legend: 'ch.swisstopo.geologie-rohstoffe-kies_abbau_verarbeitung',
+          },
           // Layer - Crushed-rock aggregates - WMS
           {
             type: LayerType.swisstopoWMTS,
