@@ -225,9 +225,22 @@ export async function createSwisstopoWMTSImageryLayer(
   config: LayerConfig,
 ) {
   const layer: ImageryLayer = await getSwisstopoImagery(config);
-  config.setVisibility = (visible) => (layer.show = !!visible);
+  config.setVisibility = (isVisible) => {
+    const off = viewer.scene.postRender.addEventListener(() => {
+      off();
+      if (!layer.isDestroyed() && viewer.scene.imageryLayers.contains(layer)) {
+        layer.show = !!isVisible;
+      }
+    });
+  };
   config.setOpacity = (opacity) => (layer.alpha = opacity);
-  config.remove = () => viewer.scene.imageryLayers.remove(layer, false);
+  config.remove = () => {
+    try {
+      viewer.scene.imageryLayers.remove(layer, false);
+    } catch (_e) {
+      // Removing imageries can sometimes throw errors, which can be ignored.
+    }
+  };
   config.add = (toIndex) => {
     const layersLength = viewer.scene.imageryLayers.length;
     if (toIndex > 0 && toIndex < layersLength) {
