@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.8.0]
+### Added
+- Added a new "gravel and sand" layer.
+
+### Changed
+- Disclaimer links now point to the new swissgeol homepage.
+- Large texts in the layer panel are now cut of instead of overflowing or extending their container.
+
+### Fixed
+- Translations are now applied before the first render.
+  This removes the initial translation delay.
+- The highlighting of picked layers is now correctly removed after unhovering.
+- The TIFF band switcher occasionally crashed on switching layers, which is now correctly handled.
+- The background layer can now be hidden and made transparent without any errors appearing.
+- WMTS layers no longer stay activated after removal or cause errors after being deactivated.
+
+
 ## [1.7.0]
 
 ### Added
