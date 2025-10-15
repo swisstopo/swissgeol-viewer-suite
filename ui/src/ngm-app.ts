@@ -30,11 +30,11 @@ import { addMantelEllipsoid, setupViewer } from './viewer';
 
 import {
   getCameraView,
-  getCesiumToolbarParam,
   getMapParam,
   getTopicOrProject,
   getZoomToPosition,
   rewriteParams,
+  setCesiumToolbarParam,
   syncCamera,
   syncMapOpacityParam,
   syncMapParam,
@@ -127,7 +127,7 @@ export class NgmApp extends LitElementI18n {
   accessor showProjectSelector = false;
 
   @state()
-  accessor showCesiumToolbar = getCesiumToolbarParam();
+  accessor showCesiumToolbar = false;
 
   @query('ngm-cam-configuration')
   accessor camConfigElement;
@@ -170,6 +170,11 @@ export class NgmApp extends LitElementI18n {
     window.addEventListener('resize', () => {
       const boundingRect = document.body.getBoundingClientRect();
       this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
+    });
+
+    MainStore.isDebugActive$.subscribe((isDebugActive) => {
+      this.showCesiumToolbar = isDebugActive;
+      setCesiumToolbarParam(isDebugActive);
     });
   }
 
@@ -525,7 +530,7 @@ export class NgmApp extends LitElementI18n {
           class: 'ngm-cam-lock-info',
           actions: [
             {
-              text: i18next.t('app_cancel_btn_label'),
+              text: i18next.t('cancel'),
               click: () => this.camConfigElement.disableLock(),
             },
           ],
@@ -680,16 +685,7 @@ export class NgmApp extends LitElementI18n {
             >
           </div>
         </div>
-        <ngm-side-bar
-          .mobileView=${this.mobileView}
-          @showLayerLegend=${this.onShowLayerLegend}
-          @showVoxelFilter=${this.onShowVoxelFilter}
-          @showWmtsDatePicker=${this.onShowWmtsDatePicker}
-          @toggleDebugTools=${(evt) => {
-            this.showCesiumToolbar = evt.detail.active;
-          }}
-        >
-        </ngm-side-bar>
+        ${this.viewer && html`<ngm-layout-sidebar></ngm-layout-sidebar>`}
         <div class="map" oncontextmenu="return false;">
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>

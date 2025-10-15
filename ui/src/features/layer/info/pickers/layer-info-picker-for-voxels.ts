@@ -34,10 +34,6 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
       return [];
     }
 
-    if (windowPosition === undefined) {
-      return [];
-    }
-
     const primitive = await (this.layer as LayerConfig).promise;
 
     const cell = this.viewer.scene.pickVoxel(windowPosition);

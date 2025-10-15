@@ -9,6 +9,7 @@ import Backend from 'i18next-http-backend';
 import { LitElement } from 'lit';
 import { SUPPORTED_LANGUAGES } from './constants';
 import { getURLSearchParams, setURLSearchParams } from './utils';
+import { BehaviorSubject } from 'rxjs';
 
 class LanguageDetector implements LanguageDetectorModule {
   readonly async = false;
@@ -60,7 +61,7 @@ export function setupI18n() {
     .use(Backend)
     .use(LanguageDetector)
     .init({
-      ns: ['app', 'assets', 'layers', 'toolbox'],
+      ns: ['app', 'assets', 'layers', 'layout', 'catalog'],
       defaultNS: 'app',
       supportedLngs: SUPPORTED_LANGUAGES,
       nonExplicitSupportedLngs: true,
@@ -112,3 +113,17 @@ export function toLocaleDateString(dateString: string): string {
 export function translated(property: string | object): string {
   return typeof property === 'string' ? property : property[i18next.language];
 }
+
+export enum Language {
+  German = 'de',
+  English = 'en',
+  French = 'fr',
+  Italian = 'it',
+}
+
+const languageSubject = new BehaviorSubject(i18next.language as Language);
+i18next.on('languageChanged', () => {
+  languageSubject.next(i18next.language as Language);
+});
+
+export const language$ = languageSubject.asObservable();

@@ -113,7 +113,6 @@ ngm-navigation-catalog .ngm-side-bar-panel {
   flex-direction: column;
   justify-content: space-between;
   gap: 10px;
-  margin-top: 14px;
 }
 
 .ngm-label-btn {
