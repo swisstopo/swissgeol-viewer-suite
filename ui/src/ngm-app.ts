@@ -6,7 +6,6 @@ import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
 import './toolbox/ngm-topo-profile-modal';
 import './toolbox/ngm-geometry-info';
-import './elements/ngm-layer-legend';
 import './elements/ngm-voxel-filter';
 import './elements/ngm-voxel-simple-filter';
 import './cesium-toolbar';
@@ -112,9 +111,6 @@ export class NgmApp extends LitElementI18n {
   accessor queueLength = 0;
 
   @state()
-  accessor legendConfigs: LayerConfig[] = [];
-
-  @state()
   accessor showProjectPopup = false;
 
   @state()
@@ -201,6 +197,7 @@ export class NgmApp extends LitElementI18n {
     BaseService.initializeWith(this);
 
     this.layerService.activeLayers$.subscribe(() => {
+      console.log('change!');
       this.viewer?.scene.requestRender();
     });
 
@@ -240,14 +237,6 @@ export class NgmApp extends LitElementI18n {
     }
   }
 
-  onShowLayerLegend(event) {
-    const config = event.detail.config;
-    if (!this.legendConfigs.find((c) => c && c.layer === config.layer)) {
-      this.legendConfigs.push(config);
-      this.requestUpdate();
-    }
-  }
-
   onShowVoxelFilter(event: CustomEvent) {
     const config = event.detail.config;
     if (config.voxelFilter) {
@@ -259,17 +248,6 @@ export class NgmApp extends LitElementI18n {
 
   onShowWmtsDatePicker(event: CustomEvent) {
     this.wmtsDatePickerElement.config = event.detail.config;
-  }
-
-  onCloseLayerLegend(event) {
-    const config = event.target.config;
-    const index = this.legendConfigs.findIndex(
-      (c) => c && c.layer === config.layer,
-    );
-    console.assert(index !== -1);
-    this.legendConfigs.splice(index, 1);
-    if (!this.legendConfigs.filter((c) => !!c).length) this.legendConfigs = [];
-    this.requestUpdate();
   }
 
   onStep2Finished(viewer) {
@@ -716,17 +694,6 @@ export class NgmApp extends LitElementI18n {
               @close=${() => (this.showProjectPopup = false)}
             >
             </ngm-project-popup>
-            ${[...this.legendConfigs].map((config) =>
-              config
-                ? html`
-                    <ngm-layer-legend
-                      class="ngm-floating-window"
-                      .config=${config}
-                      @close=${this.onCloseLayerLegend}
-                    ></ngm-layer-legend>
-                  `
-                : '',
-            )}
             <ngm-voxel-filter
               class="ngm-floating-window"
               .viewer=${this.viewer}

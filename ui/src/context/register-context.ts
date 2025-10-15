@@ -19,6 +19,7 @@ import { LayerService } from 'src/features/layer/layer.service';
 import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
 import { SessionService } from 'src/features/session/session.service';
 import { LayerApiService } from 'src/features/layer/new/layer-api.service';
+import { LayerService as LayerService2 } from 'src/features/layer/new/layer.service';
 import { LayerService as NewLayerService } from 'src/features/layer/new/layer.service';
 import { WmtsService } from 'src/services/wmts.service';
 

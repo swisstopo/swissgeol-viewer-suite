@@ -9,7 +9,7 @@ import Backend from 'i18next-http-backend';
 import { LitElement } from 'lit';
 import { SUPPORTED_LANGUAGES } from './constants';
 import { getURLSearchParams, setURLSearchParams } from './utils';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, filter } from 'rxjs';
 
 class LanguageDetector implements LanguageDetectorModule {
   readonly async = false;
@@ -126,4 +126,6 @@ i18next.on('languageChanged', () => {
   languageSubject.next(i18next.language as Language);
 });
 
-export const language$ = languageSubject.asObservable();
+export const language$ = languageSubject
+  .asObservable()
+  .pipe(filter((it) => it !== undefined));

@@ -6,8 +6,15 @@ import {
   LayerGroupConfig,
 } from 'src/features/layer/new/layer-api.service';
 import { Id } from 'src/models/id.model';
-import { Layer, LayerGroup, SwisstopoLayer } from 'src/features/layer';
+import {
+  Layer,
+  LayerGroup,
+  LayerType,
+  SwisstopoLayer,
+} from 'src/features/layer';
 import { WmtsService } from 'src/services/wmts.service';
+import { LayerController } from 'src/features/layer/new/controller/layer.controller';
+import { SwisstopoLayerController } from 'src/features/layer/new/controller/layer-swisstopo.controller';
 import { Viewer } from 'cesium';
 import MainStore from 'src/store/main';
 
@@ -16,13 +23,13 @@ export class LayerService extends BaseService {
 
   private layerApiService!: LayerApiService;
 
-  private readonly layers: IdMapping<Layer, LayerEntry> = new Map();
+  private layers: IdMapping<Layer, LayerEntry> = new Map();
 
-  private readonly groups: IdMapping<LayerGroup, GroupEntry> = new Map();
+  private groups: IdMapping<LayerGroup, GroupEntry> = new Map();
 
-  private readonly _rootGroupIds$ = new BehaviorSubject<IdArray<Layer>>([]);
+  private _rootGroupIds$ = new BehaviorSubject<IdArray<Layer>>([]);
 
-  private readonly _activeLayerIds$ = new BehaviorSubject<IdArray<Layer>>([]);
+  private _activeLayerIds$ = new BehaviorSubject<IdArray<Layer>>([]);
 
   constructor() {
     super();
@@ -95,15 +102,18 @@ export class LayerService extends BaseService {
       if (previousLayer === undefined) {
         this.layers.set(layer.id, {
           ...entry,
+          controller: null,
           state$: new BehaviorSubject(layer),
         });
       } else {
         previousLayers.delete(layer.id);
         const updated: LayerEntry = {
           ...entry,
+          controller: previousLayer.controller,
           state$: previousLayer.state$,
         };
         this.layers.set(layer.id, updated);
+        updated.controller?.update(layer);
         updated.state$.next(layer);
       }
     };
@@ -160,7 +170,7 @@ export class LayerService extends BaseService {
 
     this.groups.clear();
 
-    const previousLayers = new Map(this.layers);
+    const previousLayers = new Map([...this.layers]);
     this.layers.clear();
 
     for (const layer of config.layers) {
@@ -222,6 +232,10 @@ export class LayerService extends BaseService {
     return this._activeLayerIds$.pipe(map((layerIds) => layerIds.includes(id)));
   }
 
+  controller(id: Id<Layer>): LayerController | null {
+    return this.layers.get(id)?.controller ?? null;
+  }
+
   activate(id: Id<Layer>): void {
     const activeLayers = this._activeLayerIds$.value;
     if (activeLayers.includes(id)) {
@@ -234,6 +248,9 @@ export class LayerService extends BaseService {
         group.count += 1;
       });
     }
+    const value = { ...entry.state$.value, isVisible: true } satisfies Layer;
+    entry.controller = this.makeController(value);
+    entry.state$.next(value);
     this._activeLayerIds$.next([id, ...activeLayers]);
     this.viewer.scene.requestRender();
   }
@@ -251,6 +268,9 @@ export class LayerService extends BaseService {
         group.count -= 1;
       });
     }
+
+    entry.controller!.remove();
+    entry.controller = null;
 
     // Reset the state after removal.
     entry.state$.next(entry.definition);
@@ -275,8 +295,20 @@ export class LayerService extends BaseService {
       }
     }
 
+    entry.controller?.update(updatedLayer);
     entry.state$.next(updatedLayer);
     this.viewer.scene.requestRender();
+  }
+
+  private makeController(layer: Layer): LayerController {
+    switch (layer.type) {
+      case LayerType.Swisstopo:
+        return new SwisstopoLayerController(layer, this.viewer);
+      case LayerType.Tiles3d:
+      case LayerType.Voxel:
+      case LayerType.Tiff:
+        throw new Error('nyi');
+    }
   }
 
   private iterateGroupPath(
@@ -317,6 +349,7 @@ interface LayerEntry {
   state$: BehaviorSubject<Layer>;
   definition: Layer;
   groups: IdArray<LayerGroup>;
+  controller: LayerController | null;
 }
 
 interface GroupEntry {

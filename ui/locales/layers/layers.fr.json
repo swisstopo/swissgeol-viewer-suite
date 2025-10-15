@@ -6,14 +6,6 @@
     "title": "Info",
     "zoomToObject": "Zoom sur l'objet"
   },
-  "geoTIFF": {
-    "bandsWindow": {
-      "title": "{{ layer }} - Bandes",
-      "open": "Afficher les bandes",
-      "legend": "Légende"
-    },
-    "noData": "aucune valeur"
-  },
   "swissBEDROCK": {
     "title": "swissBEDROCK",
     "bands": {
@@ -39,5 +31,7 @@
       "name": "mètre au-dessus du niveau de la mer ",
       "symbol": "m s.n.m."
     }
-  }
+  },
+  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/fre/catalog.search#/metadata/{{id}}",
+  "noData": "aucune valeur"
 }
