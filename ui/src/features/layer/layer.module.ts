@@ -1,7 +1,3 @@
-import './catalog/layer-catalog.element';
-import './catalog/layer-catalog-category.element';
-import './catalog/layer-catalog-item.element';
-
 import './display/layer-display-list.element';
 import './display/layer-display-list-item.element';
 

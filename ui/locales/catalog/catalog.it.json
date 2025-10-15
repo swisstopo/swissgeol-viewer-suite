@@ -4,6 +4,15 @@
     "Upload": "Upload",
     "Options": "Impostazioni"
   },
+  "display": {
+    "background": "Sfondo",
+    "opacity": "Opacità",
+    "legend": "Leggenda",
+    "download": "Scaricare / Scala",
+    "filter": "Aprire il filtro",
+    "timeTravel": "Viaggio nel tempo",
+    "remove": "Rimuovere"
+  },
   "exaggeration": {
     "title": "Esagerazione verticale",
     "show": "Mostra l'esagerazione",
@@ -22,5 +31,10 @@
       "confirm": "Ajouter"
     }
   },
-  "add_content_from_cesium_ion": "Aggiunta di contenuti da cesium ion"
+  "add_content_from_cesium_ion": "Aggiunta di contenuti da cesium ion",
+  "tiffBandsWindow": {
+    "title": "{{ layer }} - Bande",
+    "open": "Visualizzare le bande",
+    "legend": "Legenda"
+  }
 }
