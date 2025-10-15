@@ -61,7 +61,7 @@ export class LayerInfoService extends BaseService {
     super();
 
     MainStore.viewer
-      .pipe(withLatestFrom(this.inject(LayerService)))
+      .pipe(withLatestFrom(LayerService.inject()))
       .subscribe(([viewer, layerService]) => {
         if (viewer === null) {
           return;

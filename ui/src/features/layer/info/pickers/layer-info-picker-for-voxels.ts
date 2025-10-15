@@ -30,6 +30,9 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
     const windowPosition = this.viewer.scene.cartesianToCanvasCoordinates(
       pick.cartesian,
     );
+    if (windowPosition === undefined) {
+      return [];
+    }
 
     const primitive = await (this.layer as LayerConfig).promise;
 
