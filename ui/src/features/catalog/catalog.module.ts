@@ -1,3 +1,7 @@
+import './display/catalog-display-legend.element';
+import './display/catalog-display-list.element';
+import './display/catalog-display-list-item.element';
+
 import './tree/catalog-tree.element';
 import './tree/catalog-tree-group.element';
 import './tree/catalog-tree-layer.element';

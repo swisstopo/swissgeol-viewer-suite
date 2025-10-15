@@ -43,7 +43,7 @@ export interface BaseLayer extends Model {
 
   /**
    * Whether the layer is currently visible on the viewer's map.
-   * This value being `false` equates an {@link BaseLayer.opacity opacity} of 0.
+   * This value will always be `false` when {@link BaseLayer.opacity opacity} is 0.
    *
    * Note that "visibility" does not indicate the layer being active or not (i.e. selected by the user),
    * although inactive layers generally have a visibility of `false.

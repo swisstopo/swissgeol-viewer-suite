@@ -6,14 +6,6 @@
     "title": "Info",
     "zoomToObject": "Auf Objekt zoomen"
   },
-  "geoTIFF": {
-    "bandsWindow": {
-      "title": "{{ layer }} - Bänder",
-      "open": "Bänder anzeigen",
-      "legend": "Legende"
-    },
-    "noData": "kein Wert"
-  },
   "swissBEDROCK": {
     "title": "swissBEDROCK",
     "bands": {
@@ -40,5 +32,23 @@
       "symbol": "m.ü.M"
     }
   },
-  "groups": {}
+  "layers": {
+
+  },
+  "groups": {
+    "grp_1786_label": "Karten, Profile & Modelle",
+    "grp_1787_label": "Geologische Karten",
+    "grp_1793_label": "Thematische Karten",
+    "grp_15174_label": "Historische Karten",
+    "grp_1799_label": "Blatteinteilungen",
+    "grp_15143_label": "Profile",
+    "grp_1855_label": "3D-Modelle",
+    "grp_1802_label": "Bohrdaten",
+    "grp_1811_label": "Geophysik",
+    "grp_1812_label": "Erdschwerefeld",
+    "grp_1818_label": "Erdmagnetfeld",
+    "grp_15070_label": "Geoenergie"
+  },
+  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/{{id}}",
+  "noData": "kein Wert"
 }
