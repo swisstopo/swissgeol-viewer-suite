@@ -16,6 +16,8 @@ export type AnyBaseServiceType<T extends BaseService = BaseService> =
   typeof BaseService & (new () => T);
 
 export abstract class BaseService {
+  private static host: LitElement | null = null;
+
   private static readonly bufferedInjections: Array<
     (element: LitElement) => void
   > = [];
@@ -37,15 +39,21 @@ export abstract class BaseService {
     return context;
   }
 
-  protected inject<T>(context: Context<unknown, T>): Subject<T>;
+  static inject<T extends BaseService>(this: AnyBaseServiceType<T>): Subject<T>;
 
-  protected inject<T extends BaseService>(
+  static inject<T>(context: Context<unknown, T>): Subject<T>;
+
+  static inject<T extends BaseService>(
     service: AnyBaseServiceType<T>,
   ): Subject<T>;
 
-  protected inject<T>(
-    serviceOrContext: AnyBaseServiceType | Context<unknown, T>,
+  static inject<T>(
+    serviceOrContext?: AnyBaseServiceType | Context<unknown, T>,
   ): Subject<T> {
+    if (serviceOrContext == null) {
+      return BaseService.inject(this as any);
+    }
+
     const subject = new Subject<T>();
     const context: Context<unknown, T> | ServiceContext<BaseService> =
       typeof serviceOrContext === 'object' &&
@@ -53,7 +61,7 @@ export abstract class BaseService {
       serviceOrContext.prototype instanceof BaseService
         ? (serviceOrContext as unknown as AnyBaseServiceType).context()
         : (serviceOrContext as Context<unknown, T>);
-    BaseService.bufferedInjections.push((host) => {
+    BaseService.injectHostWhenReady((host) => {
       new ContextConsumer(host, {
         context,
         callback: (instance) => {
@@ -64,16 +72,31 @@ export abstract class BaseService {
     return subject;
   }
 
-  protected onReady(callback: () => void): void {
-    BaseService.initializers.push(callback);
+  static onReady(callback: () => void): void {
+    if (this.host === null) {
+      BaseService.initializers.push(callback);
+      return;
+    }
+    callback();
   }
 
   static initializeWith(host: LitElement): void {
+    this.host = host;
     for (const injection of BaseService.bufferedInjections) {
       injection(host);
     }
     for (const initialize of BaseService.initializers) {
       initialize();
     }
+  }
+
+  private static injectHostWhenReady(
+    inject: (element: LitElement) => void,
+  ): void {
+    if (this.host === null) {
+      BaseService.bufferedInjections.push(inject);
+      return;
+    }
+    inject(this.host);
   }
 }

@@ -674,14 +674,6 @@ export class NgmDashboard extends LitElementI18n {
               .length})
           </div>
         </div>
-        <div
-          class="ngm-close-icon"
-          @click=${() => {
-            this.runIfNotEditCreate(() =>
-              this.dispatchEvent(new CustomEvent('close')),
-            );
-          }}
-        ></div>
       </div>
       <div class="ngm-panel-content">
         <div class="ngm-toast-placeholder"></div>

@@ -15,7 +15,7 @@ NODE_MARKER_FILE="node_modules/.deps-node_$(node -v)"
 current_hash="$(cat $LOCK_FILES 2>/dev/null | sha256sum | awk '{print $1}')"
 stored_hash="$(cat "$HASH_FILE" 2>/dev/null || true)"
 
-if [ ! -d node_modules ] || [ "$current_hash" != "$stored_hash" ] || [ ! -f "$NODE_MARKER_FILE" ]; then
+if [[ ! -d node_modules || "$current_hash" != "$stored_hash" || ! -f "$NODE_MARKER_FILE" ]]; then
   # Reinstall if the lock files or node version changed, or if there simply is no `node_modules` directory.
   echo "Dependencies out of date -> running install"
   npm ci
