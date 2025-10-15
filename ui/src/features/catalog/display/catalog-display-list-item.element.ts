@@ -8,7 +8,7 @@ import {
   tooltip,
 } from 'src/features/core';
 import { LayerService } from 'src/features/layer/new/layer.service';
-import { Layer, LayerType } from 'src/features/layer';
+import { getLayerLabel, Layer, LayerType } from 'src/features/layer';
 import { css, html } from 'lit';
 import { Id } from 'src/models/id.model';
 import i18next from 'i18next';
@@ -37,6 +37,7 @@ export class CatalogDisplayList extends CoreElement {
 
   private readonly windows = {
     legend: null as CoreWindow | null,
+    times: null as CoreWindow | null,
     tiffFilter: null as CoreWindow | null,
   } satisfies Record<string, unknown>;
 
@@ -85,18 +86,6 @@ export class CatalogDisplayList extends CoreElement {
     this.layerService.deactivate(this.layer.id);
   };
 
-  private readonly openDimensionPicker = (): void => {
-    this.dispatchEvent(
-      new CustomEvent('showWmtsDatePicker', {
-        composed: true,
-        bubbles: true,
-        detail: {
-          config: this.layer,
-        },
-      }),
-    );
-  };
-
   private readonly openVoxelFilter = (): void => {
     this.dispatchEvent(
       new CustomEvent('showVoxelFilter', {
@@ -124,23 +113,31 @@ export class CatalogDisplayList extends CoreElement {
     });
   }
 
-  private readonly openTiffFilter = (): void =>
-    this.openWindow('tiffFilter', {
-      title: () =>
-        i18next.t('catalog:tiffBandsWindow.title', { layer: this.title }),
+  private readonly openLegend = (): void =>
+    this.openWindow('legend', {
+      title: () => getLayerLabel(this.layer),
       body: () => html`
-        <ngm-layer-tiff-bands .layer="${this.layer}"></ngm-layer-tiff-bands>
+        <ngm-catalog-display-legend
+          .layerId=${this.layer.id}
+        ></ngm-catalog-display-legend>
       `,
     });
 
-  private readonly openLegend = (): void =>
-    this.openWindow('legend', {
-      title: () =>
-        this.layer.label ?? i18next.t(`layers:layer.${this.layer.id}`),
+  private readonly openTimes = (): void =>
+    this.openWindow('times', {
+      title: () => getLayerLabel(this.layer),
       body: () => html`
-        <ngm-catalog-display-legend
-          .layer=${this.layer}
-        ></ngm-catalog-display-legend>
+        <ngm-catalog-display-times
+          .layerId=${this.layer.id}
+        ></ngm-catalog-display-times>
+      `,
+    });
+
+  private readonly openTiffFilter = (): void =>
+    this.openWindow('tiffFilter', {
+      title: () => getLayerLabel(this.layer),
+      body: () => html`
+        <ngm-layer-tiff-bands .layer="${this.layer}"></ngm-layer-tiff-bands>
       `,
     });
 
@@ -165,13 +162,11 @@ export class CatalogDisplayList extends CoreElement {
         ></ngm-core-icon>
       </ngm-core-button>
 
-      <span class="title">
-        ${this.layer.label ?? i18next.t(`layers:layers.${this.layer.id}`)}
-      </span>
+      <span class="title">${getLayerLabel(this.layer)}</span>
 
       <div class="suffix">
         ${when(
-          this.layer.type === LayerType.Background,
+          this.layer.type === 'Background',
           () => html`
             <span
               class="label ${classMap({
@@ -283,13 +278,9 @@ export class CatalogDisplayList extends CoreElement {
           `
         : ''}
       ${when(
-        this.layer.type === LayerType.Swisstopo &&
-          this.layer.dimension !== null,
+        this.layer.type === LayerType.Swisstopo && this.layer.steps !== null,
         () => html`
-          <ngm-core-dropdown-item
-            role="button"
-            @click="${this.openDimensionPicker}"
-          >
+          <ngm-core-dropdown-item role="button" @click="${this.openTimes}">
             <ngm-core-icon icon="turnPage"></ngm-core-icon>
             ${i18next.t('catalog:display.timeTravel')}
           </ngm-core-dropdown-item>

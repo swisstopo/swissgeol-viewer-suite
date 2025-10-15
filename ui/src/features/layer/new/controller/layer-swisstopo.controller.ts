@@ -44,6 +44,7 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
     this.watch(this.layer.maxLevel);
     this.watch(this.layer.credit);
     this.watch(this.layer.format);
+    this.watch(this.layer.times?.current);
 
     // Apply opacity to the Cesium layer.
     this.watch(this.layer.opacity, (opacity) => {
@@ -162,7 +163,7 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
       customTags: {
         layer: () => this.layer.id,
         format: () => this.layer.format.split('/')[1],
-        timestamp: () => this.layer.dimension?.current ?? 'current',
+        timestamp: () => this.layer.times?.current ?? 'current',
       },
     });
   }

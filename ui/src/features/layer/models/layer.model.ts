@@ -4,6 +4,7 @@ import { SwisstopoLayer, TiffLayer } from 'src/features/layer';
 import { Tiles3dLayer } from 'src/features/layer/models/layer-tiles3d.model';
 import { VoxelLayer } from 'src/features/layer/models/layer-voxel.model';
 import { TranslatedString } from 'src/models/translated-string.model';
+import i18next from 'i18next';
 
 export type Layer = SwisstopoLayer | Tiles3dLayer | VoxelLayer | TiffLayer;
 
@@ -78,3 +79,6 @@ export enum LayerType {
   Voxel = 'Voxel',
   Tiff = 'Tiff',
 }
+
+export const getLayerLabel = (layer: Layer): string =>
+  layer.label ?? i18next.t(`layers:layer.${layer.id}`);

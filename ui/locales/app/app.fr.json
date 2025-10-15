@@ -57,7 +57,6 @@
   "dtd_add_ion_asset_btn": "Ajouter",
   "dtd_ion_token_info": "Cesium ion donne accès à des contenus tels que les images satellites Bing Maps ou Cesium OSM Buildings. Ces données peuvent être combinées avec vos propres géodonnées 3D.",
   "dtd_aerial_map_label": "Carte aérienne",
-  "dtd_all_label": "Tous",
   "dtd_asset_exists_info": "Ensemble de données déjà ajouté",
   "dtd_asset_added": "Données ajoutées",
   "dtd_displayed_data_label": "Données affichées",

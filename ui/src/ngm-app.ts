@@ -12,7 +12,7 @@ import './cesium-toolbar';
 import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
-import './elements/ngm-wmts-date-picker';
+import '@geoblocks/cesium-view-cube';
 import './elements/ngm-map-chooser';
 
 import 'src/features/core/core.module';
@@ -21,7 +21,6 @@ import 'src/features/controls/controls.module';
 import 'src/features/layout/layout.module';
 import 'src/features/navigation/navigation.module';
 import 'src/features/session/session.module';
-import 'src/features/ogc/ogc.module';
 
 import { DEFAULT_VIEW } from './constants';
 
@@ -49,14 +48,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { customElement, query, state } from 'lit/decorators.js';
 import { showSnackbarInfo } from './notifications';
 import type { NgmSlowLoading } from './elements/ngm-slow-loading';
-import {
-  Event,
-  FrameRateMonitor,
-  Globe,
-  ImageryLayer,
-  NearFarScalar,
-  Viewer,
-} from 'cesium';
+import { Event, FrameRateMonitor, Globe, ImageryLayer, Viewer } from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type { SideBar } from './elements/ngm-side-bar';
@@ -133,9 +125,6 @@ export class NgmApp extends LitElementI18n {
 
   @query('ngm-voxel-simple-filter')
   accessor voxelSimpleFilterElement;
-
-  @query('ngm-wmts-date-picker')
-  accessor wmtsDatePickerElement;
 
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
@@ -244,10 +233,6 @@ export class NgmApp extends LitElementI18n {
     } else {
       this.voxelSimpleFilterElement.config = config;
     }
-  }
-
-  onShowWmtsDatePicker(event: CustomEvent) {
-    this.wmtsDatePickerElement.config = event.detail.config;
   }
 
   onStep2Finished(viewer) {
@@ -414,7 +399,10 @@ export class NgmApp extends LitElementI18n {
           );
           activeLayers.push(layer);
         }
-        this.updateBaseMapTranslucency(background.opacity);
+        this.updateBaseMapTranslucency(
+          background.opacity,
+          background.hasAlphaChannel,
+        );
         syncMapParam(background.id);
         Promise.all(readyPromises).then(() => this.requestViewerRender());
       });
@@ -431,7 +419,10 @@ export class NgmApp extends LitElementI18n {
           syncMapOpacityParam(background.opacity);
         }, 50) as unknown as number;
 
-        this.updateBaseMapTranslucency(background.opacity);
+        this.updateBaseMapTranslucency(
+          background.opacity,
+          background.hasAlphaChannel,
+        );
         this.requestViewerRender();
       });
 
@@ -451,14 +442,17 @@ export class NgmApp extends LitElementI18n {
       .pipe(distinctUntilKeyChanged('isVisible'))
       .subscribe((background) => {
         if (background.isVisible) {
-          this.updateBaseMapTranslucency(background.opacity);
+          this.updateBaseMapTranslucency(
+            background.opacity,
+            background.hasAlphaChannel,
+          );
           syncMapParam(background.id);
 
           if (isVisible !== background.isVisible) {
             setLayerVisibility(true);
           }
         } else {
-          this.updateBaseMapTranslucency(0);
+          this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
           syncMapParam('empty_map');
 
           if (isVisible !== background.isVisible) {
@@ -535,19 +529,18 @@ export class NgmApp extends LitElementI18n {
     super.updated(changedProperties);
   }
 
-  private updateBaseMapTranslucency(opacity: number): void {
+  private updateBaseMapTranslucency(
+    opacity: number,
+    hasAlphaChannel: boolean,
+  ): void {
     const { translucency } = this.viewer!.scene.globe;
+    translucency.frontFaceAlpha = opacity;
     if (opacity === 1) {
-      translucency.enabled = false;
-      translucency.frontFaceAlphaByDistance = undefined as any;
+      translucency.enabled = hasAlphaChannel;
+      translucency.backFaceAlpha = 1;
     } else {
+      translucency.backFaceAlpha = 0;
       translucency.enabled = true;
-      translucency.frontFaceAlphaByDistance = new NearFarScalar(
-        1.0,
-        opacity, // near, alpha
-        1.0e7,
-        opacity, // far, alpha
-      );
     }
   }
 
@@ -707,18 +700,18 @@ export class NgmApp extends LitElementI18n {
             <ngm-coordinate-popup
               class="ngm-floating-window"
             ></ngm-coordinate-popup>
-            <ngm-wmts-date-picker
-              class="ngm-floating-window"
-            ></ngm-wmts-date-picker>
             <div class="on-map-menu">
+              <cesium-view-cube
+                ?hidden=${this.mobileView || this.showAxisOnMap}
+                .scene="${this.viewer?.scene}"
+              ></cesium-view-cube>
+
               <ngm-map-chooser
                 .hidden=${this.mobileView}
                 class="ngm-bg-chooser-map"
                 .initiallyOpened=${false}
               ></ngm-map-chooser>
             </div>
-
-            <ngm-ogc-queue></ngm-ogc-queue>
           </div>
           ${this.showCesiumToolbar
             ? html` <cesium-toolbar></cesium-toolbar>`
