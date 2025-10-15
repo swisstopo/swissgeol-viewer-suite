@@ -22,7 +22,8 @@
     "e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts",
     "cypress:run": "cypress run --config-file cypress/cypress.config.ts",
-    "analyze": "cross-env ANALYZE=true npx analyze"
+    "analyze": "cross-env ANALYZE=true npx analyze",
+    "config:validate": "docker compose run --no-deps api sh -c \"cargo run -- --validate-only\""
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.768.0",

@@ -1,14 +1,16 @@
-FROM rust:1.82 AS build
+FROM rust:1.90 AS build
 
 ARG APP_VERSION
 ENV APP_VERSION=${APP_VERSION}
+
+ENV COLORMAP_DIR_PATH="/app/colormaps"
 
 RUN apt update && apt install -y musl-tools musl-dev
 RUN rustup target add x86_64-unknown-linux-musl
 
 WORKDIR /app
 
-COPY . .
+COPY ./api .
 
 RUN cargo build --target x86_64-unknown-linux-musl --release --quiet
 
@@ -18,31 +20,16 @@ FROM alpine:3.17
 
 ARG APP_VERSION
 ENV APP_VERSION=${APP_VERSION}
+ENV COLORMAP_DIR_PATH="/app/colormaps"
+ENV LAYERS_FILE=/configs/layers/layers.json5
 
 RUN apk add --no-cache util-linux
 
-## Import from builder.
-#COPY --from=builder /etc/passwd /etc/passwd
-#COPY --from=builder /etc/group /etc/group
-
 WORKDIR /app
 
-# Create appuser
-#ENV USER=appuser
-#ENV UID=10001
-
-#RUN adduser \
-#    --disabled-password \
-#    --gecos "" \
-#    --home "/nonexistent" \
-#    --shell "/sbin/nologin" \
-#    --no-create-home \
-#    --uid "${UID}" \
-#    "${USER}"
-
 COPY --from=build /app/target/x86_64-unknown-linux-musl/release/api ./
+COPY ./titiler/colormaps /app/colormaps
 
 EXPOSE 3000
 
-#USER 10001
 CMD ["/app/api"]

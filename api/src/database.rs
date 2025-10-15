@@ -1,6 +1,6 @@
 use sqlx::{
-    postgres::{PgConnectOptions, PgPoolOptions, PgSslMode},
     Connection, Executor, PgConnection, PgPool,
+    postgres::{PgConnectOptions, PgPoolOptions, PgSslMode},
 };
 
 #[derive(clap::Parser)]

@@ -8,4 +8,4 @@ fi
 sqlx database create
 sqlx migrate run
 
-cargo watch --poll --shell "cargo run"
+cargo watch --poll -w src -w /configs --shell "cargo run"

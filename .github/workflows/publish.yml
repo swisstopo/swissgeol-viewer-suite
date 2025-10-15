@@ -58,7 +58,6 @@ jobs:
           VERSION: ${{ needs.determine-version.outputs.version }}
           DOCKERFILE: ./api/Dockerfile
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONTEXT: "./api"
 
   build-and-push-ui:
     name: "build and push ui"

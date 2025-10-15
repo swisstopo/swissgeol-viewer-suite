@@ -1,14 +1,14 @@
 use axum::{
+    Router,
     extract::{DefaultBodyLimit, Extension},
     http::{HeaderValue, Method},
     routing::get,
     routing::post,
     routing::put,
-    Router,
 };
 use clap::Parser;
 use hyper::header::{
-    HeaderName, ACCEPT, AUTHORIZATION, CONTENT_SECURITY_POLICY, CONTENT_TYPE, REFERRER_POLICY,
+    ACCEPT, AUTHORIZATION, CONTENT_SECURITY_POLICY, CONTENT_TYPE, HeaderName, REFERRER_POLICY,
     STRICT_TRANSPORT_SECURITY, X_CONTENT_TYPE_OPTIONS, X_FRAME_OPTIONS,
 };
 use sqlx::PgPool;
@@ -20,10 +20,15 @@ pub use error::Error;
 
 mod auth;
 mod config;
+mod data;
 mod database;
 mod error;
 mod handlers;
 mod s3;
+mod utils;
+
+mod layers;
+pub use layers::*;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -71,6 +76,7 @@ pub async fn app(pool: PgPool) -> Router {
 
     Router::new()
         .route("/api/client-config", get(handlers::get_client_config))
+        .route("/api/layers", get(handlers::get_layer_config))
         .route("/api/health_check", get(handlers::health_check))
         .route(
             "/api/projects",

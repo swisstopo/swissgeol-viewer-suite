@@ -1,0 +1,117 @@
+{
+  include:[
+    "special/swissBEDROCK",
+    "special/voxels",
+  ],
+  layers: [
+    // Layer - GeoCover - Vector Datasets - WMTS
+    {
+      type: "Swisstopo",
+      id: "ch.swisstopo.geologie-geocover",
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
+      legend: 'id',
+    },
+
+    // Layer - Geological Atlas GA25 - WMTS
+    {
+      type: "Swisstopo",
+      id: "ch.swisstopo.geologie-geologischer_atlas",
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '258814a5-8fcf-47df-b0c6-160602b0078c',
+      legend: 'id'
+    },
+
+    // Layer - Geological profiles GA25 - WMTS
+    {
+      type: "Swisstopo",
+      id: "ch.swisstopo.geologie-geologischer_atlas_profile",
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '345d02a3-9628-46d7-9e57-e0ab1d9faf8a',
+      legend: 'id'
+    },
+
+    // Layer - Cross sections GeoMol
+    {
+      type: "Tiles3d",
+      id: "cross_section_geomol",
+      source: {
+        type: "CesiumIon",
+        asset_id: 452436,
+      },
+      geocat_id: "2cec200c-a47b-4934-8dc1-62c19c39a3dd",
+      download_url: "https://download.swissgeol.ch/geomol/GeoMol-Cross-Sections.zip",
+    },
+
+    // Layer - Cross sections GeoMol
+    {
+      type: "Tiles3d",
+      id: "cross_section_geoquat",
+      source: {
+        type: "CesiumIon",
+        asset_id: 472446,
+      },
+      order_of_properties: [
+        "CS-AAT-Cross-section",
+        "CS-AAT-Lithostratigraphy",
+        "CS-AAT-Type",
+        "CS-AAT-Legend",
+        "CS-AAT-Report",
+      ],
+      geocat_id: "ab34eb52-30c4-4b69-840b-ef41f47f9e9a",
+    }
+  ],
+
+  groups: [
+    // Topic - Maps, cross-sections & models
+    {
+      id: "grp_1786_label",
+      children: [
+
+        // Topic - Geological maps
+        {
+          id: "grp_1787_label",
+          children: [
+            "ch.swisstopo.geologie-geocover",
+            "ch.swisstopo.geologie-geologischer_atlas"
+          ]
+        },
+
+        // Topic - Cross-sections
+        {
+          id: "grp_15143_label",
+          children: [
+            "ch.swisstopo.geologie-geologischer_atlas_profile",
+            "cross_section_geomol",
+            "cross_section_geoquat",
+          ]
+        },
+
+        // Topic - 3D models
+        {
+          id: 'grp_1855_label',
+          children: [
+            // Sub-Group II "Unconsolidated rocks"
+            {
+              id: 'lyr_unconsolidated_rocks_label',
+              children: [
+                'voxel_aaretal_litho'
+              ]
+            },
+
+            // Top bedrock
+            {
+              id: 'lyr_top_bedrock_surface_label',
+              children: [
+                "ch.swisstopo.swissbedrock-geotiff"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+  ]
+}

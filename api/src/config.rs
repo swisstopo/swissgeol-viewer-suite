@@ -3,6 +3,12 @@ use serde::Serialize;
 
 #[derive(clap::Parser)]
 pub struct Config {
+    #[clap(long = "validate-only")]
+    pub should_only_validate: bool,
+
+    #[clap(long, env)]
+    pub layers_file: String,
+
     #[clap(flatten)]
     pub database: Database,
 

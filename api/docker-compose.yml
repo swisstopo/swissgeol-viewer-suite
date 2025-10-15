@@ -1,0 +1,59 @@
+services:
+  api:
+    image: swissgeol-viewer-suite/api:local
+    build:
+      context: ..
+      dockerfile: api/DockerfileDev
+    init: true
+    ports:
+      - "8480:3000"
+    volumes:
+      - ./:/app
+      - ../layers/:/configs/layers/:ro
+      - ../titiler/colormaps/:/app/colormaps/:ro
+      - api.cargo:/usr/local/cargo
+      - api.target:/app/target
+    depends_on:
+      - db
+      - minio
+
+  db:
+    image: camptocamp/postgres:14-postgis-3
+    platform: linux/amd64
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address :9001
+    init: true
+    volumes:
+      - minio:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_BROWSER: "on"
+      MINIO_SITE_REGION: ${S3_AWS_REGION}
+      MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+    env_file:
+      - .env
+      - ../.env
+
+volumes:
+  db:
+  minio:
+  api.cargo:
+  api.target:
