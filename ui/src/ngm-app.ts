@@ -12,7 +12,6 @@ import './cesium-toolbar';
 import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
-import './elements/ngm-wmts-date-picker';
 import '@geoblocks/cesium-view-cube';
 import './elements/ngm-map-chooser';
 
@@ -127,9 +126,6 @@ export class NgmApp extends LitElementI18n {
   @query('ngm-voxel-simple-filter')
   accessor voxelSimpleFilterElement;
 
-  @query('ngm-wmts-date-picker')
-  accessor wmtsDatePickerElement;
-
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
 
@@ -237,10 +233,6 @@ export class NgmApp extends LitElementI18n {
     } else {
       this.voxelSimpleFilterElement.config = config;
     }
-  }
-
-  onShowWmtsDatePicker(event: CustomEvent) {
-    this.wmtsDatePickerElement.config = event.detail.config;
   }
 
   onStep2Finished(viewer) {
@@ -708,9 +700,6 @@ export class NgmApp extends LitElementI18n {
             <ngm-coordinate-popup
               class="ngm-floating-window"
             ></ngm-coordinate-popup>
-            <ngm-wmts-date-picker
-              class="ngm-floating-window"
-            ></ngm-wmts-date-picker>
             <div class="on-map-menu">
               <cesium-view-cube
                 ?hidden=${this.mobileView || this.showAxisOnMap}

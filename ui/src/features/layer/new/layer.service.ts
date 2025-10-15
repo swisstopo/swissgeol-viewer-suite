@@ -27,7 +27,7 @@ export class LayerService extends BaseService {
 
   private groups: IdMapping<LayerGroup, GroupEntry> = new Map();
 
-  private _rootGroupIds$ = new BehaviorSubject<IdArray<Layer>>([]);
+  private _rootGroupIds$ = new BehaviorSubject<IdArray<LayerGroup>>([]);
 
   private _activeLayerIds$ = new BehaviorSubject<IdArray<Layer>>([]);
 
@@ -66,7 +66,7 @@ export class LayerService extends BaseService {
       const fields = {
         format: layer.format,
         credit: layer.credit,
-        dimension: layer.dimension,
+        times: layer.times,
       } satisfies Partial<SwisstopoLayer>;
 
       const updatedState: SwisstopoLayer = {
@@ -212,15 +212,15 @@ export class LayerService extends BaseService {
     return entry.nodes;
   }
 
-  layer$(id: Id<Layer>): Observable<Layer> {
+  layer$<T extends Layer>(id: Id<T>): Observable<T> {
     const entry = this.layers.get(id);
     if (entry === undefined) {
       throw new Error(`Unknown layer: ${id}`);
     }
-    return entry.state$.asObservable();
+    return entry.state$.asObservable() as Observable<T>;
   }
 
-  get activeLayerIds$(): Observable<ReadonlyArray<Id<LayerGroup>>> {
+  get activeLayerIds$(): Observable<ReadonlyArray<Id<Layer>>> {
     return this._activeLayerIds$.asObservable();
   }
 
@@ -231,6 +231,8 @@ export class LayerService extends BaseService {
   isLayerActive$(id: Id<Layer>): Observable<boolean> {
     return this._activeLayerIds$.pipe(map((layerIds) => layerIds.includes(id)));
   }
+
+  controller(id: Id<SwisstopoLayer>): SwisstopoLayerController | null;
 
   controller(id: Id<Layer>): LayerController | null {
     return this.layers.get(id)?.controller ?? null;
@@ -281,8 +283,8 @@ export class LayerService extends BaseService {
     this.viewer.scene.requestRender();
   }
 
-  update(id: Id<Layer>, data: Partial<LayerUpdate>): void {
-    const entry = this.layers.get(id);
+  update<T extends Layer>(id: Id<T>, data: LayerUpdate<T>): void {
+    const entry = this.layers.get(id as unknown as Id<Layer>);
     if (entry === undefined) {
       throw new Error(`Unknown layer: ${id}`);
     }
@@ -330,7 +332,9 @@ export class LayerService extends BaseService {
   }
 }
 
-export type LayerUpdate = Omit<Layer, 'type' | 'id' | 'canUpdateOpacity'>;
+export type LayerUpdate<T> = Partial<
+  Omit<T, 'type' | 'id' | 'canUpdateOpacity'>
+>;
 
 export type TreeNode =
   | { type: TreeNodeType.Group; id: Id<LayerGroup> }

@@ -619,10 +619,6 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   opacity: 0.5;
 }
 
-ngm-wmts-date-picker {
-  width: 250px;
-}
-
 .ngm-date-picker {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

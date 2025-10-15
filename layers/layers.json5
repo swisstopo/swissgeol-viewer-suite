@@ -1,9 +1,11 @@
 {
   include: [
-    "01-maps_and_models"
+    '01-maps_and_models',
+    '10-background_data',
   ],
 
   groups: [
-    { id: "grp_1786_label" },
+    { id: 'grp_1786_label' },
+    { id: 'grp_1890_label' },
   ]
 }

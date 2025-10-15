@@ -3,7 +3,7 @@ import { language$ } from 'src/i18n';
 import {
   LayerType,
   SwisstopoLayer,
-  SwisstopoLayerDimension,
+  SwisstopoLayerTimes,
   SwisstopoLayerSource,
 } from 'src/features/layer';
 import i18next from 'i18next';
@@ -106,7 +106,7 @@ export class WmtsService extends BaseService {
         legend: null,
         format,
         credit: layerName.split('.')[1],
-        dimension: this.makeDimension(defaultTimestamp, timestamps),
+        times: this.makeTimes(defaultTimestamp, timestamps),
       });
     }
     return configs;
@@ -128,7 +128,7 @@ export class WmtsService extends BaseService {
   private parseWmtsCapabilities(xml: Document): SwisstopoLayer[] {
     const configs: SwisstopoLayer[] = [];
     const layers = xml.querySelectorAll('Layer');
-    const owsNamespace = 'https://www.opengis.net/ows/1.1';
+    const owsNamespace = 'http://www.opengis.net/ows/1.1';
     for (const layer of layers.values()) {
       const identifiers = layer.getElementsByTagNameNS(
         owsNamespace,
@@ -168,9 +168,9 @@ export class WmtsService extends BaseService {
           downloadUrl: null,
           maxLevel: tileMatrixSet == null ? null : Number(tileMatrixSet[1]),
           legend: null,
-          format: format.split('/')[1],
+          format,
           credit: layerName.split('.')[1],
-          dimension: this.makeDimension(defaultTimestamp, timestamps),
+          times: this.makeTimes(defaultTimestamp, timestamps),
         });
       }
     }
@@ -193,10 +193,10 @@ export class WmtsService extends BaseService {
     return parser.parseFromString(await res.text(), 'text/xml');
   }
 
-  private makeDimension(
+  private makeTimes(
     current: string | null,
     all: string[] | null,
-  ): SwisstopoLayerDimension | null {
+  ): SwisstopoLayerTimes | null {
     const isDefaultCurrent = current === null || current === 'current';
     const isDefaultAll =
       all === null ||

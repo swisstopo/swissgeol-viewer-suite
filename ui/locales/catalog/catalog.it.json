@@ -36,5 +36,8 @@
     "title": "{{ layer }} - Bande",
     "open": "Visualizzare le bande",
     "legend": "Legenda"
+  },
+  "timesWindow": {
+    "all": "Tutti"
   }
 }
