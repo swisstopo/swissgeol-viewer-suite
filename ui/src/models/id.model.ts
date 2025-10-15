@@ -10,8 +10,8 @@
  *
  * @typeParam T The type for which the identifier applies.
  */
-export type Id<_T> = (string | number) & {
-  readonly __id__: unique symbol;
+export type Id<T> = (string | number) & {
+  readonly __id__: T;
 };
 
 /**

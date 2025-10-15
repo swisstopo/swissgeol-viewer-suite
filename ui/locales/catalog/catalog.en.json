@@ -36,5 +36,8 @@
     "title": "{{ layer }} - Bands",
     "open": "Show bands",
     "legend": "Legend"
+  },
+  "timesWindow": {
+    "all": "All"
   }
 }

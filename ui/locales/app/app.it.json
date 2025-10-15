@@ -62,7 +62,6 @@
   "dtd_add_ion_asset_btn": "Aggiungi",
   "dtd_ion_token_info": "Aggiungere geodati 3D tramite la piattaforma Cesium ion. Cesium ion offre l'accesso a contenuti come le immagini satellitari di Bing Maps o gli edifici OSM di Cesium. Questi dati possono essere combinati con i propri geodati 3D.",
   "dtd_aerial_map_label": "Foto aerea",
-  "dtd_all_label": "Tutti",
   "dtd_asset_exists_info": "Set di dati già aggiunto",
   "dtd_asset_added": "Dati aggiunti",
   "dtd_displayed_data_label": "Dati mostrati",

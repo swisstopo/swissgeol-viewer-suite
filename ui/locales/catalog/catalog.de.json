@@ -36,5 +36,8 @@
     "title": "{{ layer }} - Bänder",
     "open": "Bänder anzeigen",
     "legend": "Legende"
+  },
+  "timesWindow": {
+    "all": "Alle"
   }
 }

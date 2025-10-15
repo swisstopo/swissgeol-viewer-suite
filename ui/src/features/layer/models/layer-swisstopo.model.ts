@@ -24,25 +24,29 @@ export interface SwisstopoLayer extends BaseLayer {
   maxLevel: number | null;
 
   /**
-   * The dimension contains the time travel variants available on this layer.
-   * For layers with only a single representation, this is `null`.
+   * The time steps available on this layer.
+   * For layers with only a single time, this is `null`.
    */
-  dimension: SwisstopoLayerDimension | null;
+  times: SwisstopoLayerTimes | null;
 
-  // TODO find out what this is
+  /**
+   * The mime type of the WM(T)S layer.
+   * In most cases, this is `image/png`.
+   */
   format: string;
 
+  // TODO check if we need this
   credit: string;
 }
 
-export interface SwisstopoLayerDimension {
+export interface SwisstopoLayerTimes {
   /**
-   * The currently selected dimension.
+   * The currently selected time.
    */
   current: string;
 
   /**
-   * The dimensions available to the layer.
+   * The times available to the layer.
    */
   all: string[];
 }

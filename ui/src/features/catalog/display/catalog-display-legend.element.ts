@@ -1,6 +1,6 @@
 import { css, html } from 'lit';
 import { until } from 'lit/directives/until.js';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -8,11 +8,30 @@ import { CoreElement } from 'src/features/core';
 import { Layer } from 'src/features/layer';
 import { choose } from 'lit/directives/choose.js';
 import { run } from 'src/utils/fn.utils';
+import { Id } from 'src/models/id.model';
+import { LayerService } from 'src/features/layer/new/layer.service';
+import { consume } from '@lit/context';
 
 @customElement('ngm-catalog-display-legend')
 export class CatalogDisplayLegend extends CoreElement {
+  @property()
+  accessor layerId!: Id<Layer>;
+
   @state()
   accessor layer!: Layer;
+
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    this.register(
+      this.layerService.layer$(this.layerId).subscribe((layer) => {
+        this.layer = layer;
+      }),
+    );
+  }
 
   render() {
     return html`
