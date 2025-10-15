@@ -131,7 +131,7 @@ export function addSwisstopoLayer(
 }
 
 const parser = new DOMParser();
-const owsNamespace = 'http://www.opengis.net/ows/1.1';
+const owsNamespace = 'https://www.opengis.net/ows/1.1';
 async function parseWMTSCapabilities(
   wmtsCapabilities: Document,
 ): Promise<SwisstopoImageryLayersConfig> {

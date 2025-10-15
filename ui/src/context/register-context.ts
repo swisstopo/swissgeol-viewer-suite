@@ -18,6 +18,9 @@ import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { LayerService } from 'src/features/layer/layer.service';
 import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
 import { SessionService } from 'src/features/session/session.service';
+import { LayerApiService } from 'src/features/layer/new/layer-api.service';
+import { LayerService as NewLayerService } from 'src/features/layer/new/layer.service';
+import { WmtsService } from 'src/services/wmts.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -43,13 +46,18 @@ export const registerAppContext = (
     }),
   );
 
-  contexts.push(makeProvider(ApiClient));
-  contexts.push(makeProvider(SessionService));
-  contexts.push(makeProvider(BackgroundLayerService));
-  contexts.push(makeProvider(ControlsService));
-  contexts.push(makeProvider(LayerService));
-  contexts.push(makeProvider(LayerInfoService));
-  contexts.push(makeProvider(GestureControlsService));
+  contexts.push(
+    makeProvider(ApiClient),
+    makeProvider(WmtsService),
+    makeProvider(LayerApiService),
+    makeProvider(NewLayerService),
+    makeProvider(SessionService),
+    makeProvider(BackgroundLayerService),
+    makeProvider(ControlsService),
+    makeProvider(LayerService),
+    makeProvider(LayerInfoService),
+    makeProvider(GestureControlsService),
+  );
 
   return contexts;
 };

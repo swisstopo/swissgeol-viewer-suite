@@ -3,12 +3,12 @@ ngm-share-link {
   flex-direction: column;
 }
 
-ngm-share-link > div {
+ngm-share-link > div:not(:empty) {
   margin-bottom: 13px;
 }
 
 .ngm-share-label {
-  margin-top: 12px;
+  margin-top: 0;
   color: #212529;
   font:
     normal normal bold 14px/20px Inter,

@@ -17,10 +17,11 @@ export class NgmAppBoot extends LitElement {
       if (!clientConfig) {
         throw new Error('Failed to load client config');
       }
+      registerAppContext(this, clientConfig);
       return clientConfig;
     },
-    onComplete: (clientConfig) => {
-      registerAppContext(this, clientConfig);
+    onError: (e) => {
+      console.error(e);
     },
     args: () => [],
   });
@@ -31,13 +32,13 @@ export class NgmAppBoot extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    setupI18n();
+    setupI18n().then();
   }
 
   render() {
     return this.viewerInitialization.render({
       pending: () => html`<p>Loading</p>`,
-      complete: () => html` <ngm-app></ngm-app>`,
+      complete: () => html`<ngm-app></ngm-app>`,
 
       error: (e) => html`<p>Error: ${e}</p>`,
     });
