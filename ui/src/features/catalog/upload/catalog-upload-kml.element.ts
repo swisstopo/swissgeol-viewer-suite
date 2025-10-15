@@ -2,14 +2,13 @@ import { css, html, unsafeCSS } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { LitElementI18n } from 'src/i18n';
 import { showSnackbarError, showSnackbarInfo } from 'src/notifications';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
 import { applyTransition, applyTypography } from 'src/styles/theme';
-import { CoreModal } from 'src/features/core';
+import { CoreElement, CoreModal } from 'src/features/core';
 
-@customElement('ngm-layer-upload-kml')
-export default class LayerUploadKml extends LitElementI18n {
+@customElement('ngm-catalog-upload-kml')
+export default class CatalogUploadKml extends CoreElement {
   @property({ type: Number })
   accessor maxFileSize: number | null = null;
 
@@ -27,17 +26,12 @@ export default class LayerUploadKml extends LitElementI18n {
 
   private modal: CoreModal | null = null;
 
-  constructor() {
-    super();
-
-    this.handleUpload = this.handleUpload.bind(this);
-  }
-
   firstUpdated() {
     this.initializeDropZone();
   }
 
   disconnectedCallback(): void {
+    super.disconnectedCallback();
     this.modal?.close();
   }
 
@@ -70,53 +64,55 @@ export default class LayerUploadKml extends LitElementI18n {
     this.uploadButton.addEventListener('drop', handleDrop);
   }
 
-  private handleDrop(event: DragEvent): void {
+  private readonly handleDrop = (event: DragEvent): void => {
     event.preventDefault();
     (event.target as HTMLElement).classList.remove('is-active');
     for (const file of event.dataTransfer!.files) {
       this.uploadFile(file);
     }
-  }
+  };
 
-  private handleFileSelection(e: InputEvent): void {
+  private readonly handleFileSelection = (e: InputEvent): void => {
     const file = (e.target as HTMLInputElement | null)?.files?.[0];
     this.uploadFile(file ?? null);
-  }
+  };
 
-  private uploadFile(file: File | null): void {
+  private readonly uploadFile = (file: File | null): void => {
     if (!this.validateFile(file)) {
       return;
     }
     this.modal = CoreModal.open(
       { size: 'small' },
       html`
-        <ngm-layer-upload-kml-modal
+        <ngm-catalog-upload-kml-modal
           .file="${file}"
           @confirm="${this.handleUpload}"
           @cancel="${() => this.modal?.close()}"
-        ></ngm-layer-upload-kml-modal>
+        ></ngm-catalog-upload-kml-modal>
       `,
     );
-  }
+  };
 
   private validateFile(file: File | null): boolean {
     if (file == null) {
-      showSnackbarInfo(i18next.t('dtd_no_file_to_upload_warn'));
+      showSnackbarInfo(i18next.t('catalog:upload.file_not_selected'));
       return false;
     }
     if (!file.name.toLowerCase().endsWith('.kml')) {
-      this.violation = i18next.t('dtd_file_not_kml');
+      this.violation = i18next.t('catalog:upload.file_not_kml');
       return false;
     }
     if (this.isFileTooLarge(file)) {
-      this.violation = `${i18next.t('dtd_max_size_exceeded_warn')} ${this.maxFileSize}MB`;
+      this.violation = i18next.t('catalog:upload.file_too_large', {
+        limit: `${this.maxFileSize}MB`,
+      });
       return false;
     }
     this.violation = null;
     return true;
   }
 
-  private handleUpload(e: KmlUploadEvent): void {
+  private readonly handleUpload = (e: KmlUploadEvent): void => {
     this.isLoading = true;
     try {
       this.dispatchEvent(
@@ -128,16 +124,16 @@ export default class LayerUploadKml extends LitElementI18n {
       this.fileInput.value = '';
     } catch (e) {
       console.error(e);
-      showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
+      showSnackbarError(i18next.t('catalog:upload.file_upload_error'));
     } finally {
       this.isLoading = false;
     }
-  }
+  };
 
   private isFileTooLarge(file: File): boolean {
     return (
       typeof this.maxFileSize === 'number' &&
-      !isNaN(this.maxFileSize) &&
+      !Number.isNaN(this.maxFileSize) &&
       file.size > this.maxFileSize * 1024 * 1024
     );
   }
@@ -149,10 +145,10 @@ export default class LayerUploadKml extends LitElementI18n {
         <div
           class="ui inline mini loader ${classMap({ active: this.isLoading })}"
         ></div>
-        ${i18next.t('dtd_kml_upload_button_title')}
+        ${i18next.t('catalog:upload.select_file')}
       </span>
       <span class="subtitle">
-        ${i18next.t('dtd_kml_upload_button_subtitle')}
+        ${i18next.t('catalog:upload.select_file_hint')}
       </span>
     </button>
     <input

@@ -1,12 +1,11 @@
 import { customElement, state } from 'lit/decorators.js';
-import { LitElementI18n } from 'src/i18n';
 import {
   CustomDataSource,
   DataSource,
   DataSourceCollection,
   Viewer,
 } from 'cesium';
-import MainStore from '../../store/main';
+import MainStore from 'src/store/main';
 import { css, html } from 'lit';
 import i18next from 'i18next';
 import { debounce } from 'src/utils';
@@ -15,46 +14,51 @@ import NavToolsStore from 'src/store/navTools';
 import { updateExaggerationForKmlDataSource } from 'src/cesiumutils';
 import '../core';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
+import { viewerContext } from 'src/context';
+import { consume } from '@lit/context';
+import { CoreElement, tooltip } from 'src/features/core';
 
-@customElement('ngm-layer-options')
-export class LayerOptions extends LitElementI18n {
-  @state()
-  private accessor viewer: Viewer | null | undefined;
+@customElement('ngm-catalog-settings')
+export class LayerOptions extends CoreElement {
+  @consume({ context: viewerContext })
+  accessor viewer!: Viewer;
 
   @state()
   private accessor exaggeration: number = 1;
 
   @state()
-  private accessor hideExaggeration = false;
+  private accessor isExaggerationHidden = false;
 
   private prevExaggeration: number = 1;
 
-  constructor() {
-    super();
-    MainStore.viewer.subscribe((viewer) => {
-      this.viewer = viewer;
-      this.exaggeration = this.viewer?.scene.verticalExaggeration ?? 1;
-      this.prevExaggeration = this.exaggeration;
-      this.viewer?.dataSources.dataSourceAdded.addEventListener(
-        (
-          _collection: DataSourceCollection,
-          dataSource: DataSource | CustomDataSource,
-        ) => {
-          if (MainStore.uploadedKmlNames.includes(dataSource.name)) {
-            const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
-            updateExaggerationForKmlDataSource(dataSource, exaggeration, 1);
-          }
-        },
-      );
-    });
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.exaggeration = this.viewer?.scene.verticalExaggeration ?? 1;
+    this.prevExaggeration = this.exaggeration;
+
+    const handleDataSourceAdded = (
+      _collection: DataSourceCollection,
+      dataSource: DataSource | CustomDataSource,
+    ) => {
+      if (MainStore.uploadedKmlNames.includes(dataSource.name)) {
+        const exaggeration = this.isExaggerationHidden ? 1 : this.exaggeration;
+        updateExaggerationForKmlDataSource(dataSource, exaggeration, 1);
+      }
+    };
+    this.viewer.dataSources.dataSourceAdded.addEventListener(
+      handleDataSourceAdded,
+    );
+    this.register(() =>
+      this.viewer.dataSources.dataSourceAdded.removeEventListener(
+        handleDataSourceAdded,
+      ),
+    );
   }
 
   private toggleExaggerationVisibility() {
-    if (!this.viewer) {
-      return;
-    }
-    this.hideExaggeration = !this.hideExaggeration;
-    const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
+    this.isExaggerationHidden = !this.isExaggerationHidden;
+    const exaggeration = this.isExaggerationHidden ? 1 : this.exaggeration;
     this.viewer.scene.verticalExaggeration = exaggeration;
     this.updateExaggerationForKmls();
     NavToolsStore.exaggerationChanged.next(exaggeration);
@@ -62,15 +66,15 @@ export class LayerOptions extends LitElementI18n {
   }
 
   private updateExaggerationForKmls() {
-    const exaggeration = this.hideExaggeration ? 1 : this.exaggeration;
-    MainStore.uploadedKmlNames.forEach((name) => {
+    const exaggeration = this.isExaggerationHidden ? 1 : this.exaggeration;
+    for (const name of MainStore.uploadedKmlNames) {
       const dataSource = this.viewer?.dataSources.getByName(name)[0];
       updateExaggerationForKmlDataSource(
         dataSource,
         exaggeration,
         this.prevExaggeration,
       );
-    });
+    }
     this.prevExaggeration = exaggeration;
     this.viewer?.scene.requestRender();
   }
@@ -79,7 +83,7 @@ export class LayerOptions extends LitElementI18n {
     if (this.viewer == null) {
       return;
     }
-    this.hideExaggeration = false;
+    this.isExaggerationHidden = false;
     this.exaggeration = event.detail.value;
     this.viewer.scene.verticalExaggeration = this.exaggeration;
     // workaround for billboards positioning
@@ -90,14 +94,23 @@ export class LayerOptions extends LitElementI18n {
 
   readonly render = () => html`
     <div class="group">
-      <ngm-core-icon
-        icon="${this.hideExaggeration ? 'hidden' : 'visible'}"
-        title=${this.hideExaggeration
-          ? i18next.t('dtd_show_exaggeration')
-          : i18next.t('dtd_hide_exaggeration')}
-        @click=${this.toggleExaggerationVisibility}
-      ></ngm-core-icon>
-      <label>${i18next.t('dtd_exaggeration_map')}</label>
+      <ngm-core-button
+        transparent
+        variant="tertiary"
+        shape="icon"
+        data-cy="visibility"
+        @click="${this.toggleExaggerationVisibility}"
+      >
+        <ngm-core-icon
+          icon="${this.isExaggerationHidden ? 'hidden' : 'visible'}"
+        ></ngm-core-icon>
+      </ngm-core-button>
+      ${tooltip(
+        this.isExaggerationHidden
+          ? i18next.t('catalog:exaggeration.show')
+          : i18next.t('catalog:exaggeration.hide'),
+      )}
+      <label>${i18next.t('catalog:exaggeration.title')}</label>
     </div>
     <hr />
     <div class="group">
@@ -119,6 +132,11 @@ export class LayerOptions extends LitElementI18n {
   `;
 
   static readonly styles = css`
+    :host,
+    :host * {
+      box-sizing: border-box;
+    }
+
     :host {
       display: flex;
       flex-direction: column;
@@ -127,11 +145,6 @@ export class LayerOptions extends LitElementI18n {
       box-sizing: border-box;
       border: 1px solid var(--color-border--default);
       border-radius: 4px;
-    }
-
-    ngm-core-icon {
-      padding: 6px;
-      color: var(--color-primary);
     }
 
     hr {

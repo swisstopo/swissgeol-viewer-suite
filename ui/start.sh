@@ -1,10 +1,12 @@
 #!/bin/bash
 
+set -e
+
 # Install latest dependencies.
-npm ci --no-audit
+scripts/install-dependencies.sh
 
 # Remove previous build output.
-rm -r dist/*
+rm -rf dist/*
 
 # Start the development server.
 npm run start

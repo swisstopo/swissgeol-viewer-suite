@@ -69,7 +69,7 @@ export function showSnackbarConfirmation(
       },
       {
         class: 'deny ngm-action-btn ngm-cancel-btn',
-        text: i18next.t('app_cancel_btn_label'),
+        text: i18next.t('cancel'),
       },
     ],
   });

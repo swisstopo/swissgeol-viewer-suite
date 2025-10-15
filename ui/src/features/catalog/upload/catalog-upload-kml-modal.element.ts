@@ -1,12 +1,12 @@
 import { css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { applyTypography } from 'src/styles/theme';
-import { KmlUploadEventDetail } from './layer-upload-kml.element';
+import { KmlUploadEventDetail } from './catalog-upload-kml.element';
 import i18next from 'i18next';
-import { LitElementI18n } from 'src/i18n';
+import { CoreElement } from 'src/features/core';
 
-@customElement('ngm-layer-upload-kml-modal')
-export class LayerUploadKmlModal extends LitElementI18n {
+@customElement('ngm-catalog-upload-kml-modal')
+export class CatalogUploadKmlModal extends CoreElement {
   @property({ type: File })
   accessor file: File | null = null;
 
@@ -32,7 +32,7 @@ export class LayerUploadKmlModal extends LitElementI18n {
   }
 
   render = () => html`
-    <h2>${i18next.t('dtd_upload_modal_title')}</h2>
+    <h2>${i18next.t('catalog:upload.modal.title')}</h2>
     <hr />
     <div class="file">${this.file!.name}</div>
     <hr />
@@ -41,15 +41,15 @@ export class LayerUploadKmlModal extends LitElementI18n {
         .isActive="${this.isClampEnabled}"
         @update=${() => (this.isClampEnabled = !this.isClampEnabled)}
       >
-        ${i18next.t('dtd_clamp_to_ground')}
+        ${i18next.t('catalog:upload.modal.should_clamp_to_group')}
       </ngm-core-checkbox>
     </div>
     <div class="actions">
       <ngm-core-button variant="secondary" @click="${this.cancel}">
-        ${i18next.t('app_cancel_btn_label')}
+        ${i18next.t('cancel')}
       </ngm-core-button>
       <ngm-core-button variant="primary" @click="${this.confirm}">
-        ${i18next.t('dtd_kml_add_button_label')}
+        ${i18next.t('catalog:upload.modal.confirm')}
       </ngm-core-button>
     </div>
   `;
