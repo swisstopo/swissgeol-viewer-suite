@@ -23,8 +23,8 @@ export class LayoutSidebar extends CoreElement {
     this.role = 'navigation';
 
     this.register(
-      this.layerService.activeLayerIds$.subscribe((layerIds) => {
-        this.countOfLayers = layerIds.length;
+      this.layerService.activeLayerIds$.subscribe((ids) => {
+        this.countOfLayers = ids.length;
       }),
     );
   }
