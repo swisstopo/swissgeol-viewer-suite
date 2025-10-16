@@ -1028,28 +1028,30 @@ const group_01: LayerTreeNode =
             // Sub-Group II "Unconsolidated rocks"
             label: t('lyr_unconsolidated_rocks_label'),
             children: [
-              {
-                type: LayerType.voxels3dtiles,
-                assetId: 3882543,
-                voxelDataName: 'Index',
-                voxelColors: aaretalIndexVoxelColors,
-                voxelFilter: aaretalVoxelFilter,
-                label: t('2025-10-08--ion--new'),
-                layer: '2025-10-08--ion--new',
-                opacityDisabled: true,
-                pickable: true,
-                downloadUrl:
-                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
-                geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
-              },
+              // {
+              //   type: LayerType.voxels3dtiles,
+              //   assetId: 3882543,
+              //   voxelDataName: 'Index',
+              //   voxelColors: aaretalIndexVoxelColors,
+              //   voxelFilter: aaretalVoxelFilter,
+              //   label: t('2025-10-08--ion--new'),
+              //   layer: '2025-10-08--ion--new',
+              //   opacityDisabled: true,
+              //   pickable: true,
+              //   downloadUrl:
+              //     DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
+              //   geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+              // },
+
+              // Layer "NEW Voxel-Aaretal"
               {
                 type: LayerType.voxels3dtiles,
                 assetId: 3882886,
                 voxelDataName: 'Index',
                 voxelColors: aaretalIndexVoxelColors,
                 voxelFilter: aaretalVoxelFilter,
-                label: t('2025-10-08_04--ion--new'),
-                layer: '2025-10-08_04--ion--new',
+                label: t('Aaretal-2025-10-08_04--ion--new'),
+                layer: 'Aaretal-2025-10-08_04--ion--new',
                 opacityDisabled: true,
                 pickable: true,
                 downloadUrl:
@@ -1057,38 +1059,102 @@ const group_01: LayerTreeNode =
                 geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
               },
 
+              // Layer "NEW Voxel-Birr"
               {
-                // Layer "Voxel-Aaretal"
                 type: LayerType.voxels3dtiles,
-                // url: 'http://localhost:8000/aaretal/tileset.json',
-                url: 'http://localhost:3002/layers/2025-10-08/output/tileset.json',
+                assetId: 3922953, //3920856,
                 voxelDataName: 'Index',
-                voxelColors: aaretalIndexVoxelColors,
-                voxelFilter: aaretalVoxelFilter,
-                label: t('lyr_voxel_aaretal_litho_label--1'),
-                layer: 'voxel_aaretal_litho--new1',
+                voxelColors: birrIndexVoxelColors,
+                voxelFilter: birrIndexVoxelFilter,
+                label: t('Birr-2025-10-15--ion--new'),
+                layer: 'Birr-2025-10-15--ion--new',
                 opacityDisabled: true,
                 pickable: true,
                 downloadUrl:
-                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
-                geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+                  DOWNLOAD_ROOT_VOXEL + 'egends/Vox-Birrfeld-Legende.pdf',
+                geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
               },
+
+              // Layer "NEW Voxel-Genf"
               {
-                // Layer "Voxel-Aaretal"
                 type: LayerType.voxels3dtiles,
-                // url: 'http://localhost:8000/aaretal/tileset.json',
-                url: 'http://localhost:3002/layers/2025-10-08_04/2025-10-08/output/tileset.json',
+                assetId: 3920957,
                 voxelDataName: 'Index',
-                voxelColors: aaretalIndexVoxelColors,
-                voxelFilter: aaretalVoxelFilter,
-                label: t('lyr_voxel_aaretal_litho_label--2'),
-                layer: 'voxel_aaretal_litho--new2',
+                voxelColors: genevaIndexVoxelColors,
+                voxelFilter: genevaIndexVoxelFilter,
+                label: t('Genf-2025-10-15--ion--new'),
+                layer: 'Genf-2025-10-15--ion--new',
                 opacityDisabled: true,
                 pickable: true,
                 downloadUrl:
-                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
-                geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
+                geocatId: '4a4a530f-6a2a-423d-834e-2831d70fde20',
               },
+
+              // Layer "NEW Voxel-St.Galler-Rheintal"
+              {
+                type: LayerType.voxels3dtiles,
+                assetId: 3922358,
+                voxelDataName: 'Klasse',
+                voxelColors: rheintalVoxelColors,
+                voxelFilter: rheintalVoxelFilter,
+                label: t('SG-Rheintal-2025-10-15--ion--new'),
+                layer: 'SG-Rheintal-2025-10-15--ion--new',
+                opacityDisabled: true,
+                pickable: true,
+                // downloadUrl:
+                //  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
+                geocatId: 'c12c8e4e-4c06-41c9-b705-f1dadb0654ae-8371',
+              },
+
+              // Layer "NEW Voxel-Visp"
+              {
+                type: LayerType.voxels3dtiles,
+                assetId: 3920961,
+                voxelDataName: 'Index',
+                voxelColors: vispIndexVoxelColors,
+                voxelFilter: vispIndexVoxelFilter,
+                label: t('Visp-2025-10-15--ion--new'),
+                layer: 'Visp-2025-10-15--ion--new',
+                opacityDisabled: true,
+                pickable: true,
+                downloadUrl:
+                  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
+                geocatId: 'f7847c2c-bd3a-4dda-99c7-d50453b24c3d',
+              },
+
+              // {
+              //   // Layer "Voxel-Aaretal"
+              //   type: LayerType.voxels3dtiles,
+              //   // url: 'http://localhost:8000/aaretal/tileset.json',
+              //   url: 'http://localhost:3002/layers/2025-10-08/output/tileset.json',
+              //   voxelDataName: 'Index',
+              //   voxelColors: aaretalIndexVoxelColors,
+              //   voxelFilter: aaretalVoxelFilter,
+              //   label: t('lyr_voxel_aaretal_litho_label--1'),
+              //   layer: 'voxel_aaretal_litho--new1',
+              //   opacityDisabled: true,
+              //   pickable: true,
+              //   downloadUrl:
+              //     DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
+              //   geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+              // },
+              // {
+              //   // Layer "Voxel-Aaretal"
+              //   type: LayerType.voxels3dtiles,
+              //   // url: 'http://localhost:8000/aaretal/tileset.json',
+              //   url: 'http://localhost:3002/layers/2025-10-08_04/2025-10-08/output/tileset.json',
+              //   voxelDataName: 'Index',
+              //   voxelColors: aaretalIndexVoxelColors,
+              //   voxelFilter: aaretalVoxelFilter,
+              //   label: t('lyr_voxel_aaretal_litho_label--2'),
+              //   layer: 'voxel_aaretal_litho--new2',
+              //   opacityDisabled: true,
+              //   pickable: true,
+              //   downloadUrl:
+              //     DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
+              //   geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+              // },
 
               {
                 // Layer "Voxel-Aaretal"
