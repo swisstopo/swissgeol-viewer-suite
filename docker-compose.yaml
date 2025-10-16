@@ -88,14 +88,14 @@ services:
   titiler:
     image: swissgeol-viewer-app/titiler:local
     build:
-      context: ./titiler
-      dockerfile: Dockerfile
+     context: ./titiler
+     dockerfile: Dockerfile
     ports:
-      - "8481:8000"
+     - "8481:8000"
     environment:
-      TITILER_API_DEBUG: "1"
+     TITILER_API_DEBUG: "1"
     volumes:
-      - ./titiler:/app:ro
+     - ./titiler:/app:ro
     mem_limit: 10g
     cpus: 2
 

@@ -103,6 +103,9 @@ export class LayerInfoPickerFor3dTiles implements LayerInfoPicker {
     const windowPosition = this.viewer.scene.cartesianToCanvasCoordinates(
       pick.cartesian,
     );
+    if (windowPosition === undefined) {
+      return null;
+    }
 
     const objects = this.viewer.scene.drillPick(
       windowPosition,
