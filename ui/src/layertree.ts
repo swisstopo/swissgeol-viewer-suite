@@ -1075,6 +1075,22 @@ const group_01: LayerTreeNode =
                 geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
               },
 
+              // Layer "NEW Voxel-Birr"
+              {
+                type: LayerType.voxels3dtiles,
+                assetId: 3925522,
+                voxelDataName: 'Index',
+                voxelColors: birrIndexVoxelColors,
+                voxelFilter: birrIndexVoxelFilter,
+                label: t('Birr-2025-10-15_03--ion--new'),
+                layer: 'Birr-2025-10-15_03--ion--new',
+                opacityDisabled: true,
+                pickable: true,
+                downloadUrl:
+                  DOWNLOAD_ROOT_VOXEL + 'egends/Vox-Birrfeld-Legende.pdf',
+                geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
+              },
+
               // Layer "NEW Voxel-Genf"
               {
                 type: LayerType.voxels3dtiles,
