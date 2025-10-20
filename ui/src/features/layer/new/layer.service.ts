@@ -3,7 +3,10 @@ import { SessionService } from 'src/features/session';
 import {
   BehaviorSubject,
   concatMap,
+  filter,
+  firstValueFrom,
   from,
+  identity,
   map,
   Observable,
   pairwise,
@@ -52,7 +55,9 @@ export class LayerService extends BaseService {
    *
    * @private
    */
-  private _activeLayerIds$ = new BehaviorSubject<IdArray<Layer>>([]);
+  private readonly _activeLayerIds$ = new BehaviorSubject<IdArray<Layer>>([]);
+
+  private readonly _isReady$ = new BehaviorSubject(false);
 
   private readonly _layerChanges$ = this._activeLayerIds$.pipe(
     pairwise(),
@@ -109,7 +114,10 @@ export class LayerService extends BaseService {
       .subscribe(() => this.loadLayers());
 
     WmtsService.inject()
-      .pipe(switchMap((wmtsService) => wmtsService.layers$))
+      .pipe(
+        filter(() => this._isReady$.value),
+        switchMap((wmtsService) => wmtsService.layers$),
+      )
       .subscribe((layers) => this.syncWmtsLayers(layers));
   }
 
@@ -248,6 +256,17 @@ export class LayerService extends BaseService {
 
     this._activeLayerIds$.next(activeLayers);
     this._rootGroupIds$.next(rootGroupIds);
+
+    this._isReady$.next(true);
+  }
+
+  get ready(): Promise<void> {
+    return firstValueFrom(
+      this._isReady$.pipe(
+        filter(identity),
+        map(() => {}),
+      ),
+    );
   }
 
   get rootGroupIds$(): Observable<ReadonlyArray<Id<LayerGroup>>> {
@@ -266,6 +285,14 @@ export class LayerService extends BaseService {
       throw new Error(`Unknown group: ${id}`);
     }
     return entry.nodes;
+  }
+
+  layer<T extends Layer>(id: Id<T>): T {
+    const entry = this.layers.get(id);
+    if (entry === undefined) {
+      throw new Error(`Unknown layer: ${id}`);
+    }
+    return entry.state$.value as T;
   }
 
   layer$<T extends Layer>(id: Id<T>): Observable<T> {
@@ -417,7 +444,7 @@ export class LayerService extends BaseService {
   }
 }
 
-export type LayerUpdate<T> = Partial<
+export type LayerUpdate<T = Layer> = Partial<
   Omit<T, 'type' | 'id' | 'canUpdateOpacity'>
 >;
 
