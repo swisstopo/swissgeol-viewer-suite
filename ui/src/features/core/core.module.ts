@@ -6,6 +6,7 @@ import './core-dropdown-box.element';
 import './core-dropdown-item.element';
 import './core-heading.element';
 import './core-icon.element';
+import './core-loader.element';
 import './core-modal.element';
 import './core-radio.element';
 import './core-slider.element';

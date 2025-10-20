@@ -6,6 +6,7 @@ import { SidebarPanel } from 'src/features/layout/layout.model';
 import 'src/ngm-app-settings';
 import { LayerService } from 'src/features/layer/new/layer.service';
 import { consume } from '@lit/context';
+import { until } from 'lit/directives/until.js';
 
 @customElement('ngm-layout-sidebar')
 export class LayoutSidebar extends CoreElement {
@@ -17,6 +18,8 @@ export class LayoutSidebar extends CoreElement {
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
+
+  private promise: Promise<unknown> | null = null;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -34,7 +37,12 @@ export class LayoutSidebar extends CoreElement {
   ) => {
     this.activePanel = event.detail.panel;
     if (this.activePanel === SidebarPanel.Layers) {
-      import('src/features/catalog/catalog.module').then();
+      this.promise =
+        customElements.get('ngm-catalog') === undefined
+          ? import('src/features/catalog/catalog.module')
+          : null;
+    } else {
+      this.promise = null;
     }
   };
 
@@ -144,33 +152,46 @@ export class LayoutSidebar extends CoreElement {
       ></ngm-dashboard>
     `;
 
-    switch (this.activePanel) {
-      case SidebarPanel.Layers:
-        return html`
-          <div class="content">
-            <ngm-catalog></ngm-catalog>
-          </div>
-          ${staticPanels}
-        `;
-      case SidebarPanel.Share:
-        return html`
-          <div class="content">
-            <ngm-share-link></ngm-share-link>
-          </div>
-          ${staticPanels}
-        `;
-      case SidebarPanel.Settings:
-        return html`
-          <div class="content">
-            <ngm-app-settings></ngm-app-settings>
-          </div>
-          ${staticPanels}
-        `;
-      case SidebarPanel.Projects:
-      case SidebarPanel.Tools:
-      case null:
-        return staticPanels;
-    }
+    const render = () => {
+      this.promise = null;
+      switch (this.activePanel) {
+        case SidebarPanel.Layers:
+          return html`
+            <div class="content">
+              <ngm-catalog></ngm-catalog>
+            </div>
+            ${staticPanels}
+          `;
+        case SidebarPanel.Share:
+          return html`
+            <div class="content">
+              <ngm-share-link></ngm-share-link>
+            </div>
+            ${staticPanels}
+          `;
+        case SidebarPanel.Settings:
+          return html`
+            <div class="content">
+              <ngm-app-settings></ngm-app-settings>
+            </div>
+            ${staticPanels}
+          `;
+        case SidebarPanel.Projects:
+        case SidebarPanel.Tools:
+        case null:
+          return staticPanels;
+      }
+    };
+
+    return this.promise == null
+      ? render()
+      : until(
+          this.promise.then(render),
+          html`<div class="content">
+              <ngm-core-loader></ngm-core-loader>
+            </div>
+            ${staticPanels}`,
+        );
   };
 
   static readonly styles = css`
