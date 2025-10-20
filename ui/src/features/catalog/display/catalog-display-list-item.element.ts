@@ -14,13 +14,12 @@ import { Id } from 'src/models/id.model';
 import i18next from 'i18next';
 import { applyTransition, applyTypography } from 'src/styles/theme';
 import { when } from 'lit/directives/when.js';
-import { classMap } from 'lit/directives/class-map.js';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
 import { throttle } from 'src/utils/fn.utils';
 
 @customElement('ngm-catalog-display-list-item')
 export class CatalogDisplayList extends CoreElement {
-  @property()
+  @property({ reflect: true, attribute: 'layer-id' })
   accessor layerId!: Id<Layer>;
 
   @consume({ context: LayerService.context() })
@@ -58,6 +57,13 @@ export class CatalogDisplayList extends CoreElement {
     });
   }
 
+  updated() {
+    this.toggleAttribute(
+      'draggable',
+      !(this.isOpacityActive || this.isBackgroundActive),
+    );
+  }
+
   private readonly toggleVisibility = (): void => {
     if (this.layer.isVisible) {
       this.isOpacityActive = false;
@@ -65,11 +71,6 @@ export class CatalogDisplayList extends CoreElement {
     this.layerService.update(this.layerId, {
       isVisible: !this.layer.isVisible,
     });
-  };
-
-  private readonly toggleBackgroundActive = (): void => {
-    this.isOpacityActive = false;
-    this.isBackgroundActive = !this.isBackgroundActive;
   };
 
   private readonly toggleOpacityActive = (): void => {
@@ -165,21 +166,6 @@ export class CatalogDisplayList extends CoreElement {
       <span class="title">${getLayerLabel(this.layer)}</span>
 
       <div class="suffix">
-        ${when(
-          this.layer.type === 'Background',
-          () => html`
-            <span
-              class="label ${classMap({
-                'is-active': this.isBackgroundActive,
-              })}"
-              role="button"
-              data-cy="background"
-              @click="${this.toggleBackgroundActive}"
-              >${i18next.t('catalog:display.background')}</span
-            >
-          `,
-        )}
-
         <ngm-core-button
           transparent
           variant="secondary"
@@ -278,7 +264,7 @@ export class CatalogDisplayList extends CoreElement {
           `
         : ''}
       ${when(
-        this.layer.type === LayerType.Swisstopo && this.layer.steps !== null,
+        this.layer.type === LayerType.Swisstopo && this.layer.times !== null,
         () => html`
           <ngm-core-dropdown-item role="button" @click="${this.openTimes}">
             <ngm-core-icon icon="turnPage"></ngm-core-icon>
@@ -319,6 +305,7 @@ export class CatalogDisplayList extends CoreElement {
       padding: 9px;
       gap: 16px;
       user-select: none;
+      cursor: grab;
 
       border-radius: 4px;
       background-color: var(--color-bg--white);

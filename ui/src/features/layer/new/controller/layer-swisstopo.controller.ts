@@ -123,6 +123,10 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
     this.viewer.flyTo(this.imagery);
   }
 
+  override moveToTop(): void {
+    this.viewer.scene.imageryLayers.raiseToTop(this.imagery);
+  }
+
   /**
    * Creates a provider instance based on the layer's source type.
    * @private

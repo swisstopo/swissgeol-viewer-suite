@@ -6,7 +6,10 @@ import { Layer } from 'src/features/layer';
 import { Id } from '@swissgeol/ui-core';
 import { css, html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
+import { keyed } from 'lit/directives/keyed.js';
 import { identity } from 'rxjs';
+import { language$ } from 'src/i18n';
+import Sortable from 'sortablejs';
 
 @customElement('ngm-catalog-display-list')
 export class CatalogDisplayList extends CoreElement {
@@ -16,26 +19,140 @@ export class CatalogDisplayList extends CoreElement {
   @state()
   accessor activeLayerIds: ReadonlyArray<Id<Layer>> = [];
 
-  connectedCallback() {
+  private sortable!: Sortable;
+
+  private haveLayersChanged = false;
+
+  /**
+   * A key that, when changed, forces the current item elements to be discarded and recreated.
+   *
+   * This key is incremented whenever a render is triggered while {@link haveLayersChanged} is `true`.
+   *
+   * @private
+   */
+  private renderKey = 0;
+
+  connectedCallback(): void {
     super.connectedCallback();
 
     this.layerService.activeLayerIds$.subscribe((ids) => {
       this.activeLayerIds = ids;
+      this.haveLayersChanged = true;
     });
+
+    this.register(language$.subscribe(() => this.initializeDragging()));
+
+    this.register(() => this.sortable.destroy());
+  }
+
+  firstUpdated(): void {
+    this.initializeDragging();
+  }
+
+  willUpdate(): void {
+    if (this.haveLayersChanged) {
+      // Force an item renewal as adding/removing/sorting layers can disconnect Lit from their elements.
+      this.renderKey += 1;
+    }
+  }
+
+  updated(): void {
+    if (this.haveLayersChanged) {
+      this.haveLayersChanged = false;
+      this.removeRemnantItems();
+    }
+  }
+
+  private initializeDragging(): void {
+    const listElement = this.shadowRoot!.querySelector('ul');
+    if (listElement == null) {
+      return;
+    }
+
+    this.sortable?.destroy();
+    this.sortable = Sortable.create(listElement, {
+      animation: 150,
+      forceFallback: true,
+      group: { pull: true, put: true, name: 'default' },
+      draggable: 'li',
+      filter: 'li:has(ngm-catalog-display-list-item:not([draggable]))',
+      onChoose: (event) => {
+        if (event.item) {
+          event.item.children[0].classList.add('is-dragged');
+        }
+      },
+      onUnchoose: (event) => {
+        if (event.item) {
+          event.item.children[0].classList.remove('is-dragged');
+        }
+      },
+      onStart: () => {
+        for (const child of listElement.children) {
+          child.children[0].classList.add('is-in-drag');
+        }
+      },
+      onEnd: (event) => {
+        for (const child of listElement.children) {
+          child.children[0].classList.remove('is-in-drag');
+        }
+        if (event.item) {
+          event.item.blur();
+        }
+      },
+      onUpdate: (e) => this.reorderLayer(e.oldIndex!, e.newIndex!),
+    });
+  }
+
+  /**
+   * When sorting layers via Sortable.js, Lit will lose connection to any elements that have been dragged.
+   *
+   * We fix this by completely redrawing the layers after sorting.
+   * However, this can cause items to be listed multiple times,
+   * as Lit doesn't recognize that the old item has to be removed.
+   *
+   * The solution to this is to iterate all items and remove any duplicates.
+   * Note that Lit will always render its items at the top of the list,
+   * so we can safely remove any duplicates after the first entry.
+   *
+   * @private
+   */
+  private removeRemnantItems(): void {
+    const listElement = this.shadowRoot!.querySelector('ul');
+    if (listElement == null) {
+      return;
+    }
+
+    const knownIds = new Set();
+    for (const element of listElement.children) {
+      const id = (element as HTMLElement).dataset.id!;
+      if (knownIds.has(id)) {
+        element.remove();
+      } else {
+        knownIds.add(id);
+      }
+    }
+  }
+
+  private reorderLayer(oldIndex: number, newIndex: number): void {
+    const layerId = this.layerService.activeLayerIds[oldIndex];
+    this.layerService.move(layerId, newIndex - oldIndex);
   }
 
   readonly render = () => html`
     <ul>
-      ${repeat(
-        this.activeLayerIds,
-        identity,
-        (id) => html`
-          <li>
-            <ngm-catalog-display-list-item
-              .layerId="${id}"
-            ></ngm-catalog-display-list-item>
-          </li>
-        `,
+      ${keyed(
+        this.renderKey,
+        repeat(
+          this.activeLayerIds,
+          identity,
+          (id) => html`
+            <li data-id="${id}">
+              <ngm-catalog-display-list-item
+                .layerId="${id}"
+              ></ngm-catalog-display-list-item>
+            </li>
+          `,
+        ),
       )}
     </ul>
   `;
