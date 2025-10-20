@@ -96,7 +96,7 @@ export class LayerDisplayList extends CoreElement {
     this.sortable = Sortable.create(listElement, {
       animation: 150,
       forceFallback: true,
-      draggable: 'ngm-layer-display-list-item',
+      draggable: 'li',
       chosenClass: 'is-dragged',
       onStart: () => {
         for (const child of listElement.children) {

@@ -73,7 +73,6 @@ Then(/^the results contain all three item types in the correct order$/, () => {
           return;
         }
 
-        console.log({ currentCategory, nextCategory });
         if (nextCategory === null) {
           expect(category).to.equal(currentCategory);
         } else {

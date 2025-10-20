@@ -183,6 +183,11 @@ export abstract class LayerController<T extends Layer = Layer> {
   abstract zoomIntoView(): void;
 
   /**
+   * Moves the layer to the top of the map.
+   */
+  abstract moveToTop(): void;
+
+  /**
    * Checks if the Cesium layer needs to be adjusted based on the current layer data.
    *
    * Note that this method should mostly consist of calls to {@link watch},

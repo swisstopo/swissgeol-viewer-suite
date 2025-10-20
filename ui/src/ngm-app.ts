@@ -186,7 +186,6 @@ export class NgmApp extends LitElementI18n {
     BaseService.initializeWith(this);
 
     this.layerService.activeLayers$.subscribe(() => {
-      console.log('change!');
       this.viewer?.scene.requestRender();
     });
 
