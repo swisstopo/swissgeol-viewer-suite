@@ -372,8 +372,11 @@ export class CatalogDisplayList extends CoreElement {
 
     .title {
       ${applyTypography('body-2')};
-
       flex-grow: 1;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* label */

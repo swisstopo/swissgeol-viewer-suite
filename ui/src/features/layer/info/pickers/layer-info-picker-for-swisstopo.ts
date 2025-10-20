@@ -2,7 +2,6 @@ import {
   LayerInfoPicker,
   LayerPickData,
 } from 'src/features/layer/info/pickers/layer-info-picker';
-import { LayerTreeNode } from 'src/layertree';
 import { lv95ToDegrees, radiansToLv95 } from 'src/projection';
 import i18next from 'i18next';
 import {
@@ -24,26 +23,29 @@ import {
   LayerInfo,
   LayerInfoAttribute,
 } from 'src/features/layer/info/layer-info.model';
+import { SwisstopoLayerController } from 'src/features/layer/new/controller/layer-swisstopo.controller';
+import { Id } from '@swissgeol/ui-core';
+import { SwisstopoLayer } from 'src/features/layer';
 
-export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
+export class LayerInfoPickerForSwisstopo implements LayerInfoPicker {
   private readonly highlights: CustomDataSource;
 
   constructor(
-    private readonly layer: LayerTreeNode,
+    private readonly controller: SwisstopoLayerController,
     private readonly viewer: Viewer,
   ) {
     this.highlights = new CustomDataSource(
-      `LayerInfoPickerForGeoadmin.${layer.layer}`,
+      `LayerInfoPickerForSwisstopo.${controller.layer.id}`,
     );
-    this.viewer.dataSources.add(this.highlights);
+    this.viewer.dataSources.add(this.highlights).then();
   }
 
-  get source(): LayerTreeNode {
-    return this.layer;
+  get source(): Id<SwisstopoLayer> {
+    return this.controller.layer.id;
   }
 
   async pick(pick: LayerPickData): Promise<LayerInfo[]> {
-    if (!this.layer.visible) {
+    if (!this.controller.layer.isVisible) {
       return [];
     }
     const geom2056 = radiansToLv95([
@@ -54,7 +56,7 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
     const lang = i18next.language;
 
     const response = await fetch(
-      `https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=${geom2056}&geometryFormat=geojson&geometryType=esriGeometryPoint&mapExtent=0,0,100,100&imageDisplay=100,100,100&lang=${lang}&layers=all:${this.layer.layer}&returnGeometry=true&sr=2056&tolerance=${tolerance}`,
+      `https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=${geom2056}&geometryFormat=geojson&geometryType=esriGeometryPoint&mapExtent=0,0,100,100&imageDisplay=100,100,100&lang=${lang}&layers=all:${this.controller.layer.id}&returnGeometry=true&sr=2056&tolerance=${tolerance}`,
     );
     const { results }: { results?: IdentifyResult[] } = await response.json();
     if (results == null || results.length === 0) {
@@ -80,21 +82,7 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
   private async getInfoForResult(
     result: IdentifyResult,
     entity: Entity,
-  ): Promise<LayerInfoForGeoadmin> {
-    const extractTextOrLink = (
-      element: HTMLElement,
-    ): LayerInfoAttribute['value'] => {
-      if (
-        element.childElementCount === 1 &&
-        element.children[0].tagName === 'A'
-      ) {
-        const anchor = element.children[0] as HTMLAnchorElement;
-        return { url: anchor.href, name: anchor.text };
-      }
-      const value = element.textContent!.trim();
-      return value;
-    };
-
+  ): Promise<LayerInfoForSwisstopo> {
     const lang = i18next.language;
     const response = await fetch(
       `https://api3.geo.admin.ch/rest/services/api/MapServer/${result.layerBodId}/${result.featureId}/htmlPopup?lang=${lang}`,
@@ -102,10 +90,6 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
     const html = await response.text();
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-
-    const title = doc!
-      .querySelector('.htmlpopup-header span')!
-      .textContent!.trim();
 
     const rows = [...doc.querySelectorAll('.htmlpopup-content table tr')];
 
@@ -131,23 +115,23 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
       ) {
         attributes.push({
           key: savedTitle ?? '',
-          value: extractTextOrLink(addition),
+          value: addition.textContent!.trim(),
         });
         return attributes;
       }
 
       // The rest are normal key-value rows.
-      const value = extractTextOrLink(val);
+      const value = val.textContent!.trim();
       attributes.push({
         key: keyValue!,
         value,
       });
       return attributes;
     }, [] as LayerInfoAttribute[]);
-    return new LayerInfoForGeoadmin(this.viewer, this.highlights, {
+    return new LayerInfoForSwisstopo(this.viewer, this.highlights, {
       entity,
-      source: this.layer,
-      title,
+      title: `layers:layers.${this.controller.layer.id}`,
+      source: this.controller.layer.id,
       attributes,
     });
   }
@@ -234,9 +218,9 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
   }
 }
 
-class LayerInfoForGeoadmin implements LayerInfo {
-  public readonly source: LayerTreeNode;
+class LayerInfoForSwisstopo implements LayerInfo {
   public readonly title: string;
+  public readonly source: Id<SwisstopoLayer>;
   public readonly attributes: LayerInfoAttribute[];
 
   private readonly entity: Entity;
@@ -246,12 +230,12 @@ class LayerInfoForGeoadmin implements LayerInfo {
     private readonly dataSource: CustomDataSource,
     data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
       entity: Entity;
-      source: LayerTreeNode;
+      source: Id<SwisstopoLayer>;
     },
   ) {
     this.entity = data.entity;
-    this.source = data.source;
     this.title = data.title;
+    this.source = data.source;
     this.attributes = data.attributes;
     this.dataSource.entities.add(this.entity);
   }

@@ -6,6 +6,7 @@ import {
 } from 'src/features/layer/info/layer-info.model';
 
 export interface LayerInfoPicker {
+  // TODO Change this to `layerId: Id<Layer>` once everything has been ported to the new layers.
   readonly source: LayerInfoSource;
 
   /**

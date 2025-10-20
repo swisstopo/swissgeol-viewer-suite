@@ -10,13 +10,20 @@ import {
 import {
   BehaviorSubject,
   delay,
+  filter,
   Observable,
   Subject,
+  take,
   withLatestFrom,
 } from 'rxjs';
 import { BaseService } from 'src/utils/base.service';
 import MainStore from 'src/store/main';
-import { isLayerTiffImagery, LayerTiffController } from 'src/features/layer';
+import {
+  isLayerTiffImagery,
+  Layer,
+  LayerTiffController,
+  LayerType,
+} from 'src/features/layer';
 import {
   LayerInfoPicker,
   LayerPickData,
@@ -27,13 +34,18 @@ import {
   LayerInfoSource,
 } from 'src/features/layer/info/layer-info.model';
 import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
-import { LayerTreeNode, LayerType } from 'src/layertree';
-import { LayerInfoPickerForGeoadmin } from 'src/features/layer/info/pickers/layer-info-picker-for-geoadmin';
+import { LayerService as NewLayerService } from 'src/features/layer/new/layer.service';
+import { LayerTreeNode, LayerType as OldLayerType } from 'src/layertree';
+import { LayerInfoPickerForSwisstopo } from 'src/features/layer/info/pickers/layer-info-picker-for-swisstopo';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
 import { LayerInfoPickerFor3dTiles } from 'src/features/layer/info/pickers/layer-info-picker-for-3dtiles';
 import DrawStore from 'src/store/draw';
+import { Id } from 'src/models/id.model';
+import { run } from 'src/utils/fn.utils';
 
 export class LayerInfoService extends BaseService {
+  private layerService!: NewLayerService;
+
   private readonly infosSubject = new BehaviorSubject<LayerInfo[]>([]);
 
   private readonly pickers: LayerInfoPicker[] = [];
@@ -59,6 +71,11 @@ export class LayerInfoService extends BaseService {
 
   constructor() {
     super();
+
+    NewLayerService.inject().subscribe((layerService) => {
+      this.layerService = layerService;
+      layerService.layerActivated$.subscribe(this.handleLayerActivated);
+    });
 
     MainStore.viewer
       .pipe(withLatestFrom(LayerService.inject()))
@@ -128,6 +145,43 @@ export class LayerInfoService extends BaseService {
       info.destroy();
     }
     this.infosSubject.next([]);
+    this.viewer.scene.requestRender();
+  }
+
+  private readonly handleLayerActivated = (layerId: Id<Layer>): void => {
+    const controller = this.layerService.controller(layerId)!;
+    const picker = run(() => {
+      switch (controller.type) {
+        case LayerType.Swisstopo:
+          return new LayerInfoPickerForSwisstopo(controller, this.viewer);
+      }
+    });
+
+    this.pickers.push(picker);
+    this.layerService.layerDeactivated$
+      .pipe(
+        filter((id) => id === layerId),
+        take(1),
+      )
+      .subscribe(() => this.removePicker(picker));
+  };
+
+  private removePicker(picker: LayerInfoPicker): void {
+    const i = this.pickers.findIndex((it) => it === picker);
+    if (i < 0) {
+      return;
+    }
+    this.pickers.splice(i, 1);
+    const newInfos = this.infosSubject.value.reduce((infos, info) => {
+      if (info.source === picker.source) {
+        info.destroy();
+      } else {
+        infos.push(info);
+      }
+      return infos;
+    }, [] as LayerInfo[]);
+    this.infosSubject.next(newInfos);
+    picker.destroy();
     this.viewer.scene.requestRender();
   }
 
@@ -213,28 +267,26 @@ export class LayerInfoService extends BaseService {
   private readonly handleQueryableLayerAddition = (
     layer: LayerTreeNode,
   ): void => {
-    if (layer.pickable === false || layer.type === LayerType.geoTIFF) {
+    if (layer.pickable === false || layer.type === OldLayerType.geoTIFF) {
       return;
     }
     this.queueModification({
       source: layer,
       action: () => {
         switch (layer.type) {
-          case LayerType.voxels3dtiles:
+          case OldLayerType.voxels3dtiles:
             this.pickers.unshift(
               new LayerInfoPickerForVoxels(layer, this.viewer),
             );
             break;
-          case LayerType.tiles3d:
-          case LayerType.earthquakes:
+          case OldLayerType.tiles3d:
+          case OldLayerType.earthquakes:
             this.pickers.unshift(
               new LayerInfoPickerFor3dTiles(layer, this.viewer),
             );
             break;
           default:
-            this.pickers.unshift(
-              new LayerInfoPickerForGeoadmin(layer, this.viewer),
-            );
+            break;
         }
       },
     });
@@ -310,10 +362,16 @@ export class LayerInfoService extends BaseService {
 }
 
 const isSameSource = (a: LayerInfoSource, b: LayerInfoSource): boolean => {
-  if (a instanceof LayerTiffController || b instanceof LayerTiffController) {
-    return a === b;
+  if (a === b) {
+    return true;
   }
-  return isSameLayer(a, b);
+  if (a instanceof LayerTiffController || b instanceof LayerTiffController) {
+    return false;
+  }
+  if (typeof a === 'string' || typeof b === 'string') {
+    return false;
+  }
+  return isSameLayer(a as LayerTreeNode, b as LayerTreeNode);
 };
 
 interface Modification {

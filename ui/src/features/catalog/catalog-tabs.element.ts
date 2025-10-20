@@ -79,6 +79,10 @@ export class CatalogTabs extends CoreElement {
       cursor: pointer;
       border-radius: 4px;
       flex: 1;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .tabs > button.is-active {

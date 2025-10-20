@@ -1,5 +1,8 @@
 import { Viewer } from 'cesium';
-import { Layer } from 'src/features/layer';
+import { Layer, LayerType } from 'src/features/layer';
+import { SwisstopoLayerController } from 'src/features/layer/new/controller/layer-swisstopo.controller';
+
+export type LayerController = SwisstopoLayerController;
 
 /**
  * A {@link LayerController} is responsible for managing how a {@link Layer} is displayed on the {@link Viewer}.
@@ -62,7 +65,7 @@ import { Layer } from 'src/features/layer';
  * To allow removal, {@link LayerController.removeFromViewer} has to be implemented.
  * This method should remove all owned data from the viewer, and fully free any other resources.
  */
-export abstract class LayerController<T extends Layer = Layer> {
+export abstract class BaseLayerController<T extends Layer = Layer> {
   /**
    * All watched values, in the order in which they were registered.
    *
@@ -136,6 +139,8 @@ export abstract class LayerController<T extends Layer = Layer> {
   get layer(): T {
     return this._layer;
   }
+
+  abstract get type(): LayerType;
 
   /**
    * Updates the controller's current layer data,

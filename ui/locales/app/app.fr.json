@@ -300,7 +300,6 @@
   "welcome_get_shortlink_error": "Une erreur s'est produite et le lien court ne peut être créé, veuillez réessayer plus tard.",
   "grp_1786_label": "Cartes, coupes & modèles",
   "grp_1787_label": "Cartes géologiques",
-  "lyr_ch_swisstopo_geologie_geocover_label": "GeoCover - données vectorielles",
   "lyr_ch_swisstopo_geologie_geologischer_atlas_label": "Atlas géologique GA25",
   "lyr_ch_swisstopo_geologie_geotechnik_gk500_lithologie_hauptgruppen_label": "Lithologie 500",
   "lyr_ch_swisstopo_geologie_geologische_karte_label": "Géologie 500",

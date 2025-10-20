@@ -1,5 +1,9 @@
-import { LayerController } from 'src/features/layer/new/controller/layer.controller';
-import { SwisstopoLayer, SwisstopoLayerSource } from 'src/features/layer';
+import { BaseLayerController } from 'src/features/layer/new/controller/layer.controller';
+import {
+  SwisstopoLayer,
+  SwisstopoLayerSource,
+  LayerType,
+} from 'src/features/layer';
 import {
   Credit,
   ImageryLayer,
@@ -18,7 +22,7 @@ import i18next from 'i18next';
  * This controller's layer are displayed using {@link ImageryLayer},
  * which are added to `viewer.scene.imageryLayers`.
  */
-export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
+export class SwisstopoLayerController extends BaseLayerController<SwisstopoLayer> {
   /**
    * The imagery provider.
    *
@@ -35,7 +39,15 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
    *
    * @private
    */
-  private imagery!: ImageryLayer;
+  private _imagery!: ImageryLayer;
+
+  get type(): LayerType.Swisstopo {
+    return LayerType.Swisstopo;
+  }
+
+  get imagery(): ImageryLayer {
+    return this._imagery;
+  }
 
   protected override reactToChanges(): void {
     // These are the values that are statically references by the `provider`.
@@ -48,7 +60,7 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
 
     // Apply opacity to the Cesium layer.
     this.watch(this.layer.opacity, (opacity) => {
-      this.imagery.alpha = opacity;
+      this._imagery.alpha = opacity;
     });
 
     // Show or hide the Cesium layer.
@@ -58,10 +70,10 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
       // Instead, we simply make the layer fully opaque and disable its picking.
 
       if (isVisible) {
-        this.imagery.alpha = this.layer.opacity;
+        this._imagery.alpha = this.layer.opacity;
         this.provider.enablePickFeatures = true;
       } else {
-        this.imagery.alpha = 0;
+        this._imagery.alpha = 0;
         this.provider.enablePickFeatures = false;
       }
     });
@@ -76,20 +88,20 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
     });
 
     const { imageryLayers } = this.viewer.scene;
-    if (this.imagery === undefined) {
+    if (this._imagery === undefined) {
       // Add a new Cesium layer.
       imageryLayers.add(imagery);
     } else {
       // Replace an existing Cesium layer.
-      const i = imageryLayers.indexOf(this.imagery);
+      const i = imageryLayers.indexOf(this._imagery);
       this.removeFromViewer();
       imageryLayers.add(imagery, i);
     }
-    this.imagery = imagery;
+    this._imagery = imagery;
   }
 
   /**
-   * Remove both the {@link imagery} and the {@link provider} from the viewer.
+   * Remove both the {@link _imagery} and the {@link provider} from the viewer.
    * @protected
    */
   protected override removeFromViewer(): void {
@@ -102,7 +114,7 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
    * @private
    */
   private removeLayerFromViewer(): void {
-    const imagery = this.imagery;
+    const imagery = this._imagery;
     if (imagery === undefined) {
       return;
     }
@@ -116,15 +128,15 @@ export class SwisstopoLayerController extends LayerController<SwisstopoLayer> {
         throw e;
       }
     }
-    this.imagery = undefined as unknown as ImageryLayer;
+    this._imagery = undefined as unknown as ImageryLayer;
   }
 
   override zoomIntoView(): void {
-    this.viewer.flyTo(this.imagery);
+    this.viewer.flyTo(this._imagery);
   }
 
   override moveToTop(): void {
-    this.viewer.scene.imageryLayers.raiseToTop(this.imagery);
+    this.viewer.scene.imageryLayers.raiseToTop(this._imagery);
   }
 
   /**

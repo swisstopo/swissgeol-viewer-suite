@@ -1,6 +1,7 @@
 import { LayerTreeNode } from 'src/layertree';
-import { LayerTiffController } from 'src/features/layer';
+import { Layer, LayerTiffController } from 'src/features/layer';
 import { TemplateResult } from 'lit';
+import { Id } from '@swissgeol/ui-core';
 
 /**
  * `LayerInfo` represents the current data of a specific object on a layer.
@@ -10,6 +11,7 @@ export interface LayerInfo {
   /**
    * The layer that was picked.
    */
+  // TODO Change this to `layerId: Id<Layer>` once everything has been ported to the new layers.
   source: LayerInfoSource;
 
   /**
@@ -46,9 +48,8 @@ export interface LayerInfo {
 
 export interface LayerInfoAttribute {
   key: string;
-  value: ValueType | { url: string; name?: ValueType };
+  value: string | number | TemplateResult;
 }
 
-type ValueType = string | number | TemplateResult;
-
-export type LayerInfoSource = LayerTreeNode | LayerTiffController;
+// TODO remove this as soon as everything is ported to the new layers.
+export type LayerInfoSource = LayerTreeNode | LayerTiffController | Id<Layer>;
