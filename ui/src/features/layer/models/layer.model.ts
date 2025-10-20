@@ -81,4 +81,4 @@ export enum LayerType {
 }
 
 export const getLayerLabel = (layer: Layer): string =>
-  layer.label ?? i18next.t(`layers:layer.${layer.id}`);
+  layer.label ?? i18next.t(`layers:layers.${layer.id}`);

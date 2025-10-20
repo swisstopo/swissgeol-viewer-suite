@@ -33,7 +33,7 @@
     }
   },
   "layers": {
-
+    "ch.swisstopo.geologie-geocover": "GeoCover - Vektordaten"
   },
   "groups": {
     "grp_1786_label": "Karten, Profile & Modelle",

@@ -2,10 +2,9 @@ import { consume } from '@lit/context';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { LayerService } from 'src/features/layer/new/layer.service';
-import { Layer } from 'src/features/layer';
+import { getLayerLabel, Layer } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
 import { css, html } from 'lit';
-import i18next from 'i18next';
 
 @customElement('ngm-catalog-tree-layer')
 export class CatalogTreeLayer extends CoreElement {
@@ -18,6 +17,9 @@ export class CatalogTreeLayer extends CoreElement {
   @state()
   accessor isActive = false;
 
+  @state()
+  accessor layer!: Layer;
+
   connectedCallback() {
     super.connectedCallback();
     this.initializeById();
@@ -29,10 +31,20 @@ export class CatalogTreeLayer extends CoreElement {
     this.title = this.label;
   }
 
+  get label() {
+    return getLayerLabel(this.layer);
+  }
+
   private initializeById() {
     this.register(
       this.layerService.isLayerActive$(this.layerId).subscribe((isActive) => {
         this.isActive = isActive;
+      }),
+    );
+
+    this.register(
+      this.layerService.layer$(this.layerId).subscribe((layer) => {
+        this.layer = layer;
       }),
     );
   }
@@ -44,10 +56,6 @@ export class CatalogTreeLayer extends CoreElement {
       this.layerService.activate(this.layerId);
     }
   };
-
-  private get label(): string {
-    return i18next.t(`layers:layers.${this.layerId}`);
-  }
 
   readonly render = () => html`
     <ngm-core-icon icon="layerIndicator"></ngm-core-icon>
