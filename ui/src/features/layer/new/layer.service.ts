@@ -29,6 +29,16 @@ export class LayerService extends BaseService {
 
   private _rootGroupIds$ = new BehaviorSubject<IdArray<LayerGroup>>([]);
 
+  /**
+   * The ids of all currently active layers.
+   *
+   * Activating a layer adds them to the start of the array.
+   * The first layer is the topmost one, the last the lowermost one.
+   *
+   * Each layer registered here has a `controller` defined.
+   *
+   * @private
+   */
   private _activeLayerIds$ = new BehaviorSubject<IdArray<Layer>>([]);
 
   constructor() {
@@ -220,6 +230,10 @@ export class LayerService extends BaseService {
     return entry.state$.asObservable() as Observable<T>;
   }
 
+  get activeLayerIds(): ReadonlyArray<Id<Layer>> {
+    return this._activeLayerIds$.value;
+  }
+
   get activeLayerIds$(): Observable<ReadonlyArray<Id<Layer>>> {
     return this._activeLayerIds$.asObservable();
   }
@@ -231,8 +245,6 @@ export class LayerService extends BaseService {
   isLayerActive$(id: Id<Layer>): Observable<boolean> {
     return this._activeLayerIds$.pipe(map((layerIds) => layerIds.includes(id)));
   }
-
-  controller(id: Id<SwisstopoLayer>): SwisstopoLayerController | null;
 
   controller(id: Id<Layer>): LayerController | null {
     return this.layers.get(id)?.controller ?? null;
@@ -300,6 +312,23 @@ export class LayerService extends BaseService {
     entry.controller?.update(updatedLayer);
     entry.state$.next(updatedLayer);
     this.viewer.scene.requestRender();
+  }
+
+  move(id: Id<Layer>, difference: number): void {
+    const ids = [...this._activeLayerIds$.value];
+    const oldIndex = ids.indexOf(id);
+    if (oldIndex < 0) {
+      throw new Error(`Can't move inactive layer: ${id}`);
+    }
+    const newIndex = Math.max(0, Math.min(ids.length, oldIndex + difference));
+    ids.splice(oldIndex, 1);
+    ids.splice(newIndex, 0, id);
+
+    // Reorder the Cesium layer, with the first element in the array being the topmost one.
+    for (let i = ids.length - 1; i >= 0; i--) {
+      this.controller(ids[i])?.moveToTop();
+    }
+    this._activeLayerIds$.next(ids);
   }
 
   private makeController(layer: Layer): LayerController {
