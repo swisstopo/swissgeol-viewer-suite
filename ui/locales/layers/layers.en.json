@@ -32,6 +32,9 @@
       "symbol": "m.a.s.l."
     }
   },
+  "layers": {
+    "ch.swisstopo.geologie-geocover": "GeoCover - Vector Datasets"
+  },
   "geocatUrl": "https://www.geocat.ch/geonetwork/srv/eng/catalog.search#/metadata/{{id}}",
   "noData": "no value"
 }

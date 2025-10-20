@@ -32,6 +32,9 @@
       "symbol": "m s.n.m."
     }
   },
+  "layers": {
+    "ch.swisstopo.geologie-geocover": "GeoCover - données vectorielles"
+  },
   "geocatUrl": "https://www.geocat.ch/geonetwork/srv/fre/catalog.search#/metadata/{{id}}",
   "noData": "aucune valeur"
 }

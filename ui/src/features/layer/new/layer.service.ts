@@ -1,6 +1,16 @@
 import { BaseService } from 'src/utils/base.service';
 import { SessionService } from 'src/features/session';
-import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  concatMap,
+  from,
+  map,
+  Observable,
+  pairwise,
+  shareReplay,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import {
   LayerApiService,
   LayerGroupConfig,
@@ -13,7 +23,10 @@ import {
   SwisstopoLayer,
 } from 'src/features/layer';
 import { WmtsService } from 'src/services/wmts.service';
-import { LayerController } from 'src/features/layer/new/controller/layer.controller';
+import {
+  BaseLayerController,
+  LayerController,
+} from 'src/features/layer/new/controller/layer.controller';
 import { SwisstopoLayerController } from 'src/features/layer/new/controller/layer-swisstopo.controller';
 import { Viewer } from 'cesium';
 import MainStore from 'src/store/main';
@@ -40,6 +53,39 @@ export class LayerService extends BaseService {
    * @private
    */
   private _activeLayerIds$ = new BehaviorSubject<IdArray<Layer>>([]);
+
+  private readonly _layerChanges$ = this._activeLayerIds$.pipe(
+    pairwise(),
+    map(([previous, current]) => {
+      const oldSet = new Set(previous);
+      const newSet = new Set(current);
+
+      const deactivated: Array<Id<Layer>> = [];
+      for (const element of previous) {
+        if (!newSet.has(element)) {
+          deactivated.push(element);
+        }
+      }
+
+      const activated: Array<Id<Layer>> = [];
+      for (const element of current) {
+        if (!oldSet.has(element)) {
+          activated.push(element);
+        }
+      }
+
+      return { activated, deactivated };
+    }),
+    shareReplay(1),
+  );
+
+  private readonly _layerActivated$ = this._layerChanges$.pipe(
+    concatMap(({ activated }) => from(activated)),
+  );
+
+  private readonly _layerDeactivated$ = this._layerChanges$.pipe(
+    concatMap(({ deactivated }) => from(deactivated)),
+  );
 
   constructor() {
     super();
@@ -123,7 +169,7 @@ export class LayerService extends BaseService {
           state$: previousLayer.state$,
         };
         this.layers.set(layer.id, updated);
-        updated.controller?.update(layer);
+        (updated.controller as BaseLayerController | null)?.update(layer);
         updated.state$.next(layer);
       }
     };
@@ -246,6 +292,16 @@ export class LayerService extends BaseService {
     return this._activeLayerIds$.pipe(map((layerIds) => layerIds.includes(id)));
   }
 
+  get layerActivated$(): Observable<Id<Layer>> {
+    return this._layerActivated$.pipe(
+      startWith(...this._activeLayerIds$.value),
+    );
+  }
+
+  get layerDeactivated$(): Observable<Id<Layer>> {
+    return this._layerDeactivated$;
+  }
+
   controller(id: Id<Layer>): LayerController | null {
     return this.layers.get(id)?.controller ?? null;
   }
@@ -309,7 +365,7 @@ export class LayerService extends BaseService {
       }
     }
 
-    entry.controller?.update(updatedLayer);
+    (entry.controller as BaseLayerController | null)?.update(updatedLayer);
     entry.state$.next(updatedLayer);
     this.viewer.scene.requestRender();
   }

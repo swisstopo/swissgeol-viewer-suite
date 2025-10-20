@@ -301,7 +301,6 @@
   "welcome_get_shortlink_error": "An error occurred and the shortcut cannot be created, please try again later.",
   "grp_1786_label": "Maps, cross-sections & models",
   "grp_1787_label": "Geological maps",
-  "lyr_ch_swisstopo_geologie_geocover_label": "GeoCover - Vector Datasets",
   "lyr_ch_swisstopo_geologie_geologischer_atlas_label": "Geological Atlas GA25",
   "lyr_ch_swisstopo_geologie_geotechnik_gk500_lithologie_hauptgruppen_label": "Lithology 500",
   "lyr_ch_swisstopo_geologie_geologische_karte_label": "Geology 500",
