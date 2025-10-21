@@ -1,5 +1,6 @@
 use crate::data::TranslatedString;
 use serde::{Deserialize, Serialize};
+use crate::layers::config::{Parse, ParseContext};
 
 mod config;
 pub use config::LayerConfig;
@@ -17,8 +18,13 @@ mod tiles3d;
 pub use tiles3d::*;
 
 mod voxel;
-use crate::layers::config::{Parse, ParseContext};
 pub use voxel::*;
+
+mod source;
+pub use source::*;
+
+mod access;
+pub use access::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
@@ -33,17 +39,22 @@ pub struct Layer {
     pub opacity: LayerOpacity,
 
     /// The id of this layer on https://geocat.ch, if available.
-    #[serde(default, skip_serializing_if = "crate::utils::is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub geocat_id: Option<String>,
 
     /// A url from which a representation of the layer can be downloaded.
-    #[serde(default, skip_serializing_if = "crate::utils::is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub download_url: Option<TranslatedString>,
 
     /// Where the legend for the layer can found.
     /// If absent, then the layer doesn't have any such legend.
-    #[serde(default, skip_serializing_if = "crate::utils::is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legend: Option<LayerLegend>,
+
+    /// Where the legend for the layer can found.
+    /// If absent, then the layer doesn't have any such legend.
+    #[serde(default, skip_serializing)]
+    pub access: Option<LayerAccess>,
 
     /// Details depending on the actual type of layer.
     #[serde(flatten)]

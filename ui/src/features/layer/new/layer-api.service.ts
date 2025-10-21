@@ -6,21 +6,19 @@ import {
   ConductivityVoxelLayerFilter,
   Layer,
   LayerGroup,
+  LayerSource,
+  LayerSourceType,
   LayerType,
   LithologyVoxelLayerFilter,
   LithologyVoxelLayerFilterItem,
-  WmtsLayer,
   TiffLayer,
   TiffLayerBand,
   TiffLayerConfigDisplay,
   Tiles3dLayer,
-  Tiles3dLayerSource,
-  Tiles3dLayerSourceForCesium,
-  Tiles3dLayerSourceForEarthquakes,
-  Tiles3dLayerSourceType,
   VoxelLayer,
   VoxelLayerFilter,
   VoxelLayerMapping,
+  WmtsLayer,
 } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
 import { firstValueFrom } from 'rxjs';
@@ -34,11 +32,11 @@ export class LayerApiService extends BaseService {
   constructor() {
     super();
 
-    SessionService.inject().subscribe((sessionService) => {
+    SessionService.inject$().subscribe((sessionService) => {
       this.sessionService = sessionService;
     });
 
-    WmtsService.inject().subscribe((wmtsService) => {
+    WmtsService.inject$().subscribe((wmtsService) => {
       this.wmtsService = wmtsService;
     });
   }
@@ -157,20 +155,7 @@ export class LayerApiService extends BaseService {
     config: DynamicObject,
   ): Specific<Tiles3dLayer> => ({
     orderOfProperties: config.takeNullable('orderOfProperties') ?? [],
-    source: config.takeObject('source').apply((source): Tiles3dLayerSource => {
-      switch (source.take<Tiles3dLayerSourceType>('type')) {
-        case Tiles3dLayerSourceType.CesiumIon:
-          return {
-            type: Tiles3dLayerSourceType.CesiumIon,
-            assetId: source.take('assetId'),
-          } satisfies Tiles3dLayerSourceForCesium;
-        case Tiles3dLayerSourceType.Earthquakes:
-          return {
-            type: Tiles3dLayerSourceType.Earthquakes,
-            url: source.take('url'),
-          } satisfies Tiles3dLayerSourceForEarthquakes;
-      }
-    }),
+    source: config.takeObject('source').apply(this.mapConfigToSource),
   });
 
   private readonly mapConfigToVoxelLayer = (
@@ -236,6 +221,27 @@ export class LayerApiService extends BaseService {
       }),
     ),
   });
+
+  private readonly mapConfigToSource = (config: DynamicObject): LayerSource => {
+    switch (config.take<LayerSourceType>('type')) {
+      case LayerSourceType.CesiumIon:
+        return {
+          type: LayerSourceType.CesiumIon,
+          assetId: config.take('assetId'),
+        };
+      case LayerSourceType.Url:
+        return {
+          type: LayerSourceType.Url,
+          url: config.take('url'),
+        };
+      case LayerSourceType.S3:
+        return {
+          type: LayerSourceType.S3,
+          bucket: config.take('bucket'),
+          key: config.take('key'),
+        };
+    }
+  };
 }
 
 type Specific<L extends Layer> = Omit<L, keyof BaseLayer>;

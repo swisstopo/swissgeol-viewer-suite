@@ -22,6 +22,7 @@ import { LayerApiService } from 'src/features/layer/new/layer-api.service';
 import { LayerService as NewLayerService } from 'src/features/layer/new/layer.service';
 import { WmtsService } from 'src/services/wmts.service';
 import { LayerUrlService } from 'src/features/layer/layer-url.service';
+import { PickService } from 'src/services/pick.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -59,6 +60,7 @@ export const registerAppContext = (
     makeProvider(LayerService),
     makeProvider(LayerInfoService),
     makeProvider(GestureControlsService),
+    makeProvider(PickService),
   );
 
   return contexts;

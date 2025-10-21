@@ -59,7 +59,7 @@ import { AppEnv, ClientConfig } from './api/client-config';
 import { CoreModal, CoreWindow } from 'src/features/core';
 import { makeId } from 'src/models/id.model';
 import { BackgroundLayer } from 'src/features/layer/layer.model';
-import { distinctUntilKeyChanged } from 'rxjs';
+import { distinctUntilKeyChanged, filter, take } from 'rxjs';
 import { addSwisstopoLayer } from 'src/swisstopoImagery';
 import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
@@ -310,7 +310,16 @@ export class NgmApp extends LitElementI18n {
     if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
       this.setResolutionScale();
     }
-    this.viewer = viewer;
+
+    const l = (count: number) => {
+      if (count === 0) {
+        this.viewer = viewer;
+        MainStore.setViewer(viewer);
+        viewer.scene.globe.tileLoadProgressEvent.removeEventListener(l);
+      }
+    };
+    viewer.scene.globe.tileLoadProgressEvent.addEventListener(l);
+
     window['viewer'] = viewer; // for debugging
 
     this.startCesiumLoadingProcess(viewer);
@@ -345,8 +354,6 @@ export class NgmApp extends LitElementI18n {
       });
     }
 
-    MainStore.setViewer(viewer);
-
     i18next.on('initialized', () => {
       this.showSlowLoadingWindow();
     });
@@ -363,7 +370,12 @@ export class NgmApp extends LitElementI18n {
       });
     });
 
-    this.initializeBackgroundLayers();
+    MainStore.viewer
+      .pipe(
+        filter((it) => it != null),
+        take(1),
+      )
+      .subscribe(() => this.initializeBackgroundLayers());
   }
 
   private initializeBackgroundLayers(): void {
