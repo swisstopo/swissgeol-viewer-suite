@@ -17,7 +17,7 @@ export class ApiClient extends BaseService {
     super();
     this.apiUrl = API_BY_PAGE_HOST[window.location.host];
 
-    SessionService.inject()
+    SessionService.inject$()
       .pipe(switchMap((service) => service.token$))
       .subscribe(async (token) => {
         this.token = token;

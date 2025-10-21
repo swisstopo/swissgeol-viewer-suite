@@ -2,17 +2,18 @@ import { BaseService } from 'src/utils/base.service';
 import { SessionService } from 'src/features/session';
 import {
   BehaviorSubject,
+  combineLatest,
   concatMap,
   filter,
   firstValueFrom,
   from,
-  identity,
   map,
   Observable,
   pairwise,
   shareReplay,
   startWith,
   switchMap,
+  take,
 } from 'rxjs';
 import {
   LayerApiService,
@@ -24,15 +25,18 @@ import { WmtsService } from 'src/services/wmts.service';
 import {
   BaseLayerController,
   LayerController,
-} from 'src/features/layer/new/controller/layer.controller';
-import { WmtsLayerController } from 'src/features/layer/new/controller/layer-wmts.controller';
+} from 'src/features/layer/new/controllers/layer.controller';
+import { WmtsLayerController } from 'src/features/layer/new/controllers/layer-wmts.controller';
 import { Viewer } from 'cesium';
 import MainStore from 'src/store/main';
+import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer-tiles3d.controller';
 
 export class LayerService extends BaseService {
   private viewer!: Viewer;
 
   private layerApiService!: LayerApiService;
+
+  private sessionService!: SessionService;
 
   private layers: IdMapping<Layer, LayerEntry> = new Map();
 
@@ -52,7 +56,8 @@ export class LayerService extends BaseService {
    */
   private readonly _activeLayerIds$ = new BehaviorSubject<IdArray<Layer>>([]);
 
-  private readonly _isReady$ = new BehaviorSubject(false);
+  private readonly hasLayers$ = new BehaviorSubject(false);
+  private readonly hasViewer$ = new BehaviorSubject(false);
 
   private readonly _layerChanges$ = this._activeLayerIds$.pipe(
     pairwise(),
@@ -93,14 +98,19 @@ export class LayerService extends BaseService {
     MainStore.viewer.subscribe((viewer) => {
       if (viewer !== null) {
         this.viewer = viewer;
+        this.hasViewer$.next(true);
       }
     });
 
-    LayerApiService.inject().subscribe((service) => {
+    LayerApiService.inject$().subscribe((service) => {
       this.layerApiService = service;
     });
 
-    SessionService.inject()
+    SessionService.inject$().subscribe((service) => {
+      this.sessionService = service;
+    });
+
+    SessionService.inject$()
       .pipe(
         switchMap((service) =>
           service.initialized$.pipe(switchMap(() => service.user$)),
@@ -108,9 +118,9 @@ export class LayerService extends BaseService {
       )
       .subscribe(() => this.loadLayers());
 
-    WmtsService.inject()
+    WmtsService.inject$()
       .pipe(
-        filter(() => this._isReady$.value),
+        filter(() => this.hasLayers$.value),
         switchMap((wmtsService) => wmtsService.layers$),
       )
       .subscribe((layers) => this.syncWmtsLayers(layers));
@@ -252,13 +262,14 @@ export class LayerService extends BaseService {
     this._activeLayerIds$.next(activeLayers);
     this._rootGroupIds$.next(rootGroupIds);
 
-    this._isReady$.next(true);
+    this.hasLayers$.next(true);
   }
 
   get ready(): Promise<void> {
     return firstValueFrom(
-      this._isReady$.pipe(
-        filter(identity),
+      combineLatest([this.hasLayers$, this.hasViewer$]).pipe(
+        filter(([a, b]) => a && b),
+        take(1),
         map(() => {}),
       ),
     );
@@ -412,8 +423,13 @@ export class LayerService extends BaseService {
   private makeController(layer: Layer): LayerController {
     switch (layer.type) {
       case LayerType.Wmts:
-        return new WmtsLayerController(layer, this.viewer);
+        return new WmtsLayerController(layer, this.viewer, this.sessionService);
       case LayerType.Tiles3d:
+        return new Tiles3dLayerController(
+          layer,
+          this.viewer,
+          this.sessionService,
+        );
       case LayerType.Voxel:
       case LayerType.Tiff:
         throw new Error('nyi');
