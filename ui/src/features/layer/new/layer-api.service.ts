@@ -9,7 +9,7 @@ import {
   LayerType,
   LithologyVoxelLayerFilter,
   LithologyVoxelLayerFilterItem,
-  SwisstopoLayer,
+  WmtsLayer,
   TiffLayer,
   TiffLayerBand,
   TiffLayerConfigDisplay,
@@ -100,46 +100,50 @@ export class LayerApiService extends BaseService {
     };
 
     switch (type) {
-      case LayerType.Swisstopo: {
-        const specifics = config.apply(this.mapConfigToSwisstopoLayer);
+      case LayerType.Wmts: {
+        const specifics = config.apply(this.mapConfigToWmtsLayer);
         if (specifics === null) {
           return null;
         }
         return {
           ...specifics,
           ...base,
+          id: base.id as Id<WmtsLayer>,
           type,
-        } satisfies SwisstopoLayer;
+        } satisfies WmtsLayer;
       }
       case LayerType.Tiles3d:
         return {
           ...config.apply(this.mapConfigToTiles3dLayer),
           ...base,
+          id: base.id as Id<Tiles3dLayer>,
           type,
         } satisfies Tiles3dLayer;
       case LayerType.Voxel:
         return {
           ...config.apply(this.mapConfigToVoxelLayer),
           ...base,
+          id: base.id as Id<VoxelLayer>,
           type,
         } satisfies VoxelLayer;
       case LayerType.Tiff:
         return {
           ...config.apply(this.mapConfigToTiffLayer),
           ...base,
+          id: base.id as Id<TiffLayer>,
           type,
         } satisfies TiffLayer;
     }
   }
 
-  private readonly mapConfigToSwisstopoLayer = (
+  private readonly mapConfigToWmtsLayer = (
     config: DynamicObject,
-  ): Specific<SwisstopoLayer> | null => {
-    const id: Id<Layer> = config.get('id');
+  ): Specific<WmtsLayer> | null => {
+    const id: Id<WmtsLayer> = config.get('id');
     const def = this.wmtsService.layer(id);
     if (def === null) {
       console.error(
-        `Swisstopo layer not found in WMS/WMTS (layer will be ignored): ${id}`,
+        `Layer not found in WMS/WMTS (layer will be ignored): ${id}`,
       );
       return null;
     }

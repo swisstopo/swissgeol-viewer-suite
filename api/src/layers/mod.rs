@@ -7,8 +7,8 @@ pub use config::LayerConfig;
 mod group;
 pub use group::*;
 
-mod swisstopo;
-pub use swisstopo::*;
+mod wmts;
+pub use wmts::*;
 
 mod tiff;
 pub use tiff::*;
@@ -25,7 +25,7 @@ pub use voxel::*;
 pub struct Layer {
     /// A unique identifier for the layer. Will also be used as part of the translation key for the layer's display name.
     ///
-    /// For [swisstopo layers](SwisstopoLayer), this is also the name that uniquely identifies the layer within the swisstopo WMTS API.
+    /// For [wmts layers](WmtsLayer), this is also the name that uniquely identifies the layer within the swisstopo WMTS API.
     pub id: String,
 
     /// The layer's default opacity.
@@ -79,7 +79,7 @@ pub enum LayerLegend {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum LayerDetail {
-    Swisstopo(SwisstopoLayer),
+    Wmts(WmtsLayer),
     Tiles3d(Tiles3dLayer),
     Voxel(VoxelLayer),
     Tiff(TiffLayer),
@@ -88,7 +88,7 @@ pub enum LayerDetail {
 impl Parse for Layer {
     fn parse(mut self, context: &mut ParseContext) -> anyhow::Result<Self> {
         self.detail = match self.detail {
-            detail @ LayerDetail::Swisstopo(_) => detail,
+            detail @ LayerDetail::Wmts(_) => detail,
             detail @ LayerDetail::Tiles3d(_) => detail,
             LayerDetail::Voxel(detail) => LayerDetail::Voxel(detail.parse(context)?),
             LayerDetail::Tiff(detail) => LayerDetail::Tiff(detail.parse(context)?),

@@ -36,7 +36,7 @@ import {
 import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
 import { LayerService as NewLayerService } from 'src/features/layer/new/layer.service';
 import { LayerTreeNode, LayerType as OldLayerType } from 'src/layertree';
-import { LayerInfoPickerForSwisstopo } from 'src/features/layer/info/pickers/layer-info-picker-for-swisstopo';
+import { LayerInfoPickerForWmts } from 'src/features/layer/info/pickers/layer-info-picker-for-wmts';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
 import { LayerInfoPickerFor3dTiles } from 'src/features/layer/info/pickers/layer-info-picker-for-3dtiles';
 import DrawStore from 'src/store/draw';
@@ -152,8 +152,8 @@ export class LayerInfoService extends BaseService {
     const controller = this.layerService.controller(layerId)!;
     const picker = run(() => {
       switch (controller.type) {
-        case LayerType.Swisstopo:
-          return new LayerInfoPickerForSwisstopo(controller, this.viewer);
+        case LayerType.Wmts:
+          return new LayerInfoPickerForWmts(controller, this.viewer);
       }
     });
 

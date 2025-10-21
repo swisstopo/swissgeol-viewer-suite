@@ -19,18 +19,13 @@ import {
   LayerGroupConfig,
 } from 'src/features/layer/new/layer-api.service';
 import { Id } from 'src/models/id.model';
-import {
-  Layer,
-  LayerGroup,
-  LayerType,
-  SwisstopoLayer,
-} from 'src/features/layer';
+import { Layer, LayerGroup, LayerType, WmtsLayer } from 'src/features/layer';
 import { WmtsService } from 'src/services/wmts.service';
 import {
   BaseLayerController,
   LayerController,
 } from 'src/features/layer/new/controller/layer.controller';
-import { SwisstopoLayerController } from 'src/features/layer/new/controller/layer-swisstopo.controller';
+import { WmtsLayerController } from 'src/features/layer/new/controller/layer-wmts.controller';
 import { Viewer } from 'cesium';
 import MainStore from 'src/store/main';
 
@@ -121,7 +116,7 @@ export class LayerService extends BaseService {
       .subscribe((layers) => this.syncWmtsLayers(layers));
   }
 
-  private syncWmtsLayers(layers: SwisstopoLayer[]) {
+  private syncWmtsLayers(layers: WmtsLayer[]) {
     for (const layer of layers) {
       const entry = this.layers.get(layer.id);
       if (entry === undefined) {
@@ -131,15 +126,15 @@ export class LayerService extends BaseService {
         format: layer.format,
         credit: layer.credit,
         times: layer.times,
-      } satisfies Partial<SwisstopoLayer>;
+      } satisfies Partial<WmtsLayer>;
 
-      const updatedState: SwisstopoLayer = {
-        ...(entry.state$.value as SwisstopoLayer),
+      const updatedState: WmtsLayer = {
+        ...(entry.state$.value as WmtsLayer),
         ...fields,
       };
 
-      const updatedDefinition: SwisstopoLayer = {
-        ...(entry.definition as SwisstopoLayer),
+      const updatedDefinition: WmtsLayer = {
+        ...(entry.definition as WmtsLayer),
         ...fields,
       };
 
@@ -416,8 +411,8 @@ export class LayerService extends BaseService {
 
   private makeController(layer: Layer): LayerController {
     switch (layer.type) {
-      case LayerType.Swisstopo:
-        return new SwisstopoLayerController(layer, this.viewer);
+      case LayerType.Wmts:
+        return new WmtsLayerController(layer, this.viewer);
       case LayerType.Tiles3d:
       case LayerType.Voxel:
       case LayerType.Tiff:

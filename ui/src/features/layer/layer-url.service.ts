@@ -4,7 +4,7 @@ import {
   LayerUpdate,
 } from 'src/features/layer/new/layer.service';
 import { combineLatest, debounceTime, identity, map, switchMap } from 'rxjs';
-import { Layer, LayerType, SwisstopoLayer } from 'src/features/layer/models';
+import { Layer, LayerType, WmtsLayer } from 'src/features/layer/models';
 import { Id } from 'src/models/id.model';
 
 export class LayerUrlService extends BaseService {
@@ -59,8 +59,8 @@ export class LayerUrlService extends BaseService {
 
       const layer = this.layerService.layer(id);
       const timestamp = params.timestamp[i] ?? 'current';
-      if (layer.type === LayerType.Swisstopo && timestamp !== 'current') {
-        (update as LayerUpdate<SwisstopoLayer>).times = {
+      if (layer.type === LayerType.Wmts && timestamp !== 'current') {
+        (update as LayerUpdate<WmtsLayer>).times = {
           ...layer.times!,
           current: timestamp,
         };
@@ -78,7 +78,7 @@ export class LayerUrlService extends BaseService {
       params.transparency.push(Number((1 - layer.opacity).toFixed(2)));
 
       const timestamp =
-        (layer.type === LayerType.Swisstopo && layer.times?.current) || '';
+        (layer.type === LayerType.Wmts && layer.times?.current) || '';
       params.timestamp.push(timestamp === 'current' ? '' : timestamp);
     }
     if (params.timestamp.every((it) => it === '')) {
