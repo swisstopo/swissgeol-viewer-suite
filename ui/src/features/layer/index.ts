@@ -1,5 +1,5 @@
 export * from './models';
 
-export * from './tiff/layer-tiff.controller';
+export * from './new/layer.service';
 
-export * from './layer-event.model';
+export * from './tiff/layer-tiff.controller';
