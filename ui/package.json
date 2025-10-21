@@ -111,6 +111,7 @@
     "stream-to-promise": "3.0.0",
     "style-loader": "^4.0.0",
     "typescript": "^5.8.2",
+    "undici-types": "^7.16.0",
     "vite-bundle-analyzer": "^0.18.0",
     "vite-plugin-static-copy": "^2.2.0"
   }
