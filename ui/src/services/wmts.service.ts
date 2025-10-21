@@ -2,9 +2,9 @@ import { BaseService } from 'src/utils/base.service';
 import { language$ } from 'src/i18n';
 import {
   LayerType,
-  SwisstopoLayer,
-  SwisstopoLayerTimes,
-  SwisstopoLayerSource,
+  WmtsLayer,
+  WmtsLayerTimes,
+  WmtsLayerSource,
 } from 'src/features/layer';
 import i18next from 'i18next';
 import { Id, makeId } from 'src/models/id.model';
@@ -12,7 +12,7 @@ import { BehaviorSubject, filter, map, Observable, switchMap } from 'rxjs';
 
 export class WmtsService extends BaseService {
   private readonly _layers$ = new BehaviorSubject(
-    new Map<Id<SwisstopoLayer>, SwisstopoLayer>(),
+    new Map<Id<WmtsLayer>, WmtsLayer>(),
   );
 
   constructor() {
@@ -29,24 +29,24 @@ export class WmtsService extends BaseService {
     );
   }
 
-  get layers$(): Observable<SwisstopoLayer[]> {
+  get layers$(): Observable<WmtsLayer[]> {
     return this._layers$.pipe(map((layers) => [...layers.values()]));
   }
 
-  layer(id: Id<SwisstopoLayer>): SwisstopoLayer | null {
+  layer(id: Id<WmtsLayer>): WmtsLayer | null {
     return this._layers$.value.get(id) ?? null;
   }
 
-  layer$(id: Id<SwisstopoLayer>): Observable<SwisstopoLayer | null> {
+  layer$(id: Id<WmtsLayer>): Observable<WmtsLayer | null> {
     return this._layers$.pipe(map((layers) => layers.get(id) ?? null));
   }
 
-  private async load(): Promise<Map<Id<SwisstopoLayer>, SwisstopoLayer>> {
+  private async load(): Promise<Map<Id<WmtsLayer>, WmtsLayer>> {
     const [wms, wmts] = await Promise.all([
       this.fetchWmsCapabilities(),
       this.fetchWmtsCapabilities(),
     ]);
-    const map = new Map<Id<SwisstopoLayer>, SwisstopoLayer>();
+    const map = new Map<Id<WmtsLayer>, WmtsLayer>();
     for (const layers of [wms, wmts]) {
       for (const layer of layers) {
         map.set(layer.id, layer);
@@ -55,7 +55,7 @@ export class WmtsService extends BaseService {
     return map;
   }
 
-  private async fetchWmsCapabilities(): Promise<SwisstopoLayer[]> {
+  private async fetchWmsCapabilities(): Promise<WmtsLayer[]> {
     const xml = await this.fetchCapabilitiesXml({
       host: 'https://wms.geo.admin.ch/',
       params: {
@@ -71,8 +71,8 @@ export class WmtsService extends BaseService {
     return this.parseWmsCapabilities(xml);
   }
 
-  parseWmsCapabilities(xml: Document): SwisstopoLayer[] {
-    const configs: SwisstopoLayer[] = [];
+  parseWmsCapabilities(xml: Document): WmtsLayer[] {
+    const configs: WmtsLayer[] = [];
     const layers = xml.querySelectorAll('Layer');
     for (const layer of layers.values()) {
       const layerTitle = layer.querySelector('Title')?.textContent;
@@ -93,10 +93,10 @@ export class WmtsService extends BaseService {
         layer.querySelector('Dimension')?.textContent?.split(',') || [];
 
       configs.push({
-        type: LayerType.Swisstopo,
+        type: LayerType.Wmts,
         id: makeId(`${layerName}`),
         label: layerTitle ?? null,
-        source: SwisstopoLayerSource.WMTS,
+        source: WmtsLayerSource.WMTS,
         opacity: 1,
         canUpdateOpacity: true,
         isVisible: true,
@@ -112,7 +112,7 @@ export class WmtsService extends BaseService {
     return configs;
   }
 
-  private async fetchWmtsCapabilities(): Promise<SwisstopoLayer[]> {
+  private async fetchWmtsCapabilities(): Promise<WmtsLayer[]> {
     const xml = await this.fetchCapabilitiesXml({
       host: 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml',
       params: {
@@ -125,8 +125,8 @@ export class WmtsService extends BaseService {
     return this.parseWmtsCapabilities(xml);
   }
 
-  private parseWmtsCapabilities(xml: Document): SwisstopoLayer[] {
-    const configs: SwisstopoLayer[] = [];
+  private parseWmtsCapabilities(xml: Document): WmtsLayer[] {
+    const configs: WmtsLayer[] = [];
     const layers = xml.querySelectorAll('Layer');
     const owsNamespace = 'http://www.opengis.net/ows/1.1';
     for (const layer of layers.values()) {
@@ -157,9 +157,9 @@ export class WmtsService extends BaseService {
         ).map((time) => time.textContent!);
 
         configs.push({
-          type: LayerType.Swisstopo,
+          type: LayerType.Wmts,
           id: makeId(`${layerName}`),
-          source: SwisstopoLayerSource.WMTS,
+          source: WmtsLayerSource.WMTS,
           label: titles?.[0]?.textContent ?? layerName,
           opacity: 1,
           canUpdateOpacity: true,
@@ -196,7 +196,7 @@ export class WmtsService extends BaseService {
   private makeTimes(
     current: string | null,
     all: string[] | null,
-  ): SwisstopoLayerTimes | null {
+  ): WmtsLayerTimes | null {
     const isDefaultCurrent = current === null || current === 'current';
     const isDefaultAll =
       all === null ||

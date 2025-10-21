@@ -1,7 +1,7 @@
 import { css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
-import { SwisstopoLayer } from 'src/features/layer';
+import { WmtsLayer } from 'src/features/layer';
 import { repeat } from 'lit/directives/repeat.js';
 import { run } from 'src/utils/fn.utils';
 import i18next from 'i18next';
@@ -12,10 +12,10 @@ import { Id } from 'src/models/id.model';
 @customElement('ngm-catalog-display-times')
 export class CatalogDisplayTimes extends CoreElement {
   @property()
-  accessor layerId!: Id<SwisstopoLayer>;
+  accessor layerId!: Id<WmtsLayer>;
 
   @state()
-  accessor layer!: SwisstopoLayer;
+  accessor layer!: WmtsLayer;
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;

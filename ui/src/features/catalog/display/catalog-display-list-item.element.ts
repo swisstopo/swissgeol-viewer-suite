@@ -264,7 +264,7 @@ export class CatalogDisplayList extends CoreElement {
           `
         : ''}
       ${when(
-        this.layer.type === LayerType.Swisstopo && this.layer.times !== null,
+        this.layer.type === LayerType.Wmts && this.layer.times !== null,
         () => html`
           <ngm-core-dropdown-item role="button" @click="${this.openTimes}">
             <ngm-core-icon icon="turnPage"></ngm-core-icon>

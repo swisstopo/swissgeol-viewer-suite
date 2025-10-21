@@ -1,8 +1,8 @@
 import { Viewer } from 'cesium';
 import { Layer, LayerType } from 'src/features/layer';
-import { SwisstopoLayerController } from 'src/features/layer/new/controller/layer-swisstopo.controller';
+import { WmtsLayerController } from 'src/features/layer/new/controller/layer-wmts.controller';
 
-export type LayerController = SwisstopoLayerController;
+export type LayerController = WmtsLayerController;
 
 /**
  * A {@link LayerController} is responsible for managing how a {@link Layer} is displayed on the {@link Viewer}.

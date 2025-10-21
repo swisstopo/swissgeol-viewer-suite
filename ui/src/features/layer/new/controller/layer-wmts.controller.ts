@@ -1,9 +1,5 @@
 import { BaseLayerController } from 'src/features/layer/new/controller/layer.controller';
-import {
-  SwisstopoLayer,
-  SwisstopoLayerSource,
-  LayerType,
-} from 'src/features/layer';
+import { WmtsLayer, WmtsLayerSource, LayerType } from 'src/features/layer';
 import {
   Credit,
   ImageryLayer,
@@ -17,12 +13,12 @@ import {
 import i18next from 'i18next';
 
 /**
- * {@link SwisstopoLayerController} is the {@link LayerController} implementation for {@link SwisstopoLayer} instances.
+ * {@link WmtsLayerController} is the {@link LayerController} implementation for {@link WmtsLayer} instances.
  *
- * This controller's layer are displayed using {@link ImageryLayer},
+ * This controller's layers are displayed using {@link ImageryLayer},
  * which are added to `viewer.scene.imageryLayers`.
  */
-export class SwisstopoLayerController extends BaseLayerController<SwisstopoLayer> {
+export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
   /**
    * The imagery provider.
    *
@@ -30,7 +26,7 @@ export class SwisstopoLayerController extends BaseLayerController<SwisstopoLayer
    *
    * @private
    */
-  private provider!: SwisstopoImageryProvider;
+  private provider!: WmtsImageryProvider;
 
   /**
    * The imagery layer created from {@link provider}.
@@ -41,8 +37,8 @@ export class SwisstopoLayerController extends BaseLayerController<SwisstopoLayer
    */
   private _imagery!: ImageryLayer;
 
-  get type(): LayerType.Swisstopo {
-    return LayerType.Swisstopo;
+  get type(): LayerType.Wmts {
+    return LayerType.Wmts;
   }
 
   get imagery(): ImageryLayer {
@@ -106,7 +102,7 @@ export class SwisstopoLayerController extends BaseLayerController<SwisstopoLayer
    */
   protected override removeFromViewer(): void {
     this.removeLayerFromViewer();
-    this.provider = undefined as unknown as SwisstopoImageryProvider;
+    this.provider = undefined as unknown as WmtsImageryProvider;
   }
 
   /**
@@ -143,16 +139,16 @@ export class SwisstopoLayerController extends BaseLayerController<SwisstopoLayer
    * Creates a provider instance based on the layer's source type.
    * @private
    */
-  private makeProvider(): SwisstopoImageryProvider {
+  private makeProvider(): WmtsImageryProvider {
     switch (this.layer.source) {
-      case SwisstopoLayerSource.WMS:
+      case WmtsLayerSource.WMS:
         return this.makeProviderForWms();
-      case SwisstopoLayerSource.WMTS:
+      case WmtsLayerSource.WMTS:
         return this.makeProviderForWmts();
     }
   }
 
-  private makeProviderForWms(): SwisstopoImageryProvider {
+  private makeProviderForWms(): WmtsImageryProvider {
     return new WebMapServiceImageryProvider({
       url: 'https://wms{s}.geo.admin.ch?version=1.3.0',
       crs: 'EPSG:4326',
@@ -170,7 +166,7 @@ export class SwisstopoLayerController extends BaseLayerController<SwisstopoLayer
     });
   }
 
-  private makeProviderForWmts(): SwisstopoImageryProvider {
+  private makeProviderForWmts(): WmtsImageryProvider {
     return new UrlTemplateImageryProvider({
       url: 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}',
       maximumLevel: this.layer.maxLevel ?? undefined,
@@ -185,6 +181,6 @@ export class SwisstopoLayerController extends BaseLayerController<SwisstopoLayer
   }
 }
 
-type SwisstopoImageryProvider =
+type WmtsImageryProvider =
   | WebMapServiceImageryProvider
   | UrlTemplateImageryProvider;
