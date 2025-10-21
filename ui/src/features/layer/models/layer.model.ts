@@ -1,12 +1,12 @@
 import type { Id } from 'src/models/id.model';
 import type { Model } from 'src/models/model.model';
-import { SwisstopoLayer, TiffLayer } from 'src/features/layer';
+import { WmtsLayer, TiffLayer } from 'src/features/layer';
 import { Tiles3dLayer } from 'src/features/layer/models/layer-tiles3d.model';
 import { VoxelLayer } from 'src/features/layer/models/layer-voxel.model';
 import { TranslatedString } from 'src/models/translated-string.model';
 import i18next from 'i18next';
 
-export type Layer = SwisstopoLayer | Tiles3dLayer | VoxelLayer | TiffLayer;
+export type Layer = WmtsLayer | Tiles3dLayer | VoxelLayer | TiffLayer;
 
 export interface BaseLayer extends Model {
   type: LayerType | 'Background';
@@ -74,7 +74,7 @@ export interface BaseLayer extends Model {
 }
 
 export enum LayerType {
-  Swisstopo = 'Swisstopo',
+  Wmts = 'Wmts',
   Tiles3d = 'Tiles3d',
   Voxel = 'Voxel',
   Tiff = 'Tiff',

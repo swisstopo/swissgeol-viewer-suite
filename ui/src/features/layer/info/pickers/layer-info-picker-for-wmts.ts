@@ -23,24 +23,24 @@ import {
   LayerInfo,
   LayerInfoAttribute,
 } from 'src/features/layer/info/layer-info.model';
-import { SwisstopoLayerController } from 'src/features/layer/new/controller/layer-swisstopo.controller';
+import { WmtsLayerController } from 'src/features/layer/new/controller/layer-wmts.controller';
 import { Id } from '@swissgeol/ui-core';
-import { SwisstopoLayer } from 'src/features/layer';
+import { WmtsLayer } from 'src/features/layer';
 
-export class LayerInfoPickerForSwisstopo implements LayerInfoPicker {
+export class LayerInfoPickerForWmts implements LayerInfoPicker {
   private readonly highlights: CustomDataSource;
 
   constructor(
-    private readonly controller: SwisstopoLayerController,
+    private readonly controller: WmtsLayerController,
     private readonly viewer: Viewer,
   ) {
     this.highlights = new CustomDataSource(
-      `LayerInfoPickerForSwisstopo.${controller.layer.id}`,
+      `${this.constructor.name}.${controller.layer.id}`,
     );
     this.viewer.dataSources.add(this.highlights).then();
   }
 
-  get source(): Id<SwisstopoLayer> {
+  get source(): Id<WmtsLayer> {
     return this.controller.layer.id;
   }
 
@@ -82,7 +82,7 @@ export class LayerInfoPickerForSwisstopo implements LayerInfoPicker {
   private async getInfoForResult(
     result: IdentifyResult,
     entity: Entity,
-  ): Promise<LayerInfoForSwisstopo> {
+  ): Promise<LayerInfoForWmts> {
     const lang = i18next.language;
     const response = await fetch(
       `https://api3.geo.admin.ch/rest/services/api/MapServer/${result.layerBodId}/${result.featureId}/htmlPopup?lang=${lang}`,
@@ -128,7 +128,7 @@ export class LayerInfoPickerForSwisstopo implements LayerInfoPicker {
       });
       return attributes;
     }, [] as LayerInfoAttribute[]);
-    return new LayerInfoForSwisstopo(this.viewer, this.highlights, {
+    return new LayerInfoForWmts(this.viewer, this.highlights, {
       entity,
       title: `layers:layers.${this.controller.layer.id}`,
       source: this.controller.layer.id,
@@ -218,9 +218,9 @@ export class LayerInfoPickerForSwisstopo implements LayerInfoPicker {
   }
 }
 
-class LayerInfoForSwisstopo implements LayerInfo {
+class LayerInfoForWmts implements LayerInfo {
   public readonly title: string;
-  public readonly source: Id<SwisstopoLayer>;
+  public readonly source: Id<WmtsLayer>;
   public readonly attributes: LayerInfoAttribute[];
 
   private readonly entity: Entity;
@@ -230,7 +230,7 @@ class LayerInfoForSwisstopo implements LayerInfo {
     private readonly dataSource: CustomDataSource,
     data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
       entity: Entity;
-      source: Id<SwisstopoLayer>;
+      source: Id<WmtsLayer>;
     },
   ) {
     this.entity = data.entity;

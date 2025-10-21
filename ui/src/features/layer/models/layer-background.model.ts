@@ -1,4 +1,4 @@
-import { BaseLayer, SwisstopoLayer } from 'src/features/layer';
+import { BaseLayer, WmtsLayer } from 'src/features/layer';
 
 /**
  * A {@link Layer} that serves as the viewer's main base layer.
@@ -16,7 +16,7 @@ export interface BackgroundLayer extends BaseLayer {
    * The layer's sub layers, consisting of images that will be layered on top of {@link imagePath the base image}.
    * Unlike the base image, these images will be fetched from swisstopo instead of being local files.
    */
-  children: SwisstopoLayer[];
+  children: WmtsLayer[];
 
   /**
    * Whether the {@link imagePath the base image} has an alpha channel.

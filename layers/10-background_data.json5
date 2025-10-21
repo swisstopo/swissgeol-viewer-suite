@@ -1,7 +1,7 @@
 {
   layers: [
     {
-      type: 'Swisstopo',
+      type: 'Wmts',
       id: 'ch.swisstopo.zeitreihen',
       max_level: 18,
       opacity: 0.7,

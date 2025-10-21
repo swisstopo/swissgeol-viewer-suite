@@ -5,8 +5,8 @@ import type { Id } from 'src/models/id.model';
  * A {@link Layer} that is sourced from swisstopo's [WMS](https://www.geo.admin.ch/de/wms-verfuegbare-dienste-und-daten)
  * or [WMTS](https://www.geo.admin.ch/de/wmts-verfuegbare-dienste-und-daten) service.
  */
-export interface SwisstopoLayer extends BaseLayer {
-  type: LayerType.Swisstopo;
+export interface WmtsLayer extends BaseLayer {
+  type: LayerType.Wmts;
 
   /**
    * A unique identifier for the layer. Will also be used as part of the translation key for the layer's display name.
@@ -15,7 +15,10 @@ export interface SwisstopoLayer extends BaseLayer {
    */
   id: Id<this>;
 
-  source: SwisstopoLayerSource;
+  /**
+   * The source of the layer (WMS or WMTS).
+   */
+  source: WmtsLayerSource;
 
   /**
    * The zoom level (zoomed in) from which on no higher resolution tiles will be fetched.
@@ -27,7 +30,7 @@ export interface SwisstopoLayer extends BaseLayer {
    * The time steps available on this layer.
    * For layers with only a single time, this is `null`.
    */
-  times: SwisstopoLayerTimes | null;
+  times: WmtsLayerTimes | null;
 
   /**
    * The mime type of the WM(T)S layer.
@@ -35,11 +38,13 @@ export interface SwisstopoLayer extends BaseLayer {
    */
   format: string;
 
-  // TODO check if we need this
+  /**
+   * The name of the organization or entity that the layer is attributed to.
+   */
   credit: string;
 }
 
-export interface SwisstopoLayerTimes {
+export interface WmtsLayerTimes {
   /**
    * The currently selected time.
    */
@@ -51,7 +56,7 @@ export interface SwisstopoLayerTimes {
   all: string[];
 }
 
-export enum SwisstopoLayerSource {
+export enum WmtsLayerSource {
   WMS = 'WMS',
   WMTS = 'WMTS',
 }
