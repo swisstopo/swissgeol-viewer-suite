@@ -38,7 +38,7 @@ import { LayerService as NewLayerService } from 'src/features/layer/new/layer.se
 import { LayerTreeNode, LayerType as OldLayerType } from 'src/layertree';
 import { LayerInfoPickerForWmts } from 'src/features/layer/info/pickers/layer-info-picker-for-wmts';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
-import { LayerInfoPickerFor3dTiles } from 'src/features/layer/info/pickers/layer-info-picker-for-3dtiles';
+import { LayerInfoPickerForTiles3d } from 'src/features/layer/info/pickers/layer-info-picker-for-tiles3d';
 import DrawStore from 'src/store/draw';
 import { Id } from 'src/models/id.model';
 import { run } from 'src/utils/fn.utils';
@@ -72,13 +72,13 @@ export class LayerInfoService extends BaseService {
   constructor() {
     super();
 
-    NewLayerService.inject().subscribe((layerService) => {
+    NewLayerService.inject$().subscribe((layerService) => {
       this.layerService = layerService;
       layerService.layerActivated$.subscribe(this.handleLayerActivated);
     });
 
     MainStore.viewer
-      .pipe(withLatestFrom(LayerService.inject()))
+      .pipe(withLatestFrom(LayerService.inject$()))
       .subscribe(([viewer, layerService]) => {
         if (viewer === null) {
           return;
@@ -154,6 +154,8 @@ export class LayerInfoService extends BaseService {
       switch (controller.type) {
         case LayerType.Wmts:
           return new LayerInfoPickerForWmts(controller, this.viewer);
+        case LayerType.Tiles3d:
+          return new LayerInfoPickerForTiles3d(controller, this.viewer);
       }
     });
 
@@ -277,12 +279,6 @@ export class LayerInfoService extends BaseService {
           case OldLayerType.voxels3dtiles:
             this.pickers.unshift(
               new LayerInfoPickerForVoxels(layer, this.viewer),
-            );
-            break;
-          case OldLayerType.tiles3d:
-          case OldLayerType.earthquakes:
-            this.pickers.unshift(
-              new LayerInfoPickerFor3dTiles(layer, this.viewer),
             );
             break;
           default:

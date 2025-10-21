@@ -55,7 +55,7 @@ export default class AmazonS3Resource extends Resource {
       Key: extractKeyFromUrl(this.url),
     };
     const command = new GetObjectCommand(options);
-    return getSignedUrl(client, command);
+    return getSignedUrl(client, command, { expiresIn: 5 });
   }
 
   _makeRequest(options) {

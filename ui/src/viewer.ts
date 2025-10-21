@@ -120,6 +120,11 @@ export async function setupViewer(
   viewer.scene.postProcessStages.ambientOcclusion.enabled = false;
 
   const scene = viewer.scene;
+
+  // Hide underground fog.
+  scene.fog.enabled = false;
+  scene.globe.showGroundAtmosphere = false;
+
   scene.rethrowRenderErrors = rethrowRenderErrors;
   // remove the default behaviour of calling 'zoomTo' on the double clicked entity
   viewer.screenSpaceEventHandler.removeInputAction(

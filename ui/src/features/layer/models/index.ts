@@ -5,3 +5,4 @@ export * from './layer-wmts.model';
 export * from './layer-tiff.model';
 export * from './layer-tiles3d.model';
 export * from './layer-voxel.model';
+export * from './source';

@@ -1,8 +1,15 @@
-import { Viewer } from 'cesium';
-import { Layer, LayerType } from 'src/features/layer';
-import { WmtsLayerController } from 'src/features/layer/new/controller/layer-wmts.controller';
+import { IonResource, Resource, Viewer } from 'cesium';
+import {
+  Layer,
+  LayerSource,
+  LayerSourceType,
+  LayerType,
+} from 'src/features/layer';
+import { WmtsLayerController } from 'src/features/layer/new/controllers/layer-wmts.controller';
+import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer-tiles3d.controller';
+import S3Resource from 'src/cesium/S3Resource';
 
-export type LayerController = WmtsLayerController;
+export type LayerController = WmtsLayerController | Tiles3dLayerController;
 
 /**
  * A {@link LayerController} is responsible for managing how a {@link Layer} is displayed on the {@link Viewer}.
@@ -130,7 +137,7 @@ export abstract class BaseLayerController<T extends Layer = Layer> {
     this.isInitialized = true;
     this.currentWatchIndex = 0;
 
-    this.addToViewer();
+    this.addToViewer()?.then();
   }
 
   /**
@@ -148,7 +155,7 @@ export abstract class BaseLayerController<T extends Layer = Layer> {
    *
    * @param layer The updated layer data.
    */
-  update(layer: T): void {
+  async update(layer: T): Promise<void> {
     // Update the local layer data.
     // Note that we do this *before* checking for changes, as change detection is handled via `watchedValues`.
     this._layer = layer;
@@ -159,7 +166,7 @@ export abstract class BaseLayerController<T extends Layer = Layer> {
     // If the changes require the current Cesium layer to be removed and a new one to be added,
     // we have to re-run `addToViewer`.
     if (this.hasRequestedReinitialization) {
-      this.addToViewer();
+      await this.addToViewer();
     }
     this.hasRequestedReinitialization = false;
 
@@ -208,7 +215,7 @@ export abstract class BaseLayerController<T extends Layer = Layer> {
    *
    * @protected
    */
-  protected abstract addToViewer(): void;
+  protected abstract addToViewer(): Promise<void> | void;
 
   /**
    * Removes the Cesium layer from the viewer, fully destroying it in the process.
@@ -274,3 +281,20 @@ export abstract class BaseLayerController<T extends Layer = Layer> {
     return false;
   }
 }
+
+export const mapLayerSourceToResource = async (
+  source: LayerSource,
+): Promise<Resource> => {
+  switch (source.type) {
+    case LayerSourceType.CesiumIon:
+      // TODO check if we need to pass an ion token here
+      return await IonResource.fromAssetId(source.assetId);
+    case LayerSourceType.Url:
+      return new Resource(source.url);
+    case LayerSourceType.S3:
+      return new S3Resource({
+        bucket: source.bucket,
+        key: source.key,
+      });
+  }
+};

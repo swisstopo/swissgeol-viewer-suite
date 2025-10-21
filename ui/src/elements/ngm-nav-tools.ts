@@ -461,6 +461,9 @@ export class NgmNavTools extends CoreElement {
   }
 
   toggleAxis(center: Cartesian3 | undefined) {
+    if (this.axisDataSource === undefined) {
+      return;
+    }
     this.axisCenter = center;
     if (!center) {
       this.axisDataSource!.entities.removeAll();

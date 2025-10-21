@@ -39,7 +39,7 @@ export class SessionService extends BaseService {
   constructor() {
     super();
 
-    BaseService.inject(clientConfigContext).subscribe((clientConfig) => {
+    BaseService.inject$(clientConfigContext).subscribe((clientConfig) => {
       this.clientConfig = clientConfig;
     });
 
@@ -108,6 +108,12 @@ export class SessionService extends BaseService {
 
   get cognitoIdentityCredentials(): CognitoIdentityCredentials | null {
     return this.sessionSubject.value?.cognitoIdentityCredentials ?? null;
+  }
+
+  get cognitoIdentityCredentials$(): Observable<CognitoIdentityCredentials | null> {
+    return this.sessionSubject.pipe(
+      map((it) => it?.cognitoIdentityCredentials ?? null),
+    );
   }
 
   setSession(session: Session): void {
