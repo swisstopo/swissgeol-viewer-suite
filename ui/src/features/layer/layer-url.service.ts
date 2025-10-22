@@ -11,8 +11,16 @@ import {
   of,
   switchMap,
 } from 'rxjs';
-import { Layer, LayerType, WmtsLayer } from 'src/features/layer/models';
-import { Id } from 'src/models/id.model';
+import {
+  BACKGROUND_LAYER,
+  BackgroundLayer,
+  BackgroundLayerVariant,
+  DEFAULT_BACKGROUND_VARIANT,
+  Layer,
+  LayerType,
+  WmtsLayer,
+} from 'src/features/layer/models';
+import { Id, makeId } from 'src/models/id.model';
 
 export class LayerUrlService extends BaseService {
   private layerService!: LayerService;
@@ -20,16 +28,17 @@ export class LayerUrlService extends BaseService {
   constructor() {
     super();
 
-    LayerService.inject$().subscribe((layerService) => {
+    LayerService.inject().then(async (layerService) => {
       this.layerService = layerService;
-      this.initialize();
+      await this.initialize();
     });
   }
 
   private async initialize(): Promise<void> {
     const params = this.readParams();
     await this.layerService.ready;
-    this.syncParamsToLayers(params);
+    this.syncParamsToLayers(params.layers);
+    this.syncParamsToBackground(params.background);
 
     this.layerService.activeLayerIds$
       .pipe(
@@ -40,24 +49,47 @@ export class LayerUrlService extends BaseService {
           return combineLatest(ids.map((id) => this.layerService.layer$(id)));
         }),
         debounceTime(250),
-        map(this.makeParams),
+        map(this.makeLayerParams),
       )
-      .subscribe(this.writeParams);
+      .subscribe((params) =>
+        this.writeParams((url) => this.writeLayerParams(params, url)),
+      );
+
+    this.layerService
+      .layer$(BACKGROUND_LAYER.id)
+      .pipe(debounceTime(250), map(this.makeBackgroundParams))
+      .subscribe((params) =>
+        this.writeParams((url) => this.writeBackgroundParams(params, url)),
+      );
   }
 
   private readParams(): Params {
     const url = new URL(window.location.href);
     return {
-      layers: this.getParamFromUrl(url, 'layers') as Array<Id<Layer>>,
-      visibility: this.getParamFromUrl(url, 'visibility').map(Boolean),
-      transparency: this.getParamFromUrl(url, 'transparency').map(Number),
-      timestamp: this.getParamFromUrl(url, 'timestamp').map((it) =>
-        it === '' ? 'current' : it,
-      ),
+      layers: {
+        layers: this.getLayerParamFromUrl(url, 'layers') as Array<Id<Layer>>,
+        visibility: this.getLayerParamFromUrl(url, 'visibility').map(Boolean),
+        transparency: this.getLayerParamFromUrl(url, 'transparency').map(
+          Number,
+        ),
+        timestamp: this.getLayerParamFromUrl(url, 'timestamp').map((it) =>
+          it === '' ? 'current' : it,
+        ),
+      },
+      background: {
+        map:
+          (this.getBackgroundParamFromUrl(
+            url,
+            'map',
+          ) as Id<BackgroundLayerVariant>) ?? DEFAULT_BACKGROUND_VARIANT.id,
+        transparency: Number(
+          this.getBackgroundParamFromUrl(url, 'transparency') ?? '0',
+        ),
+      },
     };
   }
 
-  private syncParamsToLayers(params: Params): void {
+  private syncParamsToLayers(params: LayerParams): void {
     for (let i = params.layers.length - 1; i >= 0; i--) {
       const id = params.layers[i];
       this.layerService.activate(id);
@@ -80,8 +112,21 @@ export class LayerUrlService extends BaseService {
     }
   }
 
-  private makeParams = (layers: Layer[]): Params => {
-    const params = makeEmptyParams();
+  private syncParamsToBackground(params: BackgroundParams): void {
+    console.log(params);
+    const isVisible = params.map !== 'empty_map';
+    const update: LayerUpdate<BackgroundLayer> = {
+      activeVariantId: isVisible ? params.map : DEFAULT_BACKGROUND_VARIANT.id,
+      opacity: 1 - (params.transparency ?? 0),
+    };
+    this.layerService.update(BACKGROUND_LAYER.id, update);
+
+    // Update visibility in a later step so it doesn't get overwritten by opacity.
+    this.layerService.update(BACKGROUND_LAYER.id, { isVisible });
+  }
+
+  private makeLayerParams = (layers: Layer[]): LayerParams => {
+    const params = makeEmptyLayerParams();
     for (const layer of layers) {
       params.layers.push(layer.id);
       params.visibility.push(layer.isVisible);
@@ -100,13 +145,24 @@ export class LayerUrlService extends BaseService {
     return params;
   };
 
-  private writeParams = (params: Params): void => {
-    const url = new URL(window.location.href);
+  private makeBackgroundParams = (layer: BackgroundLayer): BackgroundParams => {
+    return {
+      map: layer.isVisible ? layer.activeVariantId : makeId('empty_map'),
+      transparency: 1 - layer.opacity,
+    };
+  };
 
+  private writeParams = (write: (url: URL) => void): void => {
+    const url = new URL(window.location.href);
+    write(url);
+    history.replaceState(null, '', url.toString().replace(/%2C/g, ','));
+  };
+
+  private writeLayerParams(params: LayerParams, url: URL): void {
     for (const [key, values] of Object.entries(params) as Array<
-      [keyof Params, Params[keyof Params]]
+      [keyof LayerParams, LayerParams[keyof LayerParams]]
     >) {
-      const name = getParamName(key);
+      const name = getLayerParamName(key);
       if (values.length === 0) {
         url.searchParams.delete(name);
       } else {
@@ -118,29 +174,65 @@ export class LayerUrlService extends BaseService {
         );
       }
     }
-    history.replaceState(null, '', url.toString().replace(/%2C/g, ','));
-  };
+  }
 
-  private getParamFromUrl(url: URL, key: keyof Params): string[] {
-    const name = getParamName(key);
+  private writeBackgroundParams(params: BackgroundParams, url: URL): void {
+    const mapName = getBackgroundParamName('map');
+    if (params.map === DEFAULT_BACKGROUND_VARIANT.id) {
+      url.searchParams.delete(mapName);
+    } else {
+      url.searchParams.set(mapName, String(params.map));
+    }
+
+    const transparencyName = getBackgroundParamName('transparency');
+    if (params.transparency === 0) {
+      url.searchParams.delete(transparencyName);
+    } else {
+      url.searchParams.set(transparencyName, params.transparency.toFixed(2));
+    }
+  }
+
+  private getLayerParamFromUrl(url: URL, key: keyof LayerParams): string[] {
+    const name = getLayerParamName(key);
     const value = url.searchParams.get(name);
     return value === null ? [] : value.split(',');
+  }
+
+  private getBackgroundParamFromUrl(
+    url: URL,
+    key: keyof BackgroundParams,
+  ): string | null {
+    const name = getBackgroundParamName(key);
+    return url.searchParams.get(name);
   }
 }
 
 interface Params {
+  layers: LayerParams;
+  background: BackgroundParams;
+}
+
+interface LayerParams {
   layers: Array<Id<Layer>>;
   visibility: boolean[];
   transparency: number[];
   timestamp: string[];
 }
 
-const makeEmptyParams = (): Params => ({
+interface BackgroundParams {
+  map: Id<BackgroundLayerVariant>;
+  transparency: number;
+}
+
+const makeEmptyLayerParams = (): LayerParams => ({
   layers: [],
   visibility: [],
   transparency: [],
   timestamp: [],
 });
 
-const getParamName = (key: keyof Params): string =>
+const getLayerParamName = (key: keyof LayerParams): string =>
   key === 'layers' ? key : `layers_${key}`;
+
+const getBackgroundParamName = (key: keyof BackgroundParams): string =>
+  key === 'map' ? key : `map_${key}`;
