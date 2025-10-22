@@ -1,6 +1,6 @@
 import { IonResource, Resource, Viewer } from 'cesium';
 import {
-  Layer,
+  BaseLayer,
   LayerSource,
   LayerSourceType,
   LayerType,
@@ -8,6 +8,7 @@ import {
 import { WmtsLayerController } from 'src/features/layer/new/controllers/layer-wmts.controller';
 import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer-tiles3d.controller';
 import S3Resource from 'src/cesium/S3Resource';
+import MainStore from 'src/store/main';
 
 export type LayerController = WmtsLayerController | Tiles3dLayerController;
 
@@ -58,21 +59,21 @@ export type LayerController = WmtsLayerController | Tiles3dLayerController;
  * Creation and replacement, adjustment and removal.
  *
  * ### Creation and Replacement
- * To create the controller's data and initialize it, {@link LayerController.addToViewer} has to be implemented.
+ * To create the controller's data and initialize it, {@link BaseLayerController.addToViewer} has to be implemented.
  * This method will be called once from inside the layer's controller,
- * and once whenever a {@link LayerController.watch watched value} requested a reinitialization.
+ * and once whenever a {@link BaseLayerController.watch watched value} requested a reinitialization.
  * Note that you should never implement behavior in your own controller, but instead use this method for all initialization.
  *
  * ### Adjustment
- * To react to changes, {@link LayerController.reactToChanges} has to be implemented.
- * Inside this method, you can register value watchers using {@link LayerController.watch}.
+ * To react to changes, {@link BaseLayerController.reactToChanges} has to be implemented.
+ * Inside this method, you can register value watchers using {@link BaseLayerController.watch}.
  * Watched values can either adjust the existing Cesium layer, or request a reinitialization.
  *
  * ### Removal
- * To allow removal, {@link LayerController.removeFromViewer} has to be implemented.
+ * To allow removal, {@link BaseLayerController.removeFromViewer} has to be implemented.
  * This method should remove all owned data from the viewer, and fully free any other resources.
  */
-export abstract class BaseLayerController<T extends Layer = Layer> {
+export abstract class BaseLayerController<T extends BaseLayer> {
   /**
    * All watched values, in the order in which they were registered.
    *
@@ -121,23 +122,17 @@ export abstract class BaseLayerController<T extends Layer = Layer> {
    */
   private _layer: T;
 
+  private _viewer!: Viewer;
+
   constructor(
     /**
      * The layer's initial data.
      */
     layer: T,
-
-    /**
-     * The viewer instance.
-     */
-    protected readonly viewer: Viewer,
   ) {
     this._layer = layer;
     this.reactToChanges();
-    this.isInitialized = true;
     this.currentWatchIndex = 0;
-
-    this.addToViewer()?.then();
   }
 
   /**
@@ -147,7 +142,23 @@ export abstract class BaseLayerController<T extends Layer = Layer> {
     return this._layer;
   }
 
-  abstract get type(): LayerType;
+  protected get viewer(): Viewer {
+    return this._viewer;
+  }
+
+  abstract get type(): LayerType | 'Background';
+
+  async add(): Promise<void> {
+    if (this.isInitialized) {
+      return;
+    }
+    this.isInitialized = true;
+    this._viewer = MainStore.viewerValue!;
+    if (this._viewer === null) {
+      throw new Error("Can't add controller before viewer initialization.");
+    }
+    await this.addToViewer();
+  }
 
   /**
    * Updates the controller's current layer data,
@@ -162,6 +173,14 @@ export abstract class BaseLayerController<T extends Layer = Layer> {
 
     // Check if there are any changes between the current and the new dataset.
     this.reactToChanges();
+
+    // If we have not been initialized yet, we skip all further steps.
+    // The update simply changed our local layer and the watched initial values.
+    if (!this.isInitialized) {
+      this.currentWatchIndex = 0;
+      this.requestedChanges = [];
+      return;
+    }
 
     // If the changes require the current Cesium layer to be removed and a new one to be added,
     // we have to re-run `addToViewer`.

@@ -11,7 +11,6 @@ import {
   BaseService,
   ServiceContext,
 } from 'src/utils/base.service';
-import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { GstService } from 'src/gst.service';
 import { ControlsService } from 'src/features/controls/controls.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
@@ -55,7 +54,6 @@ export const registerAppContext = (
     makeProvider(NewLayerService),
     makeProvider(LayerUrlService),
     makeProvider(SessionService),
-    makeProvider(BackgroundLayerService),
     makeProvider(ControlsService),
     makeProvider(LayerService),
     makeProvider(LayerInfoService),

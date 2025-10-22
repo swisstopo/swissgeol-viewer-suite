@@ -2,7 +2,7 @@ import { consume } from '@lit/context';
 import { customElement, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { LayerService } from 'src/features/layer/new/layer.service';
-import { Layer } from 'src/features/layer';
+import { BACKGROUND_LAYER, Layer } from 'src/features/layer';
 import { Id } from '@swissgeol/ui-core';
 import { css, html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
@@ -10,6 +10,7 @@ import { keyed } from 'lit/directives/keyed.js';
 import { identity } from 'rxjs';
 import { language$ } from 'src/i18n';
 import Sortable from 'sortablejs';
+import { when } from 'lit/directives/when.js';
 
 @customElement('ngm-catalog-display-list')
 export class CatalogDisplayList extends CoreElement {
@@ -139,22 +140,31 @@ export class CatalogDisplayList extends CoreElement {
   }
 
   readonly render = () => html`
-    <ul>
-      ${keyed(
-        this.renderKey,
-        repeat(
-          this.activeLayerIds,
-          identity,
-          (id) => html`
-            <li data-id="${id}">
-              <ngm-catalog-display-list-item
-                .layerId="${id}"
-              ></ngm-catalog-display-list-item>
-            </li>
-          `,
-        ),
-      )}
-    </ul>
+    ${when(
+      this.activeLayerIds.length !== 0,
+      () => html`
+        <ul>
+          ${keyed(
+            this.renderKey,
+            repeat(
+              this.activeLayerIds,
+              identity,
+              (id) => html`
+                <li data-id="${id}">
+                  <ngm-catalog-display-list-item
+                    .layerId="${id}"
+                  ></ngm-catalog-display-list-item>
+                </li>
+              `,
+            ),
+          )}
+        </ul>
+        <hr />
+      `,
+    )}
+    <ngm-catalog-display-list-item
+      .layerId="${BACKGROUND_LAYER.id}"
+    ></ngm-catalog-display-list-item>
   `;
 
   static readonly styles = css`

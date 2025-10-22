@@ -49,6 +49,11 @@
     "grp_1818_label": "Erdmagnetfeld",
     "grp_15070_label": "Geoenergie"
   },
+  "backgrounds": {
+    "ch.swisstopo.pixelkarte-grau": "Karte Grau",
+    "ch.swisstopo.swissimage": "Luftbild",
+    "lakes_rivers_map": "Seen & Flüsse"
+  },
   "geocatUrl": "https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/{{id}}",
   "noData": "kein Wert"
 }
