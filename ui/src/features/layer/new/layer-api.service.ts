@@ -55,6 +55,11 @@ export class LayerApiService extends BaseService {
         headers,
       },
     );
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch layers: [HTTP ${response.status}] ${await response.text()}`,
+      );
+    }
 
     interface LayersConfigJson extends Omit<LayersConfig, 'layers'> {
       layers: object[];
