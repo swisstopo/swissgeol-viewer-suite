@@ -36,8 +36,6 @@ export class LayerService extends BaseService {
 
   private layerApiService!: LayerApiService;
 
-  private sessionService!: SessionService;
-
   private layers: IdMapping<Layer, LayerEntry> = new Map();
 
   private groups: IdMapping<LayerGroup, GroupEntry> = new Map();
@@ -102,12 +100,8 @@ export class LayerService extends BaseService {
       }
     });
 
-    LayerApiService.inject$().subscribe((service) => {
+    LayerApiService.inject().then((service) => {
       this.layerApiService = service;
-    });
-
-    SessionService.inject$().subscribe((service) => {
-      this.sessionService = service;
     });
 
     SessionService.inject$()
@@ -423,13 +417,9 @@ export class LayerService extends BaseService {
   private makeController(layer: Layer): LayerController {
     switch (layer.type) {
       case LayerType.Wmts:
-        return new WmtsLayerController(layer, this.viewer, this.sessionService);
+        return new WmtsLayerController(layer, this.viewer);
       case LayerType.Tiles3d:
-        return new Tiles3dLayerController(
-          layer,
-          this.viewer,
-          this.sessionService,
-        );
+        return new Tiles3dLayerController(layer, this.viewer);
       case LayerType.Voxel:
       case LayerType.Tiff:
         throw new Error('nyi');
