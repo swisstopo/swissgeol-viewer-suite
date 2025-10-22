@@ -8,7 +8,13 @@ import {
   tooltip,
 } from 'src/features/core';
 import { LayerService } from 'src/features/layer/new/layer.service';
-import { getLayerLabel, Layer, LayerType } from 'src/features/layer';
+import {
+  AnyLayer,
+  getLayerLabel,
+  isBackgroundLayer,
+  Layer,
+  LayerType,
+} from 'src/features/layer';
 import { css, html } from 'lit';
 import { Id } from 'src/models/id.model';
 import i18next from 'i18next';
@@ -16,17 +22,18 @@ import { applyTransition, applyTypography } from 'src/styles/theme';
 import { when } from 'lit/directives/when.js';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
 import { throttle } from 'src/utils/fn.utils';
+import { classMap } from 'lit/directives/class-map.js';
 
 @customElement('ngm-catalog-display-list-item')
 export class CatalogDisplayList extends CoreElement {
   @property({ reflect: true, attribute: 'layer-id' })
-  accessor layerId!: Id<Layer>;
+  accessor layerId!: Id<AnyLayer>;
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
 
   @state()
-  accessor layer!: Layer;
+  accessor layer!: AnyLayer;
 
   @state()
   accessor isOpacityActive = false;
@@ -58,10 +65,15 @@ export class CatalogDisplayList extends CoreElement {
   }
 
   updated() {
-    this.toggleAttribute(
-      'draggable',
-      !(this.isOpacityActive || this.isBackgroundActive),
-    );
+    if (
+      this.layer.type === 'Background' ||
+      this.isOpacityActive ||
+      this.isBackgroundActive
+    ) {
+      this.removeAttribute('draggable');
+    } else {
+      this.setAttribute('draggable', 'true');
+    }
   }
 
   private readonly toggleVisibility = (): void => {
@@ -79,12 +91,17 @@ export class CatalogDisplayList extends CoreElement {
     this.classList.toggle('has-active-opacity', this.isOpacityActive);
   };
 
+  private readonly toggleBackgroundActive = (): void => {
+    this.isOpacityActive = false;
+    this.isBackgroundActive = !this.isBackgroundActive;
+  };
+
   private readonly zoomToLayer = async (): Promise<void> => {
     this.layerService.controller(this.layer.id)?.zoomIntoView();
   };
 
   private readonly removeLayer = (): void => {
-    this.layerService.deactivate(this.layer.id);
+    this.layerService.deactivate(this.layer.id as Id<Layer>);
   };
 
   private readonly openVoxelFilter = (): void => {
@@ -163,9 +180,28 @@ export class CatalogDisplayList extends CoreElement {
         ></ngm-core-icon>
       </ngm-core-button>
 
-      <span class="title">${getLayerLabel(this.layer)}</span>
+      <span class="title">
+        ${isBackgroundLayer(this.layer)
+          ? i18next.t(`layers:backgrounds.${this.layer.activeVariantId}`)
+          : getLayerLabel(this.layer)}
+      </span>
 
       <div class="suffix">
+        ${when(
+          isBackgroundLayer(this.layer),
+          () => html`
+            <span
+              class="label ${classMap({
+                'is-active': this.isBackgroundActive,
+              })}"
+              role="button"
+              data-cy="background"
+              @click="${this.toggleBackgroundActive}"
+              >${i18next.t('catalog:display.background')}</span
+            >
+          `,
+        )}
+
         <ngm-core-button
           transparent
           variant="secondary"
@@ -179,10 +215,11 @@ export class CatalogDisplayList extends CoreElement {
           ${Math.round(this.layer.opacity * 100)}%
         </ngm-core-button>
         ${tooltip(i18next.t('catalog:display.opacity'))}
-        ${this.layer == null ? '' : this.renderActions()}
+        ${when(!isBackgroundLayer(this.layer), this.renderActions)}
       </div>
     </div>
-    ${this.isOpacityActive ? this.renderOpacity() : ''}
+    ${when(this.isOpacityActive, this.renderOpacity)}
+    ${when(this.isBackgroundActive, this.renderBackground)}
   `;
 
   private readonly renderActions = () => html`
@@ -292,6 +329,11 @@ export class CatalogDisplayList extends CoreElement {
     </div>
   `;
 
+  private readonly renderBackground = () => html`
+    <hr />
+    <ngm-background-layer-select></ngm-background-layer-select>
+  `;
+
   static readonly styles = css`
     :host,
     :host * {
@@ -305,7 +347,6 @@ export class CatalogDisplayList extends CoreElement {
       padding: 9px;
       gap: 16px;
       user-select: none;
-      cursor: grab;
 
       border-radius: 4px;
       background-color: var(--color-bg--white);

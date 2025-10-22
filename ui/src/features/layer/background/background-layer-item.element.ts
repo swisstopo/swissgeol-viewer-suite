@@ -2,13 +2,13 @@ import { customElement, property } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { css, html } from 'lit';
 import i18next from 'i18next';
-import { BackgroundLayer } from 'src/features/layer/layer.model';
 import { applyTransition } from 'src/styles/theme';
+import { BackgroundLayerVariant } from 'src/features/layer';
 
 @customElement('ngm-background-layer-item')
 export class BackgroundLayerItem extends CoreElement {
   @property()
-  accessor layer: BackgroundLayer | null = null;
+  accessor variant!: BackgroundLayerVariant;
 
   @property({ type: Boolean, reflect: true, attribute: 'active' })
   accessor isActive: boolean = false;
@@ -16,18 +16,13 @@ export class BackgroundLayerItem extends CoreElement {
   @property({ type: String, reflect: true })
   accessor size: Size = 'normal';
 
-  render() {
-    if (this.layer == null) {
-      return;
-    }
-    return html`
-      <img
-        src="${this.layer.imagePath}"
-        alt="${i18next.t(this.layer.label)}"
-        loading="eager"
-      />
-    `;
-  }
+  readonly render = () => html`
+    <img
+      src="/thumbnails/${this.variant.id}.webp"
+      alt="${i18next.t(`layers:backgrounds.${this.variant.id}`)}"
+      loading="eager"
+    />
+  `;
 
   static readonly styles = css`
     :host,
