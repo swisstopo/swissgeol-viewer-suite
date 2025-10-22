@@ -61,7 +61,6 @@ export abstract class BaseService {
           subject.next(instance as T);
           subject.complete();
         },
-        subscribe: false,
       });
     });
     return subject;

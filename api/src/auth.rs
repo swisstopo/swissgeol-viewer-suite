@@ -68,6 +68,9 @@ pub struct Claims {
     exp: usize,
     iss: String,
     pub email: String,
+
+    #[serde(rename = "cognito:groups")]
+    pub cognito_groups: Vec<String>,
 }
 
 #[async_trait]

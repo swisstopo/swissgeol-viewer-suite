@@ -1,6 +1,6 @@
 use crate::data::TranslatedString;
-use serde::{Deserialize, Serialize};
 use crate::layers::config::{Parse, ParseContext};
+use serde::{Deserialize, Serialize};
 
 mod config;
 pub use config::LayerConfig;

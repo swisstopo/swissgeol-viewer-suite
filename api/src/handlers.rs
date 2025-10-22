@@ -9,10 +9,11 @@ use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
 use crate::auth::Claims;
-use crate::{Error, LayerConfig, Result};
+use crate::config::ClientConfig;
+use crate::layers;
+use crate::{Error, Filter, LayerConfig, Result};
 use anyhow::Context;
 use axum_macros::debug_handler;
-use clap::Parser;
 use rand::{Rng, distributions::Alphanumeric};
 use serde_json::Number;
 use std::collections::HashSet;
@@ -143,15 +144,30 @@ pub struct UploadResponse {
 }
 
 #[debug_handler]
-pub async fn get_client_config() -> Json<crate::config::ClientConfig> {
-    Json(crate::config::ClientConfig::parse())
+pub async fn get_client_config(
+    Extension(client_config): Extension<Arc<ClientConfig>>,
+) -> Json<Arc<ClientConfig>> {
+    Json(client_config)
 }
 
 #[debug_handler]
 pub async fn get_layer_config(
     Extension(layer_config): Extension<Arc<LayerConfig>>,
-) -> Json<Arc<LayerConfig>> {
-    Json(layer_config)
+    Extension(client_config): Extension<Arc<ClientConfig>>,
+    claims: Option<Claims>,
+) -> Json<LayerConfig> {
+    Json(
+        (*layer_config)
+            .clone()
+            .filter(&layers::FilterContext {
+                groups: claims
+                    .map(|it| HashSet::from_iter(it.cognito_groups))
+                    .unwrap_or_default(),
+                env: client_config.env.clone(),
+                accessible_layer_ids: Default::default(),
+            })
+            .unwrap(),
+    )
 }
 
 // Health check endpoint
@@ -169,7 +185,7 @@ pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, St
     (status, version)
 }
 
-#[axum_macros::debug_handler]
+#[debug_handler]
 pub async fn create_project(
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,

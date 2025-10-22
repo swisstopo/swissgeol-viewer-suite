@@ -16,12 +16,11 @@ pub enum LayerSource {
         // TODO Decide how to handle `detailsUrl`.
     },
 
-
     #[serde(rename_all(serialize = "camelCase"))]
     S3 {
         /// The bucket in which the file resides.
         bucket: String,
-        
+
         /// The key to the file.
         key: String,
     },
