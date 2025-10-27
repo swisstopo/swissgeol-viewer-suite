@@ -1,0 +1,5 @@
+- remove `helpers`
+- remove `voxel-helpers`
+- re-add zoom to object on permalink (see behavior in old sidebar)
+- reorder pick results by order of layers
+- add 3dtiles v1.1 code to refactored layers (+ attempt to use shader instead of alpha color)

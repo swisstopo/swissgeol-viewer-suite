@@ -40,6 +40,17 @@
     "ch.swisstopo.swissimage": "Carte aérienne",
     "lakes_rivers_map": "Lacs et rivières"
   },
-  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/fre/catalog.search#/metadata/{{id}}",
-  "noData": "aucune valeur"
+  "attributes": {
+    "Voxel": {
+      "cellCenter": "",
+      "logk": "Conductivité hydraulique",
+      "Index": "Unité de modélisation",
+      "Klasse": "Perméabilité"
+    }
+  },
+  "values": {
+    "noData": "aucune valeur",
+    "undefined": "indifinie"
+  },
+  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/fre/catalog.search#/metadata/{{id}}"
 }

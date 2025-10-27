@@ -1,4 +1,4 @@
-import { Cartesian3, Cartographic } from 'cesium';
+import { Cartesian2, Cartesian3, Cartographic } from 'cesium';
 
 import {
   LayerInfo,
@@ -21,7 +21,10 @@ export interface LayerInfoPicker {
 }
 
 export interface LayerPickData {
-  cartesian: Cartesian3;
-  cartographic: Cartographic;
+  windowPosition: Cartesian2;
+  globePosition: {
+    cartesian: Cartesian3;
+    cartographic: Cartographic;
+  };
   distance: number;
 }

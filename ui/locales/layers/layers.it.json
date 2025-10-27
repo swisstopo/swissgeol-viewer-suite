@@ -40,6 +40,17 @@
     "ch.swisstopo.swissimage": "Foto aerea",
     "lakes_rivers_map": "Laghi e fiumi"
   },
-  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/ita/catalog.search#/metadata/{{id}}",
-  "noData": "nessun valore"
+  "attributes": {
+    "Voxel": {
+      "cellCenter": "",
+      "logk": "Conducibilità idraulica",
+      "Index": "Unità di modellazione",
+      "Klasse": "Permeabilità"
+    }
+  },
+  "values": {
+    "noData": "nessun valore",
+    "undefined": "indefinita"
+  },
+  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/ita/catalog.search#/metadata/{{id}}"
 }

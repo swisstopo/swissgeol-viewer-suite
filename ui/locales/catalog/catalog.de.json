@@ -32,12 +32,28 @@
     }
   },
   "add_content_from_cesium_ion": "Inhalte von Cesium ion hinzufügen",
+  "timesWindow": {
+    "all": "Alle"
+  },
+  "voxelFilterWindow": {
+    "items": {
+      "select_all": "alles aktivieren",
+      "deselect_all": "alles deaktivieren"
+    },
+    "range": {
+      "min": "Min",
+      "max": "Max",
+      "shouldIncludeUndefined": "undefinierte Werte immer anzeigen?"
+    },
+    "operators": {
+      "And": "AND",
+      "Or": "OR",
+      "Xor": "XOR"
+    }
+  },
   "tiffBandsWindow": {
     "title": "{{ layer }} - Bänder",
     "open": "Bänder anzeigen",
     "legend": "Legende"
-  },
-  "timesWindow": {
-    "all": "Alle"
   }
 }

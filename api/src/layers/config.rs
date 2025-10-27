@@ -30,11 +30,6 @@ pub struct LayerConfig {
     #[serde(default, skip_serializing)]
     pub voxel_mappings: HashMap<String, VoxelMappingDefinition>,
 
-    /// A list of voxel filters that may be reused by multiple layers.
-    /// Each entry's key is used to identify it within this config.
-    #[serde(default, skip_serializing)]
-    pub voxel_filters: HashMap<String, VoxelFilterDefinition>,
-
     /// A list of voxel band displays that may be reused by multiple layers.
     /// Each entry's key is used to identify it within this config.
     #[serde(default, skip_serializing)]
@@ -133,7 +128,6 @@ impl LayerConfig {
             layers: vec![],
             groups: vec![],
             voxel_mappings: std::mem::take(&mut self.voxel_mappings),
-            voxel_filters: std::mem::take(&mut self.voxel_filters),
             tiff_displays: Default::default(),
         };
 
@@ -175,14 +169,12 @@ impl LayerConfig {
         }
 
         for (key, mapping) in &context.config.voxel_mappings {
-            if mapping.use_count == 0 {
+            let use_count = match mapping {
+                VoxelMappingDefinition::Range(it) => it.use_count,
+                VoxelMappingDefinition::Category(it) => it.use_count,
+            };
+            if use_count == 0 {
                 tracing::warn!("[{}] Voxel mapping \"{key}\" is unused.", context.display)
-            }
-        }
-
-        for (key, filter) in &context.config.voxel_filters {
-            if filter.use_count == 0 {
-                tracing::warn!("[{}] Voxel filter \"{key}\" is unused.", context.display)
             }
         }
 

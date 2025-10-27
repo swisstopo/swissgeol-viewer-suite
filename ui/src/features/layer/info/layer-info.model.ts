@@ -2,6 +2,7 @@ import { LayerTreeNode } from 'src/layertree';
 import { Layer, LayerTiffController } from 'src/features/layer';
 import { TemplateResult } from 'lit';
 import { Id } from '@swissgeol/ui-core';
+import { TranslationKey } from 'src/models/translation-key.model';
 
 /**
  * `LayerInfo` represents the current data of a specific object on a layer.
@@ -47,8 +48,8 @@ export interface LayerInfo {
 }
 
 export interface LayerInfoAttribute {
-  key: string;
-  value: string | number | TemplateResult;
+  key: string | TranslationKey;
+  value: string | number | TemplateResult | TranslationKey;
 }
 
 // TODO remove this as soon as everything is ported to the new layers.

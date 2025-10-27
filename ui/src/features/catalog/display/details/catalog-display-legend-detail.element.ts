@@ -12,7 +12,7 @@ import { Id } from 'src/models/id.model';
 import { LayerService } from 'src/features/layer/new/layer.service';
 import { consume } from '@lit/context';
 
-@customElement('ngm-catalog-display-legend')
+@customElement('ngm-catalog-display-legend-detail')
 export class CatalogDisplayLegend extends CoreElement {
   @property()
   accessor layerId!: Id<Layer>;

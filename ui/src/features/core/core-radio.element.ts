@@ -1,11 +1,15 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { live } from 'lit/directives/live.js';
 import { applyTransition, applyTypography } from 'src/styles/theme';
 
 @customElement('ngm-core-radio')
 export class CoreRadio extends LitElement {
   @property({ type: Boolean })
   accessor isActive: boolean = false;
+
+  @property({ type: String })
+  accessor name: string | null = null;
 
   @property({ type: Boolean, attribute: 'disabled', reflect: true })
   accessor isDisabled: boolean = false;
@@ -32,7 +36,11 @@ export class CoreRadio extends LitElement {
 
   readonly render = () => html`
     <label @click="${this.handleClick}">
-      <input type="radio" ?checked="${this.isActive}" />
+      <input
+        type="radio"
+        ?checked="${live(this.isActive)}"
+        name="${this.name}"
+      />
       <div class="icon"></div>
       ${this.hasSlot
         ? html`<span class="label"><slot></slot></span>`

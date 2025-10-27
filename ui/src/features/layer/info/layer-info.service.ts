@@ -14,7 +14,6 @@ import {
   Observable,
   Subject,
   take,
-  withLatestFrom,
 } from 'rxjs';
 import { BaseService } from 'src/utils/base.service';
 import MainStore from 'src/store/main';
@@ -33,18 +32,21 @@ import {
   LayerInfo,
   LayerInfoSource,
 } from 'src/features/layer/info/layer-info.model';
-import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
+import { isSameLayer } from 'src/features/layer/layer.service';
 import { LayerService as NewLayerService } from 'src/features/layer/new/layer.service';
-import { LayerTreeNode, LayerType as OldLayerType } from 'src/layertree';
+import { LayerTreeNode } from 'src/layertree';
 import { LayerInfoPickerForWmts } from 'src/features/layer/info/pickers/layer-info-picker-for-wmts';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
 import { LayerInfoPickerForTiles3d } from 'src/features/layer/info/pickers/layer-info-picker-for-tiles3d';
 import DrawStore from 'src/store/draw';
 import { Id } from 'src/models/id.model';
-import { run } from 'src/utils/fn.utils';
+import { run, tick } from 'src/utils/fn.utils';
+import { PickService } from 'src/services/pick.service';
 
 export class LayerInfoService extends BaseService {
   private layerService!: NewLayerService;
+
+  private pickService!: PickService;
 
   private readonly infosSubject = new BehaviorSubject<LayerInfo[]>([]);
 
@@ -54,7 +56,7 @@ export class LayerInfoService extends BaseService {
 
   private isPicking = false;
 
-  private nextPick: Cartesian3 | null = null;
+  private nextPick: [Cartesian2, Cartesian3] | null = null;
 
   /**
    * A set of modifications to the current sources.
@@ -72,32 +74,33 @@ export class LayerInfoService extends BaseService {
   constructor() {
     super();
 
-    NewLayerService.inject$().subscribe((layerService) => {
+    PickService.inject().then((pickService) => {
+      this.pickService = pickService;
+    });
+
+    NewLayerService.inject().then((layerService) => {
       this.layerService = layerService;
       layerService.layerActivated$.subscribe(this.handleLayerActivated);
     });
 
-    MainStore.viewer
-      .pipe(withLatestFrom(LayerService.inject$()))
-      .subscribe(([viewer, layerService]) => {
-        if (viewer === null) {
-          return;
-        }
-        this.viewer = viewer;
-        this.initializeImageryLayers();
-        this.initializeQueryableLayers(layerService);
+    MainStore.viewer.subscribe((viewer) => {
+      if (viewer === null) {
+        return;
+      }
+      this.viewer = viewer;
+      this.initializeImageryLayers();
 
-        const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
-        eventHandler.setInputAction(
-          async (event: ScreenSpaceEventHandler.PositionedEvent) => {
-            if (DrawStore.drawStateValue) {
-              return;
-            }
-            this.pick2d(event.position);
-          },
-          ScreenSpaceEventType.LEFT_CLICK,
-        );
-      });
+      const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
+      eventHandler.setInputAction(
+        async (event: ScreenSpaceEventHandler.PositionedEvent) => {
+          if (DrawStore.drawStateValue) {
+            return;
+          }
+          this.pick2d(event.position);
+        },
+        ScreenSpaceEventType.LEFT_CLICK,
+      );
+    });
 
     this.modificationSubject.pipe(delay(200)).subscribe(() => {
       let modifications = this.queuedModifications;
@@ -117,24 +120,24 @@ export class LayerInfoService extends BaseService {
   }
 
   pick2d(position: Cartesian2): void {
-    const cartesian = this.viewer.scene.pickPosition(position);
-    if (cartesian) {
-      this.pick3d(cartesian);
+    const cartesian = this.pickService.pick(position);
+    if (cartesian !== null) {
+      this.pick3d(position, cartesian);
     }
   }
 
-  pick3d(cartesian: Cartesian3): void {
+  pick3d(windowPosition: Cartesian2, globePosition: Cartesian3): void {
     if (this.isPicking) {
-      this.nextPick = cartesian;
+      this.nextPick = [windowPosition, globePosition];
       return;
     }
     this.isPicking = true;
-    this.handlePick(cartesian).finally(() => {
+    this.handlePick(windowPosition, globePosition).finally(() => {
       this.isPicking = false;
       if (this.nextPick !== null) {
         const pick = this.nextPick;
         this.nextPick = null;
-        this.pick3d(pick);
+        this.pick3d(...pick);
       }
     });
   }
@@ -155,6 +158,8 @@ export class LayerInfoService extends BaseService {
           return new LayerInfoPickerForWmts(controller, this.viewer);
         case LayerType.Tiles3d:
           return new LayerInfoPickerForTiles3d(controller, this.viewer);
+        case LayerType.Voxel:
+          return new LayerInfoPickerForVoxels(controller, this.viewer);
       }
     });
 
@@ -186,10 +191,16 @@ export class LayerInfoService extends BaseService {
     this.viewer.scene.requestRender();
   }
 
-  private async handlePick(cartesian: Cartesian3): Promise<void> {
+  private async handlePick(
+    windowPosition: Cartesian2,
+    cartesian: Cartesian3,
+  ): Promise<void> {
     const data: LayerPickData = {
-      cartesian,
-      cartographic: Cartographic.fromCartesian(cartesian),
+      windowPosition,
+      globePosition: {
+        cartesian,
+        cartographic: Cartographic.fromCartesian(cartesian),
+      },
       distance: Cartesian3.distance(
         this.viewer.scene.camera.positionWC,
         cartesian,
@@ -197,6 +208,7 @@ export class LayerInfoService extends BaseService {
     };
 
     this.viewer.canvas.style.cursor = 'progress';
+    await tick();
     const infos: LayerInfo[] = [];
     const picks = this.pickers.map(async (picker) => {
       const pickedInfos = await picker.pick(data);
@@ -228,73 +240,6 @@ export class LayerInfoService extends BaseService {
     layers.layerAdded.addEventListener(this.handleImageryLayerAddition);
     layers.layerRemoved.addEventListener(this.handleImageryLayerRemoval);
   }
-
-  private initializeQueryableLayers(layerService: LayerService): void {
-    // The queryable layers that are currently being handled.
-    let currentLayers: readonly LayerTreeNode[] = [];
-
-    // Handle updates to the queryable layers.
-    layerService.queryableLayers$.subscribe((newLayers) => {
-      // An array containing all previously handled layers.
-      // This will be cut down to only contain the removed layers.
-      const oldLayers = [...currentLayers];
-
-      // Update the handled layers.
-      currentLayers = newLayers;
-
-      // Iterate the new layers to compare them with the previously handled ones.
-      for (const newLayer of newLayers) {
-        // Check if we are already handling this layer.
-        const oldLayerIndex = oldLayers.findIndex((it) =>
-          isSameLayer(newLayer, it),
-        );
-        if (oldLayerIndex < 0) {
-          // If we are not already handling the layer, we create a new picker for it.
-          this.handleQueryableLayerAddition(newLayer);
-        } else {
-          // If we are already handling the layer, we remove it from the `oldLayers` array.
-          // This way, only the removed layers will remain in that array.
-          oldLayers.splice(oldLayerIndex, 1);
-        }
-      }
-
-      // Remove the pickers of any layers that do not exist anymore.
-      for (const oldLayer of oldLayers) {
-        this.handleQueryableLayerRemoval(oldLayer);
-      }
-    });
-  }
-
-  private readonly handleQueryableLayerAddition = (
-    layer: LayerTreeNode,
-  ): void => {
-    if (layer.pickable === false || layer.type === OldLayerType.geoTIFF) {
-      return;
-    }
-    this.queueModification({
-      source: layer,
-      action: () => {
-        switch (layer.type) {
-          case OldLayerType.voxels3dtiles:
-            this.pickers.unshift(
-              new LayerInfoPickerForVoxels(layer, this.viewer),
-            );
-            break;
-          default:
-            break;
-        }
-      },
-    });
-  };
-
-  private readonly handleQueryableLayerRemoval = (
-    layer: LayerTreeNode,
-  ): void => {
-    this.queueModification({
-      source: layer,
-      action: () => this.removePickerBySource(layer),
-    });
-  };
 
   private readonly handleImageryLayerAddition = (layer: ImageryLayer): void => {
     if (!isLayerTiffImagery(layer)) {

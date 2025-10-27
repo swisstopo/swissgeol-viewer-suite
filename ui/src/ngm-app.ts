@@ -6,8 +6,6 @@ import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
 import './toolbox/ngm-topo-profile-modal';
 import './toolbox/ngm-geometry-info';
-import './elements/ngm-voxel-filter';
-import './elements/ngm-voxel-simple-filter';
 import './cesium-toolbar';
 import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
@@ -24,7 +22,7 @@ import 'src/features/session/session.module';
 
 import { DEFAULT_VIEW } from './constants';
 
-import { addMantelEllipsoid, setupViewer } from './viewer';
+import { setupViewer } from './viewer';
 
 import {
   getCameraView,
@@ -232,8 +230,6 @@ export class NgmApp extends LitElementI18n {
    */
   startCesiumLoadingProcess(viewer) {
     const globe = viewer.scene.globe;
-
-    addMantelEllipsoid(viewer);
 
     // Temporarily increasing the maximum screen space error to load low LOD tiles.
     const searchParams = new URLSearchParams(document.location.search);

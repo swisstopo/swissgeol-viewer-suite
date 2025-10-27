@@ -1,33 +1,37 @@
-import { Cartesian2, Cartesian3, Viewer } from 'cesium';
+import {
+  Cartesian2,
+  Cartesian3,
+  Ellipsoid,
+  IntersectionTests,
+  Ray,
+  Viewer,
+} from 'cesium';
 import { BaseService } from 'src/utils/base.service';
-import { viewerContext } from 'src/context';
+import MainStore from 'src/store/main';
 
 export class PickService extends BaseService {
   private viewer: Viewer | null = null;
 
-  private skipCount = 0;
-
   constructor() {
     super();
-    BaseService.inject$(viewerContext).subscribe((viewer) => {
+    MainStore.viewer.subscribe((viewer) => {
       this.viewer = viewer;
-
-      this.viewer?.scene.postRender.addEventListener(this.handlePostRender);
     });
   }
 
   pick(position: Cartesian2): Cartesian3 | null {
-    if (this.viewer === null || this.skipCount !== 0) {
+    if (this.viewer === null) {
       return null;
     }
-    return this.viewer.scene.pickPosition(position);
-  }
 
-  skipFrames(count: number): void {
-    this.skipCount = Math.max(this.skipCount, count);
+    // Determine the position of the click on the globe via a ray cast onto the WGS ellipsoid.
+    // This method works even with the globe turned off, unlike `scene.pickPosition`.
+    // It also doesn't trigger any weird errors happening around picking while specific tiles aren't fully loaded yet.
+    const ray = this.viewer.camera.getPickRay(position);
+    if (ray === undefined) {
+      return null;
+    }
+    const interval = IntersectionTests.rayEllipsoid(ray, Ellipsoid.WGS84);
+    return Ray.getPoint(ray, interval.start);
   }
-
-  private readonly handlePostRender = () => {
-    this.skipCount = Math.max(0, this.skipCount - 1);
-  };
 }

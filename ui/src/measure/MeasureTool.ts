@@ -13,6 +13,7 @@ import {
 } from 'cesium';
 import { CesiumDraw, DrawEndDetails } from '../draw/CesiumDraw';
 import { getDimensionLabel } from '../draw/helpers';
+import { PickService } from 'src/services/pick.service';
 
 export type MeasureOptions = {
   pointSize: number;
@@ -87,9 +88,7 @@ export default class MeasureTool {
     this.screenSpaceEventHandler.setInputAction(
       (click: { position: Cartesian2 }) => {
         if (this.draw.active || !this.measureToolActive) return;
-        const position = Cartesian3.clone(
-          this.viewer!.scene.pickPosition(click.position),
-        );
+        const position = PickService.get().pick(click.position);
         if (position) {
           this.clearMeasureGeometry();
           this.draw.active = true;

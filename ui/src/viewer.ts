@@ -1,22 +1,18 @@
-import { MANTEL_COLOR, SWITZERLAND_RECTANGLE } from './constants';
+import { SWITZERLAND_RECTANGLE } from './constants';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter';
-import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
 
 import {
   Cartesian3,
-  Cartesian4,
   CesiumInspector,
   CesiumTerrainProvider,
   Color,
   DirectionalLight,
-  Ellipsoid,
   ImageryLayer,
   Ion,
   IonResource,
   JulianDate,
-  PostProcessStage,
   Rectangle,
   RequestScheduler,
   ScreenSpaceEventType,
@@ -24,7 +20,6 @@ import {
   Viewer,
   WebGLOptions,
 } from 'cesium';
-import MainStore from './store/main';
 import { getExaggeration } from './permalink';
 
 window['CESIUM_BASE_URL'] = './cesium';
@@ -42,39 +37,6 @@ Object.assign(RequestScheduler.requestsByServer, {
 });
 
 let hasNoLimit = false;
-
-const FOG_FRAGMENT_SHADER_SOURCE = `
-  float getDistance(sampler2D depthTexture, vec2 texCoords) {
-      float depth = czm_unpackDepth(texture(depthTexture, texCoords));
-      if (depth == 0.0) {
-          return czm_infinity;
-      }
-      vec4 eyeCoordinate = czm_windowToEyeCoordinates(gl_FragCoord.xy, depth);
-      return -eyeCoordinate.z / eyeCoordinate.w;
-  }
-  float interpolateByDistance(vec4 nearFarScalar, float distance) {
-      float startDistance = nearFarScalar.x;
-      float startValue = nearFarScalar.y;
-      float endDistance = nearFarScalar.z;
-      float endValue = nearFarScalar.w;
-      float t = clamp((distance - startDistance) / (endDistance - startDistance), 0.0, 1.0);
-      return mix(startValue, endValue, t);
-  }
-  vec4 alphaBlend(vec4 sourceColor, vec4 destinationColor) {
-      return sourceColor * vec4(sourceColor.aaa, 1.0) + destinationColor * (1.0 - sourceColor.a);
-  }
-  uniform sampler2D colorTexture;
-  uniform sampler2D depthTexture;
-  uniform vec4 fogByDistance;
-  uniform vec4 fogColor;
-  in vec2 v_textureCoordinates;
-  void main(void) {
-      float distance = getDistance(depthTexture, v_textureCoordinates);
-      vec4 sceneColor = texture(colorTexture, v_textureCoordinates);
-      float blendAmount = interpolateByDistance(fogByDistance, distance);
-      vec4 finalFogColor = vec4(fogColor.rgb, fogColor.a * blendAmount);
-      out_FragColor = alphaBlend(finalFogColor, sceneColor);
-  }`;
 
 interface EmptyLayer {
   layer: { show: boolean };
@@ -239,20 +201,6 @@ export async function setupViewer(
   globe.undergroundColorAlphaByDistance.nearValue = 0.5;
   globe.undergroundColorAlphaByDistance.farValue = 0.0;
 
-  const fog = new PostProcessStage({
-    fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
-    uniforms: {
-      fogByDistance: new Cartesian4(10000, 0.0, 150000, 0.3),
-      fogColor: Color.BLACK,
-    },
-    name: 'fog',
-  });
-
-  viewer.scene.postProcessStages.add(fog);
-  scene.postRender.addEventListener((scene) => {
-    fog.enabled = scene.cameraUnderground;
-  });
-
   const shouldEnableWireframe = searchParams.has('inspector_wireframe');
   if (searchParams.has('inspector') || shouldEnableWireframe) {
     const div = document.createElement('div');
@@ -265,59 +213,4 @@ export async function setupViewer(
     }
   }
   return viewer;
-}
-
-export function addMantelEllipsoid(viewer: Viewer) {
-  // Add Mantel ellipsoid
-  const earthRadii = Ellipsoid.WGS84.radii.clone();
-  const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
-  const mantelRadii = earthRadii.clone();
-  mantelRadii.x -= mantelDepth;
-  mantelRadii.y -= mantelDepth;
-  mantelRadii.z -= mantelDepth;
-
-  const entity = viewer.entities.add({
-    position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
-    ellipsoid: {
-      radii: mantelRadii,
-      material: MANTEL_COLOR,
-    },
-  });
-
-  if (!hasNoLimit) {
-    new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
-  }
-
-  // hacky way to show mantel also above the terrain.
-  // for some reason object placed below 21km doesn't show when the camera above the terrain. distanceDisplayCondition doesn't resolve the issue.
-  const mantelDepthAboveTerrain = 21000;
-  const mantelRadiiAboveTerrain = earthRadii.clone();
-  mantelRadiiAboveTerrain.x -= mantelDepthAboveTerrain;
-  mantelRadiiAboveTerrain.y -= mantelDepthAboveTerrain;
-  mantelRadiiAboveTerrain.z -= mantelDepthAboveTerrain;
-
-  let hasUsedUndergroundValue = !viewer.scene.cameraUnderground;
-  viewer.scene.postRender.addEventListener((scene) => {
-    if (!entity.ellipsoid) return;
-    const isVoxelVisible = MainStore.visibleVoxelLayers.length > 0;
-    const exaggeration = getExaggeration();
-    if ((exaggeration > 1 || isVoxelVisible) && entity.isShowing) {
-      entity.show = false;
-      viewer.scene.requestRender();
-    } else if (exaggeration === 1 && !isVoxelVisible && !entity.isShowing) {
-      entity.show = true;
-      viewer.scene.requestRender();
-    }
-    if (scene.cameraUnderground && !hasUsedUndergroundValue) {
-      (<any>entity.ellipsoid.radii) = mantelRadii;
-      hasUsedUndergroundValue = true;
-      if (!Color.equals(scene.backgroundColor, Color.TRANSPARENT))
-        scene.backgroundColor = Color.TRANSPARENT;
-    } else if (!scene.cameraUnderground && hasUsedUndergroundValue) {
-      (<any>entity.ellipsoid.radii) = mantelRadiiAboveTerrain;
-      hasUsedUndergroundValue = false;
-      if (isVoxelVisible && !Color.equals(scene.backgroundColor, MANTEL_COLOR))
-        scene.backgroundColor = MANTEL_COLOR;
-    }
-  });
 }

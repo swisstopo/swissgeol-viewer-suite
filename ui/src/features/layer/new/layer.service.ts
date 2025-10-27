@@ -42,6 +42,7 @@ import { Viewer } from 'cesium';
 import MainStore from 'src/store/main';
 import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer-tiles3d.controller';
 import { BackgroundLayerController } from 'src/features/layer/new/controllers/layer-background.controller';
+import { VoxelLayerController } from 'src/features/layer/new/controllers/layer-voxel.controller';
 
 export class LayerService extends BaseService {
   private viewer!: Viewer;
@@ -604,7 +605,8 @@ export class LayerService extends BaseService {
     // Find the layer's entry.
     const entry = this.layers.get(id);
     if (entry === undefined) {
-      throw new Error(`Unknown layer: ${id}`);
+      console.error(`Can't activate unknown layer: ${id}`);
+      return;
     }
 
     // Cast the id and entry to usable types.
@@ -691,9 +693,12 @@ export class LayerService extends BaseService {
    * This may affect the layer's representation on the viewer.
    *
    * @param id The id of the layer.
-   * @param data The updated fields.
+   * @param data The updated fields, or a function creating them.
    */
-  update<T extends AnyLayer>(id: Id<T>, data: LayerUpdate<T>): void {
+  update<T extends AnyLayer>(
+    id: Id<T>,
+    data: LayerUpdate<T> | ((layer: T) => LayerUpdate<T>),
+  ): void {
     // Find the layer's entry.
     const entry = isBackgroundLayerId(id)
       ? { ...this.background, definition: BACKGROUND_LAYER }
@@ -702,10 +707,13 @@ export class LayerService extends BaseService {
       throw new Error(`Unknown layer: ${id}`);
     }
 
+    const patch =
+      typeof data === 'function' ? data(entry.state$.value as T) : data;
+
     // Update the layer.
     const updatedLayer = {
       ...entry.state$.value,
-      ...data,
+      ...patch,
     };
 
     // Ensure that the relationship between visibility and opacity is correct.
@@ -795,6 +803,7 @@ export class LayerService extends BaseService {
       case LayerType.Tiles3d:
         return new Tiles3dLayerController(layer);
       case LayerType.Voxel:
+        return new VoxelLayerController(layer);
       case LayerType.Tiff:
         throw new Error('nyi');
     }
@@ -835,7 +844,7 @@ export type LayerUpdate<T = AnyLayer> = Partial<
 
 /**
  * A child of a group.
- * This contain the id of either a layer or of a subgroup.
+ * This contains the id of either a layer or of a subgroup.
  */
 export type TreeNode =
   | { type: TreeNodeType.Group; id: Id<LayerGroup> }
@@ -885,7 +894,7 @@ interface LayerEntry {
 
   /**
    * The controller of the layer.
-   * This is only set if the layer is active, and removed when the layer is made inactive.
+   * This is only set if the layer is active and removed when the layer is made inactive.
    */
   controller: BaseLayerController<Layer> | null;
 }
@@ -906,7 +915,7 @@ interface GroupEntry {
   parent: Id<LayerGroup> | null;
 
   /**
-   * The amount of active layers inside the group,
+   * The number of active layers inside the group,
    * including deeply nested layers.
    */
   count: number;
