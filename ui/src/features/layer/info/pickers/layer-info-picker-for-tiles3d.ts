@@ -71,7 +71,7 @@ export class LayerInfoPickerForTiles3d implements LayerInfoPicker {
     return [
       new LayerInfoFor3dTile(this.viewer, {
         feature,
-        position: pick.cartesian,
+        position: pick.globePosition.cartesian,
         attributes,
         source: this.controller.layer.id,
         title: `layers:layers.${this.controller.layer.id}`,
@@ -103,15 +103,8 @@ export class LayerInfoPickerForTiles3d implements LayerInfoPicker {
   }
 
   private pickByDrill(pick: LayerPickData): unknown | null {
-    const windowPosition = this.viewer.scene.cartesianToCanvasCoordinates(
-      pick.cartesian,
-    );
-    if (windowPosition === undefined) {
-      return null;
-    }
-
     const objects = this.viewer.scene.drillPick(
-      windowPosition,
+      pick.windowPosition,
       DRILL_PICK_LIMIT,
       DRILL_PICK_LENGTH,
       DRILL_PICK_LENGTH,
@@ -274,6 +267,7 @@ const extractFeatureAttributes = (
   for (const propertyName of propertyNames) {
     const value = feature.getProperty(propertyName);
     if (typeof value === 'number' || !!value) {
+      // TODO move these into `layers:attributes`.
       attributes.push({ key: `assets:${propertyName}`, value });
     }
   }

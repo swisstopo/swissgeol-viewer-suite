@@ -35,7 +35,6 @@ export default class S3Resource extends Resource {
     }
     return this.getSignedUrl(credentials).then<unknown>((url) => {
       this.url = url;
-      console.log(url);
       return (Resource.prototype as any)._makeRequest.call(this, options);
     });
   }

@@ -49,8 +49,8 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
       return [];
     }
     const geom2056 = radiansToLv95([
-      pick.cartographic.longitude,
-      pick.cartographic.latitude,
+      pick.globePosition.cartographic.longitude,
+      pick.globePosition.cartographic.latitude,
     ]);
     const tolerance = getTolerance(pick.distance);
     const lang = i18next.language;

@@ -101,7 +101,8 @@
             {
               id: 'lyr_unconsolidated_rocks_label',
               children: [
-                'voxel_aaretal_litho'
+                'voxel_aaretal_lithology',
+                'voxel_aaretal_conductivity',
               ]
             },
 

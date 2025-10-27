@@ -2,78 +2,66 @@
   layers: [
     {
       type: "Voxel",
-      id: "voxel_aaretal_litho",
-      url: "https://download.swissgeol.ch/testvoxel/20240415/Voxel-Aaretal-Combined/tileset.json",
+      id: "voxel_aaretal_lithology",
+      source: {
+        type: "CesiumIon",
+        asset_id: 3882543,
+      },
       data_key: "Index",
-      no_data: -99999,
-      mapping: 'aaretal',
-      filter: 'aaretal',
+      mappings: ['conductivity','lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
       geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502",
     },
+    {
+      type: "Voxel",
+      id: "voxel_aaretal_conductivity",
+      source: {
+        type: "CesiumIon",
+        asset_id: 3882543,
+      },
+      data_key: "logk",
+      mappings: ['conductivity', 'lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502",
+    }
   ],
   voxel_mappings: {
-    aaretal: {
-      range: [-9999, 23],
-      colors: [
-        'rgb(204, 204, 204)',
-        'rgb(92, 255, 105)',
-        'rgb(122, 211, 255)',
-        'rgb(128, 128, 128)',
-        'rgb(0, 255, 234)',
-        'rgb(92, 201, 255)',
-        'rgb(31, 255, 49)',
-        'rgb(179, 204, 102)',
-        'rgb(61, 190, 255)',
-        'rgb(31, 180, 255)',
-        'rgb(0, 170, 255)',
-        'rgb(128, 153, 51)',
-        'rgb(0, 150, 224)',
-        'rgb(0, 224, 19)',
-        'rgb(0, 129, 194)',
-        'rgb(64, 77, 25)',
-        'rgb(0, 163, 14)',
-        'rgb(0, 109, 163)',
-        'rgb(0, 88, 133)',
-        'rgb(255, 255, 0)',
-        'rgb(0, 68, 102)',
-        'rgb(0, 102, 9)',
+    lithology: {
+      key: 'Index',
+      items: [
+        [3, { label: 'Verlandungssedimente, Sumpf, Ried', color: 'rgb(92, 255, 105)' }],
+        [4, { label: 'Subrezente bis rezente Alluvionen (Fluss- und Bachschotter, Überschwemmungssediment, undifferenziert)', color: 'rgb(122, 211, 255)' }],
+        [5, { label: 'Hangschutt / Hanglehm (undifferenziert)', color: 'rgb(128, 128, 128)' }],
+        [6, { label: 'Bachschutt / Bachschuttkegel (undifferenziert)', color: 'rgb(0, 255, 234)' }],
+        [7, { label: 'Spät- bis postglaziale Schotter', color: 'rgb(92, 201, 255)' }],
+        [8, { label: 'Spät- bis postglaziale Stausedimente und Seeablagerungen (undifferenziert)', color: 'rgb(31, 255, 49)' }],
+        [9, { label: 'Spätglaziale Moräne (undifferenziert)', color: 'rgb(179, 204, 102)' }],
+        [10, { label: 'Rückzugsschotter der Letzten Vergletscherung ("Felderschotter" und Äquivalente)', color: 'rgb(61, 190, 255)' }],
+        [11, { label: 'Stauschotter (undifferenziert)', color: 'rgb(31, 180, 255)' }],
+        [12, { label: 'Rinnenschotter', color: 'rgb(0, 170, 255)' }],
+        [13, { label: 'Moräne der Letzten Vergletscherung', color: 'rgb(128, 153, 51)' }],
+        [14, { label: 'Vorstossschotter der Letzten Vergletscherung (vorwiegend Münsingen- u. Karlsruhe-Schotter)', color: 'rgb(0, 150, 224)' }],
+        [15, { label: 'Interglaziale Seetone (Eemzeitliche Seetone)', color: 'rgb(0, 224, 19)' }],
+        [16, { label: 'Rückzugsschotter der Vorletzten Vergletscherung, Kies-Sand-Komplex von Kleinhöchstetten', color: 'rgb(0, 129, 194)' }],
+        [17, { label: 'Moräne der Vorletzten Vergletscherung ("Altmoräne")', color: 'rgb(64, 77, 25)' }],
+        [18, { label: 'Vorletzteiszeitliche glaziolakustrische Ablagerungen und Schlammmoräne', color: 'rgb(0, 163, 14)' }],
+        [19, { label: 'Alte Deltaschotter im Belpmoos', color: 'rgb(0, 109, 163)' }],
+        [20, { label: 'Uttigen-Bümberg-Steghalde-Schotter', color: 'rgb(0, 88, 133)' }],
+        [21, { label: 'Oppligen-Sand', color: 'rgb(255, 255, 0)' }],
+        [22, { label: 'Raintal-Deltaschotter, Hani-Deltaschotter', color: 'rgb(0, 68, 102)' }],
+        [23, { label: 'Alte Seetone', color: 'rgb(0, 102, 9)' }]
       ],
-    }
-  },
-  voxel_filters: {
-    aaretal: {
-      conductivity: {
-        key: 'logk',
-        range: [-9, -1],
-      },
-      lithology: {
-        key: 'Index',
-        items: [
-          // TODO translate the labels.
-          [-9999, 'vox_filter_undefined_lithology'],
-          [3, 'Verlandungssedimente, Sumpf, Ried'],
-          [4, 'Subrezente bis rezente Alluvionen (Fluss- und Bachschotter, Überschwemmungssediment, undifferenziert)'],
-          [5, 'Hangschutt / Hanglehm (undifferenziert)'],
-          [6, 'Bachschutt / Bachschuttkegel (undifferenziert)'],
-          [7, 'Spät- bis postglaziale Schotter'],
-          [8, 'Spät- bis postglaziale Stausedimente und Seeablagerungen (undifferenziert)'],
-          [9, 'Spätglaziale Moräne (undifferenziert)'],
-          [10, 'Rückzugsschotter der Letzten Vergletscherung ("Felderschotter" und Äquivalente)'],
-          [11, 'Stauschotter (undifferenziert)'],
-          [12, 'Rinnenschotter'],
-          [13, 'Moräne der Letzten Vergletscherung'],
-          [14, 'Vorstossschotter der Letzten Vergletscherung (vorwiegend Münsingen- u. Karlsruhe-Schotter)'],
-          [15, 'Interglaziale Seetone (Eemzeitliche Seetone)'],
-          [16, 'Rückzugsschotter der Vorletzten Vergletscherung, Kies-Sand-Komplex von Kleinhöchstetten'],
-          [17, 'Moräne der Vorletzten Vergletscherung ("Altmoräne")'],
-          [18, 'Vorletzteiszeitliche glaziolakustrische Ablagerungen und Schlammmoräne'],
-          [19, 'Alte Deltaschotter im Belpmoos'],
-          [20, 'Uttigen-Bümberg-Steghalde-Schotter'],
-          [21, 'Oppligen-Sand'],
-          [22, 'Raintal-Deltaschotter, Hani-Deltaschotter'],
-          [23, 'Alte Seetone'],
-        ]
-      }
-    }
+    },
+    conductivity: {
+      key: 'logk',
+      range: [-9, -1],
+      colors: ['rgb(0, 102, 255)', 'rgb(255, 204, 0)', 'rgb(204, 0, 0)']
+    },
   }
 }

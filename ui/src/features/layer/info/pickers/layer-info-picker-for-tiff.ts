@@ -40,7 +40,7 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
     if (!this.controller.layer.visible) {
       return [];
     }
-    const data = await this.controller.pick(pick.cartesian);
+    const data = await this.controller.pick(pick.globePosition.cartographic);
     if (data === null) {
       return [];
     }

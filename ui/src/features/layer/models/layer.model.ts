@@ -1,10 +1,14 @@
 import type { Id } from 'src/models/id.model';
 import type { Model } from 'src/models/model.model';
-import { WmtsLayer, TiffLayer, BackgroundLayer } from 'src/features/layer';
+import { BackgroundLayer, TiffLayer, WmtsLayer } from 'src/features/layer';
 import { Tiles3dLayer } from 'src/features/layer/models/layer-tiles3d.model';
 import { VoxelLayer } from 'src/features/layer/models/layer-voxel.model';
 import { TranslatedString } from 'src/models/translated-string.model';
 import i18next from 'i18next';
+import {
+  makeTranslationKey,
+  TranslationKey,
+} from 'src/models/translation-key.model';
 
 export type Layer = WmtsLayer | Tiles3dLayer | VoxelLayer | TiffLayer;
 export type AnyLayer = Layer | BackgroundLayer;
@@ -83,3 +87,19 @@ export enum LayerType {
 
 export const getLayerLabel = (layer: AnyLayer): string =>
   layer.label ?? i18next.t(`layers:layers.${layer.id}`);
+
+export const getLayerAttributeName = (
+  layer: Pick<AnyLayer, 'id' | 'type'>,
+  attribute: string,
+): string =>
+  i18next.t(getTranslationKeyForLayerAttributeName(layer, attribute));
+
+export const getTranslationKeyForLayerAttributeName = (
+  layer: Pick<AnyLayer, 'id' | 'type'>,
+  attribute: string,
+): TranslationKey =>
+  makeTranslationKey(
+    `layers:attributes.${layer.id}.${attribute}`,
+    `layers:attributes.${layer.type}.${attribute}`,
+    `layers:attributes.${attribute}`,
+  );

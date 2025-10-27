@@ -4,7 +4,6 @@ import {
 } from 'src/features/layer/new/controllers/layer.controller';
 import { LayerType, Tiles3dLayer } from 'src/features/layer';
 import { Cesium3DTileset, Cesium3DTileStyle } from 'cesium';
-import { PickService } from 'src/services/pick.service';
 
 export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   private tileset!: Cesium3DTileset;
@@ -14,7 +13,7 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   }
 
   zoomIntoView(): void {
-    this.viewer.flyTo(this.tileset);
+    this.viewer.flyTo(this.tileset).then();
   }
 
   moveToTop(): void {
@@ -58,7 +57,8 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     });
 
     const { primitives } = this.viewer.scene;
-    const i = this.findIndexInPrimitives();
+    const i =
+      this.tileset === null ? null : this.findIndexInPrimitives(this.tileset);
     if (i === null) {
       // Add a new Cesium layer.
       primitives.add(tileset);
@@ -69,12 +69,6 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     }
     this.tileset = tileset;
     await this.update(this.layer);
-
-    const pickService = PickService.get();
-
-    // Tell the PickService to not operate on the two following frames.
-    // Without this, picking may result in errors.
-    pickService.skipFrames(2);
   }
 
   protected removeFromViewer(): void {
@@ -87,20 +81,5 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       tileset.destroy();
     }
     this.tileset = undefined as unknown as Cesium3DTileset;
-  }
-
-  private findIndexInPrimitives(): number | null {
-    const { tileset } = this;
-    if (tileset === undefined) {
-      return null;
-    }
-    const { primitives } = this.viewer.scene;
-    for (let i = 0; i < primitives.length; i++) {
-      const current = primitives.get(i);
-      if (current === tileset) {
-        return i;
-      }
-    }
-    return null;
   }
 }

@@ -3,21 +3,24 @@ import { BaseService } from 'src/utils/base.service';
 import { SessionService } from 'src/features/session';
 import {
   BaseLayer,
-  ConductivityVoxelLayerFilter,
+  FilterOperator,
+  getTranslationKeyForLayerAttributeName,
   Layer,
   LayerGroup,
   LayerSource,
   LayerSourceType,
   LayerType,
-  LithologyVoxelLayerFilter,
-  LithologyVoxelLayerFilterItem,
   TiffLayer,
   TiffLayerBand,
   TiffLayerConfigDisplay,
   Tiles3dLayer,
+  VOXEL_UNDEFINED_COLOR,
+  VoxelItemMapping,
+  VoxelItemMappingItem,
   VoxelLayer,
-  VoxelLayerFilter,
   VoxelLayerMapping,
+  VoxelLayerMappingType,
+  VoxelRangeMapping,
   WmtsLayer,
 } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
@@ -165,42 +168,55 @@ export class LayerApiService extends BaseService {
 
   private readonly mapConfigToVoxelLayer = (
     config: DynamicObject,
-  ): Specific<VoxelLayer> => ({
-    ...config.takeKeys<VoxelLayer>()('url', 'unitLabel', 'dataKey', 'noData'),
-    unitLabel: config.takeNullable('unitLabel') ?? null,
-    mapping: config
-      .takeObject('mapping')
-      .apply(
-        (mapping): VoxelLayerMapping =>
-          mapping.takeKeys<VoxelLayerMapping>()('range', 'colors'),
+  ): Specific<VoxelLayer> => {
+    const basic = config.takeKeys<VoxelLayer>()('dataKey', 'values');
+    return {
+      ...basic,
+      source: config.takeObject('source').apply(this.mapConfigToSource),
+      mappings: config.takeAll('mappings', (mapping) =>
+        this.mapConfigToVoxelLayerMapping(mapping, {
+          id: config.get('id'),
+          values: basic.values,
+        }),
       ),
-    filter: config.takeObject('filter').apply(
-      (filter): VoxelLayerFilter => ({
-        lithology:
-          filter.takeNullableObject('lithology')?.apply(
-            (lithology): LithologyVoxelLayerFilter => ({
-              key: lithology.take('key'),
-              items: lithology.takeAll('items', (item) =>
-                item.takeKeys<LithologyVoxelLayerFilterItem>()(
-                  'label',
-                  'value',
-                ),
-              ),
-            }),
-          ) ?? null,
-        conductivity:
-          filter
-            .takeNullableObject('conductivity')
-            ?.apply(
-              (conductivity): ConductivityVoxelLayerFilter =>
-                conductivity.takeKeys<ConductivityVoxelLayerFilter>()(
-                  'key',
-                  'range',
-                ),
-            ) ?? null,
-      }),
-    ),
-  });
+      filterOperator: FilterOperator.And,
+    };
+  };
+
+  private readonly mapConfigToVoxelLayerMapping = (
+    config: DynamicObject,
+    layer: Pick<VoxelLayer, 'id' | 'values'>,
+  ): VoxelLayerMapping => {
+    if (config.has('items')) {
+      return {
+        type: VoxelLayerMappingType.Item,
+        key: config.take('key'),
+        items: [
+          {
+            value: layer.values.undefined,
+            label: getTranslationKeyForLayerAttributeName(
+              { type: LayerType.Voxel, id: layer.id },
+              'undefined',
+            ),
+            color: `rgb(${VOXEL_UNDEFINED_COLOR.join(', ')})`,
+            isEnabled: true,
+          },
+          ...config.takeAll('items', (item) => ({
+            ...item.takeKeys<VoxelItemMappingItem>()('label', 'value', 'color'),
+            isEnabled: true,
+          })),
+        ],
+      } satisfies VoxelItemMapping;
+    }
+    const range = config.take<[number, number]>('range');
+    return {
+      type: VoxelLayerMappingType.Range,
+      ...config.takeKeys<VoxelRangeMapping>()('key', 'colors'),
+      range,
+      enabledRange: range,
+      isUndefinedAlwaysEnabled: true,
+    } satisfies VoxelRangeMapping;
+  };
 
   private readonly mapConfigToTiffLayer = (
     config: DynamicObject,
@@ -261,6 +277,15 @@ class DynamicObject {
     const keys = Object.keys(this.object);
     this.keyCount = keys.length;
     this.unusedKeys = new Set(keys);
+  }
+
+  has(key: string): boolean {
+    return key in this.object;
+  }
+
+  takeEverything(): object {
+    this.unusedKeys.clear();
+    return this.object;
   }
 
   take<T>(key: string): T {

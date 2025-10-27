@@ -10,6 +10,7 @@ import {
   Viewer,
 } from 'cesium';
 import { DEFAULT_VIEW } from 'src/constants';
+import { PickService } from 'src/services/pick.service';
 
 /**
  * `Control2D` contains the ability to toggle the viewer in and out of the 2D mode.
@@ -59,11 +60,11 @@ export class Control2dController {
       this.viewer.canvas.clientWidth / 2,
       this.viewer.canvas.clientHeight / 2,
     );
-    const position = this.scene.pickPosition(center);
+    const position = PickService.get().pick(center);
 
     // If we can't find the center position, then the camera is looking at the sky.
     // In that case, we simply switch to the default 2d view.
-    if (position === undefined) {
+    if (position === null) {
       this.viewer.camera.flyTo({
         duration: 2,
         ...DEFAULT_VIEW,

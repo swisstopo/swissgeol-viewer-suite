@@ -113,7 +113,6 @@ export class LayerUrlService extends BaseService {
   }
 
   private syncParamsToBackground(params: BackgroundParams): void {
-    console.log(params);
     const isVisible = params.map !== 'empty_map';
     const update: LayerUpdate<BackgroundLayer> = {
       activeVariantId: isVisible ? params.map : DEFAULT_BACKGROUND_VARIANT.id,

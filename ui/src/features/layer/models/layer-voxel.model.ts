@@ -1,61 +1,74 @@
-import { BaseLayer, LayerType } from 'src/features/layer';
+import { BaseLayer, LayerSource, LayerType } from 'src/features/layer';
 import { TranslationKey } from 'src/models/translation-key.model';
 
 export interface VoxelLayer extends BaseLayer {
   type: LayerType.Voxel;
 
-  url: string;
-
-  unitLabel: TranslationKey | null;
+  source: LayerSource;
 
   dataKey: string;
 
-  noData: number;
+  values: {
+    noData: number;
+    undefined: number;
+  };
 
   /**
    * The layer's value mapping.
-   * This determines how the layer is rendered and otherwise displayed to the user.
+   * This determines how the layer can be rendered and otherwise displayed to the user.
    */
-  mapping: VoxelLayerMapping;
+  mappings: VoxelLayerMapping[];
 
   /**
-   * The layer's value filter configuration.
-   * This determines how the user is able to filter the layer's data points.
+   * How the {@link mappings} are joined together to hide or show specific datapoints.
    */
-  filter: VoxelLayerFilter;
+  filterOperator: FilterOperator;
 }
 
-export interface VoxelLayerMapping {
+/**
+ * List of operator that can join together filters.
+ */
+export enum FilterOperator {
   /**
-   * The minimum and maximum values of the layer's data points.
+   * Require all mappings to match for a datapoint to be shown.
    */
-  range: [number, number];
+  And = 'And',
 
   /**
-   * The sequence of colors applied to the range of values.
-   * These will be scaled linearly to fit the value range.
+   * Require at least one mapping to match for a datapoint to be shown.
    */
-  colors: string[];
+  Or = 'Or',
+
+  /**
+   * Require exactly one mapping to match for a datapoint to be shown.
+   */
+  Xor = 'Xor',
 }
 
-export interface VoxelLayerFilter {
-  lithology: LithologyVoxelLayerFilter | null;
-  conductivity: ConductivityVoxelLayerFilter | null;
+export const VOXEL_UNDEFINED_COLOR = Object.freeze([204, 204, 204]);
+
+export type VoxelLayerMapping = VoxelItemMapping | VoxelRangeMapping;
+
+export enum VoxelLayerMappingType {
+  Item = 'Item',
+  Range = 'Range',
 }
 
-export interface LithologyVoxelLayerFilter {
+export interface VoxelItemMapping {
+  type: VoxelLayerMappingType.Item;
+
   /**
-   * The key of the property that contains the lithology data points.
+   * The key of the property that contains the data points.
    */
   key: string;
 
   /**
-   * The filter's items. Each item represents a value that can be filtered by.
+   * The mapping's items. Each item represents a unique value.
    */
-  items: LithologyVoxelLayerFilterItem[];
+  items: VoxelItemMappingItem[];
 }
 
-export interface LithologyVoxelLayerFilterItem {
+export interface VoxelItemMappingItem {
   /**
    * The translation key providing the display name for the item.
    */
@@ -65,16 +78,45 @@ export interface LithologyVoxelLayerFilterItem {
    * The value that the data points matching this item have.
    */
   value: number;
+
+  /**
+   * The color in which this value is displayed.
+   */
+  color: string;
+
+  /**
+   * Whether the item is currently enabled.
+   * This signifies that the item's datapoints match the mapping.
+   */
+  isEnabled: boolean;
 }
 
-export interface ConductivityVoxelLayerFilter {
+export interface VoxelRangeMapping {
+  type: VoxelLayerMappingType.Range;
+
   /**
-   * The key of the property that contains the conductivity data points.
+   * The key of the property that contains the data points.
    */
   key: string;
 
   /**
-   * The minimum and maximum values of the conductivity data points.
+   * The minimum and maximum values of the data points.
    */
   range: [number, number];
+
+  /**
+   * The colors with which the range is displayed.
+   */
+  colors: string[];
+
+  /**
+   * The range of currently enabled values.
+   * Datapoints outside this range do not match the mapping.
+   */
+  enabledRange: [number, number];
+
+  /**
+   * Whether undefined values always match, independent from {@link enabledRange}.
+   */
+  isUndefinedAlwaysEnabled: boolean;
 }

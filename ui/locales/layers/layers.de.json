@@ -54,6 +54,17 @@
     "ch.swisstopo.swissimage": "Luftbild",
     "lakes_rivers_map": "Seen & Flüsse"
   },
-  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/{{id}}",
-  "noData": "kein Wert"
+  "attributes": {
+    "Voxel": {
+      "cellCenter": "",
+      "logk": "Hydraulische Leitfähigkeit",
+      "Index": "Modelliereinheit",
+      "Klasse": "Durchlässigkeit"
+    }
+  },
+  "values": {
+    "noData": "kein Wert",
+    "undefined": "undefiniert"
+  },
+  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/{{id}}"
 }
