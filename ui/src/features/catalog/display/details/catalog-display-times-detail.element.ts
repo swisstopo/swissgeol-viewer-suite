@@ -9,7 +9,7 @@ import { consume } from '@lit/context';
 import { LayerService } from 'src/features/layer/new/layer.service';
 import { Id } from 'src/models/id.model';
 
-@customElement('ngm-catalog-display-times')
+@customElement('ngm-catalog-display-times-detail')
 export class CatalogDisplayTimes extends CoreElement {
   @property()
   accessor layerId!: Id<WmtsLayer>;

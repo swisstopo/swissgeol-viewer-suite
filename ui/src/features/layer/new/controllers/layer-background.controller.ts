@@ -5,7 +5,6 @@ import { WmtsService } from 'src/services/wmts.service';
 import { Id } from 'src/models/id.model';
 import { DEFAULT_VIEW } from 'src/constants';
 import * as Cesium from 'cesium';
-import { Color } from 'cesium';
 
 export class BackgroundLayerController extends BaseLayerController<BackgroundLayer> {
   private children = new Map<Id<WmtsLayer>, WmtsLayerController>();
@@ -20,23 +19,47 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
 
     // Change the globe's translucency when the opacity changes.
     // Note that this impacts *all* imageries - there is no way to separate them from the globe.
+    //
+    // We only enable translucency if we are not fully opaque.
+    // This is necessary as certain layer types (such as voxels)
+    // are not visible when it is active but not actually in use.
     this.watch(this.layer.opacity, (opacity) => {
-      this.viewer.scene.globe.translucency.frontFaceAlphaByDistance =
-        new Cesium.NearFarScalar(
-          1.0,
-          opacity, // near, alpha
-          1.0e7,
-          opacity, // far, alpha
-        );
+      this.setLayerOpacity(opacity);
     });
 
-    // Show or hide the globe based on the background visibility.
-    // This is what allows us to view underground layers.
-    // Note that simply making the map transparent is not enough here,
-    // as that would not allow us to pick through the terrain.
+    // Show or hide the layer based on its visibility.
+    // Note that we keep the globe visible but make it fully transparent.
+    // This has the following advantages over fully hiding the globe:
+    // - The terrain is still visible and able to interact with other layers.
+    // - panning works as expected, as the cursor can "grab" onto the globe.
+    // - The opacity and visibility of imageries stay independent of the background.
     this.watch(this.layer.isVisible, (isVisible) => {
-      this.viewer.scene.globe.show = isVisible;
+      if (isVisible) {
+        this.children.forEach((child) =>
+          child.update({ ...child.layer, isVisible: true, opacity: 1 }),
+        );
+      } else {
+        this.children.forEach((child) =>
+          child.update({ ...child.layer, isVisible: false, opacity: 0 }),
+        );
+      }
     });
+  }
+
+  private setLayerOpacity(opacity: number): void {
+    const { translucency } = this.viewer.scene.globe;
+    if (opacity === 1) {
+      translucency.enabled = false;
+      translucency.frontFaceAlphaByDistance = undefined as any;
+    } else {
+      translucency.enabled = true;
+      translucency.frontFaceAlphaByDistance = new Cesium.NearFarScalar(
+        1.0,
+        opacity, // near, alpha
+        1.0e7,
+        opacity, // far, alpha
+      );
+    }
   }
 
   protected async addToViewer(): Promise<void> {
@@ -86,10 +109,6 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
         viewer.scene.imageryLayers.raiseToTop(imagery);
       }
     }
-
-    // Ensure that the globe can be made transparent.
-    viewer.scene.globe.baseColor = Color.TRANSPARENT;
-    viewer.scene.globe.translucency.enabled = true;
   }
 
   protected removeFromViewer(): void {

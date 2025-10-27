@@ -1,13 +1,13 @@
 import {
   Cartesian3,
-  Ellipsoid,
+  Cartographic,
   ImageryLayer,
   Math as CesiumMath,
+  Rectangle,
   Resource,
   UrlTemplateImageryProvider,
   Viewer,
   WebMercatorTilingScheme,
-  Rectangle,
 } from 'cesium';
 import { GeoTIFFLayer, GeoTIFFLayerBand, LayerConfig } from 'src/layertree';
 import { SWITZERLAND_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
@@ -79,12 +79,11 @@ export class LayerTiffController {
     }
   }
 
-  async pick(cartesian: Cartesian3): Promise<PickData | null> {
+  async pick(coords: Cartographic): Promise<PickData | null> {
     if (!this.layer.visible) {
       return null;
     }
 
-    const coords = Ellipsoid.WGS84.cartesianToCartographic(cartesian);
     const longitude = CesiumMath.toDegrees(coords.longitude);
     const latitude = CesiumMath.toDegrees(coords.latitude);
 

@@ -1,14 +1,21 @@
 import { customElement, property } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
-import { css, html } from 'lit';
-import { LayerInfo } from 'src/features/layer/info/layer-info.model';
+import { css, html, TemplateResult } from 'lit';
+import {
+  LayerInfo,
+  LayerInfoAttribute,
+} from 'src/features/layer/info/layer-info.model';
 import i18next from 'i18next';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
 import { Viewer } from 'cesium';
 import { viewerContext } from 'src/context';
 import { consume } from '@lit/context';
-import { run } from 'src/utils/fn.utils';
+import { TranslationKey } from 'src/models/translation-key.model';
+
+const numberFormat = new Intl.NumberFormat('de-CH', {
+  maximumFractionDigits: 20,
+});
 
 @customElement('ngm-layer-info-item')
 export class LayerInfoItem extends CoreElement {
@@ -79,6 +86,18 @@ export class LayerInfoItem extends CoreElement {
     this.style.setProperty('--divider-offset', `${offset}px`);
   };
 
+  private formatValue(
+    value: LayerInfoAttribute['value'],
+  ): string | TemplateResult {
+    if (typeof value === 'number') {
+      return numberFormat.format(value);
+    }
+    if (typeof value === 'string' || Array.isArray(value)) {
+      return translate(value);
+    }
+    return value;
+  }
+
   readonly render = () => html`
     <label class="toggle">
       <input type="checkbox" />
@@ -96,16 +115,8 @@ export class LayerInfoItem extends CoreElement {
             this.info.attributes,
             (it) => it.key,
             (it) => {
-              const key = run(() => {
-                if (/^\w+:/.test(it.key)) {
-                  // Translation keys with spaces can't be translated with the `ns:key` syntax.
-                  // Do support them, we split the namespace from the key and pass it in the options object.
-                  const [ns, key] = it.key.split(':', 2);
-                  return i18next.t(key, { ns });
-                }
-                return i18next.t(it.key);
-              });
-              return html`<li title="${key}">${key}</li>`;
+              const translatedKey = translate(it.key);
+              return html`<li title="${translatedKey}">${translatedKey}</li>`;
             },
           )}
         </ul>
@@ -134,9 +145,8 @@ export class LayerInfoItem extends CoreElement {
                   </li>
                 `;
               }
-              return html`<li title="${i18next.t(`${it.value}`)}">
-                ${i18next.t(`${it.value}`)}
-              </li>`;
+              const value = this.formatValue(it.value);
+              return html`<li title="${value}">${value}</li>`;
             },
           )}
         </ul>
@@ -271,3 +281,16 @@ export class LayerInfoItem extends CoreElement {
     }
   `;
 }
+
+const translate = (key: string | TranslationKey) => {
+  const keys = Array.isArray(key) ? [...key].reverse() : [key];
+  return keys.reduce((prev, key) => {
+    if (/^\w+:/.test(key)) {
+      // Translation keys with spaces can't be translated with the `ns:key` syntax.
+      // Do support them, we split the namespace from the key and pass it in the options object.
+      const [ns, actualKey] = key.split(':', 2);
+      return i18next.t(actualKey, { ns, defaultValue: prev });
+    }
+    return i18next.t(key, { defaultValue: prev });
+  }, keys[0]);
+};

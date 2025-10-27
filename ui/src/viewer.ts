@@ -1,7 +1,6 @@
-import { MANTEL_COLOR, SWITZERLAND_RECTANGLE } from './constants';
+import { SWITZERLAND_RECTANGLE } from './constants';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter';
-import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
 
 import {
@@ -10,17 +9,17 @@ import {
   CesiumTerrainProvider,
   Color,
   DirectionalLight,
-  Ellipsoid,
   ImageryLayer,
   Ion,
   IonResource,
+  JulianDate,
   Rectangle,
   RequestScheduler,
   ScreenSpaceEventType,
+  SunLight,
   Viewer,
   WebGLOptions,
 } from 'cesium';
-import MainStore from './store/main';
 import { getExaggeration } from './permalink';
 
 window['CESIUM_BASE_URL'] = './cesium';
@@ -117,8 +116,6 @@ export async function setupViewer(
     // maximumRenderTimeChange: 10,
   });
 
-  viewer.scene.postProcessStages.ambientOcclusion.enabled = false;
-
   const scene = viewer.scene;
 
   // Hide underground fog.
@@ -143,23 +140,44 @@ export async function setupViewer(
     globe.cartographicLimitRectangle = rectangle;
   }
 
-  // Disable underground fog.
-  viewer.scene.fog.enabled = false;
+  // Position the sun the that shadows look nice
+  let sunDate = new Date('2018-06-21T10:00:00.000Z');
+  if (searchParams.has('date')) {
+    const betterDate = new Date(searchParams.get('date') ?? '');
+    if (Number.isNaN(betterDate.getDate())) {
+      console.error(`Provided date is wrong: ${searchParams.get('date')}`);
+    } else {
+      sunDate = betterDate;
+    }
+  }
+  viewer.clock.currentTime = JulianDate.fromDate(sunDate);
 
-  // Create a  directional light that is aligned with the camera.
-  const light = new DirectionalLight({
-    direction: Cartesian3.clone(scene.camera.directionWC),
-    intensity: 2,
-  });
-  scene.light = light;
-
-  // Update the light position when the camera moves.
-  scene.preRender.addEventListener(() => {
-    light.direction = Cartesian3.clone(
-      scene.camera.directionWC,
-      light.direction,
-    );
-  });
+  if (searchParams.has('light')) {
+    const p = searchParams.get('light')?.split('-').map(parseFloat) as number[];
+    scene.light = new DirectionalLight({
+      direction: new Cartesian3(p[0], p[1], p[2]),
+      color: Color.WHITE,
+      intensity: p[3],
+    });
+  } else {
+    // Use sun lighting above ground
+    const sunLight = new SunLight();
+    // Define a flashlight for viewing underground
+    const flashlight = new DirectionalLight({
+      direction: scene.camera.directionWC,
+    });
+    scene.preRender.addEventListener((scene) => {
+      if (scene.cameraUnderground) {
+        flashlight.direction = Cartesian3.clone(
+          scene.camera.directionWC,
+          flashlight.direction,
+        );
+        scene.light = flashlight;
+      } else {
+        scene.light = sunLight;
+      }
+    });
+  }
 
   // Limit the volume inside which the user can navigate
   if (!hasNoLimit) {
@@ -194,61 +212,5 @@ export async function setupViewer(
       inspector.viewModel.wireframe = true;
     }
   }
-
   return viewer;
-}
-
-export function addMantelEllipsoid(viewer: Viewer) {
-  // Add Mantel ellipsoid
-  const earthRadii = Ellipsoid.WGS84.radii.clone();
-  const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
-  const mantelRadii = earthRadii.clone();
-  mantelRadii.x -= mantelDepth;
-  mantelRadii.y -= mantelDepth;
-  mantelRadii.z -= mantelDepth;
-
-  const entity = viewer.entities.add({
-    position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
-    ellipsoid: {
-      radii: mantelRadii,
-      material: MANTEL_COLOR,
-    },
-  });
-
-  if (!hasNoLimit) {
-    new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
-  }
-
-  // hacky way to show mantel also above the terrain.
-  // for some reason object placed below 21km doesn't show when the camera above the terrain. distanceDisplayCondition doesn't resolve the issue.
-  const mantelDepthAboveTerrain = 21000;
-  const mantelRadiiAboveTerrain = earthRadii.clone();
-  mantelRadiiAboveTerrain.x -= mantelDepthAboveTerrain;
-  mantelRadiiAboveTerrain.y -= mantelDepthAboveTerrain;
-  mantelRadiiAboveTerrain.z -= mantelDepthAboveTerrain;
-
-  let hasUsedUndergroundValue = !viewer.scene.cameraUnderground;
-  viewer.scene.postRender.addEventListener((scene) => {
-    if (!entity.ellipsoid) return;
-    const isVoxelVisible = MainStore.visibleVoxelLayers.length > 0;
-    const exaggeration = getExaggeration();
-    if ((exaggeration > 1 || isVoxelVisible) && entity.isShowing) {
-      entity.show = false;
-      viewer.scene.requestRender();
-    } else if (exaggeration === 1 && !isVoxelVisible && !entity.isShowing) {
-      entity.show = true;
-      viewer.scene.requestRender();
-    }
-    if (scene.cameraUnderground && !hasUsedUndergroundValue) {
-      (<any>entity.ellipsoid.radii) = mantelRadii;
-      hasUsedUndergroundValue = true;
-      if (!Color.equals(scene.backgroundColor, Color.TRANSPARENT))
-        scene.backgroundColor = Color.TRANSPARENT;
-    } else if (!scene.cameraUnderground && hasUsedUndergroundValue) {
-      (<any>entity.ellipsoid.radii) = mantelRadiiAboveTerrain;
-      hasUsedUndergroundValue = false;
-      if (isVoxelVisible && !Color.equals(scene.backgroundColor, MANTEL_COLOR))
-        scene.backgroundColor = MANTEL_COLOR;
-    }
-  });
 }

@@ -9,8 +9,12 @@ import { WmtsLayerController } from 'src/features/layer/new/controllers/layer-wm
 import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer-tiles3d.controller';
 import S3Resource from 'src/cesium/S3Resource';
 import MainStore from 'src/store/main';
+import { VoxelLayerController } from 'src/features/layer/new/controllers/layer-voxel.controller';
 
-export type LayerController = WmtsLayerController | Tiles3dLayerController;
+export type LayerController =
+  | WmtsLayerController
+  | Tiles3dLayerController
+  | VoxelLayerController;
 
 /**
  * A {@link LayerController} is responsible for managing how a {@link Layer} is displayed on the {@link Viewer}.
@@ -299,6 +303,17 @@ export abstract class BaseLayerController<T extends BaseLayer> {
     }
     return false;
   }
+
+  protected findIndexInPrimitives(primitive: unknown): number | null {
+    const { primitives } = this.viewer.scene;
+    for (let i = 0; i < primitives.length; i++) {
+      const current = primitives.get(i);
+      if (current === primitive) {
+        return i;
+      }
+    }
+    return null;
+  }
 }
 
 export const mapLayerSourceToResource = async (
@@ -307,7 +322,10 @@ export const mapLayerSourceToResource = async (
   switch (source.type) {
     case LayerSourceType.CesiumIon:
       // TODO check if we need to pass an ion token here
-      return await IonResource.fromAssetId(source.assetId);
+      return await IonResource.fromAssetId(source.assetId, {
+        accessToken:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY',
+      });
     case LayerSourceType.Url:
       return new Resource(source.url);
     case LayerSourceType.S3:

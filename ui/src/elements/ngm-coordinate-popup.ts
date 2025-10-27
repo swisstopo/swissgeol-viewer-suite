@@ -10,6 +10,7 @@ import {
 import MainStore from '../store/main';
 import { formatCartographicAs2DLv95, radToDeg } from '../projection';
 import i18next from 'i18next';
+import { PickService } from 'src/services/pick.service';
 
 @customElement('ngm-coordinate-popup')
 export class NgmCoordinatePopup extends LitElementI18n {
@@ -39,7 +40,7 @@ export class NgmCoordinatePopup extends LitElementI18n {
 
       eventHandler.setInputAction(async (event) => {
         this.opened = false;
-        const cartesian = viewer.scene.pickPosition(event.position);
+        const cartesian = PickService.get().pick(event.position);
         if (!cartesian) {
           return;
         }

@@ -41,14 +41,12 @@ export class CatalogDisplayList extends CoreElement {
   @state()
   accessor isBackgroundActive = false;
 
-  private readonly windows = {
-    legend: null as CoreWindow | null,
-    times: null as CoreWindow | null,
-    tiffFilter: null as CoreWindow | null,
-  } satisfies Record<string, unknown>;
+  private windows!: WindowMapping;
 
   connectedCallback() {
     super.connectedCallback();
+
+    this.windows = getWindowsOfLayer(this.layerId);
 
     this.register(
       this.layerService.layer$(this.layerId).subscribe((layer) => {
@@ -56,12 +54,6 @@ export class CatalogDisplayList extends CoreElement {
         this.layer = layer;
       }),
     );
-
-    this.register(() => {
-      for (const window of Object.values(this.windows)) {
-        window?.close();
-      }
-    });
   }
 
   updated() {
@@ -104,18 +96,6 @@ export class CatalogDisplayList extends CoreElement {
     this.layerService.deactivate(this.layer.id as Id<Layer>);
   };
 
-  private readonly openVoxelFilter = (): void => {
-    this.dispatchEvent(
-      new CustomEvent('showVoxelFilter', {
-        composed: true,
-        bubbles: true,
-        detail: {
-          config: this.layer,
-        },
-      }),
-    );
-  };
-
   private openWindow(
     name: keyof typeof this.windows,
     options: Omit<CoreWindowProps, 'onClose'>,
@@ -135,7 +115,7 @@ export class CatalogDisplayList extends CoreElement {
     this.openWindow('legend', {
       title: () => getLayerLabel(this.layer),
       body: () => html`
-        <ngm-catalog-display-legend
+        <ngm-catalog-display-legend-detail
           .layerId=${this.layer.id}
         ></ngm-catalog-display-legend>
       `,
@@ -145,9 +125,19 @@ export class CatalogDisplayList extends CoreElement {
     this.openWindow('times', {
       title: () => getLayerLabel(this.layer),
       body: () => html`
-        <ngm-catalog-display-times
+        <ngm-catalog-display-times-detail
           .layerId=${this.layer.id}
         ></ngm-catalog-display-times>
+      `,
+    });
+
+  private readonly openVoxelFilter = (): void =>
+    this.openWindow('voxelFilter', {
+      title: () => getLayerLabel(this.layer),
+      body: () => html`
+        <ngm-catalog-display-voxel-filter-detail
+          .layerId=${this.layer.id}
+        ></ngm-catalog-display-voxel-filter-detail>
       `,
     });
 
@@ -494,3 +484,48 @@ export class CatalogDisplayList extends CoreElement {
     }
   `;
 }
+
+type WindowName = 'legend' | 'times' | 'voxelFilter' | 'tiffFilter';
+
+type WindowMapping = Record<WindowName, CoreWindow | null>;
+
+/**
+ * A collection of all currently open windows, mapped to the layer to which they belong.
+ *
+ * This is kept outside the layer's component itself,
+ * which enables us to close the catalog itself, while keeping the windows open.
+ *
+ * Cleanup is done when a layer is deactivated.
+ */
+const windowMappingsByLayerId = new Map<Id<AnyLayer>, WindowMapping>();
+
+const getWindowsOfLayer = (layerId: Id<AnyLayer>): WindowMapping => {
+  const mapping = windowMappingsByLayerId.get(layerId);
+  if (mapping !== undefined) {
+    return mapping;
+  }
+  const newMapping: WindowMapping = {
+    legend: null,
+    tiffFilter: null,
+    times: null,
+    voxelFilter: null,
+  };
+  windowMappingsByLayerId.set(layerId, newMapping);
+  return newMapping;
+};
+
+LayerService.inject().then((layerService) => {
+  // Close the windows of any deactivated layer.
+  layerService.layerDeactivated$.subscribe((layerId) => {
+    const mapping = windowMappingsByLayerId.get(layerId);
+    if (mapping === undefined) {
+      return;
+    }
+    for (const window of Object.values(mapping)) {
+      if (window !== null) {
+        window.close();
+      }
+    }
+    windowMappingsByLayerId.delete(layerId);
+  });
+});
