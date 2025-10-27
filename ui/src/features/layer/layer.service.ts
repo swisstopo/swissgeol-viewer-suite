@@ -187,8 +187,8 @@ export class LayerService extends BaseService {
       ) {
         dataSources.raiseToTop(layer);
       } else if (config.type === LayerType.geoTIFF) {
-        const imagery = (config as GeoTIFFLayer).controller!.activeImagery;
-        imageries.raiseToTop(imagery);
+        const tileset = (config as GeoTIFFLayer).controller!.tileset;
+        this.viewer.scene.primitives.raiseToTop(tileset);
       } else if (config.type === LayerType.voxels3dtiles) {
         const primitive = (await config.promise) as VoxelPrimitive;
         this.viewer.scene.primitives.raiseToTop(primitive);

@@ -1,27 +1,50 @@
 import {
   Cartesian3,
+  Cesium3DTileset,
+  CustomShader,
+  CustomShaderTranslucencyMode,
   Ellipsoid,
   ImageryLayer,
+  IonResource,
   Math as CesiumMath,
+  Rectangle,
   Resource,
+  UniformType,
   UrlTemplateImageryProvider,
   Viewer,
   WebMercatorTilingScheme,
-  Rectangle,
 } from 'cesium';
 import { GeoTIFFLayer, GeoTIFFLayerBand, LayerConfig } from 'src/layertree';
 import { SWITZERLAND_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
 import proj4 from 'proj4';
+import { PickableCesium3DTileset } from 'src/layers/helpers';
 
 export class LayerTiffController {
-  private active!: ActiveBand;
-
-  private metadata!: TiffMetadata;
-
-  constructor(
+  private constructor(
     readonly layer: LayerConfig & GeoTIFFLayer,
+    readonly tileset: PickableCesium3DTileset,
     private readonly viewer: Viewer,
   ) {
+    Object.assign(this.layer, {
+      controller: this,
+      setVisibility: this.setVisibility,
+      setOpacity: this.setOpacity,
+      add: this.addToViewer,
+      remove: this.removeFromViewer,
+    });
+
+    Object.assign(this.tileset, {
+      controller: this,
+    });
+
+    this.activateBand(layer.bands[0].index);
+    this.fetchMetadata().then((info) => (this.metadata = info));
+  }
+
+  public static async build(
+    layer: LayerConfig & GeoTIFFLayer,
+    viewer: Viewer,
+  ): Promise<LayerTiffController> {
     if (layer.controller !== undefined) {
       throw new Error(`GeoTIFFLayer is already controlled: ${layer.label}`);
     }
@@ -30,21 +53,43 @@ export class LayerTiffController {
         "Can't control GeoTIFFLayer as it has no bands configured",
       );
     }
-    Object.assign(layer, {
-      controller: this,
-      setVisibility: this.setVisibility,
-      setOpacity: this.setOpacity,
-      add: this.addToViewer,
-      remove: this.removeFromViewer,
+
+    const resource = await IonResource.fromAssetId(layer.terrainAssetId, {
+      accessToken: '{access-token-here}',
     });
-    this.activateBand(layer.bands[0].index);
+    const tileset: PickableCesium3DTileset = await Cesium3DTileset.fromUrl(
+      resource,
+      {
+        show: layer.visible,
+        backFaceCulling: false,
+        enableCollision: true,
+        maximumScreenSpaceError: 16,
+      },
+    );
+    tileset.pickable = true;
+    tileset.customShader = new CustomShader({
+      translucencyMode: CustomShaderTranslucencyMode.TRANSLUCENT,
+      fragmentShaderText: `
+        void fragmentMain(FragmentInput fsIn, inout czm_modelMaterial m) {
+          m.alpha = u_alpha;
+        }
+      `,
+      uniforms: {
+        u_alpha: {
+          type: UniformType.FLOAT,
+          value: layer.opacity ?? 1,
+        },
+      },
+    });
 
-    this.fetchMetadata().then((info) => (this.metadata = info));
+    viewer.scene.primitives.add(tileset);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return new LayerTiffController(layer, tileset, viewer);
   }
 
-  get activeImagery(): ImageryLayer {
-    return this.active.imagery;
-  }
+  private active!: ActiveBand;
+
+  private metadata!: TiffMetadata;
 
   get activeBand(): GeoTIFFLayerBand {
     return this.active.band;
@@ -56,27 +101,14 @@ export class LayerTiffController {
       throw new Error(`Band with index does not exist: ${index}`);
     }
 
-    let oldImageryIndex = -1;
-    if (this.active != null) {
-      oldImageryIndex =
-        this.viewer.scene.imageryLayers.indexOf(this.active.imagery) ?? -1;
-      if (oldImageryIndex >= 0) {
-        this.viewer.scene.imageryLayers.remove(this.active.imagery, false);
-      }
-    }
-
+    this.tileset.imageryLayers.removeAll(false);
     const imagery = this.makeImagery(band);
-    const oldImagery = this.active;
-    this.active = { imagery, band };
-    if (oldImageryIndex !== -1) {
-      this.addToViewer(oldImageryIndex);
+    this.tileset.imageryLayers.add(imagery);
+    if (!this.viewer.scene.primitives.contains(this.tileset)) {
+      this.viewer.scene.primitives.add(this.tileset);
     }
+    this.active = { band };
     this.viewer.scene.requestRender();
-    if (oldImagery != null) {
-      setTimeout(() => {
-        oldImagery.imagery.destroy();
-      });
-    }
   }
 
   async pick(cartesian: Cartesian3): Promise<PickData | null> {
@@ -168,26 +200,20 @@ export class LayerTiffController {
       // Suppress error logs
     });
     const imagery = new ImageryLayer(provider, {
-      alpha: this.layer.opacity ?? 1,
-      show: this.layer.visible ?? true,
+      alpha: 1,
+      show: true,
     });
     return Object.assign(imagery, {
       controller: this,
     });
   }
 
-  private readonly addToViewer = (toIndex: number) => {
-    const layersLength = this.viewer.scene.imageryLayers.length;
-    if (toIndex > 0 && toIndex < layersLength) {
-      const imageryIndex = layersLength - toIndex;
-      this.viewer.scene.imageryLayers.add(this.active.imagery, imageryIndex);
-      return;
-    }
-    this.viewer.scene.imageryLayers.add(this.active.imagery);
+  private readonly addToViewer = () => {
+    this.viewer.scene.primitives.add(this.tileset);
   };
 
   private readonly removeFromViewer = (): void => {
-    this.viewer.scene.imageryLayers.remove(this.active.imagery, false);
+    this.viewer.scene.primitives.remove(this.tileset);
   };
 
   private readonly setVisibility = (isVisible: boolean): void => {
@@ -195,7 +221,7 @@ export class LayerTiffController {
     if (this.active === null) {
       return;
     }
-    this.active.imagery.show = isVisible;
+    this.tileset.show = isVisible;
   };
 
   private readonly setOpacity = (opacity: number): void => {
@@ -203,7 +229,8 @@ export class LayerTiffController {
     if (this.active === null) {
       return;
     }
-    this.active.imagery.alpha = opacity;
+    this.tileset.customShader!.setUniform('u_alpha', opacity);
+    this.viewer.scene.requestRender();
   };
 
   private async fetchMetadata(): Promise<TiffMetadata> {
@@ -269,7 +296,6 @@ export class LayerTiffController {
 
 interface ActiveBand {
   band: GeoTIFFLayerBand;
-  imagery: ImageryLayer;
 }
 
 export type LayerTiffImagery = ImageryLayer & {

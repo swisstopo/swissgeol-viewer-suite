@@ -60,12 +60,12 @@ export function createIonGeoJSONFromConfig(viewer: Viewer, config) {
     });
 }
 
-export function createGeoTiffImageryProviderFromConfig(
+export async function createGeoTiffImageryProviderFromConfig(
   viewer: Viewer,
   config: LayerConfig,
 ) {
   const tiff = config as LayerConfig & GeoTIFFLayer;
-  const controller = new LayerTiffController(tiff, viewer);
+  const controller = await LayerTiffController.build(tiff, viewer);
   return Promise.resolve(controller);
 }
 

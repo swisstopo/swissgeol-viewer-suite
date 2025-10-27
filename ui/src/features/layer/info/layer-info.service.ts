@@ -2,7 +2,6 @@ import {
   Cartesian2,
   Cartesian3,
   Cartographic,
-  ImageryLayer,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   Viewer,
@@ -16,7 +15,7 @@ import {
 } from 'rxjs';
 import { BaseService } from 'src/utils/base.service';
 import MainStore from 'src/store/main';
-import { isLayerTiffImagery, LayerTiffController } from 'src/features/layer';
+import { LayerTiffController } from 'src/features/layer';
 import {
   LayerInfoPicker,
   LayerPickData,
@@ -67,7 +66,6 @@ export class LayerInfoService extends BaseService {
           return;
         }
         this.viewer = viewer;
-        this.initializeImageryLayers();
         this.initializeQueryableLayers(layerService);
 
         const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
@@ -164,15 +162,6 @@ export class LayerInfoService extends BaseService {
     }
   }
 
-  private initializeImageryLayers(): void {
-    const layers = this.viewer.scene.imageryLayers;
-    for (let i = 0; i < layers.length; i++) {
-      this.handleImageryLayerAddition(layers.get(i));
-    }
-    layers.layerAdded.addEventListener(this.handleImageryLayerAddition);
-    layers.layerRemoved.addEventListener(this.handleImageryLayerRemoval);
-  }
-
   private initializeQueryableLayers(layerService: LayerService): void {
     // The queryable layers that are currently being handled.
     let currentLayers: readonly LayerTreeNode[] = [];
@@ -212,7 +201,7 @@ export class LayerInfoService extends BaseService {
   private readonly handleQueryableLayerAddition = (
     layer: LayerTreeNode,
   ): void => {
-    if (layer.pickable === false || layer.type === LayerType.geoTIFF) {
+    if (layer.pickable === false) {
       return;
     }
     this.queueModification({
@@ -228,6 +217,14 @@ export class LayerInfoService extends BaseService {
           case LayerType.earthquakes:
             this.pickers.unshift(
               new LayerInfoPickerFor3dTiles(layer, this.viewer),
+            );
+            break;
+          case LayerType.geoTIFF:
+            this.pickers.unshift(
+              new LayerInfoPickerForTiff(
+                this.viewer,
+                (layer as { controller: LayerTiffController }).controller,
+              ),
             );
             break;
           default:
@@ -247,40 +244,6 @@ export class LayerInfoService extends BaseService {
       action: () => this.removePickerBySource(layer),
     });
   };
-
-  private readonly handleImageryLayerAddition = (layer: ImageryLayer): void => {
-    if (!isLayerTiffImagery(layer)) {
-      return;
-    }
-    this.queueModification({
-      source: layer.controller,
-      action: () => {
-        this.addPicker(
-          new LayerInfoPickerForTiff(this.viewer, layer.controller),
-        );
-      },
-    });
-  };
-
-  private readonly handleImageryLayerRemoval = (layer: ImageryLayer): void => {
-    if (!isLayerTiffImagery(layer)) {
-      return;
-    }
-    this.queueModification({
-      source: layer.controller,
-      action: () => this.removePickerBySource(layer.controller),
-    });
-  };
-
-  private addPicker(picker: LayerInfoPicker): void {
-    const i = this.pickers.findIndex((info) =>
-      isSameSource(picker.source, info.source),
-    );
-    if (i >= 0) {
-      return;
-    }
-    this.pickers.push(picker);
-  }
 
   private removePickerBySource(source: LayerInfoSource): void {
     const i = this.pickers.findIndex((info) =>

@@ -66,6 +66,7 @@ interface UnspecificLayerTreeNode {
 
 export interface GeoTIFFLayer {
   type: LayerType.geoTIFF;
+  terrainAssetId: number;
   url: string;
   layer: string;
   id: string;
@@ -1164,6 +1165,7 @@ const group_01: LayerTreeNode =
                 type: LayerType.geoTIFF,
                 url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
                 layer: 'ch.swisstopo.swissbedrock-geotiff',
+                terrainAssetId: 3914142,
                 id: 'swissBEDROCK',
                 label: t('layers:swissBEDROCK.title'),
                 opacity: 0.5,
