@@ -1,3 +1,7 @@
+ngm-tools {
+  height: 100%;
+}
+
 ngm-tools[hidden] {
   display: none;
 }
