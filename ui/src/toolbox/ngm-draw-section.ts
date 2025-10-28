@@ -64,10 +64,6 @@ export class NgmDrawSection extends CoreElement {
         draw.addEventListener('statechanged', () => this.requestUpdate());
       }
     });
-
-    ToolboxStore.geometryAction.subscribe(() => {
-      setTimeout(() => this.requestUpdate());
-    });
   }
 
   update(changedProperties: PropertyValues) {
