@@ -64,8 +64,8 @@ export interface BaseLayer extends Model {
   /**
    * Whether the layer has a legend, and how that legend can be found.
    *
-   * - If this is `true`, the layer can be fetched as HTML from `geo.admin.ch` via the layer's id.
-   * - If this is a `string`, the layer can be fetched as PNG from `geo.admin.ch` by using that string as id.
+   * - If this is `true`, the legend can be fetched as HTML from `geo.admin.ch` via the layer's id.
+   * - If this is a `string`, the legend can be fetched as PNG from `geo.admin.ch` by using that string as id.
    * - If this is `null`, then the layer doesn't have a legend.
    *
    */
