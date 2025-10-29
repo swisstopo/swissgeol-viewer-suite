@@ -26,7 +26,7 @@ export type LayerTreeNode =
 interface UnspecificLayerTreeNode {
   type?: LayerType;
   layer?: string;
-  ogcId?: number;
+  ogc?: OgcReference;
   label: string;
   assetId?: number;
   ionToken?: string;
@@ -63,6 +63,11 @@ interface UnspecificLayerTreeNode {
   wmtsTimes?: string[];
   wmtsCurrentTime?: string;
   env?: Array<AppEnv>;
+}
+
+export interface OgcReference {
+  id: number;
+  styleId?: number;
 }
 
 export interface GeoTIFFLayer {
@@ -1332,8 +1337,24 @@ const group_01: LayerTreeNode =
             children: [
               {
                 type: LayerType.tiles3d,
-                assetId: 267959,
-                ogcId: 10486,
+                ogc: { id: 13327, styleId: 5 },
+                label: t('seismic-from-ogc--test'),
+                layer: 'seismic-from-ogc--test',
+                pickable: true,
+                opacity: DEFAULT_LAYER_OPACITY,
+              },
+              {
+                type: LayerType.tiles3d,
+                ogc: { id: 13328, styleId: 5 },
+                label: t('seismic-from-ogc--test2'),
+                layer: 'seismic-from-ogc--test2',
+                pickable: true,
+                opacity: DEFAULT_LAYER_OPACITY,
+              },
+
+              {
+                type: LayerType.tiles3d,
+                ogc: { id: 10486 },
                 label: t('lyr_top_omm_label'),
                 layer: 'top_omm',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1347,7 +1368,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267961,
-                ogcId: 10487,
+                ogc: { id: 10487 },
                 label: t('lyr_top_usm_label'),
                 layer: 'top_usm',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1362,7 +1383,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267966,
-                ogcId: 10485,
+                ogc: { id: 10485 },
                 label: t('lyr_top_umm_label'),
                 layer: 'top_umm',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1376,7 +1397,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267954,
-                ogcId: 10489,
+                ogc: { id: 10489 },
                 label: t('lyr_base_cenozoic_label'),
                 layer: 'base_cenozoic',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1389,7 +1410,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267958,
-                ogcId: 10488,
+                ogc: { id: 10488 },
                 label: t('lyr_top_cretaceous_label'),
                 layer: 'top_cretaceous',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1402,7 +1423,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267962,
-                ogcId: 10500,
+                ogc: { id: 10500 },
                 label: t('lyr_top_upper_malm_label'),
                 layer: 'top_upper_malm',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1415,7 +1436,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267963,
-                ogcId: 10490,
+                ogc: { id: 10490 },
                 label: t('lyr_top_lower_malm_label'),
                 layer: 'top_lower_malm',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1428,7 +1449,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267957,
-                ogcId: 10491,
+                ogc: { id: 10491 },
                 label: t('lyr_top_dogger_label'),
                 layer: 'top_dogger',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1441,7 +1462,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267899,
-                ogcId: 10492,
+                ogc: { id: 10492 },
                 label: t('lyr_top_lias_label'),
                 layer: 'top_lias',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1454,7 +1475,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267960,
-                ogcId: 10497,
+                ogc: { id: 10497 },
                 label: t('lyr_top_keuper_label'),
                 layer: 'top_keuper',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1467,7 +1488,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267953,
-                ogcId: 10498,
+                ogc: { id: 10498 },
                 label: t('lyr_top_muschelkalk_label'),
                 layer: 'top_muschelkalk',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1481,7 +1502,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267952,
-                ogcId: 10496,
+                ogc: { id: 10496 },
                 label: t('lyr_base_mesozoic_label'),
                 layer: 'base_mesozoic',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1494,7 +1515,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267965,
-                ogcId: 10494,
+                ogc: { id: 10494 },
                 label: t('lyr_base_permocarboniferous'),
                 layer: 'base_permocarboniferous',
                 opacity: DEFAULT_LAYER_OPACITY,
@@ -1508,7 +1529,7 @@ const group_01: LayerTreeNode =
               {
                 type: LayerType.tiles3d,
                 assetId: 267964,
-                ogcId: 10495,
+                ogc: { id: 10495 },
                 label: t('lyr_base_permocarboniferous_supposed'),
                 layer: 'base_permocarboniferous_supposed',
                 opacity: DEFAULT_LAYER_OPACITY,

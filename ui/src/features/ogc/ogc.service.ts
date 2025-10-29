@@ -210,11 +210,11 @@ export class OgcService extends BaseService {
       },
       polygon: points,
     };
-    if (layer.ogcId != null) {
+    if (layer.ogc !== undefined) {
       // A layer from the gst service, most likely a 3dtile.
       return {
         type: 'gst',
-        id: layer.ogcId,
+        id: layer.ogc.id,
         requestedFormat: 'tiles3d',
 
         // The coordinate system used in the output file.
