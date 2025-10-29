@@ -1,0 +1,21 @@
+{
+  "actions": {
+    "export": ""
+  },
+  "ogc": {
+    "layer-selection": {
+      "title": "",
+      "confirm": ""
+    },
+    "queue": {
+      "title": ""
+    },
+    "stage": {
+      "Prepare": "",
+      "Running": "",
+      "Success": "",
+      "Failure": "",
+      "Complete": ""
+    }
+  }
+}

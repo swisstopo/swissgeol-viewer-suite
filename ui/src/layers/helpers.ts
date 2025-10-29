@@ -8,6 +8,7 @@ import {
   Cesium3DTileStyle,
   Cesium3DTilesVoxelProvider,
   CustomShader,
+  CustomShaderTranslucencyMode,
   Ellipsoid,
   GeoJsonDataSource,
   ImageBasedLighting,
@@ -17,6 +18,9 @@ import {
   Matrix3,
   Matrix4,
   Rectangle,
+  Resource,
+  Scene,
+  UniformType,
   Viewer,
   VoxelPrimitive,
 } from 'cesium';
@@ -131,7 +135,7 @@ export async function create3DTilesetFromConfig(
   config: LayerConfig,
   tileLoadCallback,
 ) {
-  let resource: string | IonResource | AmazonS3Resource;
+  let resource: string | AmazonS3Resource | IonResource | Resource;
   if (config.aws_s3_bucket && config.aws_s3_key) {
     resource = new AmazonS3Resource({
       sessionService,
@@ -140,10 +144,27 @@ export async function create3DTilesetFromConfig(
     });
   } else if (config.url) {
     resource = config.url;
-  } else {
+  } else if (config.assetId) {
     resource = await IonResource.fromAssetId(config.assetId!, {
       accessToken: config.ionToken,
     });
+  } else if (config.ogc) {
+    const url =
+      config.ogc.styleId === undefined
+        ? `https://ogc-api.gst-viewer.swissgeol.ch/collections/${config.ogc.id}/download_format/tiles3d`
+        : `https://ogc-api.gst-viewer.swissgeol.ch/collections/${config.ogc.id}/styles/${config.ogc.styleId}/download_format/tiles3d`;
+    resource = new Resource({
+      url,
+      headers: {
+        // This is the Authorization required to access the Seismic layers.
+        // This is a read-only auth level and safe to expose.
+        // The reason these credentials exist is related to how GST categorizes and exposes its data.
+        // They are not intended for security and can thus be public.
+        Authorization: 'Basic T0dDLVNlaXNtaWNzOk9HQy1TZWlzbWljc18yMDI1Kg==',
+      },
+    });
+  } else {
+    throw new Error(`layer is missing a usable source: ${config.layer}`);
   }
 
   const tileset: PickableCesium3DTileset = await Cesium3DTileset.fromUrl(
@@ -167,7 +188,42 @@ export async function create3DTilesetFromConfig(
   }
 
   tileset.pickable = config.pickable ?? false;
-  viewer.scene.primitives.add(tileset);
+
+  const updateShader = (opacity: number) => {
+    const requiredTranslucency =
+      opacity === 1
+        ? CustomShaderTranslucencyMode.OPAQUE
+        : CustomShaderTranslucencyMode.TRANSLUCENT;
+
+    const needsNewShader =
+      tileset.customShader === undefined ||
+      tileset.customShader.translucencyMode !== requiredTranslucency;
+
+    if (needsNewShader) {
+      tileset.customShader = new CustomShader({
+        translucencyMode: requiredTranslucency,
+        fragmentShaderText: `
+          void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
+            material.specular = vec3(0.0);   // no view-dependent spec
+            material.occlusion = 1.0;        // full diffuse
+            material.alpha = u_alpha;
+          }
+        `,
+        uniforms: {
+          u_alpha: {
+            type: UniformType.FLOAT,
+            value: opacity,
+          },
+        },
+      });
+    } else {
+      tileset.customShader!.setUniform('u_alpha', opacity);
+    }
+  };
+  updateShader(config.opacity ?? 1);
+
+  tileset.imageBasedLighting = new ImageBasedLighting();
+  tileset.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(1, 0);
 
   config.setVisibility = (visible) => {
     tileset.show = !!visible;
@@ -175,20 +231,10 @@ export async function create3DTilesetFromConfig(
 
   if (!config.opacityDisabled) {
     config.setOpacity = (opacity) => {
-      const style = config.style;
-      if (style && (style.color || style.labelColor)) {
-        const { propertyName, colorType, colorValue } = styleColorParser(style);
-        const color = `${colorType}(${colorValue}, ${opacity})`;
-        tileset.style = new Cesium3DTileStyle({
-          ...style,
-          [propertyName]: color,
-        });
-      } else {
-        const color = `vec4(1, 1, 1, ${opacity})`;
-        tileset.style = new Cesium3DTileStyle({ ...style, color });
-      }
+      updateShader(opacity);
+      viewer.scene.requestRender();
     };
-    config.setOpacity(config.opacity ? config.opacity : 1);
+    config.setOpacity(config.opacity ?? 1);
   }
 
   if (tileLoadCallback) {
@@ -197,7 +243,7 @@ export async function create3DTilesetFromConfig(
     );
   }
 
-  if (config.propsOrder) {
+  if (config.propsOrder && tileset.properties) {
     tileset.properties.propsOrder = config.propsOrder;
   }
   if (config.heightOffset) {
@@ -221,20 +267,28 @@ export async function create3DTilesetFromConfig(
 
   tileset.colorBlendMode = Cesium3DTileColorBlendMode.REPLACE;
 
-  tileset.customShader = new CustomShader({
-    fragmentShaderText: `
-      void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
-        material.specular = vec3(0.0);   // no view-dependent spec
-        material.occlusion = 1.0;        // full diffuse
-      }
-    `,
+  // Disable `pickPosition` until the tileset is loaded.
+  // Without this, hovering over the viewer will cause a render error due to `layout-cursor-info` attempting to pick
+  // the incomplete tileset.
+  pickSuppressionCount += 1;
+  viewer.scene.pickPosition = pickSuppression;
+
+  tileset.allTilesLoaded.addEventListener(() => {
+    pickSuppressionCount -= 1;
+    if (pickSuppressionCount === 0) {
+      viewer.scene.pickPosition = originalPick;
+    }
   });
 
-  tileset.imageBasedLighting = new ImageBasedLighting();
-  tileset.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(1, 0);
-
+  viewer.scene.primitives.add(tileset);
   return tileset;
 }
+
+const originalPick = Scene.prototype.pickPosition;
+let pickSuppressionCount = 0;
+const pickSuppression: typeof originalPick = () => {
+  return null as unknown as Cartesian3;
+};
 
 export async function createSwisstopoWMTSImageryLayer(
   viewer: Viewer,
@@ -295,24 +349,6 @@ export function createCesiumObject(
     [LayerType.geoTIFF]: createGeoTiffImageryProviderFromConfig,
   };
   return factories[config.type!](viewer, config, tileLoadCallback);
-}
-
-function styleColorParser(style: any) {
-  const propertyName = style.color ? 'color' : 'labelColor';
-  let colorType = style[propertyName].slice(
-    0,
-    style[propertyName].indexOf('('),
-  );
-  const lastIndex =
-    colorType === 'rgba'
-      ? style[propertyName].lastIndexOf(',')
-      : style[propertyName].indexOf(')');
-  const colorValue = style[propertyName].slice(
-    style[propertyName].indexOf('(') + 1,
-    lastIndex,
-  );
-  colorType = colorType === 'rgb' ? 'rgba' : colorType;
-  return { propertyName, colorType, colorValue };
 }
 
 export function getBoxFromRectangle(
