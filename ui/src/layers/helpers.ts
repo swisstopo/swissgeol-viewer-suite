@@ -100,6 +100,10 @@ export async function create3DVoxelsTilesetFromConfig(
   primitive.pickable = config.pickable ?? false;
   primitive.layer = config.layer;
 
+  // Workaround to make exaggeration work on the voxel primitive.
+  const maxExaggerationFactor = 10;
+  primitive.maxClippingBounds.z = primitive.maxBounds.z * maxExaggerationFactor;
+
   viewer.scene.primitives.add(primitive);
 
   config.setVisibility = (visible) => {
