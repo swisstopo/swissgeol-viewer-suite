@@ -6,7 +6,6 @@ import KeyboardNavigation from './KeyboardNavigation.js';
 
 import {
   Cartesian3,
-  Cartesian4,
   CesiumInspector,
   CesiumTerrainProvider,
   Color,
@@ -15,12 +14,9 @@ import {
   ImageryLayer,
   Ion,
   IonResource,
-  JulianDate,
-  PostProcessStage,
   Rectangle,
   RequestScheduler,
   ScreenSpaceEventType,
-  SunLight,
   Viewer,
   WebGLOptions,
 } from 'cesium';
@@ -42,39 +38,6 @@ Object.assign(RequestScheduler.requestsByServer, {
 });
 
 let hasNoLimit = false;
-
-const FOG_FRAGMENT_SHADER_SOURCE = `
-  float getDistance(sampler2D depthTexture, vec2 texCoords) {
-      float depth = czm_unpackDepth(texture(depthTexture, texCoords));
-      if (depth == 0.0) {
-          return czm_infinity;
-      }
-      vec4 eyeCoordinate = czm_windowToEyeCoordinates(gl_FragCoord.xy, depth);
-      return -eyeCoordinate.z / eyeCoordinate.w;
-  }
-  float interpolateByDistance(vec4 nearFarScalar, float distance) {
-      float startDistance = nearFarScalar.x;
-      float startValue = nearFarScalar.y;
-      float endDistance = nearFarScalar.z;
-      float endValue = nearFarScalar.w;
-      float t = clamp((distance - startDistance) / (endDistance - startDistance), 0.0, 1.0);
-      return mix(startValue, endValue, t);
-  }
-  vec4 alphaBlend(vec4 sourceColor, vec4 destinationColor) {
-      return sourceColor * vec4(sourceColor.aaa, 1.0) + destinationColor * (1.0 - sourceColor.a);
-  }
-  uniform sampler2D colorTexture;
-  uniform sampler2D depthTexture;
-  uniform vec4 fogByDistance;
-  uniform vec4 fogColor;
-  in vec2 v_textureCoordinates;
-  void main(void) {
-      float distance = getDistance(depthTexture, v_textureCoordinates);
-      vec4 sceneColor = texture(colorTexture, v_textureCoordinates);
-      float blendAmount = interpolateByDistance(fogByDistance, distance);
-      vec4 finalFogColor = vec4(fogColor.rgb, fogColor.a * blendAmount);
-      out_FragColor = alphaBlend(finalFogColor, sceneColor);
-  }`;
 
 interface EmptyLayer {
   layer: { show: boolean };
@@ -154,6 +117,8 @@ export async function setupViewer(
     // maximumRenderTimeChange: 10,
   });
 
+  viewer.scene.postProcessStages.ambientOcclusion.enabled = false;
+
   const scene = viewer.scene;
   scene.rethrowRenderErrors = rethrowRenderErrors;
   // remove the default behaviour of calling 'zoomTo' on the double clicked entity
@@ -173,44 +138,19 @@ export async function setupViewer(
     globe.cartographicLimitRectangle = rectangle;
   }
 
-  // Position the sun the that shadows look nice
-  let sunDate = new Date('2018-06-21T10:00:00.000Z');
-  if (searchParams.has('date')) {
-    const betterDate = new Date(searchParams.get('date') ?? '');
-    if (Number.isNaN(betterDate.getDate())) {
-      console.error(`Provided date is wrong: ${searchParams.get('date')}`);
-    } else {
-      sunDate = betterDate;
-    }
-  }
-  viewer.clock.currentTime = JulianDate.fromDate(sunDate);
+  // Disable underground fog.
+  viewer.scene.fog.enabled = false;
 
-  if (searchParams.has('light')) {
-    const p = searchParams.get('light')?.split('-').map(parseFloat) as number[];
-    scene.light = new DirectionalLight({
-      direction: new Cartesian3(p[0], p[1], p[2]),
-      color: Color.WHITE,
-      intensity: p[3],
-    });
-  } else {
-    // Use sun lighting above ground
-    const sunLight = new SunLight();
-    // Define a flashlight for viewing underground
-    const flashlight = new DirectionalLight({
-      direction: scene.camera.directionWC,
-    });
-    scene.preRender.addEventListener((scene) => {
-      if (scene.cameraUnderground) {
-        flashlight.direction = Cartesian3.clone(
-          scene.camera.directionWC,
-          flashlight.direction,
-        );
-        scene.light = flashlight;
-      } else {
-        scene.light = sunLight;
-      }
-    });
-  }
+  // Create a fixed, directional light.
+  // Unlike sunlight, this one is fixed in space and can penetrate the terrain.
+  scene.light = new DirectionalLight({
+    // direction: Cartesian3.negate(scene.camera.direction, new Cartesian3()),
+    direction: Cartesian3.normalize(
+      new Cartesian3(-0.3, -0.5, -1),
+      new Cartesian3(),
+    ),
+    intensity: 5,
+  });
 
   // Limit the volume inside which the user can navigate
   if (!hasNoLimit) {
@@ -234,20 +174,6 @@ export async function setupViewer(
   globe.undergroundColorAlphaByDistance.nearValue = 0.5;
   globe.undergroundColorAlphaByDistance.farValue = 0.0;
 
-  const fog = new PostProcessStage({
-    fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
-    uniforms: {
-      fogByDistance: new Cartesian4(10000, 0.0, 150000, 0.3),
-      fogColor: Color.BLACK,
-    },
-    name: 'fog',
-  });
-
-  viewer.scene.postProcessStages.add(fog);
-  scene.postRender.addEventListener((scene) => {
-    fog.enabled = scene.cameraUnderground;
-  });
-
   const shouldEnableWireframe = searchParams.has('inspector_wireframe');
   if (searchParams.has('inspector') || shouldEnableWireframe) {
     const div = document.createElement('div');
@@ -259,6 +185,7 @@ export async function setupViewer(
       inspector.viewModel.wireframe = true;
     }
   }
+
   return viewer;
 }
 
