@@ -10,6 +10,9 @@ export class CoreCheckbox extends LitElement {
   @property({ type: Boolean })
   accessor isIndeterminate: boolean = false;
 
+  @property({ type: Boolean, attribute: 'disabled', reflect: true })
+  accessor isDisabled: boolean = false;
+
   firstUpdated() {
     const slot = this.shadowRoot?.querySelector('slot');
     slot?.addEventListener('slotchange', () => {
@@ -25,6 +28,9 @@ export class CoreCheckbox extends LitElement {
   private handleClick(e: Event) {
     e.stopPropagation();
     e.preventDefault();
+    if (this.isDisabled) {
+      return;
+    }
     this.dispatchEvent(
       new CustomEvent('update', { bubbles: true, composed: true }),
     );
@@ -82,6 +88,13 @@ export class CoreCheckbox extends LitElement {
     :host {
       display: flex;
       align-items: center;
+      --checkbox-color: var(--color-primary);
+      --checkbox-color--active: var(--color-primary--active);
+    }
+
+    :host([disabled]) {
+      --checkbox-color: var(--color-primary--disabled);
+      --checkbox-color--active: var(--color-primary--disabled);
     }
 
     label {
@@ -107,15 +120,15 @@ export class CoreCheckbox extends LitElement {
       width: 20px;
       height: 20px;
       border-radius: 1px;
-      border: 2px solid var(--color-primary);
+      border: 2px solid var(--checkbox-color);
 
       ${applyTransition('fade')};
       transition-property: background-color, border-color;
     }
 
     label:has(input[checked]) .icon {
-      border-color: var(--color-primary--active);
-      background-color: var(--color-primary--active);
+      border-color: var(--checkbox-color--active);
+      background-color: var(--checkbox-color--active);
     }
 
     /* checkbox highlight */

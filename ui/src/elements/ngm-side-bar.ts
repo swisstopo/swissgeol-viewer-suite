@@ -49,10 +49,10 @@ import { consume } from '@lit/context';
 import { isSameLayer, LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { distinctUntilChanged, map, skip, take } from 'rxjs';
-import { run } from 'src/utils/fn.utils';
 import { getLayersConfig } from 'src/swisstopoImagery';
 import { SessionService } from 'src/features/session';
 import { initializeLayerHelpers } from 'src/layers/helpers';
+import { run } from 'src/utils/fn.utils';
 
 export type SearchLayer = SearchLayerWithLayer | SearchLayerWithSource;
 
@@ -123,7 +123,9 @@ export class SideBar extends LitElementI18n {
   private shareListenerAdded = false;
 
   private readonly shareDownListener = (evt) => {
-    if (!evt.composedPath().includes(this)) this.activePanel = null;
+    if (!evt.composedPath().includes(this)) {
+      this.closePanel();
+    }
   };
 
   private viewer: Viewer | null = null;
@@ -206,8 +208,9 @@ export class SideBar extends LitElementI18n {
     });
 
     const sliceOptions = getSliceParam();
-    if (sliceOptions?.type && sliceOptions.slicePoints)
-      this.activePanel = 'tools';
+    if (sliceOptions?.type && sliceOptions.slicePoints) {
+      this.openPanel('tools');
+    }
 
     this.layerService.layerActivated$.subscribe((layer) => {
       this.maybeShowVisibilityHint(layer as LayerConfig);
@@ -224,18 +227,49 @@ export class SideBar extends LitElementI18n {
       });
   }
 
-  async togglePanel(panelName, showHeader = true) {
+  async togglePanel(panelName: string, showHeader = true) {
+    this.showHeader = showHeader;
+    if (this.activePanel === panelName) {
+      this.closePanel(panelName);
+    } else {
+      this.openPanel(panelName);
+    }
+  }
+
+  private openPanel(panelName: string): void {
+    document.body.style.setProperty(
+      '--sidebar-width',
+      run(() => {
+        switch (panelName) {
+          case 'data':
+            return '440px';
+          case 'settings':
+          case 'tools':
+            return '250px';
+          case 'dashboard':
+            return 'min(1028px, calc(100vw - 144px))';
+          case 'share':
+            return '436px';
+          default:
+            return '';
+        }
+      }),
+    );
+    this.activePanel = panelName;
+  }
+
+  private readonly handlePanelClose = () => this.closePanel();
+
+  private readonly closePanel = (panelName?: string): void => {
     if (DashboardStore.projectMode.value === 'edit') {
       DashboardStore.showSaveOrCancelWarning(true);
       return;
     }
-    this.showHeader = showHeader;
-    if (this.activePanel === panelName) {
+    if (panelName === undefined || this.activePanel === panelName) {
+      document.body.style.setProperty('--sidebar-width', '');
       this.activePanel = null;
-      return;
     }
-    this.activePanel = panelName;
-  }
+  };
 
   async syncActiveLayers() {
     const flatLayers = flattenLayers(this.catalogLayers!);
@@ -570,18 +604,18 @@ export class SideBar extends LitElementI18n {
       <ngm-dashboard
         class="ngm-side-bar-panel ngm-large-panel"
         ?hidden=${this.activePanel !== 'dashboard'}
-        @close=${() => (this.activePanel = null)}
+        @close=${this.handlePanelClose}
       ></ngm-dashboard>
       <ngm-layer-panel
         ?hidden="${this.activePanel !== 'data'}"
         .layers="${this.catalogLayers ?? []}"
-        @close="${() => (this.activePanel = null)}"
+        @close="${this.handlePanelClose}"
       ></ngm-layer-panel>
       <div .hidden=${this.activePanel !== 'tools'} class="ngm-side-bar-panel">
         <ngm-tools
           .toolsHidden=${this.activePanel !== 'tools'}
-          @open=${() => (this.activePanel = 'tools')}
-          @close=${() => (this.activePanel = null)}
+          @open=${() => this.openPanel('tools')}
+          @close=${this.handlePanelClose}
         ></ngm-tools>
       </div>
       <div
@@ -590,10 +624,7 @@ export class SideBar extends LitElementI18n {
       >
         <div class="ngm-panel-header">
           ${i18next.t('lsb_share')}
-          <div
-            class="ngm-close-icon"
-            @click=${() => (this.activePanel = null)}
-          ></div>
+          <div class="ngm-close-icon" @click=${this.handlePanelClose}></div>
         </div>
         ${this.activePanel !== 'share'
           ? ''
@@ -605,10 +636,7 @@ export class SideBar extends LitElementI18n {
       >
         <div class="ngm-panel-header">
           ${i18next.t('lsb_settings')}
-          <div
-            class="ngm-close-icon"
-            @click=${() => (this.activePanel = null)}
-          ></div>
+          <div class="ngm-close-icon" @click=${this.handlePanelClose}></div>
         </div>
         <div class="toolbar-settings">
           <div class="inner-toolbar-settings">
