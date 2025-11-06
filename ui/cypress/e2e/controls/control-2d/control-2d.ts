@@ -2,7 +2,7 @@ import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import { Viewer } from 'cesium';
 
 When(/^the user clicks on the 2d control$/, () => {
-  cy.get('controls-2d-action').click();
+  cy.get('control-2d').click();
 });
 
 Then(/^the map is in 3d mode$/, () => {
@@ -26,7 +26,7 @@ Then(/^the map is in 2d mode$/, () => {
 });
 
 Then(/^the 2d control shows the 3d icon$/, () => {
-  cy.get('controls-2d-action')
+  cy.get('control-2d')
     .shadow()
     .find('ngm-core-icon')
     .should('exist')
@@ -34,7 +34,7 @@ Then(/^the 2d control shows the 3d icon$/, () => {
 });
 
 Then(/^the 2d control shows the 2d icon$/, () => {
-  cy.get('controls-2d-action')
+  cy.get('control-2d')
     .shadow()
     .find('ngm-core-icon')
     .should('exist')

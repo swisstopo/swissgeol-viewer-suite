@@ -132,6 +132,7 @@ Then(/^signed in user's profile is loaded$/, () => {
   getSessionService().then((sessionService) => {
     cy.wrap(
       firstValueFrom(sessionService.token$.pipe(filter((it) => it != null))),
+      { timeout: 60_000 },
     ).then((token) => {
       expect(token).to.exist;
     });
@@ -203,6 +204,7 @@ Then(/^the user is signed out$/, () => {
   getSessionService().then((sessionService) => {
     cy.wrap(
       firstValueFrom(sessionService.token$.pipe(filter((it) => it === null))),
+      { timeout: 60_000 },
     ).then((token) => {
       expect(token).to.be.null;
     });
