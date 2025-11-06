@@ -168,11 +168,6 @@ ngm-app-boot {
   vertical-align: middle;
 }
 
-cesium-view-cube {
-  --cesium-view-cube-stroke-color: transparent;
-  --cesium-view-cube-fill-color: transparent;
-}
-
 #cesium {
   display: flex;
   flex: auto;

@@ -14,7 +14,6 @@ import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import './elements/ngm-wmts-date-picker';
-import '@geoblocks/cesium-view-cube';
 import './elements/ngm-map-chooser';
 
 import 'src/features/core/core.module';
@@ -749,11 +748,6 @@ export class NgmApp extends LitElementI18n {
               class="ngm-floating-window"
             ></ngm-wmts-date-picker>
             <div class="on-map-menu">
-              <cesium-view-cube
-                ?hidden=${this.mobileView || this.showAxisOnMap}
-                .scene="${this.viewer?.scene}"
-              ></cesium-view-cube>
-
               <ngm-map-chooser
                 .hidden=${this.mobileView}
                 class="ngm-bg-chooser-map"
