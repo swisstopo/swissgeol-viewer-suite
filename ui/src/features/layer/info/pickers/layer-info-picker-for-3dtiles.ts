@@ -32,6 +32,10 @@ const PROPERTIES_TO_EXCLUDE = [
   'color_blue',
   'color_green',
   'color_red',
+  'model_feature',
+  'm_alias',
+  'oname',
+  'style_transparency',
 ];
 
 export class LayerInfoPickerFor3dTiles implements LayerInfoPicker {
