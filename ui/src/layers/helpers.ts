@@ -1,13 +1,16 @@
 import EarthquakeVisualizer from '../earthquakeVisualization/earthquakeVisualizer.js';
 import {
+  Cartesian2,
   Cartesian3,
   Cartographic,
   Cesium3DTileColorBlendMode,
   Cesium3DTileset,
   Cesium3DTileStyle,
   Cesium3DTilesVoxelProvider,
+  CustomShader,
   Ellipsoid,
   GeoJsonDataSource,
+  ImageBasedLighting,
   ImageryLayer,
   IonResource,
   LabelStyle,
@@ -181,7 +184,7 @@ export async function create3DTilesetFromConfig(
           [propertyName]: color,
         });
       } else {
-        const color = `color("white", ${opacity})`;
+        const color = `vec4(1, 1, 1, ${opacity})`;
         tileset.style = new Cesium3DTileStyle({ ...style, color });
       }
     };
@@ -215,8 +218,21 @@ export async function create3DTilesetFromConfig(
     tileset.modelMatrix = Matrix4.fromTranslation(translation);
     viewer.scene.requestRender();
   }
-  // for correct highlighting
+
   tileset.colorBlendMode = Cesium3DTileColorBlendMode.REPLACE;
+
+  tileset.customShader = new CustomShader({
+    fragmentShaderText: `
+      void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
+        material.specular = vec3(0.0);   // no view-dependent spec
+        material.occlusion = 1.0;        // full diffuse
+      }
+    `,
+  });
+
+  tileset.imageBasedLighting = new ImageBasedLighting();
+  tileset.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(1, 0);
+
   return tileset;
 }
 
