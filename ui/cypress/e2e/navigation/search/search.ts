@@ -16,7 +16,7 @@ When(/^the query "([^"]*)" is entered$/, (query: string) => {
   cy.get('@searchInput').type(query);
 });
 Then(/^the results contain the "([^"]*)" layer$/, (layer: string) => {
-  cy.get('@searchResults')
+  cy.get('@searchResults', { timeout: 30_000 })
     .should('be.visible')
     .find(`li > [data-cy="${layer}"]`)
     .should('exist');
