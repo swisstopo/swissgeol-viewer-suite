@@ -1,21 +1,21 @@
 {
   "actions": {
-    "export": ""
+    "export": "Esporta dati"
   },
   "ogc": {
     "layer-selection": {
-      "title": "",
-      "confirm": ""
+      "title": "Esporta",
+      "confirm": "Esporta"
     },
     "queue": {
-      "title": ""
+      "title": "Coda di esportazione"
     },
     "stage": {
-      "Prepare": "",
-      "Running": "",
-      "Success": "",
-      "Failure": "",
-      "Complete": ""
+      "Prepare": "Preparazione del download sul server",
+      "Running": "Esecuzione dell'esportazione",
+      "Success": "Esportazione completata con successo",
+      "Failure": "Esportazione fallita",
+      "Complete": "Esportazione completata"
     }
   }
 }
