@@ -1,21 +1,21 @@
 {
   "actions": {
-    "export": ""
+    "export": "Exporter les données"
   },
   "ogc": {
     "layer-selection": {
-      "title": "",
-      "confirm": ""
+      "title": "Exportation",
+      "confirm": "Exportation"
     },
     "queue": {
-      "title": ""
+      "title": "File d'attente d'exportation"
     },
     "stage": {
-      "Prepare": "",
-      "Running": "",
-      "Success": "",
-      "Failure": "",
-      "Complete": ""
+      "Prepare": "Préparation du téléchargement sur le serveur",
+      "Running": "Exécution de l'exportation ",
+      "Success": "Exportation terminée avec succès",
+      "Failure": "Échec de l'exportation",
+      "Complete": "Exportation terminée"
     }
   }
 }
