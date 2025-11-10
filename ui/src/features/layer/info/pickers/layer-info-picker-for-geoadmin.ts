@@ -81,6 +81,20 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
     result: IdentifyResult,
     entity: Entity,
   ): Promise<LayerInfoForGeoadmin> {
+    const extractTextOrLink = (
+      element: HTMLElement,
+    ): LayerInfoAttribute['value'] => {
+      if (
+        element.childElementCount === 1 &&
+        element.children[0].tagName === 'A'
+      ) {
+        const anchor = element.children[0] as HTMLAnchorElement;
+        return { url: anchor.href, name: anchor.text };
+      }
+      const value = element.textContent!.trim();
+      return value;
+    };
+
     const lang = i18next.language;
     const response = await fetch(
       `https://api3.geo.admin.ch/rest/services/api/MapServer/${result.layerBodId}/${result.featureId}/htmlPopup?lang=${lang}`,
@@ -117,13 +131,13 @@ export class LayerInfoPickerForGeoadmin implements LayerInfoPicker {
       ) {
         attributes.push({
           key: savedTitle ?? '',
-          value: addition.textContent!.trim(),
+          value: extractTextOrLink(addition),
         });
         return attributes;
       }
 
       // The rest are normal key-value rows.
-      const value = val.textContent!.trim();
+      const value = extractTextOrLink(val);
       attributes.push({
         key: keyValue!,
         value,
