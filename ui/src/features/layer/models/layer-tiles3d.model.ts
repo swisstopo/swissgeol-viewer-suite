@@ -13,4 +13,10 @@ export interface Tiles3dLayer extends BaseLayer {
    * Keys that are left out will be sorted below any sorted ones, in default order.
    */
   orderOfProperties: string[];
+
+  /**
+   * Whether the layer is partially transparent.
+   * For partially transparent tiles, fragments that are fully white are discarded.
+   */
+  isPartiallyTransparent: boolean;
 }

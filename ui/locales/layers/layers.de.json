@@ -6,22 +6,6 @@
     "title": "Info",
     "zoomToObject": "Auf Objekt zoomen"
   },
-  "swissBEDROCK": {
-    "title": "swissBEDROCK",
-    "bands": {
-      "BEM": "Höhenmodell der Felsoberfläche",
-      "TMUD": "Mächtigkeitsmodell des Lockergesteins",
-      "Uncertainty": "Unsicherheit",
-      "Version": "Versionsnummer",
-      "Author": "Numerische Autoren-ID",
-      "Change": "Änderung zur vorherigen Version",
-      "prev_BEM": "Vorherige Version des Höhenmodells der Felsoberfläche",
-      "prev_TMUD": "Vorherige Version des Mächtigkeitsmodells des Lockergesteins",
-      "prev_Uncertainty": "Vorherige Version der Unsicherheit",
-      "prev_Version": "Vorherige Versionsnummer",
-      "prev_Author": "Vorherige Version – numerische Autoren-ID"
-    }
-  },
   "units": {
     "Meters": {
       "name": "Meter",
@@ -33,7 +17,8 @@
     }
   },
   "layers": {
-    "ch.swisstopo.geologie-geocover": "GeoCover - Vektordaten"
+    "ch.swisstopo.geologie-geocover": "GeoCover - Vektordaten",
+    "ch.swisstopo.swissbedrock-geotiff": "swissBEDROCK"
   },
   "groups": {
     "grp_1786_label": "Karten, Profile & Modelle",
@@ -60,6 +45,19 @@
       "logk": "Hydraulische Leitfähigkeit",
       "Index": "Modelliereinheit",
       "Klasse": "Durchlässigkeit"
+    },
+    "ch.swisstopo.swissbedrock-geotiff": {
+      "BEM": "Höhenmodell der Felsoberfläche",
+      "TMUD": "Mächtigkeitsmodell des Lockergesteins",
+      "Uncertainty": "Unsicherheit",
+      "Version": "Versionsnummer",
+      "Author": "Numerische Autoren-ID",
+      "Change": "Änderung zur vorherigen Version",
+      "prev_BEM": "Vorherige Version des Höhenmodells der Felsoberfläche",
+      "prev_TMUD": "Vorherige Version des Mächtigkeitsmodells des Lockergesteins",
+      "prev_Uncertainty": "Vorherige Version der Unsicherheit",
+      "prev_Version": "Vorherige Versionsnummer",
+      "prev_Author": "Vorherige Version – numerische Autoren-ID"
     }
   },
   "values": {

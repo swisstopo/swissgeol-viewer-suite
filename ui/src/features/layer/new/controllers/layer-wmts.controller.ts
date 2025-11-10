@@ -3,6 +3,7 @@ import { WmtsLayer, WmtsLayerSource, LayerType } from 'src/features/layer';
 import {
   Credit,
   ImageryLayer,
+  ImageryLayerCollection,
   UrlTemplateImageryProvider,
   WebMapServiceImageryProvider,
 } from 'cesium';
@@ -37,12 +38,24 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
    */
   private _imagery!: ImageryLayer;
 
+  constructor(
+    layer: WmtsLayer,
+
+    private readonly customTarget: ImageryLayerCollection | null = null,
+  ) {
+    super(layer);
+  }
+
   get type(): LayerType.Wmts {
     return LayerType.Wmts;
   }
 
   get imagery(): ImageryLayer {
     return this._imagery;
+  }
+
+  private get imageryLayers(): ImageryLayerCollection {
+    return this.customTarget ?? this.viewer.scene.imageryLayers;
   }
 
   protected override reactToChanges(): void {
@@ -83,7 +96,7 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
       alpha: this.layer.opacity,
     });
 
-    const { imageryLayers } = this.viewer.scene;
+    const { imageryLayers } = this;
     if (this._imagery === undefined) {
       // Add a new Cesium layer.
       imageryLayers.add(imagery);
@@ -115,7 +128,7 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
       return;
     }
     try {
-      this.viewer.scene.imageryLayers.remove(imagery, true);
+      this.imageryLayers.remove(imagery, true);
     } catch (e) {
       // For some reason, removing an imagery can lead to an error about its tiles already being destroyed.
       // There doesn't seem to be a way to circumvent or detect this (`imagery.isDestroyed()` is `false`),
@@ -128,18 +141,18 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
   }
 
   override zoomIntoView(): void {
-    this.viewer.flyTo(this._imagery);
+    this.viewer.flyTo(this._imagery).then();
   }
 
   override moveToTop(): void {
-    this.viewer.scene.imageryLayers.raiseToTop(this._imagery);
+    this.imageryLayers.raiseToTop(this._imagery);
   }
 
   /**
    * Creates a provider instance based on the layer's source type.
    * @private
    */
-  private makeProvider(): WmtsImageryProvider {
+  protected makeProvider(): WmtsImageryProvider {
     switch (this.layer.source) {
       case WmtsLayerSource.WMS:
         return this.makeProviderForWms();
@@ -181,6 +194,6 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
   }
 }
 
-type WmtsImageryProvider =
+export type WmtsImageryProvider =
   | WebMapServiceImageryProvider
   | UrlTemplateImageryProvider;

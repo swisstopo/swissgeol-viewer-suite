@@ -10,11 +10,13 @@ import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer
 import S3Resource from 'src/cesium/S3Resource';
 import MainStore from 'src/store/main';
 import { VoxelLayerController } from 'src/features/layer/new/controllers/layer-voxel.controller';
+import { TiffLayerController } from 'src/features/layer/new/controllers/layer-tiff.controller';
 
 export type LayerController =
   | WmtsLayerController
   | Tiles3dLayerController
-  | VoxelLayerController;
+  | VoxelLayerController
+  | TiffLayerController;
 
 /**
  * A {@link LayerController} is responsible for managing how a {@link Layer} is displayed on the {@link Viewer}.
@@ -156,12 +158,12 @@ export abstract class BaseLayerController<T extends BaseLayer> {
     if (this.isInitialized) {
       return;
     }
-    this.isInitialized = true;
     this._viewer = MainStore.viewerValue!;
     if (this._viewer === null) {
       throw new Error("Can't add controller before viewer initialization.");
     }
     await this.addToViewer();
+    this.isInitialized = true;
   }
 
   /**
@@ -260,11 +262,16 @@ export abstract class BaseLayerController<T extends BaseLayer> {
    * @param action An action to execute when the value has changed. This is assumed to adjust the Cesium layer.
    * @protected
    */
-  protected watch<T>(value: T, action?: (value: T) => void): void {
+  protected watch<T>(
+    value: T,
+    action?: (value: T, previousValue: T | undefined) => void,
+  ): void {
     if (!this.isInitialized) {
       this.watchedValues.push(value);
     }
-    const lastValue = this.watchedValues[this.currentWatchIndex];
+    const lastValue = this.watchedValues[this.currentWatchIndex] as
+      | T
+      | undefined;
     this.watchedValues[this.currentWatchIndex] = value;
     this.currentWatchIndex += 1;
 
@@ -272,7 +279,7 @@ export abstract class BaseLayerController<T extends BaseLayer> {
       if (action === undefined) {
         this.hasRequestedReinitialization = true;
       } else {
-        this.requestedChanges.push(() => action(value));
+        this.requestedChanges.push(() => action(value, lastValue));
       }
     }
   }
@@ -324,7 +331,7 @@ export const mapLayerSourceToResource = async (
       // TODO check if we need to pass an ion token here
       return await IonResource.fromAssetId(source.assetId, {
         accessToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YjNhNmQ4My01OTdlLTRjNmQtYTllYS1lMjM0NmYxZTU5ZmUiLCJpZCI6MTg3NTIsInNjb3BlcyI6WyJhc2wiLCJhc3IiLCJhc3ciLCJnYyJdLCJpYXQiOjE1NzQ0MTAwNzV9.Cj3sxjA_x--bN6VATcN4KE9jBJNMftlzPuA8hawuZkY',
+          source.assetId === 3914142 ? '{you-need-a-custom-key}' : undefined,
       });
     case LayerSourceType.Url:
       return new Resource(source.url);

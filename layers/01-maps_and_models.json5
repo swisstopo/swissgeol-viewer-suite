@@ -110,7 +110,8 @@
             {
               id: 'lyr_top_bedrock_surface_label',
               children: [
-                "ch.swisstopo.swissbedrock-geotiff"
+                "ch.swisstopo.swissbedrock-geotiff",
+                "ch.swisstopo.swissbedrock-geotiff-with-terrain",
               ]
             }
           ]

@@ -7,12 +7,18 @@ use std::iter::Iterator;
 use std::path::Path;
 use std::sync::LazyLock;
 use strum::{EnumIter, IntoEnumIterator};
+use crate::LayerSource;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all(serialize = "camelCase"))]
 pub struct TiffLayer {
     /// The url at which the tiff can be accessed.
     pub url: String,
+
+    /// The source for the layer's terrain.
+    /// If absent, the TIFF is draped directly onto the default terrain.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub terrain: Option<LayerSource>,
 
     /// The width and height of each of the TIFF's cells, in meters.
     pub cell_size: u32,
@@ -268,7 +274,7 @@ impl TiffLayerBandDisplayDefinition {
             if n == 1 {
                 (1.0, 0.5)
             } else {
-                let base = 1.0 / n as f32;
+                let base = 1.0 / (n as f32);
                 (base, base / 2.0)
             }
         } else {
@@ -279,9 +285,11 @@ impl TiffLayerBandDisplayDefinition {
         let values = labels
             .into_iter()
             .enumerate()
-            .map(|(i, label)| TiffLayerBandStepValue::Labelled {
-                label,
-                value: (min + ratio * (base * (i as f32) + offset)) as i32,
+            .map(|(i, label)| {
+                TiffLayerBandStepValue::Labelled {
+                    label,
+                    value: (min + ratio * (base * (i as f32) + offset)).round() as i32
+                }
             })
             .collect();
         TiffLayerBandSteps::Values(values)

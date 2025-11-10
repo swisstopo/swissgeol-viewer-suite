@@ -1,42 +1,37 @@
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
-import { css, html, PropertyValues } from 'lit';
-import { GeoTIFFLayer, GeoTIFFLayerBand } from 'src/layertree';
+import { css, html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
-import { LayerTiffController } from 'src/features/layer';
+import { LayerService, TiffLayer, TiffLayerBand } from 'src/features/layer';
 import i18next from 'i18next';
+import { Id } from 'src/models/id.model';
+import { consume } from '@lit/context';
 
-@customElement('ngm-layer-tiff-bands')
+@customElement('catalog-display-layer-tiff-bands')
 export class LayerTiffBands extends CoreElement {
-  @property({ type: Object })
-  accessor layer!: GeoTIFFLayer;
+  @property()
+  accessor layerId!: Id<TiffLayer>;
 
-  private controller!: LayerTiffController;
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
 
-  private readonly handleBandClick = (band: GeoTIFFLayerBand): void => {
-    this.controller.activateBand(band.index);
-    this.requestUpdate();
-  };
+  @state()
+  accessor layer!: TiffLayer;
 
-  connectedCallback() {
+  connectedCallback(): void {
     super.connectedCallback();
-    this.updateController();
+
+    this.register(
+      this.layerService.layer$(this.layerId).subscribe((layer) => {
+        this.layer = layer;
+      }),
+    );
   }
 
-  willUpdate(props: PropertyValues<this>): void {
-    super.willUpdate(props);
-    this.updateController();
-  }
-
-  private updateController(): void {
-    if (this.layer.controller == null) {
-      throw new Error(
-        `GeoTIFFLayer is missing a controller: ${this.layer.label}`,
-      );
-    }
-    this.controller = this.layer.controller!;
-  }
+  private readonly activateBand = (index: number): void => {
+    this.layerService.update(this.layerId, { bandIndex: index });
+  };
 
   readonly render = () => html`
     <ul>
@@ -45,10 +40,10 @@ export class LayerTiffBands extends CoreElement {
     ${this.renderLegend()}
   `;
 
-  private readonly renderBand = (band: GeoTIFFLayerBand) => {
-    const name = i18next.t(`layers:${this.layer.id}.bands.${band.name}`);
+  private readonly renderBand = (band: TiffLayerBand, index: number) => {
+    const name = i18next.t(`layers:attributes.${this.layerId}.${band.name}`);
     const [unitSymbol, unitName] =
-      band.unit === undefined
+      band.unit === null
         ? [null, null]
         : [
             `[${i18next.t(`layers:units.${band.unit}.symbol`)}]`,
@@ -58,9 +53,9 @@ export class LayerTiffBands extends CoreElement {
       <li>
         <ngm-core-radio
           title="${unitSymbol === null ? name : `${name} ${unitSymbol}`}"
-          .isActive="${this.controller.activeBand === band}"
-          ?disabled="${band.display === undefined}"
-          @click="${() => this.handleBandClick(band)}"
+          .isActive="${this.layer.bandIndex === index}"
+          ?disabled="${band.display === null}"
+          @click="${() => this.activateBand(index)}"
         >
           <span class="text">
             ${name}
@@ -74,16 +69,16 @@ export class LayerTiffBands extends CoreElement {
   };
 
   private readonly renderLegend = () => {
-    const band = this.controller.activeBand;
-    if (band.display === undefined) {
+    const band = this.layer.bands[this.layer.bandIndex];
+    if (band.display === null) {
       return null;
     }
     return html`
-      <ngm-layer-tiff-legend
+      <catalog-display-tiff-legend
         .layer="${this.layer}"
         .band="${band}"
         .display="${band.display}"
-      ></ngm-layer-tiff-legend>
+      ></catalog-display-tiff-legend>
     `;
   };
 
