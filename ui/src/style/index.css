@@ -628,3 +628,7 @@ ngm-wmts-date-picker {
   overflow: auto;
   padding: 10px;
 }
+
+.ngm-core-window-container {
+  position: absolute;
+}
