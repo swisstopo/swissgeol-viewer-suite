@@ -46,7 +46,9 @@ export interface LayerInfo {
 
 export interface LayerInfoAttribute {
   key: string;
-  value: string | number | TemplateResult;
+  value: ValueType | { url: string; name?: ValueType };
 }
+
+type ValueType = string | number | TemplateResult;
 
 export type LayerInfoSource = LayerTreeNode | LayerTiffController;

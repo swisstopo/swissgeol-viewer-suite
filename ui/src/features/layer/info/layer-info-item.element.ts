@@ -115,19 +115,24 @@ export class LayerInfoItem extends CoreElement {
             this.info.attributes,
             (it) => it.key,
             (it) => {
-              if (
+              const value =
                 typeof it.value === 'string' &&
                 (it.value.startsWith('https://') ||
                   it.value.startsWith('http://'))
-              ) {
-                return html`<li>
-                  <a
-                    href="${it.value}"
-                    rel="external noopener nofollow"
-                    target="_blank"
-                    >${it.value}</a
-                  >
-                </li>`;
+                  ? { url: it.value }
+                  : it.value;
+              if (typeof value === 'object' && 'url' in value) {
+                return html`
+                  <li>
+                    <a
+                      href="${value.url}"
+                      title="${value.url}"
+                      rel="external noopener nofollow"
+                      target="_blank"
+                      >${value.name ?? value.url}</a
+                    >
+                  </li>
+                `;
               }
               return html`<li title="${i18next.t(`${it.value}`)}">
                 ${i18next.t(`${it.value}`)}
