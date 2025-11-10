@@ -1,4 +1,5 @@
 import { BaseLayer, LayerType } from './layer.model';
+import { LayerSource } from 'src/features/layer';
 
 export interface TiffLayer extends BaseLayer {
   type: LayerType.Tiff;
@@ -9,9 +10,20 @@ export interface TiffLayer extends BaseLayer {
   url: string;
 
   /**
+   * The source for the layer's terrain.
+   * If this is `null`, the TIFF is draped directly onto the default terrain.
+   */
+  terrain: LayerSource | null;
+
+  /**
    * The width and height of each of the TIFF's cells, in meters.
    */
   cellSize: number;
+
+  /**
+   * The index of the visible band.
+   */
+  bandIndex: number;
 
   /**
    * The tiff's bands.
@@ -48,11 +60,14 @@ export interface TiffLayerConfigDisplay {
    *
    * This configuration is used mainly for calculating the band's legend and tooltips.
    * Values in the band may fall outside of this range without causing any issue.
-   *
-   * If the layer's legend should be rendered in descending order,
-   * the lower and upper bound are switched.
    */
   bounds: [number, number];
+
+  /**
+   * The order in which the bounds should be rendered on the layer's legend.
+   * `asc` goes from min to max, `desc` is reversed.
+   */
+  direction: 'asc' | 'desc';
 
   /**
    * The value that represents the absence of data on this band.

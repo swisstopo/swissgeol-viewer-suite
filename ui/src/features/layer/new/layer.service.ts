@@ -43,6 +43,7 @@ import MainStore from 'src/store/main';
 import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer-tiles3d.controller';
 import { BackgroundLayerController } from 'src/features/layer/new/controllers/layer-background.controller';
 import { VoxelLayerController } from 'src/features/layer/new/controllers/layer-voxel.controller';
+import { TiffLayerController } from 'src/features/layer/new/controllers/layer-tiff.controller';
 
 export class LayerService extends BaseService {
   private viewer!: Viewer;
@@ -805,7 +806,7 @@ export class LayerService extends BaseService {
       case LayerType.Voxel:
         return new VoxelLayerController(layer);
       case LayerType.Tiff:
-        throw new Error('nyi');
+        return new TiffLayerController(layer);
     }
   }
 

@@ -23,7 +23,9 @@ spec:
       match: Host(`{{ .Values.api.host }}`) && PathPrefix(`/titiler`)
       priority: 140
       middlewares:
-        - name: {{ .Release.Name }}-titiler-middleware
+        - name: {{ .Release.Name }}-titiler-middleware-strip-prefix
+          namespace: {{ .Release.Namespace }}
+        - name: {{ .Release.Name }}-titiler-middleware-cors
           namespace: {{ .Release.Namespace }}
       services:
         - name: {{ .Release.Name }}-titiler

@@ -145,7 +145,9 @@ export class CatalogDisplayList extends CoreElement {
     this.openWindow('tiffFilter', {
       title: () => getLayerLabel(this.layer),
       body: () => html`
-        <ngm-layer-tiff-bands .layer="${this.layer}"></ngm-layer-tiff-bands>
+        <catalog-display-layer-tiff-bands
+          .layerId=${this.layer.id}
+        ></catalog-display-layer-tiff-bands>
       `,
     });
 

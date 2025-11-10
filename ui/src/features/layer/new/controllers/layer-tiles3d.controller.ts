@@ -3,13 +3,28 @@ import {
   mapLayerSourceToResource,
 } from 'src/features/layer/new/controllers/layer.controller';
 import { LayerType, Tiles3dLayer } from 'src/features/layer';
-import { Cesium3DTileset, Cesium3DTileStyle } from 'cesium';
+import {
+  Cartesian2,
+  Cesium3DTileset,
+  CustomShader,
+  CustomShaderTranslucencyMode,
+  ImageBasedLighting,
+  UniformType,
+} from 'cesium';
+import { OBJECT_HIGHLIGHT_NORMALIZED_RGB } from 'src/constants';
+import { PickService, ScenePickingLock } from 'src/services/pick.service';
 
 export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
-  private tileset!: Cesium3DTileset;
+  private _tileset!: Cesium3DTileset;
+
+  private scenePickingLock: ScenePickingLock | null = null;
 
   get type(): LayerType.Tiles3d {
     return LayerType.Tiles3d;
+  }
+
+  get tileset(): Cesium3DTileset {
+    return this._tileset;
   }
 
   zoomIntoView(): void {
@@ -24,9 +39,13 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     this.watch(this.layer.source);
 
     // Apply opacity to the Cesium layer.
-    this.watch(this.layer.opacity, (opacity) => {
-      const color = `color("white", ${opacity})`;
-      this.tileset.style = new Cesium3DTileStyle({ color });
+    this.watch(this.layer.opacity, (opacity, previousOpacity) => {
+      if (opacity === 1 || previousOpacity === 1) {
+        this.tileset.customShader = this.makeShader();
+      } else {
+        const shader = this.tileset.customShader!;
+        shader.setUniform('u_alpha', opacity);
+      }
     });
 
     // Show or hide the Cesium layer.
@@ -56,6 +75,15 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       foveatedTimeDelay: 0.2,
     });
 
+    tileset.imageBasedLighting = new ImageBasedLighting();
+    tileset.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(1, 0);
+    tileset.customShader = this.makeShader();
+
+    const scenePickingLock = PickService.get().acquireScenePickingLock();
+    tileset.allTilesLoaded.addEventListener(() => {
+      scenePickingLock.release();
+    });
+
     const { primitives } = this.viewer.scene;
     const i =
       this.tileset === null ? null : this.findIndexInPrimitives(this.tileset);
@@ -67,8 +95,9 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       this.removeFromViewer();
       primitives.add(tileset, i);
     }
-    this.tileset = tileset;
-    await this.update(this.layer);
+
+    this._tileset = tileset;
+    this.scenePickingLock = scenePickingLock;
   }
 
   protected removeFromViewer(): void {
@@ -80,6 +109,56 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     if (!tileset.isDestroyed()) {
       tileset.destroy();
     }
-    this.tileset = undefined as unknown as Cesium3DTileset;
+    this._tileset = undefined as unknown as Cesium3DTileset;
+
+    this.scenePickingLock?.release();
+    this.scenePickingLock = null;
+  }
+
+  private makeShader(): CustomShader {
+    const { opacity } = this.layer;
+    return new CustomShader({
+      translucencyMode:
+        opacity === 1
+          ? CustomShaderTranslucencyMode.OPAQUE
+          : CustomShaderTranslucencyMode.TRANSLUCENT,
+
+      //language=glsl
+      fragmentShaderText: `
+        const float WHITE_CUTOFF = 0.985;
+
+        bool isWhite(vec3 color) {
+          return all(greaterThanEqual(color, vec3(WHITE_CUTOFF)));
+        }
+
+        void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
+            material.specular = vec3(0.0);   // no view-dependent spec
+            material.occlusion = 1.0;        // full diffuse
+            material.alpha = u_alpha;
+            if (u_isHighlighted) {
+              material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}); // highlight color
+            }
+
+            // Discard fully white (uncolored) fragments for partially transparent layers.
+            if (u_isPartiallyTransparent && isWhite(material.baseColor.rgb)) {
+              discard;
+            }
+          }
+        `,
+      uniforms: {
+        u_alpha: {
+          type: UniformType.FLOAT,
+          value: opacity,
+        },
+        u_isHighlighted: {
+          type: UniformType.BOOL,
+          value: false,
+        },
+        u_isPartiallyTransparent: {
+          type: UniformType.BOOL,
+          value: this.layer.isPartiallyTransparent,
+        },
+      },
+    });
   }
 }
