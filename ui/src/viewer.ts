@@ -141,15 +141,19 @@ export async function setupViewer(
   // Disable underground fog.
   viewer.scene.fog.enabled = false;
 
-  // Create a fixed, directional light.
-  // Unlike sunlight, this one is fixed in space and can penetrate the terrain.
-  scene.light = new DirectionalLight({
-    // direction: Cartesian3.negate(scene.camera.direction, new Cartesian3()),
-    direction: Cartesian3.normalize(
-      new Cartesian3(-0.3, -0.5, -1),
-      new Cartesian3(),
-    ),
-    intensity: 5,
+  // Create a  directional light that is aligned with the camera.
+  const light = new DirectionalLight({
+    direction: Cartesian3.clone(scene.camera.directionWC),
+    intensity: 2,
+  });
+  scene.light = light;
+
+  // Update the light position when the camera moves.
+  scene.preRender.addEventListener(() => {
+    light.direction = Cartesian3.clone(
+      scene.camera.directionWC,
+      light.direction,
+    );
   });
 
   // Limit the volume inside which the user can navigate
