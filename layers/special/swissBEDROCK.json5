@@ -84,6 +84,96 @@
           display: 'Author',
         }
       ],
+    },
+
+    {
+      // Layer Top Bedrock Geotiff with Terrain
+      type: 'Tiff',
+      id: 'ch.swisstopo.swissbedrock-geotiff-with-terrain',
+      url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+      terrain: {
+        type: "CesiumIon",
+        asset_id: 3914142,
+      },
+      opacity: 0.5,
+      download_url: {
+        de: 'https://www.swisstopo.admin.ch/de/swissbedrock-de',
+        en: 'https://www.swisstopo.admin.ch/en/swissbedrock-en',
+        fr: 'https://www.swisstopo.admin.ch/fr/swissbedrock-fr',
+        it: 'https://www.swisstopo.admin.ch/it/swissbedrock-it',
+      },
+      geocat_id: 'f7836146-3f9a-4807-9011-618800409236',
+      cell_size: 10,
+      bands: [
+        {
+          index: 1,
+          name: 'BEM',
+          unit: 'MetersAboveSeaLevel',
+          display: 'BEM',
+        },
+        {
+          index: 2,
+          name: 'TMUD',
+          unit: 'Meters',
+          display: 'TMUD',
+        },
+        {
+          index: 3,
+          name: 'Uncertainty',
+          unit: 'Meters',
+          display: 'Uncertainty'
+        },
+        {
+          index: 4,
+          name: 'Version',
+          display: {
+            bounds: [221104, 250519],
+            color_map: 'swissBEDROCK_Version',
+            is_discrete: true,
+          },
+        },
+        {
+          index: 5,
+          name: 'Author',
+          display: 'Author',
+        },
+        {
+          index: 6,
+          name: 'Change',
+          unit: 'Meters',
+          display: {
+            bounds: [-30, 30],
+            color_map: 'swissBEDROCK_Change'
+          },
+        },
+        {
+          index: 7,
+          name: 'prev_BEM',
+          unit: 'MetersAboveSeaLevel',
+          display: 'BEM'
+        },
+        {
+          index: 8,
+          name: 'prev_TMUD',
+          unit: 'Meters',
+          display: 'TMUD',
+        },
+        {
+          index: 9,
+          name: 'prev_Uncertainty',
+          unit: 'Meters',
+          display: 'Uncertainty',
+        },
+        {
+          index: 10,
+          name: 'prev_Version',
+        },
+        {
+          index: 11,
+          name: 'prev_Author',
+          display: 'Author',
+        }
+      ],
     }
   ],
   'tiff_displays': {

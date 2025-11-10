@@ -105,7 +105,7 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
     // These are important to be sorted the same, always,
     // as we use a key's index to communicate its state to the layer's shader.
     this.knownKeys = this.layer.mappings.map((it) => it.key);
-    this.knownKeys.sort();
+    this.knownKeys.sort((a, b) => a.localeCompare(b));
 
     // Our shader uses its key's index within `knownKeys` as identifier.
     // This means that there needs to be a 1:1 relation between keys and mappings.

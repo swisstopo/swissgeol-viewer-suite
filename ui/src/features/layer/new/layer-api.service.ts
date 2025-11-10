@@ -164,6 +164,7 @@ export class LayerApiService extends BaseService {
   ): Specific<Tiles3dLayer> => ({
     orderOfProperties: config.takeNullable('orderOfProperties') ?? [],
     source: config.takeObject('source').apply(this.mapConfigToSource),
+    isPartiallyTransparent: false,
   });
 
   private readonly mapConfigToVoxelLayer = (
@@ -222,23 +223,31 @@ export class LayerApiService extends BaseService {
     config: DynamicObject,
   ): Specific<TiffLayer> => ({
     ...config.takeKeys<TiffLayer>()('url', 'cellSize'),
+    terrain:
+      config.takeNullableObject('terrain')?.apply(this.mapConfigToSource) ??
+      null,
+    bandIndex: 0,
     bands: config.takeAll(
       'bands',
       (band): TiffLayerBand => ({
         ...band.takeKeys<TiffLayerBand>()('index', 'name'),
         unit: band.takeNullable('unit') ?? null,
         display:
-          band.takeNullableObject('display')?.apply(
-            (display): TiffLayerConfigDisplay => ({
-              ...display.takeKeys<TiffLayerConfigDisplay>()(
-                'bounds',
-                'colorMap',
-              ),
-              noData: display.takeNullable('noData'),
-              steps: display.takeNullable('steps') ?? [],
-              isDiscrete: display.takeNullable('isDiscrete') ?? false,
-            }),
-          ) ?? null,
+          band
+            .takeNullableObject('display')
+            ?.apply((display): TiffLayerConfigDisplay => {
+              const [a, b] = display.take<[number, number]>('bounds');
+              const [min, max, direction] =
+                a < b ? [a, b, 'asc' as const] : [b, a, 'desc' as const];
+              return {
+                bounds: [min, max],
+                direction,
+                colorMap: display.take('colorMap'),
+                noData: display.takeNullable('noData'),
+                steps: display.takeNullable('steps') ?? [],
+                isDiscrete: display.takeNullable('isDiscrete') ?? false,
+              };
+            }) ?? null,
       }),
     ),
   });

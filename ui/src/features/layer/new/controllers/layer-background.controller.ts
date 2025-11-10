@@ -34,31 +34,27 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
     // - panning works as expected, as the cursor can "grab" onto the globe.
     // - The opacity and visibility of imageries stay independent of the background.
     this.watch(this.layer.isVisible, (isVisible) => {
-      if (isVisible) {
-        this.children.forEach((child) =>
-          child.update({ ...child.layer, isVisible: true, opacity: 1 }),
-        );
-      } else {
-        this.children.forEach((child) =>
-          child.update({ ...child.layer, isVisible: false, opacity: 0 }),
-        );
-      }
+      this.setLayerOpacity(isVisible ? this.layer.opacity : 0);
     });
   }
 
   private setLayerOpacity(opacity: number): void {
     const { translucency } = this.viewer.scene.globe;
+    const isVisible = opacity > 0;
+    this.children.forEach((child) =>
+      child.update({ ...child.layer, isVisible, opacity }),
+    );
     if (opacity === 1) {
       translucency.enabled = false;
-      translucency.frontFaceAlphaByDistance = undefined as any;
+      // translucency.frontFaceAlphaByDistance = undefined as any;
     } else {
       translucency.enabled = true;
-      translucency.frontFaceAlphaByDistance = new Cesium.NearFarScalar(
-        1.0,
-        opacity, // near, alpha
-        1.0e7,
-        opacity, // far, alpha
-      );
+      // translucency.frontFaceAlphaByDistance = new Cesium.NearFarScalar(
+      //   1.0,
+      //   opacity, // near, alpha
+      //   1.0e7,
+      //   opacity, // far, alpha
+      // );
     }
   }
 
@@ -109,6 +105,8 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
         viewer.scene.imageryLayers.raiseToTop(imagery);
       }
     }
+
+    this.setLayerOpacity(layer.isVisible ? layer.opacity : 0);
   }
 
   protected removeFromViewer(): void {

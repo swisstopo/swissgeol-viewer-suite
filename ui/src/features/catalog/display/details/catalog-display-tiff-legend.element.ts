@@ -1,21 +1,33 @@
 import { customElement, property } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { css, html, PropertyValues } from 'lit';
-import { GeoTIFFDisplay, GeoTIFFLayer, GeoTIFFLayerBand } from 'src/layertree';
 import i18next from 'i18next';
 import { applyTypography } from 'src/styles/theme';
 import { run } from 'src/utils/fn.utils';
+import {
+  TiffLayer,
+  TiffLayerBand,
+  TiffLayerBandStep,
+  TiffLayerConfigDisplay,
+} from 'src/features/layer';
 
-@customElement('ngm-layer-tiff-legend')
+import swissbedrockColorMapAuthor from '../../../../../../titiler/colormaps/swissBEDROCK_Author.json';
+import swissbedrockColorMapBEM from '../../../../../../titiler/colormaps/swissBEDROCK_BEM.json';
+import swissbedrockColorMapChange from '../../../../../../titiler/colormaps/swissBEDROCK_Change.json';
+import swissbedrockColorMapTMUD from '../../../../../../titiler/colormaps/swissBEDROCK_TMUD.json';
+import swissbedrockColorMapUncertainty from '../../../../../../titiler/colormaps/swissBEDROCK_Uncertainty.json';
+import swissbedrockColorMapVersion from '../../../../../../titiler/colormaps/swissBEDROCK_Version.json';
+
+@customElement('catalog-display-tiff-legend')
 export class LayerTiffLegend extends CoreElement {
   @property({ type: Object })
-  accessor layer!: GeoTIFFLayer;
+  accessor layer!: TiffLayer;
 
   @property({ type: Object })
-  accessor band!: GeoTIFFLayerBand;
+  accessor band!: TiffLayerBand;
 
   @property({ type: Object })
-  accessor display!: GeoTIFFDisplay;
+  accessor display!: TiffLayerConfigDisplay;
 
   private gradientCss = '';
   private steps: Step[] = [];
@@ -32,37 +44,15 @@ export class LayerTiffLegend extends CoreElement {
     this.gradientCss = this.makeGradient();
 
     // Calculate the steps that will be shown on the legend.
-    this.steps =
-      this.display.steps === undefined
-        ? this.makeStepsFromBounds()
-        : this.makeCustomSteps();
+    this.steps = this.makeSteps();
 
+    // Reverse the steps so we show them with the max at the top by default.
     this.steps.reverse();
   }
 
-  private makeStepsFromBounds(): Step[] {
-    if (this.display.isDiscrete) {
-      const keys = Object.keys(this.display.colorMap.definition);
-      const base = 1 / keys.length;
-      return keys.map((key, i) => ({
-        percentage: base * i + base / 2,
-        value: key,
-      }));
-    }
-    const [min, max] = this.display.bounds;
-    const step = (max - min) / 5;
-    const base = 1 / 5;
-    return Array.from({ length: 6 }, (_, i) => ({
-      percentage: base * i,
-      value: Math.round(min + step * i),
-    }));
-  }
-
-  private makeCustomSteps(): Step[] {
-    const values = [...this.display.steps!] as
-      | string[]
-      | Array<{ value: number; label: string } | number>;
-    if (this.display.stepDirection === 'desc') {
+  private makeSteps(): Step[] {
+    const values = [...this.display.steps];
+    if (this.display.direction === 'desc') {
       values.reverse();
     }
 
@@ -89,24 +79,20 @@ export class LayerTiffLegend extends CoreElement {
   }
 
   private makeGradient(): string {
-    const originalColors = Object.values(this.display.colorMap.definition);
-    const mappedColors =
-      this.display.steps === undefined ||
-      typeof this.display.steps[0] === 'string'
-        ? originalColors
-        : remapColors(
-            originalColors,
-            this.display.steps as Array<
-              { value: number; label: string } | number
-            >,
-            this.display.bounds,
-          );
+    const originalColors = Object.values(
+      getColorMap(this.display.colorMap),
+    ) as number[][];
+    const mappedColors = rampColorsToSteps(
+      originalColors,
+      this.display.steps,
+      this.display.bounds,
+    );
 
     const colors = mappedColors.map((rgba) => {
       const args = rgba.join(',');
       return rgba.length === 3 ? `rgb(${args})` : `rgba(${args})`;
     });
-    if (this.display.stepDirection === 'desc') {
+    if (this.display.direction === 'desc') {
       colors.reverse();
     }
     if (this.display.isDiscrete) {
@@ -137,7 +123,7 @@ export class LayerTiffLegend extends CoreElement {
   readonly render = () => html`
     <div class="title">
       ${i18next.t('layers:geoTIFF.bandsWindow.legend')}
-      ${this.band.unit === undefined
+      ${this.band.unit === null
         ? ''
         : html`
             <span title="${i18next.t(`layers:units.${this.band.unit}.name`)}">
@@ -234,27 +220,22 @@ interface Step {
   percentage: number;
 }
 
-const remapColors = (
+const rampColorsToSteps = (
   originalColors: number[][],
-  steps: Array<{ value: number; label: string } | number>,
+  steps: TiffLayerBandStep[],
   bounds: [number, number],
 ): number[][] => {
-  const getValue = (
-    value: { value: number; label: string } | number,
-  ): number => {
-    if (typeof value === 'number') {
-      return value;
-    }
-    return value.value;
-  };
-
   const segments = steps.length - 1;
   const colorsPerSegment = Math.floor(originalColors.length / segments);
   const newColors: number[][] = [];
 
+  if (colorsPerSegment === 1) {
+    return originalColors;
+  }
+
   for (let i = 0; i < segments; i++) {
-    const start = getValue(steps[i]);
-    const end = getValue(steps[i + 1]);
+    const start = steps[i].value;
+    const end = steps[i + 1].value;
 
     for (let j = 0; j < colorsPerSegment; j++) {
       const t = j / (colorsPerSegment - 1);
@@ -285,4 +266,22 @@ const remapColors = (
   }
 
   return newColors;
+};
+const getColorMap = (name: string) => {
+  switch (name) {
+    case 'swissBEDROCK_Author':
+      return swissbedrockColorMapAuthor;
+    case 'swissBEDROCK_BEM':
+      return swissbedrockColorMapBEM;
+    case 'swissBEDROCK_Change':
+      return swissbedrockColorMapChange;
+    case 'swissBEDROCK_TMUD':
+      return swissbedrockColorMapTMUD;
+    case 'swissBEDROCK_Uncertainty':
+      return swissbedrockColorMapUncertainty;
+    case 'swissBEDROCK_Version':
+      return swissbedrockColorMapVersion;
+    default:
+      throw new Error(`Unknown color map: ${name}`);
+  }
 };

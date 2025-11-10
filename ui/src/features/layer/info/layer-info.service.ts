@@ -2,39 +2,21 @@ import {
   Cartesian2,
   Cartesian3,
   Cartographic,
-  ImageryLayer,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   Viewer,
 } from 'cesium';
-import {
-  BehaviorSubject,
-  delay,
-  filter,
-  Observable,
-  Subject,
-  take,
-} from 'rxjs';
+import { BehaviorSubject, filter, Observable, take } from 'rxjs';
 import { BaseService } from 'src/utils/base.service';
 import MainStore from 'src/store/main';
-import {
-  isLayerTiffImagery,
-  Layer,
-  LayerTiffController,
-  LayerType,
-} from 'src/features/layer';
+import { Layer, LayerType } from 'src/features/layer';
 import {
   LayerInfoPicker,
   LayerPickData,
 } from 'src/features/layer/info/pickers/layer-info-picker';
 import { LayerInfoPickerForTiff } from 'src/features/layer/info/pickers/layer-info-picker-for-tiff';
-import {
-  LayerInfo,
-  LayerInfoSource,
-} from 'src/features/layer/info/layer-info.model';
-import { isSameLayer } from 'src/features/layer/layer.service';
+import { LayerInfo } from 'src/features/layer/info/layer-info.model';
 import { LayerService as NewLayerService } from 'src/features/layer/new/layer.service';
-import { LayerTreeNode } from 'src/layertree';
 import { LayerInfoPickerForWmts } from 'src/features/layer/info/pickers/layer-info-picker-for-wmts';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
 import { LayerInfoPickerForTiles3d } from 'src/features/layer/info/pickers/layer-info-picker-for-tiles3d';
@@ -58,19 +40,6 @@ export class LayerInfoService extends BaseService {
 
   private nextPick: [Cartesian2, Cartesian3] | null = null;
 
-  /**
-   * A set of modifications to the current sources.
-   * These are delayed so short-term additions/removals don't affect the view.
-   * @private
-   */
-  private queuedModifications: Modification[] = [];
-
-  /**
-   * A subject that emits whenever a new modification is queued.
-   * @private
-   */
-  private readonly modificationSubject = new Subject<void>();
-
   constructor() {
     super();
 
@@ -88,7 +57,6 @@ export class LayerInfoService extends BaseService {
         return;
       }
       this.viewer = viewer;
-      this.initializeImageryLayers();
 
       const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
       eventHandler.setInputAction(
@@ -100,18 +68,6 @@ export class LayerInfoService extends BaseService {
         },
         ScreenSpaceEventType.LEFT_CLICK,
       );
-    });
-
-    this.modificationSubject.pipe(delay(200)).subscribe(() => {
-      let modifications = this.queuedModifications;
-      this.queuedModifications = [];
-      while (modifications.length > 0) {
-        const modification = modifications.pop()!;
-        modifications = modifications.filter(
-          (it) => !isSameSource(it.source, modification.source),
-        );
-        modification.action();
-      }
     });
   }
 
@@ -160,6 +116,8 @@ export class LayerInfoService extends BaseService {
           return new LayerInfoPickerForTiles3d(controller, this.viewer);
         case LayerType.Voxel:
           return new LayerInfoPickerForVoxels(controller, this.viewer);
+        case LayerType.Tiff:
+          return new LayerInfoPickerForTiff(controller, this.viewer);
       }
     });
 
@@ -231,90 +189,4 @@ export class LayerInfoService extends BaseService {
       }
     }
   }
-
-  private initializeImageryLayers(): void {
-    const layers = this.viewer.scene.imageryLayers;
-    for (let i = 0; i < layers.length; i++) {
-      this.handleImageryLayerAddition(layers.get(i));
-    }
-    layers.layerAdded.addEventListener(this.handleImageryLayerAddition);
-    layers.layerRemoved.addEventListener(this.handleImageryLayerRemoval);
-  }
-
-  private readonly handleImageryLayerAddition = (layer: ImageryLayer): void => {
-    if (!isLayerTiffImagery(layer)) {
-      return;
-    }
-    this.queueModification({
-      source: layer.controller,
-      action: () => {
-        this.addPicker(
-          new LayerInfoPickerForTiff(this.viewer, layer.controller),
-        );
-      },
-    });
-  };
-
-  private readonly handleImageryLayerRemoval = (layer: ImageryLayer): void => {
-    if (!isLayerTiffImagery(layer)) {
-      return;
-    }
-    this.queueModification({
-      source: layer.controller,
-      action: () => this.removePickerBySource(layer.controller),
-    });
-  };
-
-  private addPicker(picker: LayerInfoPicker): void {
-    const i = this.pickers.findIndex((info) =>
-      isSameSource(picker.source, info.source),
-    );
-    if (i >= 0) {
-      return;
-    }
-    this.pickers.push(picker);
-  }
-
-  private removePickerBySource(source: LayerInfoSource): void {
-    const i = this.pickers.findIndex((info) =>
-      isSameSource(source, info.source),
-    );
-    if (i >= 0) {
-      const [picker] = this.pickers.splice(i, 1);
-      const newInfos = this.infosSubject.value.reduce((infos, info) => {
-        if (isSameSource(source, info.source)) {
-          info.destroy();
-        } else {
-          infos.push(info);
-        }
-        return infos;
-      }, [] as LayerInfo[]);
-      this.infosSubject.next(newInfos);
-      picker.destroy();
-      this.viewer.scene.requestRender();
-    }
-  }
-
-  private queueModification(modification: Modification): void {
-    this.queuedModifications.push(modification);
-    this.modificationSubject.next();
-  }
-}
-
-const isSameSource = (a: LayerInfoSource, b: LayerInfoSource): boolean => {
-  if (a === b) {
-    return true;
-  }
-  if (a instanceof LayerTiffController || b instanceof LayerTiffController) {
-    return false;
-  }
-  if (typeof a === 'string' || typeof b === 'string') {
-    return false;
-  }
-  return isSameLayer(a as LayerTreeNode, b as LayerTreeNode);
-};
-
-interface Modification {
-  source: LayerInfoSource;
-  action: () => void;
 }
