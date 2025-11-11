@@ -1,11 +1,11 @@
 {
   layers: [
-    // Layer "Private boreholes",
+    // Layer 'Private boreholes',
     {
-      type: "Tiles3d",
-      id: "boreholes_private",
+      type: 'Tiles3d',
+      id: 'boreholes_private',
       source: {
-        type: "S3",
+        type: 'S3',
         bucket: 'ngm-protected-prod',
         key: 'tiles/bh_private_20210201_00/tileset.json'
       },

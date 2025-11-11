@@ -92,7 +92,7 @@
       id: 'ch.swisstopo.swissbedrock-geotiff-with-terrain',
       url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
       terrain: {
-        type: "CesiumIon",
+        type: 'CesiumIon',
         asset_id: 3914142,
       },
       opacity: 0.5,
