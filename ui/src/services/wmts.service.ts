@@ -41,6 +41,10 @@ export class WmtsService extends BaseService {
     return this._layers$.pipe(map((layers) => layers.get(id) ?? null));
   }
 
+  exists(id: Id<WmtsLayer>): boolean {
+    return this._layers$.value.has(id);
+  }
+
   private async load(): Promise<Map<Id<WmtsLayer>, WmtsLayer>> {
     const [wms, wmts] = await Promise.all([
       this.fetchWmsCapabilities(),

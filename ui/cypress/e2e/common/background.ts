@@ -19,7 +19,7 @@ beforeEach(() => {
 Given(/^the viewer is fully loaded$/, () => {
   cy.visit('/?lang=en');
   cy.get('.cesium-widget > canvas', { timeout: 10_000 }).should('be.visible');
-  cy.get('.ngm-menu', { timeout: 60_000 }).should('be.visible');
+  cy.get('ngm-layout-sidebar', { timeout: 60_000 }).should('be.visible');
 });
 
 Given(/^the data panel is open$/, () => {

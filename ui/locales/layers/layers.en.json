@@ -33,7 +33,12 @@
     }
   },
   "layers": {
-    "ch.swisstopo.geologie-geocover": "GeoCover - Vector Datasets"
+    "ch.swisstopo.geologie-geocover": "GeoCover - Vector Datasets",
+    "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen": "Lithology 500",
+    "top_omm": "Top Upper Marine Molasse",
+    "top_usm": "Top Lower Freshwater Molasse",
+    "top_umm": "Top Lower Marine Molasse",
+    "top_muschelkalk": "Top Muschelkalk"
   },
   "backgrounds": {
     "ch.swisstopo.pixelkarte-grau": "Grey map",

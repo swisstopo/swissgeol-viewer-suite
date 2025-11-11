@@ -33,7 +33,12 @@
     }
   },
   "layers": {
-    "ch.swisstopo.geologie-geocover": "GeoCover - données vectorielles"
+    "ch.swisstopo.geologie-geocover": "GeoCover - données vectorielles",
+    "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen": "Lithologie 500",
+    "top_omm": "Toit de la Molasse marine supérieure",
+    "top_usm": "Toit de la Molasse d'eau douce inférieure",
+    "top_umm": "Toit de la Molasse marine inférieure",
+    "top_muschelkalk": "Toit du Muschelkalk"
   },
   "backgrounds": {
     "ch.swisstopo.pixelkarte-grau": "Carte en niveaux de gris",

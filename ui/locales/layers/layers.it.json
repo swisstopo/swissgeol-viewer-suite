@@ -33,7 +33,12 @@
     }
   },
   "layers": {
-    "ch.swisstopo.geologie-geocover": "GeoCover - dati vettoriali"
+    "ch.swisstopo.geologie-geocover": "GeoCover - dati vettoriali",
+    "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen": "Litologia 500",
+    "top_omm": "Tetto della Molassa marina superiore",
+    "top_usm": "Tetto della Molassa d'acqua dolce inferiore",
+    "top_umm": "Tetto della Molassa marina inferiore",
+    "top_muschelkalk": "Tetto del Muschelkalk"
   },
   "backgrounds": {
     "ch.swisstopo.pixelkarte-grau": "Mappa in scala di grigi",

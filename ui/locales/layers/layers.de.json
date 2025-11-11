@@ -18,7 +18,12 @@
   },
   "layers": {
     "ch.swisstopo.geologie-geocover": "GeoCover - Vektordaten",
-    "ch.swisstopo.swissbedrock-geotiff": "swissBEDROCK"
+    "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen": "Lithologie 500",
+    "ch.swisstopo.swissbedrock-geotiff": "swissBEDROCK",
+    "top_omm": "Top Obere Meeresmolasse",
+    "top_usm": "Top Untere Süsswassermolasse",
+    "top_umm": "Top Untere Meeresmolasse",
+    "top_muschelkalk": "Top Muschelkalk"
   },
   "groups": {
     "grp_1786_label": "Karten, Profile & Modelle",
