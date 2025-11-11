@@ -50,14 +50,17 @@ export class CoreModal extends LitElement {
     };
 
     render(
-      html`<ngm-core-modal
-        @close="${close}"
-        .isPersistent="${props.isPersistent}"
-        .size="${props.size ?? 'auto'}"
-        .hasNoPadding="${props.hasNoPadding}"
-        .isOverflowHidden="${props.isOverflowHidden}"
-        >${content}</ngm-core-modal
-      >`,
+      html`
+        <ngm-core-modal
+          @close="${close}"
+          .isPersistent="${props.isPersistent}"
+          .size="${props.size ?? 'auto'}"
+          .hasNoPadding="${props.hasNoPadding}"
+          .isOverflowHidden="${props.isOverflowHidden}"
+        >
+          ${content}
+        </ngm-core-modal>
+      `,
       container,
     );
 

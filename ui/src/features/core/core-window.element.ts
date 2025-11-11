@@ -22,7 +22,6 @@ export class CoreWindow extends CoreElement {
     const map = document.getElementById('cesium') as HTMLElement;
     const container = document.createElement('div');
     container.classList.add('ngm-core-window-container');
-    container.style.position = 'absolute';
     container.style.top = '10px';
     container.style.right = '10px';
     container.hidden = true;
