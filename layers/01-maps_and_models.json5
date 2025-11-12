@@ -77,6 +77,16 @@
       ],
       geocat_id: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
     },
+
+    //  Layer - swissALTI3D multidirectional hillshade - WMTS
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.swissalti3d-reliefschattierung',
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '1964cc81-5298-460f-9228-41120315bea8',
+      legend: 'id'
+    }
   ],
 
   groups: [
@@ -92,6 +102,7 @@
             'ch.swisstopo.geologie-geocover',
             'ch.swisstopo.geologie-geologischer_atlas',
             'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
+            'ch.swisstopo.swissalti3d-reliefschattierung'
           ]
         },
 

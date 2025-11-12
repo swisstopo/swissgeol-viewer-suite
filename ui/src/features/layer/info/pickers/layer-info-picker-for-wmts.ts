@@ -241,7 +241,7 @@ class LayerInfoForWmts implements LayerInfo {
   }
 
   zoomToObject(): void {
-    this.viewer.zoomTo(this.entity);
+    this.viewer.zoomTo(this.entity).then();
   }
 
   activateHighlight(): void {

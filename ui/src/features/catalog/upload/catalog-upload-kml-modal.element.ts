@@ -41,7 +41,7 @@ export class CatalogUploadKmlModal extends CoreElement {
         .isActive="${this.isClampEnabled}"
         @update=${() => (this.isClampEnabled = !this.isClampEnabled)}
       >
-        ${i18next.t('catalog:upload.modal.should_clamp_to_group')}
+        ${i18next.t('catalog:upload.modal.should_clamp_to_ground')}
       </ngm-core-checkbox>
     </div>
     <div class="actions">

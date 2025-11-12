@@ -9,8 +9,15 @@ import {
   makeTranslationKey,
   TranslationKey,
 } from 'src/models/translation-key.model';
+import { KmlLayer } from 'src/features/layer/models/layer-kml.model';
 
-export type Layer = WmtsLayer | Tiles3dLayer | VoxelLayer | TiffLayer;
+export type Layer =
+  | WmtsLayer
+  | Tiles3dLayer
+  | VoxelLayer
+  | TiffLayer
+  | KmlLayer;
+
 export type AnyLayer = Layer | BackgroundLayer;
 
 export interface BaseLayer extends Model {
@@ -76,6 +83,12 @@ export interface BaseLayer extends Model {
    *
    */
   legend: true | string | null;
+
+  /**
+   * Whether the layer is local-only, i.e. relies on the current browser or client.
+   * If this is `true`, it indicates that the layer should not be shared via permalinks and the likes.
+   */
+  isLocal?: boolean
 }
 
 export enum LayerType {
@@ -83,6 +96,7 @@ export enum LayerType {
   Tiles3d = 'Tiles3d',
   Voxel = 'Voxel',
   Tiff = 'Tiff',
+  Kml = 'Kml',
 }
 
 export const getLayerLabel = (layer: AnyLayer): string =>

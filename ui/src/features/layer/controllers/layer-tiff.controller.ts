@@ -19,7 +19,6 @@ import {
   WmtsLayerController,
 } from 'src/features/layer/controllers/layer-wmts.controller';
 
-// TODO remove this
 export class TiffLayerController extends BaseLayerController<TiffLayer> {
   /**
    * The controller responsible for displaying the tiff's active band.

@@ -14,13 +14,6 @@ export default class MainStore {
   static readonly syncLayerParams = new Subject<void>();
 
   static readonly isDebugActive$ = new BehaviorSubject(getCesiumToolbarParam());
-  /**
-   * List of uploaded KML dataSource names. Required to get list of uploaded layers and update properties in batch (e.g. exaggeration)
-   * @private
-   */
-  private static readonly uploadedKmlListSubject = new BehaviorSubject<
-    string[]
-  >([]);
 
   static get viewer(): BehaviorSubject<Viewer | null> {
     return this.viewerSubject;
@@ -65,21 +58,5 @@ export default class MainStore {
   static removeVisibleVoxelLayer(layer) {
     const voxelLayers = this.visibleVoxelLayers.filter((l) => l !== layer);
     this.voxelLayerCountSubject.next(voxelLayers);
-  }
-
-  /**
-   * Returns the list of uploaded KML dataSource names
-   */
-  static get uploadedKmlNames(): string[] {
-    return this.uploadedKmlListSubject.value;
-  }
-
-  /**
-   * Adds uploaded KML dataSource name to the list
-   */
-  static addUploadedKmlName(name: string) {
-    const names = this.uploadedKmlNames;
-    names.push(name);
-    this.uploadedKmlListSubject.next(names);
   }
 }

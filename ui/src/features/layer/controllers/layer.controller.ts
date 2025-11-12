@@ -11,12 +11,14 @@ import S3Resource from 'src/cesium/S3Resource';
 import MainStore from 'src/store/main';
 import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
 import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.controller';
+import { KmlLayerController } from 'src/features/layer/controllers/layer-kml.controller';
 
 export type LayerController =
   | WmtsLayerController
   | Tiles3dLayerController
   | VoxelLayerController
-  | TiffLayerController;
+  | TiffLayerController
+  | KmlLayerController;
 
 /**
  * A {@link LayerController} is responsible for managing how a {@link Layer} is displayed on the {@link Viewer}.
@@ -223,6 +225,16 @@ export abstract class BaseLayerController<T extends BaseLayer> {
    * Moves the layer to the top of the map.
    */
   abstract moveToTop(): void;
+
+  /**
+   * Updates the layer's exaggeration.
+   *
+   * This is called whenever the Cesium scene's exaggeration changes.
+   * For most layers, this is a no-op, as their exaggeration is directly tied to the scene's.
+   *
+   * @param _exaggeration
+   */
+  updateExaggeration(_exaggeration: number): void {}
 
   /**
    * Checks if the Cesium layer needs to be adjusted based on the current layer data.

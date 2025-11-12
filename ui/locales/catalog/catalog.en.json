@@ -27,8 +27,8 @@
     "file_upload_error": "Error while uploading KML",
     "modal": {
       "title": "Upload",
-      "should_clamp_to_ground": "Morsetto al terreno",
-      "confirm": "Aggiungi"
+      "should_clamp_to_ground": "Clamp to terrain",
+      "confirm": "Add"
     }
   },
   "add_content_from_cesium_ion": "Add content from Cesium ion",

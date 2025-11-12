@@ -30,7 +30,7 @@ sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres", "uui
 
 # AWS
 aws-config = "1.8"
-aws-sdk-s3 = "1.106"
+aws-sdk-s3 = "1.112.0"
 
 # Serialization
 serde = {version = "1.0", features = ["derive"]}

@@ -46,6 +46,7 @@ import { Tiles3dLayerController } from 'src/features/layer/controllers/layer-til
 import { BackgroundLayerController } from 'src/features/layer/controllers/layer-background.controller';
 import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
 import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.controller';
+import { KmlLayerController } from 'src/features/layer/controllers/layer-kml.controller';
 
 export class LayerService extends BaseService {
   private viewer!: Viewer;
@@ -907,6 +908,13 @@ export class LayerService extends BaseService {
   }
 
   /**
+   * The controllers of all active layers.
+   */
+  get controllers(): ReadonlyArray<LayerController> {
+    return this._activeLayerIds$.value.map((id) => this.controller(id)!);
+  }
+
+  /**
    * Creates a new {@link LayerController} for a given layer.
    *
    * @param layer The layer.
@@ -922,6 +930,8 @@ export class LayerService extends BaseService {
         return new VoxelLayerController(layer);
       case LayerType.Tiff:
         return new TiffLayerController(layer);
+      case LayerType.Kml:
+        return new KmlLayerController(layer);
     }
   }
 
