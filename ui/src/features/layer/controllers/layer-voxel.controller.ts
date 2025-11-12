@@ -1,7 +1,7 @@
 import {
   BaseLayerController,
   mapLayerSourceToResource,
-} from 'src/features/layer/new/controllers/layer.controller';
+} from 'src/features/layer/controllers/layer.controller';
 import {
   FilterOperator,
   LayerType,

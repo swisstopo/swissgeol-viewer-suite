@@ -29,16 +29,13 @@
 @import "fomantic-ui-css/components/header.css";
 @import "fomantic-ui-css/components/card.css";
 
-@import "search.css";
 @import "ngm-modal.css";
 @import "keyboard-navigation.css";
-@import "layers.css";
 @import "ngm-map-configuration.css";
 @import "ngm-point-edit.css";
 @import "ngm-position-edit.css";
 @import "ngm-map-chooser.css";
 @import "icons.css";
-@import "ngm-side-bar.css";
 @import "ngm-nav-tools.css";
 @import "ngm-minimap.css";
 @import "header.css";

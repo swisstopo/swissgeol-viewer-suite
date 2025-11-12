@@ -20,22 +20,15 @@ import LocalStorageController from '../../LocalStorageController';
 import type { Viewer } from 'cesium';
 import { CustomDataSource } from 'cesium';
 import { showSnackbarError } from 'src/notifications';
-import {
-  DEFAULT_LAYER_OPACITY,
-  DEFAULT_PROJECT_COLOR,
-  PROJECT_ASSET_URL,
-} from '../../constants';
+import { DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL } from 'src/constants';
 import type { NgmGeometry } from 'src/toolbox/interfaces';
 import { ApiClient } from 'src/api/api-client';
 import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
 import { isProject, isProjectOwnerOrEditor } from './helpers';
-import { LayerConfig, LayerTreeNode } from 'src/layertree';
-import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
 import { parseKml, renderWithDelay } from 'src/cesiumutils';
 import { consume } from '@lit/context';
-import { LayerTiffController } from 'src/features/layer';
 import { LayerService } from 'src/features/layer/layer.service';
 import { SessionService, User } from 'src/features/session';
 
@@ -146,7 +139,7 @@ export class NgmDashboard extends LitElementI18n {
 
   private viewer: Viewer | null = null;
   private assetConfigs: any = {};
-  private assets: LayerConfig[] | undefined;
+  private assets: unknown; // TODO
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
   private readonly tempKmlDataSource = new CustomDataSource(
@@ -165,6 +158,12 @@ export class NgmDashboard extends LitElementI18n {
       this.viewer = viewer;
       this.viewer?.dataSources.add(this.tempKmlDataSource);
     });
+
+    // noinspection PointlessBooleanExpressionJS
+    if (false) {
+      console.log(this.assets);
+    }
+
     // topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
     // fetch('./src/sampleData/topics.json').then(topicsResponse =>
     //   topicsResponse.json().then(topics => {
@@ -215,27 +214,30 @@ export class NgmDashboard extends LitElementI18n {
     DashboardStore.viewIndex.subscribe(async (viewIndex) => {
       await this.selectView(viewIndex);
     });
-    MainStore.layersRemoved.subscribe(async () => {
-      if (this.selectedViewIndx !== undefined && this.assets) {
-        await Promise.all(
-          this.assets.map(async (asset) => {
-            const layer = await asset.promise;
-            if (layer === undefined) {
-              return;
-            }
-            if (
-              !(layer instanceof EarthquakeVisualizer) &&
-              !(layer instanceof LayerTiffController)
-            ) {
-              layer.show = true;
-            }
-            if ('type' in layer && 'displayed' in layer) {
-              this.layerService.toggle(layer as unknown as LayerTreeNode);
-            }
-          }),
-        );
-      }
-    });
+
+    // TODO Check if we still need this.
+    // MainStore.layersRemoved.subscribe(async () => {
+    //   if (this.selectedViewIndx !== undefined && this.assets) {
+    //     await Promise.all(
+    //       this.assets.map(async (asset) => {
+    //         const layer = await asset.promise;
+    //         if (layer === undefined) {
+    //           return;
+    //         }
+    //         if (
+    //           !(layer instanceof EarthquakeVisualizer) &&
+    //           !(layer instanceof LayerTiffController)
+    //         ) {
+    //           layer.show = true;
+    //         }
+    //         if ('type' in layer && 'displayed' in layer) {
+    //           this.layerService.toggle(layer as unknown as LayerTreeNode);
+    //         }
+    //       }),
+    //     );
+    //   }
+    // });
+
     DashboardStore.geometriesUpdate.subscribe((geometries) => {
       if (this.selectedTopicOrProject) {
         this.selectTopicOrProject({
@@ -289,8 +291,8 @@ export class NgmDashboard extends LitElementI18n {
   //   });
   // }
 
-  async fetchAssets(assets: Asset[]): Promise<LayerConfig[]> {
-    const assetsData: LayerConfig[] = [];
+  async fetchAssets(assets: Asset[]): Promise<unknown[]> {
+    const assetsData: unknown[] = [];
     if (!this.viewer) return assetsData;
     for (const asset of assets) {
       try {
@@ -310,7 +312,7 @@ export class NgmDashboard extends LitElementI18n {
           );
           this.assetConfigs[href] = {
             label: name,
-            opacity: DEFAULT_LAYER_OPACITY,
+            opacity: 1,
             notSaveToPermalink: true,
             topicKml: true,
           };
@@ -386,7 +388,6 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   async setDataFromPermalink() {
-    MainStore.setUrlLayersSubject.next();
     MainStore.nextMapSync();
     const { destination, orientation } = getCameraView();
     if (destination && orientation)

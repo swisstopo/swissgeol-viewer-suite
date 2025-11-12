@@ -1,4 +1,4 @@
-import { BaseLayerController } from 'src/features/layer/new/controllers/layer.controller';
+import { BaseLayerController } from 'src/features/layer/controllers/layer.controller';
 import {
   LayerType,
   TiffLayer,
@@ -6,14 +6,18 @@ import {
   WmtsLayer,
   WmtsLayerSource,
 } from 'src/features/layer';
-import { UrlTemplateImageryProvider, WebMercatorTilingScheme } from 'cesium';
+import {
+  Cesium3DTileset,
+  UrlTemplateImageryProvider,
+  WebMercatorTilingScheme,
+} from 'cesium';
 import { SWITZERLAND_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
-import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer-tiles3d.controller';
+import { Tiles3dLayerController } from 'src/features/layer/controllers/layer-tiles3d.controller';
 import { makeId } from 'src/models/id.model';
 import {
   WmtsImageryProvider,
   WmtsLayerController,
-} from 'src/features/layer/new/controllers/layer-wmts.controller';
+} from 'src/features/layer/controllers/layer-wmts.controller';
 
 // TODO remove this
 export class TiffLayerController extends BaseLayerController<TiffLayer> {
@@ -36,6 +40,14 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
 
   get type(): LayerType.Tiff {
     return LayerType.Tiff;
+  }
+
+  /**
+   * The tileset representing the tiff's terrain,
+   * or `null`, if the layer does not have a custom terrain.
+   */
+  get terrain(): Cesium3DTileset | null {
+    return this.terrainController?.tileset ?? null;
   }
 
   /**

@@ -5,12 +5,12 @@ import {
   LayerSourceType,
   LayerType,
 } from 'src/features/layer';
-import { WmtsLayerController } from 'src/features/layer/new/controllers/layer-wmts.controller';
-import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer-tiles3d.controller';
+import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
+import { Tiles3dLayerController } from 'src/features/layer/controllers/layer-tiles3d.controller';
 import S3Resource from 'src/cesium/S3Resource';
 import MainStore from 'src/store/main';
-import { VoxelLayerController } from 'src/features/layer/new/controllers/layer-voxel.controller';
-import { TiffLayerController } from 'src/features/layer/new/controllers/layer-tiff.controller';
+import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
+import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.controller';
 
 export type LayerController =
   | WmtsLayerController

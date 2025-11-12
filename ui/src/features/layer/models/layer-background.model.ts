@@ -56,8 +56,8 @@ const WATERS_BACKGROUND: BackgroundLayerVariant = {
   id: makeId('lakes_rivers_map'),
   thumbnailPath: 'images/lakes_rivers.png',
   children: [
-    makeId('ch.bafu.vec25-seen'),
     makeId('ch.bafu.vec25-gewaessernetz_2000'),
+    makeId('ch.bafu.vec25-seen'),
   ],
 };
 

@@ -10,8 +10,6 @@ import {
 } from 'cesium';
 import { ArrowListItem, BBoxSide } from './slicer/SlicerArrows';
 
-export { LayerType, DEFAULT_LAYER_OPACITY } from './layertree';
-
 export const SWITZERLAND_BOUNDS_WGS84 = [4.54249, 44.61921, 12.6725, 48.45365];
 export const SWITZERLAND_BOUNDS_LV95 = [2370000, 945000, 2987000, 1380000];
 

@@ -1,4 +1,4 @@
-import { BaseLayerController } from 'src/features/layer/new/controllers/layer.controller';
+import { BaseLayerController } from 'src/features/layer/controllers/layer.controller';
 import { WmtsLayer, WmtsLayerSource, LayerType } from 'src/features/layer';
 import {
   Credit,
@@ -91,6 +91,7 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
   protected override addToViewer(): void {
     // Create new instances of both the provider and layer.
     this.provider = this.makeProvider();
+    (this.provider as { controller?: WmtsLayerController }).controller = this;
     const imagery = new ImageryLayer(this.provider, {
       show: this.layer.isVisible,
       alpha: this.layer.opacity,

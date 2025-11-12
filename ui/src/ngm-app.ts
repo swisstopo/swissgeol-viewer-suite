@@ -1,6 +1,5 @@
 import { LitElementI18n } from 'src/i18n';
 import { html, PropertyValues } from 'lit';
-import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
@@ -46,8 +45,6 @@ import type { NgmSlowLoading } from './elements/ngm-slow-loading';
 import { Event, FrameRateMonitor, Globe, Viewer } from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
-import type { SideBar } from './elements/ngm-side-bar';
-import { LayerConfig } from './layertree';
 import { clientConfigContext, viewerContext } from './context';
 import { consume, provide } from '@lit/context';
 import { AppEnv, ClientConfig } from './api/client-config';
@@ -141,7 +138,6 @@ export class NgmApp extends LitElementI18n {
     });
   }
 
-  private sidebar: SideBar | null = null;
   private waitForViewLoading = false;
   private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
   private disclaimer: CoreModal | null = null;
@@ -161,21 +157,6 @@ export class NgmApp extends LitElementI18n {
     super.connectedCallback();
 
     BaseService.initializeWith(this);
-
-    this.layerService.activeLayers$.subscribe(() => {
-      this.viewer?.scene.requestRender();
-    });
-
-    this.layerService.layerActivated$.subscribe((layer) => {
-      const config = layer as LayerConfig;
-      if (
-        this.slicer_ &&
-        this.slicer_!.active &&
-        config.promise !== undefined
-      ) {
-        this.slicer_!.applyClippingPlanesToTileset(config.promise);
-      }
-    });
 
     let infoWindow: CoreWindow | null = null;
     this.layerInfoService.infos$.subscribe((layers) => {
@@ -215,8 +196,6 @@ export class NgmApp extends LitElementI18n {
     }
     this.slicer_ = new Slicer(viewer);
     ToolboxStore.setSlicer(this.slicer_);
-
-    this.sidebar = this.querySelector('ngm-side-bar') as SideBar | null;
   }
 
   removeLoading() {
@@ -285,8 +264,6 @@ export class NgmApp extends LitElementI18n {
     const topicOrProjectParam = getTopicOrProject();
     if (topicOrProjectParam) {
       this.waitForViewLoading = !!topicOrProjectParam.param.viewId;
-      !this.waitForViewLoading &&
-        (<SideBar>this.querySelector('ngm-side-bar')).togglePanel('dashboard');
       DashboardStore.setTopicOrProjectParam(topicOrProjectParam);
     } else {
       const storedView = LocalStorageController.storedView;
@@ -473,7 +450,6 @@ export class NgmApp extends LitElementI18n {
           </a>
           <ngm-navigation-search
             .viewer="${this.viewer}"
-            .sidebar="${this.sidebar}"
           ></ngm-navigation-search>
         </div>
         <ngm-layout-header-actions></ngm-layout-header-actions>

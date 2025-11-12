@@ -20,7 +20,6 @@ export default class MainStore {
     Set<number>
   >(new Set<number>());
   private static readonly removeIonAssetsSubject = new Subject<void>();
-  static readonly setUrlLayersSubject = new Subject<void>();
   static readonly syncLayerParams = new Subject<void>();
 
   static readonly isDebugActive$ = new BehaviorSubject(getCesiumToolbarParam());

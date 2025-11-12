@@ -39,13 +39,8 @@ export default class DashboardStore {
   private static readonly showSaveOrCancelWarningSubject =
     new Subject<boolean>();
 
-  // We would ideally inject this, however,
-  // as this class is static, we do not really have a way to do that.
-  // If we ever get to refactor this class, this service should no longer be handled like this.
-  private static sessionService: SessionService;
-
-  static initialize(options: { sessionService: SessionService }): void {
-    this.sessionService = options.sessionService;
+  private static get sessionService(): SessionService {
+    return SessionService.get();
   }
 
   static get selectedTopicOrProject(): BehaviorSubject<

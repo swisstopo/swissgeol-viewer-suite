@@ -7,7 +7,7 @@ import {
   dropdown,
   tooltip,
 } from 'src/features/core';
-import { LayerService } from 'src/features/layer/new/layer.service';
+import { LayerService } from 'src/features/layer/layer.service';
 import {
   AnyLayer,
   getLayerLabel,
@@ -25,7 +25,7 @@ import { throttle } from 'src/utils/fn.utils';
 import { classMap } from 'lit/directives/class-map.js';
 
 @customElement('ngm-catalog-display-list-item')
-export class CatalogDisplayList extends CoreElement {
+export class CatalogDisplayListItem extends CoreElement {
   @property({ reflect: true, attribute: 'layer-id' })
   accessor layerId!: Id<AnyLayer>;
 

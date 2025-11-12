@@ -21,8 +21,7 @@ import {
 } from './constants';
 import type { ProjectParamSubject, TopicParamSubject } from './store/dashboard';
 
-import { LayerConfig } from './layertree';
-import { LayerService } from 'src/features/layer/layer.service';
+import { LayerService } from 'src/features/layer';
 
 export type LayerFromParam = {
   layer: string;

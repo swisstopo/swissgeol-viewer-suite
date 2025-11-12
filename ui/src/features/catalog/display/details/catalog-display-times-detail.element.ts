@@ -6,7 +6,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { run } from 'src/utils/fn.utils';
 import i18next from 'i18next';
 import { consume } from '@lit/context';
-import { LayerService } from 'src/features/layer/new/layer.service';
+import { LayerService } from 'src/features/layer/layer.service';
 import { Id } from 'src/models/id.model';
 
 @customElement('ngm-catalog-display-times-detail')

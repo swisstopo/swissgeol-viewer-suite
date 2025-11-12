@@ -5,7 +5,7 @@ import {
   LayerService,
   TreeNode,
   TreeNodeType,
-} from 'src/features/layer/new/layer.service';
+} from 'src/features/layer/layer.service';
 import { css, html } from 'lit';
 import { LayerGroup } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
@@ -105,12 +105,14 @@ export class CatalogTreeGroup extends CoreElement {
         return html`
           <ngm-catalog-tree-group
             .groupId="${node.id}"
+            data-cy="${node.id}"
           ></ngm-catalog-tree-group>
         `;
       case TreeNodeType.Layer:
         return html`
           <ngm-catalog-tree-layer
             .layerId="${node.id}"
+            data-cy="${node.id}"
           ></ngm-catalog-tree-layer>
         `;
     }
