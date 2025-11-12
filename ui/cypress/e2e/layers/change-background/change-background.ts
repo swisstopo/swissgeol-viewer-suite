@@ -19,16 +19,6 @@ Given(/^the topographic map is displayed in the 3D scene$/, () => {
   hasViewerBackground(TOPOGRAPHIC_LAYER);
 });
 
-Given(/^the layer panel is open$/, () => {
-  cy.get('.ngm-menu > .ngm-menu-top:first-child > ngm-menu-item:first-child')
-    .shadow()
-    .find('.box')
-    .click();
-  cy.wait(1000);
-  cy.get('ngm-layer-panel').then((it) => console.log(it, it.is(':visible')));
-  cy.get('ngm-layer-panel').should('not.have.attr', 'hidden');
-});
-
 When(/^the user clicks on the background chip$/, () => {
   getBackgroundButton().click();
 });

@@ -1,4 +1,6 @@
 import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
+import { getViewer } from '../../common/viewer';
+import { Cesium3DTileset } from 'cesium';
 
 Given(/^no cursor info is shown$/, () => {
   cy.get('ngm-layout-cursor-info').should('not.be.visible');
@@ -18,25 +20,38 @@ When(/^the cursor is moved over the map$/, () => {
 });
 
 When(/^the (.+) layer has been activated$/, (layer: string) => {
-  cy.get('[data-cy="menu-item--data"]').click();
+  cy.get('ngm-layout-sidebar-item[data-cy="Layers"]').click();
 
-  cy.get(`[data-cy="layer-${layer}"]`, { timeout: 10_000 })
+  cy.get(`ngm-catalog-tree-layer[data-cy="${layer}"]`, { timeout: 10_000 })
     .shadow()
     .find('ngm-core-checkbox')
     .shadow()
     .find('label')
     .click({ force: true });
 
-  cy.get('[data-cy="menu-item--data"]').click();
+  cy.get('ngm-layout-sidebar-item[data-cy="Layers"]').click();
+
+  getViewer().then((viewer) => {
+    const { primitives } = viewer.scene;
+    const tileset = primitives.get(primitives.length - 1) as Cesium3DTileset;
+    cy.wrap(
+      new Promise<void>((resolve) => {
+        tileset.allTilesLoaded.addEventListener(() => resolve());
+      }),
+      { timeout: 60_000 },
+    );
+  });
 });
 
 When(/^the terrain is hidden$/, () => {
-  cy.get('ngm-layer-display-list')
-    .shadow()
-    .find('> ngm-layer-display-list-item:last-child')
+  cy.get('ngm-layout-sidebar-item[data-cy="Layers"]').click();
+
+  cy.get('ngm-catalog-display-list-item[data-cy="background"]')
     .shadow()
     .find('ngm-core-button[data-cy="visibility"]')
     .click({ force: true });
+
+  cy.get('ngm-layout-sidebar-item[data-cy="Layers"]').click();
 });
 
 Then(/^the (terrain|object) height is shown$/, (terrainOrObject) => {

@@ -23,8 +23,18 @@ Given(/^the viewer is fully loaded$/, () => {
 });
 
 Given(/^the data panel is open$/, () => {
-  cy.get('[data-cy=menu-item--data]').click();
-  cy.get('ngm-navigation-panel', { timeout: 10_000 }).should('be.visible');
+  cy.get('ngm-layout-sidebar').should('exist');
+  cy.get('ngm-layout-sidebar > ul:nth(0)').should('exist');
+  cy.get('ngm-layout-sidebar > ul:nth(0) > li:first-child').should('exist');
+
+  cy.get(
+    'ngm-layout-sidebar > ul:nth(0) > li:first-child > ngm-layout-sidebar-item',
+  )
+    .shadow()
+    .find('.box')
+    .click();
+  cy.get('ngm-catalog').then((it) => console.log(it, it.is(':visible')));
+  cy.get('ngm-catalog').should('not.have.attr', 'hidden');
 });
 
 Given(/^the map has been loaded in$/, () => {
