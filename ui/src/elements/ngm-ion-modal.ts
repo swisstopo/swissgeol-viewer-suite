@@ -1,24 +1,38 @@
 import { customElement, state } from 'lit/decorators.js';
-import { LitElementI18n } from '../i18n';
 import { css, html } from 'lit';
 import i18next from 'i18next';
 import draggable from './draggable';
 import { getAssets, IonAsset } from '../api-ion';
-import MainStore from '../store/main';
 import { showSnackbarConfirmation } from '../notifications';
 import { getAssetIds } from '../permalink';
 import { applyTypography } from 'src/styles/theme';
 import { InputChangeEvent } from 'src/features/core/core-text-input.element';
 import { repeat } from 'lit/directives/repeat.js';
 import { classMap } from 'lit/directives/class-map.js';
+import { consume } from '@lit/context';
+import { clientConfigContext } from 'src/context';
+import { ClientConfig } from 'src/api/client-config';
+import { live } from 'lit/directives/live.js';
+import { CoreElement } from 'src/features/core';
+import {
+  Layer,
+  LayerService,
+  LayerSourceType,
+  LayerType,
+  Tiles3dLayer,
+} from 'src/features/layer';
+import { makeId } from 'src/models/id.model';
 
 const CESIUM_ION_DOCUMENTATION_URL =
   'https://cesium.com/learn/ion/cesium-ion-access-tokens/';
 
 @customElement('ngm-ion-modal')
-export class NgmIonModal extends LitElementI18n {
-  @state()
-  accessor token: string | null = MainStore.ionToken.value;
+export class NgmIonModal extends CoreElement {
+  @consume({ context: clientConfigContext })
+  accessor clientConfig!: ClientConfig;
+
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
 
   @state()
   accessor assets: IonAsset[] = [];
@@ -37,9 +51,12 @@ export class NgmIonModal extends LitElementI18n {
 
   @state()
   accessor preloader = false;
-
   @state()
   accessor confirmationToast: HTMLElement | undefined;
+
+  accessor tokenInput: string | null = null;
+
+  accessor token: string | null = null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -47,10 +64,7 @@ export class NgmIonModal extends LitElementI18n {
     draggable(this, {
       allowFrom: '.drag-handle',
     });
-
-    MainStore.selectedIonAssets.subscribe((ionAssetIds) => {
-      this.selectedIonAssetIds = ionAssetIds;
-    });
+    this.tokenInput = this.clientConfig.ionDefaultAccessToken;
   }
 
   get unselectedAssets(): IonAsset[] {
@@ -59,41 +73,50 @@ export class NgmIonModal extends LitElementI18n {
     );
   }
 
-  async onLoadAssets(removeAssets = false) {
-    if (!this.token) return;
+  async onLoadAssets() {
+    if (this.token === null) {
+      return;
+    }
     this.confirmationToast = undefined;
     this.errorMessage = undefined;
     this.assets = [];
     this.assetsToDisplay = [];
     this.preloader = true;
-    const res = await getAssets(this.token);
+    const res = await getAssets(this.token, {
+      status: 'COMPLETE',
+      type: ['3DTILES'],
+    });
     if (res.items) {
-      if (removeAssets) {
-        MainStore.removeIonAssets();
-      }
-      MainStore.setIonToken(this.token);
-      this.assets = res.items;
-      this.assetsToDisplay = res.items;
+      this.assets = res.items.filter((it) => {
+        // Filter out custom layers that have already been activated.
+        return !this.layerService.hasLayer(makeId(it.id));
+      });
+      this.assetsToDisplay = this.assets;
     } else {
       this.errorMessage = res.message;
     }
     this.preloader = false;
   }
 
-  loadAssets() {
-    if (!this.token || this.confirmationToast || this.preloader) return;
-    const currentToken = MainStore.ionToken.value;
+  loadAssets(token: string) {
+    if (this.confirmationToast || this.preloader) {
+      return;
+    }
     const assets = getAssetIds();
-    if (currentToken !== this.token && assets.length) {
+    if (token !== this.token && assets.length) {
       this.confirmationToast = showSnackbarConfirmation(
         i18next.t('dtd_remove_assets_confirmation'),
         {
-          onApprove: () => this.onLoadAssets(true),
+          onApprove: () => {
+            this.token = token;
+            this.onLoadAssets().then();
+          },
           onDeny: () => (this.confirmationToast = undefined),
         },
       );
     } else {
-      this.onLoadAssets();
+      this.token = token;
+      this.onLoadAssets().then();
     }
   }
 
@@ -117,7 +140,42 @@ export class NgmIonModal extends LitElementI18n {
 
   addAsset(ionAsset: IonAsset) {
     if (!ionAsset?.id || this.preloader) return;
-    MainStore.addIonAssetId(ionAsset);
+    let customLayer: Layer;
+    switch (ionAsset.type) {
+      case '3DTILES':
+        customLayer = {
+          type: LayerType.Tiles3d,
+          id: makeId(ionAsset.id),
+          source: {
+            type: LayerSourceType.CesiumIon,
+            assetId: ionAsset.id,
+            accessToken: this.token ?? undefined,
+          },
+          label: ionAsset.name,
+          opacity: 1,
+          canUpdateOpacity: true,
+          isVisible: true,
+          geocatId: null,
+          downloadUrl: null,
+          legend: null,
+          orderOfProperties: [],
+          isPartiallyTransparent: false,
+        } satisfies Tiles3dLayer;
+        break;
+      default:
+        throw new Error(`Unsupported asset type: ${ionAsset.type}`);
+    }
+
+    this.layerService.activateCustomLayer(customLayer);
+
+    // Hide the layer from the list of assets.
+    const indexInAssets = this.assets.indexOf(ionAsset);
+    this.assets.splice(indexInAssets, 1);
+
+    const indexInDisplayedAssets = this.assetsToDisplay.indexOf(ionAsset);
+    this.assetsToDisplay.splice(indexInDisplayedAssets, 1);
+
+    this.requestUpdate();
   }
 
   addAllSelectedAssets() {
@@ -135,8 +193,8 @@ export class NgmIonModal extends LitElementI18n {
     this.dispatchEvent(new CustomEvent('close'));
   }
 
-  setIonToken(event: InputChangeEvent) {
-    this.token = event.detail.value;
+  updateTokenInput(event: InputChangeEvent) {
+    this.tokenInput = event.detail.value;
   }
 
   searchForIonAssets(event: InputChangeEvent) {
@@ -151,7 +209,9 @@ export class NgmIonModal extends LitElementI18n {
 
   render() {
     return html`
-      <h2 class="header">${i18next.t('dtd_add_ion_token')}</h2>
+      <h2 class="header">
+        ${i18next.t('catalog:add_content_from_cesium_ion')}
+      </h2>
       <div
         class="content ${classMap({
           'has-table': this.assetsToDisplay.length !== 0,
@@ -165,11 +225,13 @@ export class NgmIonModal extends LitElementI18n {
         </div>
         <div class="token-input">
           <ngm-core-text-input
-            .value=${this.token ?? ''}
+            .value=${live(this.tokenInput ?? '')}
             .label=${i18next.t('dtd_ion_token_label')}
-            @inputChange="${this.setIonToken}"
+            @inputChange="${this.updateTokenInput}"
           ></ngm-core-text-input>
-          <sgc-button @buttonClick=${() => this.loadAssets()}
+          <sgc-button
+            @buttonClick=${() =>
+              this.tokenInput && this.loadAssets(this.tokenInput)}
             >${i18next.t('dtd_load_ion_assets_btn')}</sgc-button
           >
         </div>

@@ -12,6 +12,7 @@ export enum LayerSourceType {
 export interface LayerSourceForCesiumIon {
   type: LayerSourceType.CesiumIon;
   assetId: number;
+  accessToken?: string;
 }
 
 export interface LayerSourceForUrl {

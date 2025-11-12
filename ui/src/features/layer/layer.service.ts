@@ -698,16 +698,17 @@ export class LayerService extends BaseService {
    * Deactivating the layer will fully remove it from the application.
    *
    * Be aware that the layer must have a unique id.
-   * Activating a custom layer that shares its id with another, pre-existing layer will cause an error.
+   * Activating a custom layer that shares its id with another will log an error and ignore the new layer.
    *
    * @param layer The custom layer.
    */
   activateCustomLayer(layer: Layer): void {
     const hasLayer = this.layers.has(layer.id);
     if (hasLayer) {
-      throw new Error(
+      console.error(
         `Can't add custom layer, its id is already in use: ${layer.id}`,
       );
+      return;
     }
     this.layers.set(layer.id, {
       state$: new BehaviorSubject(layer),
@@ -798,7 +799,8 @@ export class LayerService extends BaseService {
     // Find the current index of the layer.
     const oldIndex = ids.indexOf(id);
     if (oldIndex < 0) {
-      throw new Error(`Can't move inactive layer: ${id}`);
+      console.error(`Can't move inactive layer: ${id}`);
+      return;
     }
 
     // Calculate the new index.

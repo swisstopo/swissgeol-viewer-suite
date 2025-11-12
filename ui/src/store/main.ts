@@ -1,7 +1,6 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Viewer } from 'cesium';
-import { getCesiumToolbarParam, getIonToken, setIonToken } from '../permalink';
-import { IonAsset } from '../api-ion';
+import { getCesiumToolbarParam } from '../permalink';
 
 export default class MainStore {
   private static readonly viewerSubject = new BehaviorSubject<Viewer | null>(
@@ -12,14 +11,6 @@ export default class MainStore {
   private static readonly voxelLayerCountSubject = new BehaviorSubject<
     string[]
   >([]);
-  private static readonly ionTokenSubject = new BehaviorSubject<string | null>(
-    getIonToken(),
-  );
-  private static readonly ionAssetSubject = new Subject<IonAsset>();
-  private static readonly selectIonAssetsSubject = new BehaviorSubject<
-    Set<number>
-  >(new Set<number>());
-  private static readonly removeIonAssetsSubject = new Subject<void>();
   static readonly syncLayerParams = new Subject<void>();
 
   static readonly isDebugActive$ = new BehaviorSubject(getCesiumToolbarParam());
@@ -74,48 +65,6 @@ export default class MainStore {
   static removeVisibleVoxelLayer(layer) {
     const voxelLayers = this.visibleVoxelLayers.filter((l) => l !== layer);
     this.voxelLayerCountSubject.next(voxelLayers);
-  }
-
-  static setIonToken(token: string) {
-    this.ionTokenSubject.next(token);
-    setIonToken(token);
-  }
-
-  static get ionToken(): BehaviorSubject<string | null> {
-    return this.ionTokenSubject;
-  }
-
-  static get selectedIonAssets(): BehaviorSubject<Set<number>> {
-    return this.selectIonAssetsSubject;
-  }
-
-  static updateSelectedIonAssetIds(ionAsset: IonAsset) {
-    const selectedIonAssets = this.selectIonAssetsSubject.value;
-    selectedIonAssets.add(ionAsset.id);
-    this.selectIonAssetsSubject.next(new Set(selectedIonAssets));
-  }
-
-  static addIonAssetId(ionAsset: IonAsset) {
-    MainStore.updateSelectedIonAssetIds(ionAsset);
-    this.ionAssetSubject.next(ionAsset);
-  }
-
-  static removeIonAssetId(ionAssetId: number) {
-    const selectedIonAssets = this.selectIonAssetsSubject.value;
-    selectedIonAssets.delete(ionAssetId);
-    this.selectIonAssetsSubject.next(new Set(selectedIonAssets));
-  }
-
-  static get onIonAssetAdd() {
-    return this.ionAssetSubject;
-  }
-
-  static removeIonAssets() {
-    this.removeIonAssetsSubject.next();
-  }
-
-  static get onRemoveIonAssets(): Subject<void> {
-    return this.removeIonAssetsSubject;
   }
 
   /**

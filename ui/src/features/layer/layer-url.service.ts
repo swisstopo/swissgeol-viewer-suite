@@ -14,29 +14,40 @@ import {
   BackgroundLayerVariant,
   DEFAULT_BACKGROUND_VARIANT,
   Layer,
+  LayerSourceType,
   LayerType,
   WmtsLayer,
 } from 'src/features/layer/models';
 import { Id, makeId } from 'src/models/id.model';
+import { IonService } from 'src/services/ion.service';
+import { clientConfigContext } from 'src/context';
 
 export class LayerUrlService extends BaseService {
   private layerService!: LayerService;
+  private ionService!: IonService;
 
   constructor() {
     super();
 
-    LayerService.inject().then(async (layerService) => {
-      this.layerService = layerService;
-      await this.initialize();
-    });
+    Promise.all([LayerService.inject(), IonService.inject()]).then(
+      ([layerService, ionService]) => {
+        this.layerService = layerService;
+        this.ionService = ionService;
+        return this.initialize();
+      },
+    );
   }
 
   private async initialize(): Promise<void> {
-    const params = this.readParams();
+    // Wait for all layer configs to be loaded.
     await this.layerService.ready;
-    this.syncParamsToLayers(params.layers);
+
+    // Read the params and sync them to our local state.
+    const params = this.readParams();
+    await this.syncParamsToLayers(params.layers);
     this.syncParamsToBackground(params.background);
 
+    // Start syncing local state changes to the url.
     this.layerService.activeLayerIds$
       .pipe(
         switchMap((ids) => {
@@ -48,9 +59,10 @@ export class LayerUrlService extends BaseService {
         debounceTime(250),
         map(this.makeLayerParams),
       )
-      .subscribe((params) =>
-        this.writeParams((url) => this.writeLayerParams(params, url)),
-      );
+      .subscribe((params) => {
+        console.log('writers!');
+        this.writeParams((url) => this.writeLayerParams(params, url));
+      });
 
     this.layerService
       .layer$(BACKGROUND_LAYER.id)
@@ -62,7 +74,7 @@ export class LayerUrlService extends BaseService {
 
   private readParams(): Params {
     const url = new URL(window.location.href);
-    return {
+    const params: Params = {
       layers: {
         layers: this.getLayerParamFromUrl(url, 'layers') as Array<Id<Layer>>,
         visibility: this.getLayerParamFromUrl(url, 'visibility').map(Boolean),
@@ -71,6 +83,9 @@ export class LayerUrlService extends BaseService {
         ),
         timestamp: this.getLayerParamFromUrl(url, 'timestamp').map((it) =>
           it === '' ? 'current' : it,
+        ),
+        ionAccessToken: url.searchParams.get(
+          getLayerParamName('ionAccessToken'),
         ),
       },
       background: {
@@ -84,19 +99,52 @@ export class LayerUrlService extends BaseService {
         ),
       },
     };
+
+    // `ionAssetIds` is an old parameter that contained the ids of custom assets loaded from Cesium Ion.
+    // We do not use it anymore, as we store these custom ids at the same place as non-custom layer ids.
+    // Here, we parse the ids, which can be necessary if someone were to use an old link.
+    const assetIds = url.searchParams.get('ionAssetIds');
+    if (assetIds !== null) {
+      const assetIdNumbers = assetIds
+        .split(',')
+        .map((it) => makeId<Layer>(Number(it)));
+      console.log(assetIdNumbers);
+      params.layers.layers.push(...assetIdNumbers);
+    }
+
+    return params;
   }
 
-  private syncParamsToLayers(params: LayerParams): void {
+  private async syncParamsToLayers(params: LayerParams): Promise<void> {
+    let ionLayers: Layer[] | null = null;
     for (let i = params.layers.length - 1; i >= 0; i--) {
       const id = params.layers[i];
-      this.layerService.activate(id);
+
+      const assetId = parseInt(String(id));
+      if (Number.isNaN(assetId)) {
+        this.layerService.activate(id);
+      } else {
+        ionLayers ??= await this.ionService.fetchLayers({
+          accessToken: params.ionAccessToken ?? undefined,
+        });
+        const layer = ionLayers.find((it) => it.id === assetId);
+        if (layer === undefined) {
+          console.error(`Unknown Cesium Ion asset: ${id}`);
+          continue;
+        }
+        this.layerService.activateCustomLayer(layer);
+      }
 
       const update: LayerUpdate = {
         isVisible: params.visibility[i] ?? true,
         opacity: 1 - (params.transparency[i] ?? 0),
       };
 
-      const layer = this.layerService.layer(id);
+      const layer = this.layerService.layerOrNull(id);
+      if (layer === null) {
+        continue;
+      }
+
       const timestamp = params.timestamp[i] ?? 'current';
       if (layer.type === LayerType.Wmts && timestamp !== 'current') {
         (update as LayerUpdate<WmtsLayer>).times = {
@@ -123,6 +171,8 @@ export class LayerUrlService extends BaseService {
 
   private makeLayerParams = (layers: Layer[]): LayerParams => {
     const params = makeEmptyLayerParams();
+    const defaultIonAccessToken =
+      BaseService.get(clientConfigContext).ionDefaultAccessToken;
     for (const layer of layers) {
       params.layers.push(layer.id);
       params.visibility.push(layer.isVisible);
@@ -131,6 +181,22 @@ export class LayerUrlService extends BaseService {
       const timestamp =
         (layer.type === LayerType.Wmts && layer.times?.current) || '';
       params.timestamp.push(timestamp === 'current' ? '' : timestamp);
+
+      // If there are custom layers loaded via Cesium Ion,
+      // we store the last layer's ion access token.
+      // The current URL parameters don't have a way to store more than one access token,
+      // so there may be some mismatches after reloading.
+      if (
+        'source' in layer &&
+        typeof layer.source === 'object' &&
+        layer.source !== null &&
+        'type' in layer.source &&
+        layer.source.type === LayerSourceType.CesiumIon &&
+        layer.source.accessToken !== undefined &&
+        layer.source.accessToken !== defaultIonAccessToken
+      ) {
+        params.ionAccessToken = layer.source.accessToken;
+      }
     }
     if (params.timestamp.every((it) => it === '')) {
       params.timestamp = [];
@@ -150,6 +216,10 @@ export class LayerUrlService extends BaseService {
 
   private writeParams = (write: (url: URL) => void): void => {
     const url = new URL(window.location.href);
+
+    // Remove deprecated parameters.
+    url.searchParams.delete('ionAssetIds');
+
     write(url);
     history.replaceState(null, '', url.toString().replace(/%2C/g, ','));
   };
@@ -159,15 +229,17 @@ export class LayerUrlService extends BaseService {
       [keyof LayerParams, LayerParams[keyof LayerParams]]
     >) {
       const name = getLayerParamName(key);
-      if (values.length === 0) {
+      if (values === null || values.length === 0) {
         url.searchParams.delete(name);
-      } else {
+      } else if (Array.isArray(values)) {
         url.searchParams.set(
           name,
           values
             .map((it: (typeof values)[0]) => encodeURIComponent(String(it)))
             .join(','),
         );
+      } else {
+        url.searchParams.set(name, String(values));
       }
     }
   }
@@ -213,6 +285,7 @@ interface LayerParams {
   visibility: boolean[];
   transparency: number[];
   timestamp: string[];
+  ionAccessToken: string | null;
 }
 
 interface BackgroundParams {
@@ -225,10 +298,19 @@ const makeEmptyLayerParams = (): LayerParams => ({
   visibility: [],
   transparency: [],
   timestamp: [],
+  ionAccessToken: null,
 });
 
-const getLayerParamName = (key: keyof LayerParams): string =>
-  key === 'layers' ? key : `layers_${key}`;
+const getLayerParamName = (key: keyof LayerParams): string => {
+  switch (key) {
+    case 'layers':
+      return key;
+    case 'ionAccessToken':
+      return 'ionToken';
+    default:
+      return `layers_${key}`;
+  }
+};
 
 const getBackgroundParamName = (key: keyof BackgroundParams): string =>
   key === 'map' ? key : `map_${key}`;
