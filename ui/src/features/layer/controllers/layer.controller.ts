@@ -328,7 +328,6 @@ export const mapLayerSourceToResource = async (
 ): Promise<Resource> => {
   switch (source.type) {
     case LayerSourceType.CesiumIon:
-      // TODO check if we need to pass an ion token here
       return await IonResource.fromAssetId(source.assetId, {
         accessToken:
           source.accessToken ??
