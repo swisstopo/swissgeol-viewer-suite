@@ -8,6 +8,8 @@ import { LayerService } from 'src/features/layer/layer.service';
 import { consume } from '@lit/context';
 import { until } from 'lit/directives/until.js';
 import ToolboxStore from 'src/store/toolbox';
+import 'src/toolbox/ngm-toolbox';
+import 'src/elements/dashboard/ngm-dashboard';
 
 @customElement('ngm-layout-sidebar')
 export class LayoutSidebar extends CoreElement {
@@ -51,18 +53,6 @@ export class LayoutSidebar extends CoreElement {
         this.promise =
           customElements.get('ngm-catalog') === undefined
             ? import('src/features/catalog/catalog.module')
-            : null;
-        break;
-      case SidebarPanel.Tools:
-        this.promise =
-          customElements.get('ngm-tools') === undefined
-            ? import('src/toolbox/ngm-toolbox')
-            : null;
-        break;
-      case SidebarPanel.Projects:
-        this.promise =
-          customElements.get('ngm-dashboard') === undefined
-            ? import('src/elements/dashboard/ngm-dashboard')
             : null;
         break;
       default:

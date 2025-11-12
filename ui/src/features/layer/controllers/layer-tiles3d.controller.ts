@@ -79,10 +79,8 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     tileset.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(1, 0);
     tileset.customShader = this.makeShader();
 
-    const scenePickingLock = PickService.get().acquireScenePickingLock();
-    tileset.allTilesLoaded.addEventListener(() => {
-      scenePickingLock.release();
-    });
+    const pickService = PickService.get();
+    const scenePickingLock = pickService.acquireScenePickingLock();
 
     const { primitives } = this.viewer.scene;
     const i =
@@ -98,6 +96,16 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
 
     this._tileset = tileset;
     this.scenePickingLock = scenePickingLock;
+    tileset.loadProgress.addEventListener(
+      (numberOfPendingRequests: number, numberOfTilesProcessing: number) => {
+        if (numberOfPendingRequests === 0 && numberOfTilesProcessing === 0) {
+          this.scenePickingLock?.release();
+          this.scenePickingLock = null;
+        } else {
+          this.scenePickingLock ??= pickService.acquireScenePickingLock();
+        }
+      },
+    );
   }
 
   protected removeFromViewer(): void {

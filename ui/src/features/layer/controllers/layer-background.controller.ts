@@ -34,6 +34,10 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
     // - The opacity and visibility of imageries stay independent of the background.
     this.watch(this.layer.isVisible, (isVisible) => {
       this.setLayerOpacity(isVisible ? this.layer.opacity : 0);
+
+      const { globe } = this.viewer.scene;
+      globe.depthTestAgainstTerrain = isVisible;
+      globe.show = isVisible;
     });
   }
 
@@ -45,15 +49,8 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
     );
     if (opacity === 1) {
       translucency.enabled = false;
-      // translucency.frontFaceAlphaByDistance = undefined as any;
     } else {
       translucency.enabled = true;
-      // translucency.frontFaceAlphaByDistance = new Cesium.NearFarScalar(
-      //   1.0,
-      //   opacity, // near, alpha
-      //   1.0e7,
-      //   opacity, // far, alpha
-      // );
     }
   }
 
