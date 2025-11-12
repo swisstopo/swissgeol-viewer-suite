@@ -13,9 +13,11 @@ import {
   of,
   pairwise,
   shareReplay,
+  skip,
   startWith,
   switchMap,
   take,
+  tap,
 } from 'rxjs';
 import {
   LayerApiService,
@@ -49,6 +51,7 @@ export class LayerService extends BaseService {
   private viewer!: Viewer;
 
   private layerApiService!: LayerApiService;
+  private wmtsService!: WmtsService;
 
   /**
    * A mapping of all currently known layers.
@@ -188,8 +191,11 @@ export class LayerService extends BaseService {
     // This mostly happens due to language changes.
     WmtsService.inject$()
       .pipe(
-        filter(() => this.hasLayers$.value),
+        tap((wmtsService) => {
+          this.wmtsService = wmtsService;
+        }),
         switchMap((wmtsService) => wmtsService.layers$),
+        filter(() => this.hasLayers$.value),
       )
       .subscribe((layers) => this.syncWmtsLayers(layers));
   }
@@ -717,6 +723,45 @@ export class LayerService extends BaseService {
       groups: [],
     });
     this.activate(layer.id);
+  }
+
+  /**
+   * Actives a {@link activateCustomLayer custom layer} that fetches its data from the GeoAdmin WM(T)S service.
+   *
+   * @param layerId The id of the layer in WMTS.
+   *
+   * @see WmtsService
+   */
+  activateCustomLayerFromWmts(layerId: Id<WmtsLayer>): void {
+    // Take the layer from WMTS and add it to the LayerService.
+    const layer = this.wmtsService.layer(layerId);
+    if (layer === null) {
+      console.warn(
+        `Can't activate layer as it doesn't exist in WMTS: ${layerId}`,
+      );
+      return;
+    }
+    this.activateCustomLayer(layer);
+
+    // Update the layer when the WMTS service reloads it.
+    const subscription = this.wmtsService
+      .layer$(layerId)
+      .pipe(skip(1))
+      .subscribe((layer) => {
+        if (layer === null) {
+          this.deactivate(layerId);
+        } else {
+          this.update(layerId, layer);
+        }
+      });
+
+    // Remove the WMTS subscription once the layer is deactivated.
+    this.layerDeactivated$
+      .pipe(
+        filter((id) => id === layerId),
+        take(1),
+      )
+      .subscribe(() => subscription.unsubscribe());
   }
 
   /**

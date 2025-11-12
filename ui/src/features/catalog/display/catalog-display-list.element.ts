@@ -61,6 +61,7 @@ export class CatalogDisplayList extends CoreElement {
     if (this.haveLayersChanged) {
       this.haveLayersChanged = false;
       this.removeRemnantItems();
+      this.initializeDragging();
     }
   }
 

@@ -27,7 +27,7 @@ import {
   LayerService,
   WmtsLayer,
 } from 'src/features/layer';
-import { Id } from 'src/models/id.model';
+import { Id, makeId } from 'src/models/id.model';
 import { WmtsService } from 'src/services/wmts.service';
 
 @customElement('ngm-navigation-search')
@@ -243,9 +243,8 @@ export class NavigationSearch extends CoreElement {
   }
 
   private selectLayerFromGeoadmin(feature: Feature): void {
-    // TODO add custom layer
-    console.log(feature.properties);
-    throw new Error('add custom layer here!');
+    const layerId = makeId<WmtsLayer>(feature.properties!.layer);
+    this.layerService.activateCustomLayerFromWmts(layerId);
   }
 
   private selectLayerFromCatalog(item: EntityItem | Layer): void {
