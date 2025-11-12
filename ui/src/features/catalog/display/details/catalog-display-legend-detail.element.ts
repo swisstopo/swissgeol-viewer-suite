@@ -9,7 +9,7 @@ import { Layer } from 'src/features/layer';
 import { choose } from 'lit/directives/choose.js';
 import { run } from 'src/utils/fn.utils';
 import { Id } from 'src/models/id.model';
-import { LayerService } from 'src/features/layer/new/layer.service';
+import { LayerService } from 'src/features/layer/layer.service';
 import { consume } from '@lit/context';
 
 @customElement('ngm-catalog-display-legend-detail')

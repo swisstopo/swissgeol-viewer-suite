@@ -1,7 +1,7 @@
 import { consume } from '@lit/context';
 import { customElement, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
-import { LayerService } from 'src/features/layer/new/layer.service';
+import { LayerService } from 'src/features/layer/layer.service';
 import { LayerGroup } from 'src/features/layer';
 import { Id } from '@swissgeol/ui-core';
 import { css, html } from 'lit';

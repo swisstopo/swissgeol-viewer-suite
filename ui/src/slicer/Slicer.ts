@@ -11,6 +11,8 @@ import type { GeometryTypes, NgmGeometry } from '../toolbox/interfaces';
 import { getMeasurements } from '../cesiumutils';
 import ToolboxStore from '../store/toolbox';
 import NavToolsStore from '../store/navTools';
+import { LayerService, LayerType } from 'src/features/layer';
+import { filter } from 'rxjs';
 
 interface SliceOptions {
   /**
@@ -116,6 +118,29 @@ export default class Slicer {
       this.slicingBox.syncPlanes();
       this.viewer.scene.requestRender();
     });
+
+    const layerService = LayerService.get();
+    layerService.layerActivated$
+      .pipe(filter(() => this.active))
+      .subscribe((layer) => {
+        const controller = layerService.controller(layer)!;
+        switch (controller.type) {
+          case LayerType.Wmts:
+            // Imageries don't support clipping.
+            return;
+          case LayerType.Tiles3d:
+            this.applyClippingPlanesToTileset(controller.tileset);
+            break;
+          case LayerType.Voxel:
+            this.applyClippingPlanesToTileset(controller.primitive);
+            break;
+          case LayerType.Tiff:
+            if (controller.terrain !== null) {
+              this.applyClippingPlanesToTileset(controller.terrain);
+            }
+            break;
+        }
+      });
   }
 
   get active() {
@@ -183,18 +208,14 @@ export default class Slicer {
     this.sliceOptions = options;
   }
 
-  applyClippingPlanesToTileset(tileset) {
-    if (tileset.readyPromise) {
-      tileset.readyPromise.then((primitive) => {
-        if (!primitive.clippingPlanes && this.slicingTool) {
-          this.slicingTool.addClippingPlanes(primitive);
-          if (
-            this.sliceOptions.type === 'box' ||
-            this.sliceOptions.type === 'view-box'
-          )
-            this.slicingBox.syncPlanes();
-        }
-      });
+  applyClippingPlanesToTileset(primitive) {
+    if (!primitive.clippingPlanes && this.slicingTool) {
+      this.slicingTool.addClippingPlanes(primitive);
+      if (
+        this.sliceOptions.type === 'box' ||
+        this.sliceOptions.type === 'view-box'
+      )
+        this.slicingBox.syncPlanes();
     }
   }
 

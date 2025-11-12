@@ -16,7 +16,7 @@ import {
 } from 'src/features/layer/info/pickers/layer-info-picker';
 import { LayerInfoPickerForTiff } from 'src/features/layer/info/pickers/layer-info-picker-for-tiff';
 import { LayerInfo } from 'src/features/layer/info/layer-info.model';
-import { LayerService as NewLayerService } from 'src/features/layer/new/layer.service';
+import { LayerService as NewLayerService } from 'src/features/layer/layer.service';
 import { LayerInfoPickerForWmts } from 'src/features/layer/info/pickers/layer-info-picker-for-wmts';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
 import { LayerInfoPickerForTiles3d } from 'src/features/layer/info/pickers/layer-info-picker-for-tiles3d';
@@ -137,7 +137,7 @@ export class LayerInfoService extends BaseService {
     }
     this.pickers.splice(i, 1);
     const newInfos = this.infosSubject.value.reduce((infos, info) => {
-      if (info.source === picker.source) {
+      if (info.layerId === picker.layerId) {
         info.destroy();
       } else {
         infos.push(info);

@@ -1,8 +1,5 @@
 import { BaseService } from 'src/utils/base.service';
-import {
-  LayerService,
-  LayerUpdate,
-} from 'src/features/layer/new/layer.service';
+import { LayerService, LayerUpdate } from 'src/features/layer/layer.service';
 import {
   combineLatest,
   debounceTime,

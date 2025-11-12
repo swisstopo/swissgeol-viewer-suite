@@ -4,9 +4,7 @@ import {
   ImageryLayer,
   VoxelPrimitive,
 } from 'cesium';
-import { PickableCesium3DTileset } from './layers/helpers';
 import EarthquakeVisualizer from './earthquakeVisualization/earthquakeVisualizer';
-import { LayerTiffController } from 'src/features/layer';
 import { AppEnv, ClientConfig } from 'src/api/client-config';
 import swissbedrockColorMapAuthor from '../../titiler/colormaps/swissBEDROCK_Author.json';
 import swissbedrockColorMapBEM from '../../titiler/colormaps/swissBEDROCK_BEM.json';

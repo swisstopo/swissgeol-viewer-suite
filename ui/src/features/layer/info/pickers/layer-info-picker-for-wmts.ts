@@ -23,7 +23,7 @@ import {
   LayerInfo,
   LayerInfoAttribute,
 } from 'src/features/layer/info/layer-info.model';
-import { WmtsLayerController } from 'src/features/layer/new/controllers/layer-wmts.controller';
+import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
 import { Id } from '@swissgeol/ui-core';
 import { WmtsLayer } from 'src/features/layer';
 
@@ -40,7 +40,7 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
     this.viewer.dataSources.add(this.highlights).then();
   }
 
-  get source(): Id<WmtsLayer> {
+  get layerId(): Id<WmtsLayer> {
     return this.controller.layer.id;
   }
 
@@ -131,7 +131,7 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
     return new LayerInfoForWmts(this.viewer, this.highlights, {
       entity,
       title: `layers:layers.${this.controller.layer.id}`,
-      source: this.controller.layer.id,
+      layerId: this.controller.layer.id,
       attributes,
     });
   }
@@ -220,7 +220,7 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
 
 class LayerInfoForWmts implements LayerInfo {
   public readonly title: string;
-  public readonly source: Id<WmtsLayer>;
+  public readonly layerId: Id<WmtsLayer>;
   public readonly attributes: LayerInfoAttribute[];
 
   private readonly entity: Entity;
@@ -228,14 +228,14 @@ class LayerInfoForWmts implements LayerInfo {
   constructor(
     private readonly viewer: Viewer,
     private readonly dataSource: CustomDataSource,
-    data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
+    data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
       entity: Entity;
-      source: Id<WmtsLayer>;
+      layerId: Id<WmtsLayer>;
     },
   ) {
     this.entity = data.entity;
     this.title = data.title;
-    this.source = data.source;
+    this.layerId = data.layerId;
     this.attributes = data.attributes;
     this.dataSource.entities.add(this.entity);
   }

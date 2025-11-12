@@ -4,9 +4,10 @@ import { customElement, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { SidebarPanel } from 'src/features/layout/layout.model';
 import 'src/ngm-app-settings';
-import { LayerService } from 'src/features/layer/new/layer.service';
+import { LayerService } from 'src/features/layer/layer.service';
 import { consume } from '@lit/context';
 import { until } from 'lit/directives/until.js';
+import ToolboxStore from 'src/store/toolbox';
 
 @customElement('ngm-layout-sidebar')
 export class LayoutSidebar extends CoreElement {
@@ -15,6 +16,9 @@ export class LayoutSidebar extends CoreElement {
 
   @state()
   accessor countOfLayers = 0;
+
+  @state()
+  accessor countOfGeometries = 0;
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
@@ -28,6 +32,12 @@ export class LayoutSidebar extends CoreElement {
     this.register(
       this.layerService.activeLayerIds$.subscribe((ids) => {
         this.countOfLayers = ids.length;
+      }),
+    );
+
+    this.register(
+      ToolboxStore.geometries.subscribe((geometries) => {
+        this.countOfGeometries = geometries.length;
       }),
     );
   }
@@ -86,26 +96,24 @@ export class LayoutSidebar extends CoreElement {
 
   private readonly renderItems = () => html`
     <ul>
-      <li>
-        ${this.renderItem({
-          panel: SidebarPanel.Layers,
-          icon: 'layer',
-          counter: this.countOfLayers,
-        })}
-        ${this.renderItem({
-          panel: SidebarPanel.Tools,
-          icon: 'tools',
-          counter: 0, // TODO
-        })}
-        ${this.renderItem({
-          panel: SidebarPanel.Projects,
-          icon: 'projects',
-        })}
-        ${this.renderItem({
-          panel: SidebarPanel.Share,
-          icon: 'share',
-        })}
-      </li>
+      ${this.renderItem({
+        panel: SidebarPanel.Layers,
+        icon: 'layer',
+        counter: this.countOfLayers,
+      })}
+      ${this.renderItem({
+        panel: SidebarPanel.Tools,
+        icon: 'tools',
+        counter: this.countOfGeometries,
+      })}
+      ${this.renderItem({
+        panel: SidebarPanel.Projects,
+        icon: 'projects',
+      })}
+      ${this.renderItem({
+        panel: SidebarPanel.Share,
+        icon: 'share',
+      })}
     </ul>
     <ul>
       ${this.renderItem({
@@ -123,6 +131,7 @@ export class LayoutSidebar extends CoreElement {
     <li>
       <ngm-layout-sidebar-item
         .panel="${options.panel}"
+        data-cy="${options.panel}"
         icon="${options.icon}"
         .counter="${options.counter ?? 0}"
         ?active="${options.panel === this.activePanel}"

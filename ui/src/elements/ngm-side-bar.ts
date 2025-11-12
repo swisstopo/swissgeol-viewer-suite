@@ -207,6 +207,7 @@ export class SideBar extends LitElementI18n {
       syncLayersParam(this.layerService);
     });
 
+    /* ------------------------------------------------- =================================================== ------------------------------------------------- */
     const sliceOptions = getSliceParam();
     if (sliceOptions?.type && sliceOptions.slicePoints) {
       this.openPanel('tools');

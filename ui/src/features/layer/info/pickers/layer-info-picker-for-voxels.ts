@@ -12,7 +12,7 @@ import {
 } from 'cesium';
 import { formatCartesian3AsLv95 } from 'src/projection';
 import NavToolsStore from 'src/store/navTools';
-import { VoxelLayerController } from 'src/features/layer/new/controllers/layer-voxel.controller';
+import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
 import { Id } from 'src/models/id.model';
 import {
   getTranslationKeyForLayerAttributeName,
@@ -27,7 +27,7 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
     private readonly viewer: Viewer,
   ) {}
 
-  get source(): Id<VoxelLayer> {
+  get layerId(): Id<VoxelLayer> {
     return this.controller.layer.id;
   }
 
@@ -47,7 +47,7 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
       new LayerInfoForVoxels(this.viewer, {
         cell,
         attributes,
-        source: this.controller.layer.id,
+        layerId: this.controller.layer.id,
         title: `layers:layers.${this.controller.layer.id}`,
       }),
     ];
@@ -103,7 +103,7 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
 }
 
 class LayerInfoForVoxels implements LayerInfo {
-  public readonly source: Id<VoxelLayer>;
+  public readonly layerId: Id<VoxelLayer>;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
@@ -111,13 +111,13 @@ class LayerInfoForVoxels implements LayerInfo {
 
   constructor(
     private readonly viewer: Viewer,
-    data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
+    data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
       cell: VoxelCell;
-      source: Id<VoxelLayer>;
+      layerId: Id<VoxelLayer>;
     },
   ) {
     this.cell = data.cell;
-    this.source = data.source;
+    this.layerId = data.layerId;
     this.title = data.title;
     this.attributes = data.attributes;
   }

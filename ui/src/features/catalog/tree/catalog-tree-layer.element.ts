@@ -1,7 +1,7 @@
 import { consume } from '@lit/context';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
-import { LayerService } from 'src/features/layer/new/layer.service';
+import { LayerService } from 'src/features/layer/layer.service';
 import { getLayerLabel, Layer } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
 import { css, html } from 'lit';

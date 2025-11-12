@@ -14,13 +14,15 @@ import {
 import { GstService } from 'src/gst.service';
 import { ControlsService } from 'src/features/controls/controls.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
-import { LayerService } from 'src/features/layer/layer.service';
 import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
 import { SessionService } from 'src/features/session/session.service';
-import { LayerApiService } from 'src/features/layer/new/layer-api.service';
-import { LayerService as NewLayerService } from 'src/features/layer/new/layer.service';
+import {
+  LayerService,
+  LayerApiService,
+  LayerUrlService,
+} from 'src/features/layer';
+import { OgcService } from 'src/features/ogc';
 import { WmtsService } from 'src/services/wmts.service';
-import { LayerUrlService } from 'src/features/layer/layer-url.service';
 import { PickService } from 'src/services/pick.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
@@ -50,15 +52,16 @@ export const registerAppContext = (
   contexts.push(
     makeProvider(ApiClient),
     makeProvider(WmtsService),
-    makeProvider(LayerApiService),
-    makeProvider(NewLayerService),
-    makeProvider(LayerUrlService),
+    makeProvider(OgcService),
+    makeProvider(PickService),
     makeProvider(SessionService),
     makeProvider(ControlsService),
-    makeProvider(LayerService),
-    makeProvider(LayerInfoService),
     makeProvider(GestureControlsService),
-    makeProvider(PickService),
+
+    makeProvider(LayerApiService),
+    makeProvider(LayerService),
+    makeProvider(LayerUrlService),
+    makeProvider(LayerInfoService),
   );
 
   return contexts;

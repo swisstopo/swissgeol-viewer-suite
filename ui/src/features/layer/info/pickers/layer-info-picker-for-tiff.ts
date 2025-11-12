@@ -24,7 +24,7 @@ import {
   LayerInfoAttribute,
 } from 'src/features/layer/info/layer-info.model';
 import { OBJECT_HIGHLIGHT_COLOR, TITILER_BY_PAGE_HOST } from 'src/constants';
-import { TiffLayerController } from 'src/features/layer/new/controllers/layer-tiff.controller';
+import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.controller';
 import { Id } from 'src/models/id.model';
 import proj4 from 'proj4';
 
@@ -38,7 +38,7 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
     private readonly viewer: Viewer,
   ) {}
 
-  get source(): Id<TiffLayer> {
+  get layerId(): Id<TiffLayer> {
     return this.controller.layer.id;
   }
 
@@ -65,7 +65,7 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
     return [
       new LayerInfoForTiff(this.viewer, {
         entity: this.createHighlight(data),
-        source: this.source,
+        layerId: this.layerId,
         title: `layers:layers.${this.controller.layer.id}`,
         attributes,
       }),
@@ -104,7 +104,7 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
         bands: json.values,
       };
     } catch (e) {
-      console.error(`failed to pick TIFF ${this.source}`, e);
+      console.error(`failed to pick TIFF ${this.layerId}`, e);
       return null;
     }
   }
@@ -225,20 +225,20 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
 }
 
 class LayerInfoForTiff implements LayerInfo {
-  public readonly source: Id<TiffLayer>;
+  public readonly layerId: Id<TiffLayer>;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
   private readonly entity: Entity;
 
   constructor(
     private readonly viewer: Viewer,
-    data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
+    data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
       entity: Entity;
-      source: Id<TiffLayer>;
+      layerId: Id<TiffLayer>;
     },
   ) {
     this.entity = data.entity;
-    this.source = data.source;
+    this.layerId = data.layerId;
     this.title = data.title;
     this.attributes = data.attributes;
     this.viewer.entities.add(this.entity);

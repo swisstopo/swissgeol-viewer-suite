@@ -1,10 +1,9 @@
-import { BaseLayerController } from 'src/features/layer/new/controllers/layer.controller';
+import { BaseLayerController } from 'src/features/layer/controllers/layer.controller';
 import { BackgroundLayer, WmtsLayer } from 'src/features/layer';
-import { WmtsLayerController } from 'src/features/layer/new/controllers/layer-wmts.controller';
+import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
 import { WmtsService } from 'src/services/wmts.service';
 import { Id } from 'src/models/id.model';
 import { DEFAULT_VIEW } from 'src/constants';
-import * as Cesium from 'cesium';
 
 export class BackgroundLayerController extends BaseLayerController<BackgroundLayer> {
   private children = new Map<Id<WmtsLayer>, WmtsLayerController>();

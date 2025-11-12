@@ -24,7 +24,7 @@ import {
 } from 'src/constants';
 import NavToolsStore from 'src/store/navTools';
 import { TemplateResult } from 'lit';
-import { Tiles3dLayerController } from 'src/features/layer/new/controllers/layer-tiles3d.controller';
+import { Tiles3dLayerController } from 'src/features/layer/controllers/layer-tiles3d.controller';
 import { Tiles3dLayer } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
 
@@ -34,7 +34,7 @@ export class LayerInfoPickerForTiles3d implements LayerInfoPicker {
     private readonly viewer: Viewer,
   ) {}
 
-  get source(): Id<Tiles3dLayer> {
+  get layerId(): Id<Tiles3dLayer> {
     return this.controller.layer.id;
   }
 
@@ -73,7 +73,7 @@ export class LayerInfoPickerForTiles3d implements LayerInfoPicker {
         feature,
         position: pick.globePosition.cartesian,
         attributes,
-        source: this.controller.layer.id,
+        layerId: this.controller.layer.id,
         title: `layers:layers.${this.controller.layer.id}`,
       }),
     ];
@@ -96,7 +96,7 @@ export class LayerInfoPickerForTiles3d implements LayerInfoPicker {
       new LayerInfoForEntity(this.viewer, {
         entity,
         attributes,
-        source: this.source,
+        layerId: this.layerId,
         title: `layers:layers.${this.controller.layer.id}`,
       }),
     ];
@@ -134,7 +134,7 @@ export class LayerInfoPickerForTiles3d implements LayerInfoPicker {
 }
 
 class LayerInfoFor3dTile implements LayerInfo {
-  public readonly source: Id<Tiles3dLayer>;
+  public readonly layerId: Id<Tiles3dLayer>;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
@@ -145,15 +145,15 @@ class LayerInfoFor3dTile implements LayerInfo {
 
   constructor(
     private readonly viewer: Viewer,
-    data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
+    data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
       feature: Cesium3DTileFeature;
-      source: Id<Tiles3dLayer>;
+      layerId: Id<Tiles3dLayer>;
       position: Cartesian3;
     },
   ) {
     this.feature = data.feature;
     this.position = data.position;
-    this.source = data.source;
+    this.layerId = data.layerId;
     this.title = data.title;
     this.attributes = data.attributes;
 
@@ -190,7 +190,7 @@ class LayerInfoFor3dTile implements LayerInfo {
 }
 
 class LayerInfoForEntity implements LayerInfo {
-  public readonly source: Id<Tiles3dLayer>;
+  public readonly layerId: Id<Tiles3dLayer>;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
@@ -201,13 +201,13 @@ class LayerInfoForEntity implements LayerInfo {
 
   constructor(
     private readonly viewer: Viewer,
-    data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
+    data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
       entity: Entity;
-      source: Id<Tiles3dLayer>;
+      layerId: Id<Tiles3dLayer>;
     },
   ) {
     this.entity = data.entity;
-    this.source = data.source;
+    this.layerId = data.layerId;
     this.title = data.title;
     this.attributes = data.attributes;
 

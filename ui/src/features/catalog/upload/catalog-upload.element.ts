@@ -5,7 +5,6 @@ import type { KmlUploadEvent } from './catalog-upload-kml.element';
 import { CustomDataSource, Viewer } from 'cesium';
 import { parseKml, renderWithDelay } from 'src/cesiumutils';
 import MainStore from '../../../store/main';
-import { DEFAULT_LAYER_OPACITY, LayerConfig } from 'src/layertree';
 import fomanticButtonCss from 'fomantic-ui-css/components/button.css?raw';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
 import { CoreElement, CoreModal } from 'src/features/core';
@@ -43,6 +42,7 @@ export class CatalogUpload extends CoreElement {
 
     // done like this to have correct rerender of component
     const dataSourcePromise = Promise.resolve(dataSource);
+    // @ts-ignore
     const config: LayerConfig = {
       load() {
         return dataSourcePromise;
@@ -50,12 +50,13 @@ export class CatalogUpload extends CoreElement {
       label: name,
       layer,
       promise: dataSourcePromise,
-      opacity: DEFAULT_LAYER_OPACITY,
+      opacity: 1,
       notSaveToPermalink: true,
       ownKml: true,
       opacityDisabled: true,
     };
-    this.layerService.activate(config);
+    // TODO activate custom layer
+    // this.layerService.activate(config);
     await this.viewer.zoomTo(dataSource);
     this.requestUpdate();
   }

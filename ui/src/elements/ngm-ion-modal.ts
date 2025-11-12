@@ -19,22 +19,31 @@ const CESIUM_ION_DOCUMENTATION_URL =
 export class NgmIonModal extends LitElementI18n {
   @state()
   accessor token: string | null = MainStore.ionToken.value;
+
   @state()
   accessor assets: IonAsset[] = [];
+
   @state()
   accessor assetsToDisplay: IonAsset[] = [];
+
   @state()
   accessor assetsToAdd: Set<IonAsset> = new Set<IonAsset>();
+
   @state()
   accessor selectedIonAssetIds: Set<number> = new Set<number>();
+
   @state()
   accessor errorMessage: string | undefined;
+
   @state()
   accessor preloader = false;
+
   @state()
   accessor confirmationToast: HTMLElement | undefined;
 
   connectedCallback() {
+    super.connectedCallback();
+
     draggable(this, {
       allowFrom: '.drag-handle',
     });
@@ -42,7 +51,6 @@ export class NgmIonModal extends LitElementI18n {
     MainStore.selectedIonAssets.subscribe((ionAssetIds) => {
       this.selectedIonAssetIds = ionAssetIds;
     });
-    super.connectedCallback();
   }
 
   get unselectedAssets(): IonAsset[] {

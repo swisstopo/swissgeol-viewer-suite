@@ -4,7 +4,7 @@ import { consume } from '@lit/context';
 import { css, html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTransition } from 'src/styles/theme';
-import { LayerService } from 'src/features/layer/new/layer.service';
+import { LayerService } from 'src/features/layer/layer.service';
 import { BACKGROUND_LAYER, BackgroundLayerVariant } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
 import { BackgroundLayer } from 'src/features/layer/models';

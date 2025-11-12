@@ -1,13 +1,11 @@
 import { Cartesian2, Cartesian3, Cartographic } from 'cesium';
 
-import {
-  LayerInfo,
-  LayerInfoSource,
-} from 'src/features/layer/info/layer-info.model';
+import { LayerInfo } from 'src/features/layer/info/layer-info.model';
+import { Layer } from 'src/features/layer';
+import { Id } from '@swissgeol/ui-core';
 
 export interface LayerInfoPicker {
-  // TODO Change this to `layerId: Id<Layer>` once everything has been ported to the new layers.
-  readonly source: LayerInfoSource;
+  readonly layerId: Id<Layer>;
 
   /**
    * Picks a point on the layer and returns information about any hit objects.

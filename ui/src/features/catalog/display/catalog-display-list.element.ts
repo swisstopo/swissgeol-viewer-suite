@@ -1,7 +1,7 @@
 import { consume } from '@lit/context';
 import { customElement, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
-import { LayerService } from 'src/features/layer/new/layer.service';
+import { LayerService } from 'src/features/layer/layer.service';
 import { BACKGROUND_LAYER, Layer } from 'src/features/layer';
 import { Id } from '@swissgeol/ui-core';
 import { css, html } from 'lit';
@@ -43,7 +43,7 @@ export class CatalogDisplayList extends CoreElement {
 
     this.register(language$.subscribe(() => this.initializeDragging()));
 
-    this.register(() => this.sortable.destroy());
+    this.register(() => this.sortable?.destroy());
   }
 
   firstUpdated(): void {
@@ -73,7 +73,7 @@ export class CatalogDisplayList extends CoreElement {
     this.sortable?.destroy();
     this.sortable = Sortable.create(listElement, {
       animation: 150,
-      forceFallback: true,
+      forceFallback: false,
       group: { pull: true, put: true, name: 'default' },
       draggable: 'li',
       filter: 'li:has(ngm-catalog-display-list-item:not([draggable]))',
@@ -153,6 +153,7 @@ export class CatalogDisplayList extends CoreElement {
                 <li data-id="${id}">
                   <ngm-catalog-display-list-item
                     .layerId="${id}"
+                    data-cy="${id}"
                   ></ngm-catalog-display-list-item>
                 </li>
               `,
@@ -164,6 +165,7 @@ export class CatalogDisplayList extends CoreElement {
     )}
     <ngm-catalog-display-list-item
       .layerId="${BACKGROUND_LAYER.id}"
+      data-cy="${BACKGROUND_LAYER.id}"
     ></ngm-catalog-display-list-item>
   `;
 
