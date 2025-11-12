@@ -26,6 +26,13 @@ export class LayerUrlService extends BaseService {
   private layerService!: LayerService;
   private ionService!: IonService;
 
+  /**
+   * A temporary storage of layers loaded from Cesium Ion.
+   * Will be reset after the initial load.
+   * @private
+   */
+  private temporaryIonLayers: Layer[] | null = null;
+
   constructor() {
     super();
 
@@ -46,6 +53,7 @@ export class LayerUrlService extends BaseService {
     const params = this.readParams();
     await this.syncParamsToLayers(params.layers);
     this.syncParamsToBackground(params.background);
+    this.temporaryIonLayers = null;
 
     // Start syncing local state changes to the url.
     this.layerService.activeLayerIds$
@@ -114,23 +122,11 @@ export class LayerUrlService extends BaseService {
   }
 
   private async syncParamsToLayers(params: LayerParams): Promise<void> {
-    let ionLayers: Layer[] | null = null;
     for (let i = params.layers.length - 1; i >= 0; i--) {
       const id = params.layers[i];
-
-      const assetId = parseInt(String(id));
-      if (Number.isNaN(assetId)) {
-        this.layerService.activate(id);
-      } else {
-        ionLayers ??= await this.ionService.fetchLayers({
-          accessToken: params.ionAccessToken ?? undefined,
-        });
-        const layer = ionLayers.find((it) => it.id === assetId);
-        if (layer === undefined) {
-          console.error(`Unknown Cesium Ion asset: ${id}`);
-          continue;
-        }
-        this.layerService.activateCustomLayer(layer);
+      const hasActivated = await this.activateLayer(id, params);
+      if (!hasActivated) {
+        continue;
       }
 
       const update: LayerUpdate = {
@@ -153,6 +149,42 @@ export class LayerUrlService extends BaseService {
 
       this.layerService.update(id, update);
     }
+  }
+
+  private async activateLayer(
+    id: Id<Layer>,
+    params: LayerParams,
+  ): Promise<boolean> {
+    // Load custom Cesium Ion layers.
+    // These were most likely included via the Cesium Ion upload modal.
+    const assetId = parseInt(String(id));
+    if (!Number.isNaN(assetId)) {
+      this.temporaryIonLayers ??= await this.ionService.fetchLayers({
+        accessToken: params.ionAccessToken ?? undefined,
+      });
+      const layer = this.temporaryIonLayers.find((it) => it.id === assetId);
+      if (layer === undefined) {
+        console.error(`Unknown Cesium Ion asset: ${id}`);
+        return false;
+      }
+      this.layerService.activateCustomLayer(layer);
+      return true;
+    }
+
+    // WMTS layer that are not part of the catalog need to be activated as custom WMTS layers.
+    // These were most likely included via search.
+    if (
+      typeof id === 'string' &&
+      id.startsWith('ch.') &&
+      !this.layerService.hasLayer(id)
+    ) {
+      this.layerService.activateCustomLayerFromWmts(id as Id<WmtsLayer>);
+      return true;
+    }
+
+    // Attempt to activate a catalog layer.
+    this.layerService.activate(id);
+    return true;
   }
 
   private syncParamsToBackground(params: BackgroundParams): void {
