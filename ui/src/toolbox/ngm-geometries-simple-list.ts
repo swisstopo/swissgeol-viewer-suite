@@ -250,7 +250,12 @@ export default class NgmGeometriesSimpleList extends CoreElement {
         >
           ${i18next.t('tbx_download_all_btn')}
         </div>
-        <div class="item" @click=${() => (this.deleteWarningModal.show = true)}>
+        <div
+          class="item"
+          @click=${() => {
+            this.deleteWarningModal.show = true;
+          }}
+        >
           ${i18next.t('tbx_remove_all_btn')}
         </div>
       </div>

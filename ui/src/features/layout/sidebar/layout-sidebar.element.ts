@@ -46,13 +46,27 @@ export class LayoutSidebar extends CoreElement {
     event: CustomEvent<{ panel: SidebarPanel }>,
   ) => {
     this.activePanel = event.detail.panel;
-    if (this.activePanel === SidebarPanel.Layers) {
-      this.promise =
-        customElements.get('ngm-catalog') === undefined
-          ? import('src/features/catalog/catalog.module')
-          : null;
-    } else {
-      this.promise = null;
+    switch (this.activePanel) {
+      case SidebarPanel.Layers:
+        this.promise =
+          customElements.get('ngm-catalog') === undefined
+            ? import('src/features/catalog/catalog.module')
+            : null;
+        break;
+      case SidebarPanel.Tools:
+        this.promise =
+          customElements.get('ngm-tools') === undefined
+            ? import('src/toolbox/ngm-toolbox')
+            : null;
+        break;
+      case SidebarPanel.Projects:
+        this.promise =
+          customElements.get('ngm-dashboard') === undefined
+            ? import('src/elements/dashboard/ngm-dashboard')
+            : null;
+        break;
+      default:
+        this.promise = null;
     }
   };
 
@@ -154,7 +168,7 @@ export class LayoutSidebar extends CoreElement {
     // separation of concerns and other stuff, so getting rid of these panels will help the rest of the application too.
     const staticPanels = html`
       <ngm-tools
-        .toolsHidden=${this.activePanel !== SidebarPanel.Tools}
+        ?hidden="${this.activePanel !== SidebarPanel.Tools}"
       ></ngm-tools>
       <ngm-dashboard
         ?hidden=${this.activePanel !== SidebarPanel.Projects}
@@ -165,42 +179,30 @@ export class LayoutSidebar extends CoreElement {
       this.promise = null;
       switch (this.activePanel) {
         case SidebarPanel.Layers:
-          return html`
-            <div class="content">
-              <ngm-catalog></ngm-catalog>
-            </div>
-            ${staticPanels}
-          `;
+          return html`<ngm-catalog></ngm-catalog>`;
         case SidebarPanel.Share:
-          return html`
-            <div class="content">
-              <ngm-share-link></ngm-share-link>
-            </div>
-            ${staticPanels}
-          `;
+          return html`<ngm-share-link></ngm-share-link>`;
         case SidebarPanel.Settings:
-          return html`
-            <div class="content">
-              <ngm-app-settings></ngm-app-settings>
-            </div>
-            ${staticPanels}
-          `;
+          return html` <ngm-app-settings></ngm-app-settings>`;
         case SidebarPanel.Projects:
         case SidebarPanel.Tools:
         case null:
-          return staticPanels;
+          return undefined;
       }
     };
 
-    return this.promise == null
-      ? render()
-      : until(
-          this.promise.then(render),
-          html`<div class="content">
-              <ngm-core-loader></ngm-core-loader>
-            </div>
-            ${staticPanels}`,
-        );
+    const panel =
+      this.promise == null
+        ? render()
+        : until(
+            this.promise.then(render),
+            html`<ngm-core-loader></ngm-core-loader>`,
+          );
+
+    return html`
+      <div class="content">${panel}</div>
+      ${staticPanels}
+    `;
   };
 
   static readonly styles = css`
@@ -239,6 +241,10 @@ export class LayoutSidebar extends CoreElement {
 
       height: calc(var(--panel-height) - var(--panel-header-height));
     }
+
+    ngm-navigation-panel > .content:empty {
+      display: none;
+    }
   `;
 
   // This transforms the `styles` value into a globally usable css.
@@ -246,6 +252,30 @@ export class LayoutSidebar extends CoreElement {
   private static readonly stylesAsGlobal = css`
     ngm-layout-sidebar {
       ${unsafeCSS(LayoutSidebar.styles.cssText.replaceAll(':host', '&'))}
+    }
+
+    /* Old panel styles. */
+    /* Can be removed once all panels have been redesigned. */
+    .ngm-panel-header {
+      height: var(--ngm-panel-header-height);
+      border-bottom: 2px solid #dfe2e6;
+      display: flex;
+      align-items: center;
+      font:
+        normal normal bold 14px/20px Inter,
+        sans-serif;
+      color: #212529;
+    }
+
+    .ngm-panel-header .ngm-close-icon {
+      width: 24px;
+      height: 24px;
+      background-color: #000000;
+      margin-left: auto;
+    }
+
+    .ngm-panel-header .ngm-close-icon:hover {
+      background-color: var(--ngm-action-hover);
     }
   `;
 }

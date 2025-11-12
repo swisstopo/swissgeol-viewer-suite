@@ -6,6 +6,10 @@ ngm-tools[hidden] {
   display: none;
 }
 
+ngm-tools {
+  min-height: calc(var(--panel-height) - var(--panel-header-height));
+}
+
 ngm-draw-tool,
 ngm-slicer,
 ngm-gst-interaction,

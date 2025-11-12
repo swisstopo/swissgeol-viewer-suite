@@ -11,6 +11,7 @@ import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
 import '@geoblocks/cesium-view-cube';
 import './elements/ngm-map-chooser';
+import './elements/ngm-confirmation-modal';
 
 import 'src/features/core/core.module';
 import 'src/features/layer/layer.module';
