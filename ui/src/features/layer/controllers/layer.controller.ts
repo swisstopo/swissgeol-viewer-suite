@@ -331,7 +331,8 @@ export const mapLayerSourceToResource = async (
       // TODO check if we need to pass an ion token here
       return await IonResource.fromAssetId(source.assetId, {
         accessToken:
-          source.assetId === 3914142 ? '{you-need-a-custom-key}' : undefined,
+          source.accessToken ??
+          (source.assetId === 3914142 ? '{you-need-a-custom-key}' : undefined),
       });
     case LayerSourceType.Url:
       return new Resource(source.url);

@@ -24,6 +24,7 @@ import {
 import { OgcService } from 'src/features/ogc';
 import { WmtsService } from 'src/services/wmts.service';
 import { PickService } from 'src/services/pick.service';
+import { IonService } from 'src/services/ion.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -54,6 +55,7 @@ export const registerAppContext = (
     makeProvider(WmtsService),
     makeProvider(OgcService),
     makeProvider(PickService),
+    makeProvider(IonService),
     makeProvider(SessionService),
     makeProvider(ControlsService),
     makeProvider(GestureControlsService),

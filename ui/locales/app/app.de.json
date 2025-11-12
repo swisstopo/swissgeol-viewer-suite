@@ -55,7 +55,6 @@
   "disclaimer_href": "https://www.swissgeol.ch/de/impressum",
   "disclaimer_text": "Copyright & Datenschutz",
   "dtd_add_ion_asset_btn": "Hinzufügen",
-  "dtd_add_ion_token": "Inhalte von Cesium ion hinzufügen",
   "dtd_ion_token_info": "Fügen sie 3D-Geodaten über die Cesium ion Plattform hinzu. Cesium ion bietet Zugriff auf Inhalte wie Bing Maps-Satellitenbilder oder Cesium OSM Buildings. Diese Daten lassen sich mit eigenen 3D-Geodaten kombinieren.",
   "dtd_all_label": "Alle",
   "dtd_asset_exists_info": "Datensatz bereits hinzugefügt",
