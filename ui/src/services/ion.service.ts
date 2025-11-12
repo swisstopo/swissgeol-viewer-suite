@@ -46,7 +46,7 @@ export class IonService extends BaseService {
           isPartiallyTransparent: false,
         } satisfies Tiles3dLayer;
       default:
-        throw new Error(`Unsupported asset type: ${ionAsset.type}`);
+        throw new Error(`Unsupported asset type: ${asset.type}`);
     }
   };
 

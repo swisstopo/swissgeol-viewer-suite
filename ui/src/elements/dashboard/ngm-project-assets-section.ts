@@ -20,6 +20,13 @@ export class NgmProjectAssetsSection extends LitElementI18n {
   @state()
   accessor kmlEditIndex: number | undefined;
 
+  connectedCallback() {
+    super.connectedCallback();
+
+    // Import the catalog for the KML upload component.
+    import('src/features/catalog/catalog.module').then();
+  }
+
   updated(changedProperties: PropertyValues) {
     if (changedProperties.has('assets')) {
       this.dispatchEvent(
@@ -67,11 +74,11 @@ export class NgmProjectAssetsSection extends LitElementI18n {
         ${this.viewMode
           ? ''
           : html`
-              <ngm-layer-upload-kml
+              <ngm-catalog-upload-kml
                 .toastPlaceholder=${this.toastPlaceholder}
                 .maxFileSize=${PROJECT_ASSET_MAX_SIZE}
                 @upload=${this.handleKmlUpload}
-              ></ngm-layer-upload-kml>
+              ></ngm-catalog-upload-kml>
             `}
         ${this.assets?.map((kml, index) => {
           return html`

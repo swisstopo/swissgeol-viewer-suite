@@ -2,15 +2,15 @@ import { customElement } from 'lit/decorators.js';
 import { css, html, unsafeCSS } from 'lit';
 import i18next from 'i18next';
 import type { KmlUploadEvent } from './catalog-upload-kml.element';
-import { CustomDataSource, Viewer } from 'cesium';
-import { parseKml, renderWithDelay } from 'src/cesiumutils';
-import MainStore from '../../../store/main';
+import { Viewer } from 'cesium';
 import fomanticButtonCss from 'fomantic-ui-css/components/button.css?raw';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
 import { CoreElement, CoreModal } from 'src/features/core';
 import { LayerService } from 'src/features/layer/layer.service';
 import { consume } from '@lit/context';
 import { viewerContext } from 'src/context';
+import { KmlLayer, LayerType } from 'src/features/layer';
+import { makeId } from 'src/models/id.model';
 
 @customElement('ngm-catalog-upload')
 export class CatalogUpload extends CoreElement {
@@ -22,43 +22,21 @@ export class CatalogUpload extends CoreElement {
 
   private modal: CoreModal | null = null;
 
-  // TODO Cleanup/Refactor this function.
-  // As of now, this function remains unchanged to before the navigation-catalog refactoring.
   private async handleKmlUpload(e: KmlUploadEvent): Promise<void> {
-    const dataSource = new CustomDataSource();
-    const name = await parseKml(
-      this.viewer,
-      e.detail.file,
-      dataSource,
-      e.detail.isClampEnabled,
-    );
-    const layer = `${name.replace(' ', '_')}_${Date.now()}`;
-
-    // name used as id for datasource
-    dataSource.name = layer;
-    MainStore.addUploadedKmlName(dataSource.name);
-    await this.viewer.dataSources.add(dataSource);
-    await renderWithDelay(this.viewer);
-
-    // done like this to have correct rerender of component
-    const dataSourcePromise = Promise.resolve(dataSource);
-    // @ts-ignore
-    const config: LayerConfig = {
-      load() {
-        return dataSourcePromise;
-      },
-      label: name,
-      layer,
-      promise: dataSourcePromise,
+    this.layerService.activateCustomLayer({
+      id: makeId(crypto.randomUUID()),
+      type: LayerType.Kml,
+      source: e.detail.file,
+      shouldClampToGround: e.detail.isClampEnabled,
+      label: null,
       opacity: 1,
-      notSaveToPermalink: true,
-      ownKml: true,
-      opacityDisabled: true,
-    };
-    // TODO activate custom layer
-    // this.layerService.activate(config);
-    await this.viewer.zoomTo(dataSource);
-    this.requestUpdate();
+      canUpdateOpacity: false,
+      isVisible: true,
+      geocatId: null,
+      downloadUrl: null,
+      legend: null,
+      isLocal: true,
+    } satisfies KmlLayer);
   }
 
   private openIonModal(): void {

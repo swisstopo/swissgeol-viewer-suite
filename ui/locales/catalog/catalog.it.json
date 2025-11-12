@@ -27,8 +27,8 @@
     "file_upload_error": "Errore nel download di KML",
     "modal": {
       "title": "Upload",
-      "should_clamp_to_ground": "Fixation au terrain",
-      "confirm": "Ajouter"
+      "should_clamp_to_ground": "Morsetto al terreno",
+      "confirm": "Aggiungi"
     }
   },
   "add_content_from_cesium_ion": "Aggiunta di contenuti da cesium ion",

@@ -61,7 +61,7 @@ export class CatalogDisplayList extends CoreElement {
     if (this.haveLayersChanged) {
       this.haveLayersChanged = false;
       this.removeRemnantItems();
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         this.initializeDragging();
       });
     }
@@ -79,7 +79,7 @@ export class CatalogDisplayList extends CoreElement {
       forceFallback: false,
       group: { pull: true, put: true, name: 'default' },
       draggable: 'li',
-      filter: 'li:has(ngm-catalog-display-list-item:not([draggable]))',
+      filter: 'li:has(ngm-catalog-display-list-item:not([sortable]))',
       onChoose: (event) => {
         if (event.item) {
           event.item.children[0].classList.add('is-dragged');

@@ -1,27 +1,24 @@
 import { customElement, state } from 'lit/decorators.js';
-import {
-  CustomDataSource,
-  DataSource,
-  DataSourceCollection,
-  Viewer,
-} from 'cesium';
-import MainStore from 'src/store/main';
+import { Viewer } from 'cesium';
 import { css, html } from 'lit';
 import i18next from 'i18next';
 import { debounce } from 'src/utils';
 import { setExaggeration } from 'src/permalink';
 import NavToolsStore from 'src/store/navTools';
-import { updateExaggerationForKmlDataSource } from 'src/cesiumutils';
 import '../core';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
 import { viewerContext } from 'src/context';
 import { consume } from '@lit/context';
 import { CoreElement, tooltip } from 'src/features/core';
+import { LayerService } from 'src/features/layer';
 
 @customElement('ngm-catalog-settings')
 export class LayerOptions extends CoreElement {
   @consume({ context: viewerContext })
   accessor viewer!: Viewer;
+
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
 
   @state()
   private accessor exaggeration: number = 1;
@@ -29,54 +26,21 @@ export class LayerOptions extends CoreElement {
   @state()
   private accessor isExaggerationHidden = false;
 
-  private prevExaggeration: number = 1;
-
   connectedCallback() {
     super.connectedCallback();
 
     this.exaggeration = this.viewer?.scene.verticalExaggeration ?? 1;
-    this.prevExaggeration = this.exaggeration;
-
-    const handleDataSourceAdded = (
-      _collection: DataSourceCollection,
-      dataSource: DataSource | CustomDataSource,
-    ) => {
-      if (MainStore.uploadedKmlNames.includes(dataSource.name)) {
-        const exaggeration = this.isExaggerationHidden ? 1 : this.exaggeration;
-        updateExaggerationForKmlDataSource(dataSource, exaggeration, 1);
-      }
-    };
-    this.viewer.dataSources.dataSourceAdded.addEventListener(
-      handleDataSourceAdded,
-    );
-    this.register(() =>
-      this.viewer.dataSources.dataSourceAdded.removeEventListener(
-        handleDataSourceAdded,
-      ),
-    );
   }
 
   private toggleExaggerationVisibility() {
     this.isExaggerationHidden = !this.isExaggerationHidden;
     const exaggeration = this.isExaggerationHidden ? 1 : this.exaggeration;
     this.viewer.scene.verticalExaggeration = exaggeration;
-    this.updateExaggerationForKmls();
+    this.layerService.controllers.forEach((controller) =>
+      controller.updateExaggeration(exaggeration),
+    );
     NavToolsStore.exaggerationChanged.next(exaggeration);
     this.viewer.scene.requestRender();
-  }
-
-  private updateExaggerationForKmls() {
-    const exaggeration = this.isExaggerationHidden ? 1 : this.exaggeration;
-    for (const name of MainStore.uploadedKmlNames) {
-      const dataSource = this.viewer?.dataSources.getByName(name)[0];
-      updateExaggerationForKmlDataSource(
-        dataSource,
-        exaggeration,
-        this.prevExaggeration,
-      );
-    }
-    this.prevExaggeration = exaggeration;
-    this.viewer?.scene.requestRender();
   }
 
   private updateExaggeration(event: SliderChangeEvent) {
@@ -86,10 +50,17 @@ export class LayerOptions extends CoreElement {
     this.isExaggerationHidden = false;
     this.exaggeration = event.detail.value;
     this.viewer.scene.verticalExaggeration = this.exaggeration;
+
     // workaround for billboards positioning
     setTimeout(() => this.viewer!.scene.requestRender(), 500);
     setExaggeration(this.exaggeration);
     NavToolsStore.exaggerationChanged.next(this.exaggeration);
+  }
+
+  private propagateExaggerationChange() {
+    this.layerService.controllers.forEach((controller) =>
+      controller.updateExaggeration(this.viewer.scene.verticalExaggeration),
+    );
   }
 
   readonly render = () => html`
@@ -121,7 +92,7 @@ export class LayerOptions extends CoreElement {
         .step="${0.5}"
         .value="${this.exaggeration}"
         @change=${this.updateExaggeration}
-        @done="${debounce(() => this.updateExaggerationForKmls(), 300)}"
+        @done="${debounce(() => this.propagateExaggerationChange(), 300)}"
       ></ngm-core-slider>
       <div class="chip-container">
         <ngm-core-chip data-cy="exaggeration-factor"

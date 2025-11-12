@@ -62,9 +62,9 @@ export class CatalogDisplayListItem extends CoreElement {
       this.isOpacityActive ||
       this.isBackgroundActive
     ) {
-      this.removeAttribute('draggable');
+      this.removeAttribute('sortable');
     } else {
-      this.setAttribute('draggable', 'true');
+      this.setAttribute('sortable', 'true');
     }
   }
 
@@ -193,14 +193,13 @@ export class CatalogDisplayListItem extends CoreElement {
             >
           `,
         )}
-
         <ngm-core-button
           transparent
           variant="secondary"
           shape="chip"
           class="opacity-toggle"
           ?active="${this.isOpacityActive}"
-          ?disabled="${!this.layer.isVisible}"
+          ?disabled="${!this.layer.isVisible || !this.layer.canUpdateOpacity}"
           data-cy="opacity"
           @click="${this.toggleOpacityActive}"
         >
@@ -345,7 +344,7 @@ export class CatalogDisplayListItem extends CoreElement {
       border: 1px solid var(--color-bg--white);
     }
 
-    :host([draggable]) {
+    :host([sortable]) {
       cursor: grab;
     }
 

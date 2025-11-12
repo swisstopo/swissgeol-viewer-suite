@@ -1,22 +1,13 @@
 import {
-  ArcType,
   BoundingSphere,
   Camera,
   Cartesian2,
   Cartesian3,
   Cartographic,
-  Color,
-  ColorMaterialProperty,
-  ConstantPositionProperty,
-  ConstantProperty,
-  CustomDataSource,
-  DataSource,
   Ellipsoid,
   EntityCollection,
   HeadingPitchRoll,
-  HeightReference,
   JulianDate,
-  KmlDataSource,
   Math as CMath,
   Matrix3,
   OrientedBoundingBox,
@@ -27,7 +18,6 @@ import {
 } from 'cesium';
 import type { GeometryTypes } from './toolbox/interfaces';
 import earcut from 'earcut';
-import { DEFAULT_UPLOADED_KML_COLOR } from './constants';
 
 const julianDate = new JulianDate();
 
@@ -599,75 +589,6 @@ export function isGeometryInViewport(
   );
 }
 
-/**
- * Parses KML file with fixes for clampToGround and adding missing properties.
- */
-export async function parseKml(
-  viewer: Viewer,
-  data: File | string,
-  dataSource: CustomDataSource,
-  clampToGround: boolean,
-) {
-  const kmlDataSource = await KmlDataSource.load(data, {
-    camera: viewer.scene.camera,
-    canvas: viewer.scene.canvas,
-    clampToGround,
-  });
-  let name = kmlDataSource.name;
-  kmlDataSource.entities.suspendEvents();
-  dataSource.entities.suspendEvents();
-  for (const ent of kmlDataSource.entities.values) {
-    ent.show = true;
-    if (!name) {
-      name = ent.name!;
-    }
-    if (ent['point']) {
-      const point = ent['point'];
-      const color: Color =
-        point.color?.getValue(julianDate)?.color || DEFAULT_UPLOADED_KML_COLOR;
-      if (color.alpha === 0) {
-        color.alpha = 1;
-      }
-      point.color = new ConstantProperty(color);
-      point.pixelSize = point.pixelSize?.getValue(julianDate) || 1;
-      point.heightReference = clampToGround
-        ? HeightReference.CLAMP_TO_GROUND
-        : point.heightReference?.getValue(julianDate);
-    }
-    if (ent['polygon']) {
-      const polygon = ent['polygon'];
-      const color: Color =
-        polygon.material?.getValue(julianDate)?.color ||
-        DEFAULT_UPLOADED_KML_COLOR;
-      if (color.alpha === 0) {
-        color.alpha = 1;
-      }
-      polygon.material = new ColorMaterialProperty(color);
-      polygon.heightReference = clampToGround
-        ? HeightReference.CLAMP_TO_GROUND
-        : polygon.heightReference?.getValue(julianDate);
-    }
-    if (ent['polyline']) {
-      const line = ent['polyline'];
-      const color: Color =
-        line.material?.getValue(julianDate)?.color ||
-        DEFAULT_UPLOADED_KML_COLOR;
-      if (color.alpha === 0) {
-        color.alpha = 1;
-      }
-      line.arcType = new ConstantProperty(ArcType.GEODESIC);
-      line.clampToGround = new ConstantProperty(clampToGround);
-      line.material = new ColorMaterialProperty(color);
-      line.width = line.width?.getValue(julianDate) || 2;
-    }
-    dataSource.entities.add(ent);
-  }
-  dataSource.entities.resumeEvents();
-
-  // TODO: remove this and fix data upload
-  return name ?? 'untitled';
-}
-
 // workaround to rerender map after dataSources update in requestRenderMode
 export async function renderWithDelay(viewer: Viewer) {
   await new Promise<void>((resolve) =>
@@ -676,53 +597,4 @@ export async function renderWithDelay(viewer: Viewer) {
       resolve();
     }, 1000),
   );
-}
-
-export function updateExaggerationForKmlDataSource(
-  dataSource: CustomDataSource | DataSource | undefined,
-  exaggeration: number,
-  prevExaggeration: number,
-) {
-  if (dataSource && dataSource.show) {
-    dataSource.entities.suspendEvents();
-    const exaggerationScale = exaggeration / prevExaggeration;
-    dataSource.entities.values.forEach((ent) => {
-      if (ent.position) {
-        const position = ent.position.getValue(julianDate);
-        position &&
-          updateExaggerationForCartesianPositions(
-            [position],
-            exaggerationScale,
-          );
-        ent.position = new ConstantPositionProperty(position);
-      }
-      if (ent['polygon']) {
-        const polygon = ent['polygon'];
-        const hierarchy = polygon?.hierarchy?.getValue(julianDate);
-        if (hierarchy?.positions) {
-          const positions = updateExaggerationForCartesianPositions(
-            hierarchy.positions,
-            exaggerationScale,
-          );
-          polygon.hierarchy = new ConstantProperty({
-            holes: [],
-            positions,
-          });
-        }
-      }
-      if (ent['polyline']) {
-        const line = ent['polyline'];
-        const positions = line.positions?.getValue(julianDate);
-        if (positions) {
-          line.positions = new ConstantProperty(
-            updateExaggerationForCartesianPositions(
-              positions,
-              exaggerationScale,
-            ),
-          );
-        }
-      }
-    });
-    dataSource.entities.resumeEvents();
-  }
 }

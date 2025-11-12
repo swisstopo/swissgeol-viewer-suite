@@ -108,6 +108,9 @@ export class LayerInfoService extends BaseService {
 
   private readonly handleLayerActivated = (layerId: Id<Layer>): void => {
     const controller = this.layerService.controller(layerId)!;
+    if (controller.type === LayerType.Kml) {
+      return;
+    }
     const picker = run(() => {
       switch (controller.type) {
         case LayerType.Wmts:

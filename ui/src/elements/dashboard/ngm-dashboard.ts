@@ -18,7 +18,6 @@ import NavToolsStore from '../../store/navTools';
 import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
 import type { Viewer } from 'cesium';
-import { CustomDataSource } from 'cesium';
 import { showSnackbarError } from 'src/notifications';
 import { DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL } from 'src/constants';
 import type { NgmGeometry } from 'src/toolbox/interfaces';
@@ -27,10 +26,11 @@ import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
 import { isProject, isProjectOwnerOrEditor } from './helpers';
-import { parseKml, renderWithDelay } from 'src/cesiumutils';
 import { consume } from '@lit/context';
 import { LayerService } from 'src/features/layer/layer.service';
 import { SessionService, User } from 'src/features/session';
+import { Id, makeId } from 'src/models/id.model';
+import { KmlLayer, LayerSourceType, LayerType } from 'src/features/layer';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -138,13 +138,9 @@ export class NgmDashboard extends LitElementI18n {
   private accessor user: User | null = null;
 
   private viewer: Viewer | null = null;
-  private assetConfigs: any = {};
-  private assets: unknown; // TODO
+  private layerIds: Array<Id<KmlLayer>> = [];
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
-  private readonly tempKmlDataSource = new CustomDataSource(
-    'tempKmlDataSource',
-  );
 
   @consume({ context: ApiClient.context() })
   accessor apiClient!: ApiClient;
@@ -154,15 +150,6 @@ export class NgmDashboard extends LitElementI18n {
 
   constructor() {
     super();
-    MainStore.viewer.subscribe((viewer) => {
-      this.viewer = viewer;
-      this.viewer?.dataSources.add(this.tempKmlDataSource);
-    });
-
-    // noinspection PointlessBooleanExpressionJS
-    if (false) {
-      console.log(this.assets);
-    }
 
     // topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
     // fetch('./src/sampleData/topics.json').then(topicsResponse =>
@@ -294,59 +281,48 @@ export class NgmDashboard extends LitElementI18n {
   //   });
   // }
 
-  async fetchAssets(assets: Asset[]): Promise<unknown[]> {
-    const assetsData: unknown[] = [];
-    if (!this.viewer) return assetsData;
-    for (const asset of assets) {
-      try {
-        const href = `${PROJECT_ASSET_URL}${asset.key}`;
-        const dataSources = this.viewer.dataSources.getByName(href);
-        let uploadedLayer: CustomDataSource;
-        if (dataSources.length) {
-          uploadedLayer = dataSources[0];
-          uploadedLayer.show = true;
-        } else {
-          uploadedLayer = new CustomDataSource(href);
-          const name = await parseKml(
-            this.viewer,
-            href,
-            uploadedLayer,
-            !!asset.clampToGround,
-          );
-          this.assetConfigs[href] = {
-            label: name,
-            opacity: 1,
-            notSaveToPermalink: true,
-            topicKml: true,
-          };
-          MainStore.addUploadedKmlName(name);
-          await this.viewer.dataSources.add(uploadedLayer);
-          await renderWithDelay(this.viewer);
-        }
-        const promise = Promise.resolve(uploadedLayer);
-        assetsData.push({
-          ...this.assetConfigs[href],
-          displayed: false,
-          load() {
-            return promise;
-          },
-          promise,
-        });
-      } catch (e) {
-        console.error(e);
-        showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
-      }
+  async fetchAssets(assets: Asset[]): Promise<Array<Id<KmlLayer>>> {
+    if (this.viewer == null) {
+      return [];
     }
-    return assetsData;
+    const layerIds: Array<Id<KmlLayer>> = [];
+    for (const asset of assets) {
+      const href = `${PROJECT_ASSET_URL}${asset.key}`;
+      const id = makeId<KmlLayer>(crypto.randomUUID());
+      this.layerService.activateCustomLayer({
+        id,
+        type: LayerType.Kml,
+        source: {
+          type: LayerSourceType.Url,
+          url: href,
+        },
+        shouldClampToGround: !!asset.clampToGround,
+        label: null,
+        opacity: 1,
+        canUpdateOpacity: false,
+        isVisible: true,
+        geocatId: null,
+        downloadUrl: null,
+        legend: null,
+        isLocal: true,
+      } satisfies KmlLayer);
+      layerIds.push(id);
+    }
+    return layerIds;
   }
 
   async selectView(viewIndex: number | undefined) {
+    for (const layerId of this.layerIds) {
+      this.layerService.deactivate(layerId);
+    }
+    this.layerIds = [];
+
     this.selectedViewIndx = viewIndex;
     syncTargetParam(undefined);
     NavToolsStore.nextTargetPointSync();
     if (this.viewer && this.selectedTopicOrProject && viewIndex !== undefined) {
       if (this.selectedTopicOrProject?.assets)
-        this.assets = await this.fetchAssets(
+        this.layerIds = await this.fetchAssets(
           this.selectedTopicOrProject.assets,
         );
       this.geometries.forEach((geometry) =>
@@ -385,7 +361,10 @@ export class NgmDashboard extends LitElementI18n {
   deselectTopicOrProject() {
     this.runIfNotEditCreate(() => {
       this.selectTopicOrProject(undefined);
-      this.assets = [];
+      for (const layerId of this.layerIds) {
+        this.layerService.deactivate(layerId);
+      }
+      this.layerIds = [];
       this.removeGeometries();
     });
   }
@@ -469,12 +448,11 @@ export class NgmDashboard extends LitElementI18n {
       }
       this.projectToCreate = undefined;
     }
-    this.tempKmlDataSource.entities.removeAll();
     this.saveOrCancelWarning = false;
     if (this.selectedViewIndx !== undefined) {
       DashboardStore.setViewIndex(this.selectedViewIndx);
       if (this.selectedTopicOrProject?.assets) {
-        this.assets = await this.fetchAssets(
+        this.layerIds = await this.fetchAssets(
           this.selectedTopicOrProject.assets,
         );
       }
@@ -487,7 +465,6 @@ export class NgmDashboard extends LitElementI18n {
     this.projectTabState = 'view';
     this.saveOrCancelWarning = false;
     this.projectToCreate = undefined;
-    this.tempKmlDataSource.entities.removeAll();
   }
 
   runIfNotEditCreate(callback: () => void) {
@@ -746,7 +723,6 @@ export class NgmDashboard extends LitElementI18n {
                 .saveOrCancelWarning="${this.saveOrCancelWarning}"
                 .createMode="${this.projectTabState === 'create'}"
                 .userEmail="${this.user?.email}"
-                .tempKmlDataSource="${this.tempKmlDataSource}"
                 @onBack=${this.deselectTopicOrProject}
                 @onSave="${async (evt: { detail: { project: Project } }) =>
                   this.onProjectSave(evt.detail.project)}"

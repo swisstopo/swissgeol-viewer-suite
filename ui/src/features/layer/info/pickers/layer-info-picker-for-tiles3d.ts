@@ -240,7 +240,7 @@ class LayerInfoForEntity implements LayerInfo {
 
   zoomToObject(): void {
     const props = this.entity.properties?.getValue(JulianDate.now());
-    this.viewer.zoomTo(this.entity, props?.zoomHeadingPitchRange);
+    this.viewer.zoomTo(this.entity, props?.zoomHeadingPitchRange).then();
   }
 
   activateHighlight() {}

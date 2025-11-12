@@ -89,7 +89,7 @@ export class NgmIonModal extends CoreElement {
     if (res.items) {
       this.assets = res.items.filter((it) => {
         // Filter out custom layers that have already been activated.
-        return !this.layerService.hasLayer(makeId(it.id));
+        return !this.layerService.hasLayer(makeId<Layer>(it.id));
       });
       this.assetsToDisplay = this.assets;
     } else {

@@ -27,8 +27,8 @@
     "file_upload_error": "Erreur lors du téléchargement de KML",
     "modal": {
       "title": "Upload",
-      "should_clamp_to_ground": "Clamp to terrain",
-      "confirm": "Add"
+      "should_clamp_to_ground": "Fixation au terrain",
+      "confirm": "Ajouter"
     }
   },
   "add_content_from_cesium_ion": "Ajouter du contenu à propos de l'ion césium",

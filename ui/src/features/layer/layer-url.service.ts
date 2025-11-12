@@ -204,6 +204,11 @@ export class LayerUrlService extends BaseService {
     const defaultIonAccessToken =
       BaseService.get(clientConfigContext).ionDefaultAccessToken;
     for (const layer of layers) {
+      // Ignore local-only layers.
+      if (layer.isLocal) {
+        continue;
+      }
+
       params.layers.push(layer.id);
       params.visibility.push(layer.isVisible);
       params.transparency.push(Number((1 - layer.opacity).toFixed(2)));
@@ -220,6 +225,7 @@ export class LayerUrlService extends BaseService {
         'source' in layer &&
         typeof layer.source === 'object' &&
         layer.source !== null &&
+        !(layer.source instanceof File) &&
         'type' in layer.source &&
         layer.source.type === LayerSourceType.CesiumIon &&
         layer.source.accessToken !== undefined &&
