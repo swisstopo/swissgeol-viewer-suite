@@ -18,7 +18,6 @@ import $ from 'jquery';
 import { DEFAULT_PROJECT_COLOR } from 'src/constants';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
-import '../ngm-confirmation-modal';
 import './ngm-project-members-section';
 import { isProject } from './helpers';
 import { NgmConfirmationModal } from '../ngm-confirmation-modal';

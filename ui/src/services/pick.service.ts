@@ -47,13 +47,20 @@ export class PickService extends BaseService {
   }
 
   private tryPickWithSceneOrFallback(position: Cartesian2): Cartesian3 | null {
+    const KNOWN_PICK_ERROR_SUFFIXES = [
+      'DeveloperError: This object was destroyed,',
+      "TypeError: Can't access property _target, v3 is undefined",
+    ] as const;
     try {
       return this.pickWithScene(Cartesian2.clone(position));
     } catch (e) {
-      if (!String(e).startsWith('DeveloperError: This object was destroyed,')) {
-        throw e;
+      const message = String(e);
+      if (
+        KNOWN_PICK_ERROR_SUFFIXES.some((suffix) => message.startsWith(suffix))
+      ) {
+        return this.pickWithMath(position);
       }
-      return this.pickWithMath(position);
+      throw e;
     }
   }
 

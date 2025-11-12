@@ -4,7 +4,6 @@ import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
 import { classMap } from 'lit/directives/class-map.js';
 import { Asset } from './ngm-dashboard';
-import '../../layers/ngm-layers-upload';
 import { PROJECT_ASSET_MAX_SIZE } from 'src/constants';
 import { KmlUploadEvent } from 'src/features/catalog/upload/catalog-upload-kml.element';
 

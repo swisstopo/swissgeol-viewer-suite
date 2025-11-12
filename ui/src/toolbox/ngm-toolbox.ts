@@ -37,7 +37,7 @@ import { viewerContext } from 'src/context';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends CoreElement {
-  @property({ type: Boolean })
+  @property({ type: Boolean, attribute: 'hidden' })
   accessor toolsHidden = true;
   @state()
   accessor activeTool:
@@ -66,8 +66,8 @@ export class NgmToolbox extends CoreElement {
 
   private readonly julianDate = new JulianDate();
   private draw: CesiumDraw | undefined;
-  private geometryController: GeometryController | undefined;
-  private geometryControllerNoEdit: GeometryController | undefined;
+  private geometryController!: GeometryController;
+  private geometryControllerNoEdit!: GeometryController;
   private forceSlicingToolOpen = false;
 
   @consume({ context: ApiClient.context() })
@@ -208,6 +208,16 @@ export class NgmToolbox extends CoreElement {
       });
       DrawStore.setDraw(this.draw);
     }
+
+    this.geometryController = new GeometryController(
+      this.geometriesDataSource,
+      this.toastPlaceholder,
+    );
+    this.geometryControllerNoEdit = new GeometryController(
+      this.noEditGeometriesDataSource,
+      this.toastPlaceholder,
+      true,
+    );
   }
 
   protected update(changedProperties: PropertyValues) {
@@ -233,36 +243,12 @@ export class NgmToolbox extends CoreElement {
     super.update(changedProperties);
   }
 
-  updated(changedProperties: PropertyValues<this>) {
-    if (!this.geometryController && this.viewer && this.toastPlaceholder) {
-      const geometryController = new GeometryController(
-        this.geometriesDataSource,
-        this.toastPlaceholder,
+  firstUpdated(): void {
+    setTimeout(() => {
+      this.geometryController.setGeometries(
+        LocalStorageController.getStoredAoi(),
       );
-      this.geometryController = geometryController;
-      setTimeout(() => {
-        geometryController.setGeometries(LocalStorageController.getStoredAoi());
-      });
-    }
-    if (
-      !this.geometryControllerNoEdit &&
-      this.viewer &&
-      this.toastPlaceholder
-    ) {
-      this.geometryControllerNoEdit = new GeometryController(
-        this.noEditGeometriesDataSource,
-        this.toastPlaceholder,
-        true,
-      );
-    }
-
-    if (changedProperties.has('toolsHidden')) {
-      if (this.toolsHidden) {
-        this.setAttribute('hidden', 'true');
-      } else {
-        this.removeAttribute('hidden');
-      }
-    }
+    });
   }
 
   showSectionModal(imageUrl) {

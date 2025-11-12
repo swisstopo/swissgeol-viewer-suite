@@ -60,7 +60,6 @@ export class LayerUrlService extends BaseService {
         map(this.makeLayerParams),
       )
       .subscribe((params) => {
-        console.log('writers!');
         this.writeParams((url) => this.writeLayerParams(params, url));
       });
 
@@ -108,7 +107,6 @@ export class LayerUrlService extends BaseService {
       const assetIdNumbers = assetIds
         .split(',')
         .map((it) => makeId<Layer>(Number(it)));
-      console.log(assetIdNumbers);
       params.layers.layers.push(...assetIdNumbers);
     }
 
