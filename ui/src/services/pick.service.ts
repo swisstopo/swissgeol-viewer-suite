@@ -16,7 +16,7 @@ export class PickService extends BaseService {
 
   constructor() {
     super();
-    MainStore.viewer.subscribe((viewer) => {
+    MainStore.viewer.subscribe(async (viewer) => {
       this.viewer = viewer;
     });
   }

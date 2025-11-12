@@ -92,7 +92,7 @@ export class LayerService extends BaseService {
    *
    * @private
    */
-  private readonly background = {
+  private readonly _background = {
     /**
      * The background layer's active state.
      */
@@ -397,16 +397,16 @@ export class LayerService extends BaseService {
     this.hasViewer$.pipe(filter(identity), take(1)).subscribe(async () => {
       // Mark the background as visible.
       const layer: BackgroundLayer = {
-        ...this.background.state$.value,
+        ...this._background.state$.value,
         isVisible: true,
       };
 
       // Update the existing background controller and add it to the viewer.
-      await this.background.controller.update(layer);
-      await this.background.controller.add();
+      await this._background.controller.update(layer);
+      await this._background.controller.add();
 
       // Publish the new background state.
-      this.background.state$.next(layer);
+      this._background.state$.next(layer);
 
       // Mark the layers as loaded.
       this.hasLayers$.next(true);
@@ -464,6 +464,10 @@ export class LayerService extends BaseService {
     return entry.nodes;
   }
 
+  get background(): BackgroundLayer {
+    return this._background.state$.value;
+  }
+
   /**
    * The current state of a specific layer.
    *
@@ -486,7 +490,7 @@ export class LayerService extends BaseService {
    */
   layerOrNull<T extends AnyLayer>(id: Id<T>): T | null {
     if (isBackgroundLayerId(id)) {
-      return this.background.state$.value as T;
+      return this._background.state$.value as T;
     }
 
     const entry = this.layers.get(id as Id<Layer>);
@@ -505,7 +509,7 @@ export class LayerService extends BaseService {
    */
   layer$<T extends AnyLayer>(id: Id<T>): Observable<T> {
     if (isBackgroundLayerId(id)) {
-      return this.background.state$.asObservable() as Observable<T>;
+      return this._background.state$.asObservable() as Observable<T>;
     }
     const entry = this.layers.get(id as Id<Layer>);
     if (entry === undefined) {
@@ -777,7 +781,7 @@ export class LayerService extends BaseService {
   ): void {
     // Find the layer's entry.
     const entry = isBackgroundLayerId(id)
-      ? { ...this.background, definition: BACKGROUND_LAYER }
+      ? { ...this._background, definition: BACKGROUND_LAYER }
       : this.layers.get(id as Id<Layer>);
     if (entry === undefined) {
       throw new Error(`Unknown layer: ${id}`);
@@ -896,7 +900,7 @@ export class LayerService extends BaseService {
 
   controller<T extends AnyLayer>(id: Id<T>): BaseLayerController<T> | null {
     if (isBackgroundLayerId(id)) {
-      return this.background.controller as unknown as BaseLayerController<T>;
+      return this._background.controller as unknown as BaseLayerController<T>;
     }
     return (this.layers.get(id as Id<Layer>)?.controller ??
       null) as BaseLayerController<T> | null;
