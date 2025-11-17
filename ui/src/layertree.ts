@@ -1356,6 +1356,7 @@ const group_01: LayerTreeNode =
             label: t('lyr_consolidated_rocks_label'),
             children: [
               {
+                // TOMM
                 type: LayerType.tiles3d,
                 ogc: { id: 10486 },
                 label: t('lyr_top_omm_label'),
@@ -1369,8 +1370,9 @@ const group_01: LayerTreeNode =
                 previewColor: '#cad0c3',
               },
               {
+                // TUSM
                 type: LayerType.tiles3d,
-                assetId: 267961,
+                assetId: 3955284,
                 ogc: { id: 10487 },
                 label: t('lyr_top_usm_label'),
                 layer: 'top_usm',
@@ -1384,8 +1386,9 @@ const group_01: LayerTreeNode =
                 previewColor: '#cdd0d0',
               },
               {
+                // TUMM
                 type: LayerType.tiles3d,
-                assetId: 267966,
+                assetId: 3955372,
                 ogc: { id: 10485 },
                 label: t('lyr_top_umm_label'),
                 layer: 'top_umm',
@@ -1399,7 +1402,7 @@ const group_01: LayerTreeNode =
               },
               {
                 type: LayerType.tiles3d,
-                assetId: 267954,
+                assetId: 3955446,
                 ogc: { id: 10489 },
                 label: t('lyr_base_cenozoic_label'),
                 layer: 'base_cenozoic',
