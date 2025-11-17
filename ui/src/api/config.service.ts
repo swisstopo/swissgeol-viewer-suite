@@ -8,15 +8,15 @@ export class ConfigService {
     this.apiUrl = API_BY_PAGE_HOST[window.location.host];
   }
 
-  async getConfig(): Promise<ClientConfig | null> {
-    try {
-      const response = await fetch(`${this.apiUrl}/client-config`, {
-        method: 'GET',
-      });
-      return (await response.json()) as ClientConfig;
-    } catch (e) {
-      console.error(`Failed to update project: ${e}`);
-      return null;
+  async getConfig(): Promise<ClientConfig> {
+    const response = await fetch(`${this.apiUrl}/client-config`, {
+      method: 'GET',
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch client-config: [HTTP ${response.status}] ${await response.text()}`,
+      );
     }
+    return (await response.json()) as ClientConfig;
   }
 }

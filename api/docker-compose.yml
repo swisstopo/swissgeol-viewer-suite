@@ -7,6 +7,8 @@ services:
     init: true
     ports:
       - "8480:3000"
+    environment:
+      PGHOST: db
     volumes:
       - ./:/app
       - ../layers/:/configs/layers/:ro

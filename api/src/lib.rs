@@ -15,7 +15,7 @@ use sqlx::PgPool;
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, set_header::SetResponseHeaderLayer, trace::TraceLayer};
 
-pub use config::Config;
+pub use config::{ClientConfig, Config};
 pub use error::Error;
 
 mod auth;

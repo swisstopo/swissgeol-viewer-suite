@@ -1,4 +1,4 @@
-import { BaseLayerController } from 'src/features/layer/new/controller/layer.controller';
+import { BaseLayerController } from 'src/features/layer/new/controllers/layer.controller';
 import { WmtsLayer, WmtsLayerSource, LayerType } from 'src/features/layer';
 import {
   Credit,

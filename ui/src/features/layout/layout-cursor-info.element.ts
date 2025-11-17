@@ -1,5 +1,5 @@
 import { CoreElement } from 'src/features/core';
-import { ContextConsumer } from '@lit/context';
+import { consume, ContextConsumer } from '@lit/context';
 import { viewerContext } from 'src/context';
 import {
   Cartographic,
@@ -12,6 +12,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { formatCartographicAs2DLv95 } from 'src/projection';
 import i18next from 'i18next';
 import { applyTypography } from 'src/styles/theme';
+import { PickService } from 'src/services/pick.service';
 
 @customElement('ngm-layout-cursor-info')
 export class LayoutCursorInfo extends CoreElement {
@@ -26,6 +27,9 @@ export class LayoutCursorInfo extends CoreElement {
 
   @state()
   accessor heightType: 'terrain' | 'object' = 'object';
+
+  @consume({ context: PickService.context() })
+  accessor pickService!: PickService;
 
   private static readonly HEIGHT_FORMAT = new Intl.NumberFormat('de-CH', {
     maximumFractionDigits: 1,
@@ -62,7 +66,9 @@ export class LayoutCursorInfo extends CoreElement {
       this.handleMouseMove,
       ScreenSpaceEventType.MOUSE_MOVE,
     );
-    this.register(() => eventHandler.destroy());
+    this.register(() => {
+      eventHandler.destroy();
+    });
   }
 
   private readonly handleMouseMove = (
@@ -76,7 +82,7 @@ export class LayoutCursorInfo extends CoreElement {
     this.height = null;
     this.coordinates.length = 0;
 
-    const cartesian = viewer.scene.pickPosition(event.endPosition);
+    const cartesian = this.pickService.pick(event.endPosition);
     if (cartesian == null) {
       return;
     }

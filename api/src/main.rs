@@ -41,12 +41,16 @@ async fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
+    let client_config = api::ClientConfig::parse();
+
     // Set up a database connection pool & run any pending migrations
     let pool = config.database.setup().await;
 
     // Build our application
     let app = api::app(pool).await;
-    let app = app.layer(Extension(Arc::new(layers)));
+    let app = app
+        .layer(Extension(Arc::new(layers)))
+        .layer(Extension(Arc::new(client_config)));
 
     // run our app with hyper
     let address = SocketAddr::from(([0, 0, 0, 0], config.app_port));

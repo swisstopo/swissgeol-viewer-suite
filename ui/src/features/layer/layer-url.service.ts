@@ -3,7 +3,14 @@ import {
   LayerService,
   LayerUpdate,
 } from 'src/features/layer/new/layer.service';
-import { combineLatest, debounceTime, identity, map, switchMap } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  identity,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 import { Layer, LayerType, WmtsLayer } from 'src/features/layer/models';
 import { Id } from 'src/models/id.model';
 
@@ -13,7 +20,7 @@ export class LayerUrlService extends BaseService {
   constructor() {
     super();
 
-    LayerService.inject().subscribe((layerService) => {
+    LayerService.inject$().subscribe((layerService) => {
       this.layerService = layerService;
       this.initialize();
     });
@@ -26,9 +33,12 @@ export class LayerUrlService extends BaseService {
 
     this.layerService.activeLayerIds$
       .pipe(
-        switchMap((ids) =>
-          combineLatest(ids.map((id) => this.layerService.layer$(id))),
-        ),
+        switchMap((ids) => {
+          if (ids.length === 0) {
+            return of([]);
+          }
+          return combineLatest(ids.map((id) => this.layerService.layer$(id)));
+        }),
         debounceTime(250),
         map(this.makeParams),
       )
