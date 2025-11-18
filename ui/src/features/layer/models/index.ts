@@ -1,5 +1,6 @@
 export * from './layer.model';
 export * from './layer-background.model';
+export * from './layer-earthquakes.model';
 export * from './layer-group.model';
 export * from './layer-kml.model';
 export * from './layer-wmts.model';

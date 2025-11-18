@@ -1,6 +1,11 @@
 import type { Id } from 'src/models/id.model';
 import type { Model } from 'src/models/model.model';
-import type { BackgroundLayer, TiffLayer, WmtsLayer } from 'src/features/layer';
+import type {
+  BackgroundLayer,
+  EarthquakesLayer,
+  TiffLayer,
+  WmtsLayer,
+} from 'src/features/layer';
 import { Tiles3dLayer } from 'src/features/layer/models/layer-tiles3d.model';
 import { VoxelLayer } from 'src/features/layer/models/layer-voxel.model';
 import { TranslatedString } from 'src/models/translated-string.model';
@@ -16,7 +21,8 @@ export type Layer =
   | Tiles3dLayer
   | VoxelLayer
   | TiffLayer
-  | KmlLayer;
+  | KmlLayer
+  | EarthquakesLayer;
 
 export type AnyLayer = Layer | BackgroundLayer;
 
@@ -97,6 +103,7 @@ export enum LayerType {
   Voxel = 'Voxel',
   Tiff = 'Tiff',
   Kml = 'Kml',
+  Earthquakes = 'Earthquakes',
 }
 
 export const getLayerLabel = (layer: AnyLayer): string =>

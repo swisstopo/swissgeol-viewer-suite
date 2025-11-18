@@ -39,7 +39,6 @@ export class KmlLayerController extends BaseLayerController<KmlLayer> {
   updateExaggeration(exaggeration: number): void {
     this.dataSource.entities.suspendEvents();
     const exaggerationScale = exaggeration / this.currentExaggeration;
-    console.log({ exaggerationScale });
     this.dataSource.entities.values.forEach((ent) => {
       if (ent.position) {
         const position = ent.position.getValue(JulianDate.now());

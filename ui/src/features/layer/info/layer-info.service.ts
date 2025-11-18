@@ -24,6 +24,7 @@ import DrawStore from 'src/store/draw';
 import { Id } from 'src/models/id.model';
 import { run, tick } from 'src/utils/fn.utils';
 import { PickService } from 'src/services/pick.service';
+import { LayerInfoPickerForEarthquakes } from 'src/features/layer/info/pickers/layer-info-picker-for-earthquakes';
 
 export class LayerInfoService extends BaseService {
   private layerService!: NewLayerService;
@@ -108,9 +109,6 @@ export class LayerInfoService extends BaseService {
 
   private readonly handleLayerActivated = (layerId: Id<Layer>): void => {
     const controller = this.layerService.controller(layerId)!;
-    if (controller.type === LayerType.Kml) {
-      return;
-    }
     const picker = run(() => {
       switch (controller.type) {
         case LayerType.Wmts:
@@ -121,8 +119,15 @@ export class LayerInfoService extends BaseService {
           return new LayerInfoPickerForVoxels(controller, this.viewer);
         case LayerType.Tiff:
           return new LayerInfoPickerForTiff(controller, this.viewer);
+        case LayerType.Earthquakes:
+          return new LayerInfoPickerForEarthquakes(controller, this.viewer);
+        default:
+          return null;
       }
     });
+    if (picker === null) {
+      return;
+    }
 
     this.pickers.push(picker);
     this.layerService.layerDeactivated$
@@ -183,6 +188,7 @@ export class LayerInfoService extends BaseService {
       // If there is no next pick queued up, we can display the results.
       this.infosSubject.next(infos);
       this.viewer.canvas.style.cursor = 'default';
+      console.log('rerender!');
       this.viewer.scene.requestRender();
     } else {
       // If there is already a new pick queued, we simply destroy our results.

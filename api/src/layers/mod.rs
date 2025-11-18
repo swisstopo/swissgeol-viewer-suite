@@ -5,6 +5,9 @@ use serde::{Deserialize, Serialize};
 mod config;
 pub use config::LayerConfig;
 
+mod earthquakes;
+pub use earthquakes::EarthquakesLayer;
+
 mod group;
 pub use group::*;
 
@@ -94,15 +97,15 @@ pub enum LayerDetail {
     Tiles3d(Tiles3dLayer),
     Voxel(VoxelLayer),
     Tiff(TiffLayer),
+    Earthquakes(EarthquakesLayer),
 }
 
 impl Parse for Layer {
     fn parse(mut self, context: &mut ParseContext) -> anyhow::Result<Self> {
         self.detail = match self.detail {
-            detail @ LayerDetail::Wmts(_) => detail,
-            detail @ LayerDetail::Tiles3d(_) => detail,
             LayerDetail::Voxel(detail) => LayerDetail::Voxel(detail.parse(context)?),
             LayerDetail::Tiff(detail) => LayerDetail::Tiff(detail.parse(context)?),
+            detail @ _ => detail,
         };
         Ok(self)
     }
