@@ -256,6 +256,8 @@ const voxelFilter: VoxelFilter = {
   conductivityDataName: 'logk',
 };
 
+// @ts-expect-error unused variable
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const temperaturVoxelColors: VoxelColors = {
   label: t('Temperature'),
   range: [10, 300],
@@ -1034,24 +1036,26 @@ const group_01: LayerTreeNode =
             // Sub-Group II "Unconsolidated rocks"
             label: t('lyr_unconsolidated_rocks_label'),
             children: [
+              // Layer "NEW Voxel-Aaretal - Modelling units"
               {
-                // Layer "Voxel-Aaretal"
                 type: LayerType.voxels3dtiles,
-                url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-Aaretal-Combined/tileset.json',
+                assetId: 3882886,
                 voxelDataName: 'Index',
                 voxelColors: aaretalIndexVoxelColors,
                 voxelFilter: aaretalVoxelFilter,
-                label: t('lyr_voxel_aaretal_litho_label'),
-                layer: 'voxel_aaretal_litho',
+                label: t('lyr_voxel_aaretal_mod-units_label'),
+                layer: 'voxel_aaretal_mod-units',
                 opacityDisabled: true,
                 pickable: true,
                 downloadUrl:
                   DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
                 geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
               },
+
+              // Layer "NEW Voxel-Aaretal - LogK"
               {
                 type: LayerType.voxels3dtiles,
-                url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-Aaretal-Combined/tileset.json',
+                assetId: 3882886,
                 voxelDataName: 'logk',
                 voxelColors: logkVoxelColors,
                 voxelFilter: aaretalVoxelFilter,
@@ -1061,25 +1065,29 @@ const group_01: LayerTreeNode =
                 pickable: true,
                 downloadUrl:
                   DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Aaretal-Legende.pdf',
-                geocatId: '9471ee1b-5811-489d-b050-612c011f9d57',
+                geocatId: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
               },
+
+              // Layer "NEW Voxel-Birr - Modelling units"
               {
                 type: LayerType.voxels3dtiles,
-                url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-BIRR-Combined/tileset.json',
+                assetId: 4070346,
                 voxelDataName: 'Index',
                 voxelColors: birrIndexVoxelColors,
                 voxelFilter: birrIndexVoxelFilter,
-                label: t('lyr_voxel_birrfeld_litho_label'),
-                layer: 'voxel_birrfeld_litho',
+                label: t('lyr_voxel_birrfeld_mod-units_label'),
+                layer: 'voxel_aaretal_mod-units',
                 opacityDisabled: true,
                 pickable: true,
                 downloadUrl:
                   DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
                 geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
               },
+
+              // Layer "NEW Voxel-Birr - LogK"
               {
                 type: LayerType.voxels3dtiles,
-                url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-BIRR-Combined/tileset.json',
+                assetId: 4070346,
                 voxelDataName: 'logk',
                 voxelColors: logkVoxelColors,
                 voxelFilter: birrIndexVoxelFilter,
@@ -1089,25 +1097,29 @@ const group_01: LayerTreeNode =
                 pickable: true,
                 downloadUrl:
                   DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Birrfeld-Legende.pdf',
-                geocatId: '96f923d6-a747-481b-a0d8-2cfec321170e',
+                geocatId: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
               },
+
+              // Layer "NEW Voxel-Genf - Modelling units"
               {
                 type: LayerType.voxels3dtiles,
-                url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-GENF-Combined/tileset.json',
+                assetId: 4070290,
                 voxelDataName: 'Index',
                 voxelColors: genevaIndexVoxelColors,
                 voxelFilter: genevaIndexVoxelFilter,
-                label: t('lyr_voxel_geneva_litho_label'),
-                layer: 'voxel_geneva_litho',
+                label: t('lyr_voxel_geneva_mod-units_label'),
+                layer: 'voxel_geneva_mod-units',
                 opacityDisabled: true,
                 pickable: true,
                 downloadUrl:
                   DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
-                geocatId: '697f4c99-ed1b-4901-bc87-3710fcce1352',
+                geocatId: '4a4a530f-6a2a-423d-834e-2831d70fde20',
               },
+
+              // Layer "NEW Voxel-Genf - LogK"
               {
                 type: LayerType.voxels3dtiles,
-                url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-GENF-Combined/tileset.json',
+                assetId: 4070290,
                 voxelDataName: 'logk',
                 voxelColors: logkVoxelColors,
                 voxelFilter: genevaIndexVoxelFilter,
@@ -1119,35 +1131,43 @@ const group_01: LayerTreeNode =
                   DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
                 geocatId: '4a4a530f-6a2a-423d-834e-2831d70fde20',
               },
+
+              // Layer "NEW Voxel-St.Galler-Rheintal"
               {
                 type: LayerType.voxels3dtiles,
-                url: 'https://download.swissgeol.ch/testvoxel/test20250113_KTSGRhein/2025-03-21/output/tileset.json',
+                assetId: 4071931,
                 voxelDataName: 'Klasse',
                 voxelColors: rheintalVoxelColors,
                 voxelFilter: rheintalVoxelFilter,
                 label: t('lyr_voxel_rheintal_klasse_label'),
-                layer: 'voxel_rheintal_klasse',
+                layer: 'voxel_rheintal',
                 opacityDisabled: true,
                 pickable: true,
+                // downloadUrl:
+                //  DOWNLOAD_ROOT_VOXEL + 'legends/Vox-GVA-Legende.pdf',
                 geocatId: 'c12c8e4e-4c06-41c9-b705-f1dadb0654ae-8371',
               },
+
+              // Layer "NEW Voxel-Visp - Modelling units"
               {
                 type: LayerType.voxels3dtiles,
-                url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-VISP-Combined/tileset.json',
+                assetId: 4069970,
                 voxelDataName: 'Index',
                 voxelColors: vispIndexVoxelColors,
                 voxelFilter: vispIndexVoxelFilter,
-                label: t('lyr_voxel_visp_litho_label'),
-                layer: 'voxel_visp_litho',
+                label: t('lyr_voxel_visp_mod-units_label'),
+                layer: 'voxel_visp_mod-units',
                 opacityDisabled: true,
                 pickable: true,
                 downloadUrl:
                   DOWNLOAD_ROOT_VOXEL + 'legends/Vox-Visp-Legende.pdf',
-                geocatId: 'b621de46-2553-4fb2-88b4-f770e0243299',
+                geocatId: 'f7847c2c-bd3a-4dda-99c7-d50453b24c3d',
               },
+
+              // Layer "NEW Voxel-Visp - LogK"
               {
                 type: LayerType.voxels3dtiles,
-                url: 'https://download.swissgeol.ch/testvoxel/20240415/Voxel-VISP-Combined/tileset.json',
+                assetId: 4069970,
                 voxelDataName: 'logk',
                 voxelColors: logkVoxelColors,
                 voxelFilter: vispIndexVoxelFilter,
@@ -2227,18 +2247,18 @@ const group_04: LayerTreeNode =
             legend: 'ch.swisstopo.geologie-geomol-temperaturverteilung_4000'
           },
           */
-          {
-            // Layer "Temperature model GeoMol"
-            type: LayerType.voxels3dtiles,
-            url: 'https://download.swissgeol.ch/testvoxel/20240617/Voxel-Temperaturmodell-GeoMol15/tileset.json',
-            voxelDataName: 'Temp_C',
-            voxelColors: temperaturVoxelColors,
-            label: t('lyr_temperature_model_label'),
-            layer: 'temperature_model',
-            opacityDisabled: true,
-            pickable: true,
-            geocatId: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
-          },
+          // {
+          //   // Layer "Temperature model GeoMol"
+          //   type: LayerType.voxels3dtiles,
+          //   url: 'https://download.swissgeol.ch/testvoxel/20240617/Voxel-Temperaturmodell-GeoMol15/tileset.json',
+          //   voxelDataName: 'Temp_C',
+          //   voxelColors: temperaturVoxelColors,
+          //   label: t('lyr_temperature_model_label'),
+          //   layer: 'temperature_model',
+          //   opacityDisabled: true,
+          //   pickable: true,
+          //   geocatId: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
+          // },
           {
             // Layer "Isotherm 60"
             type: LayerType.tiles3d,
