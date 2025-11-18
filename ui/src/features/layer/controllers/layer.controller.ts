@@ -8,11 +8,11 @@ import {
 import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
 import { Tiles3dLayerController } from 'src/features/layer/controllers/layer-tiles3d.controller';
 import S3Resource from 'src/cesium/S3Resource';
-import MainStore from 'src/store/main';
 import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
 import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.controller';
 import { KmlLayerController } from 'src/features/layer/controllers/layer-kml.controller';
 import { EarthquakesLayerController } from 'src/features/layer/controllers/layer-earthquakes.controller';
+import { CesiumService } from 'src/services/cesium.service';
 
 export type LayerController =
   | WmtsLayerController
@@ -162,7 +162,7 @@ export abstract class BaseLayerController<T extends BaseLayer> {
     if (this.isInitialized) {
       return;
     }
-    this._viewer = MainStore.viewerValue!;
+    this._viewer = CesiumService.get().viewerOrNull!;
     if (this._viewer === null) {
       throw new Error("Can't add controller before viewer initialization.");
     }

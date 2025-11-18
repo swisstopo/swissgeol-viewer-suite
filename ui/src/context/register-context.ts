@@ -17,14 +17,15 @@ import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
 import { SessionService } from 'src/features/session/session.service';
 import {
-  LayerService,
   LayerApiService,
+  LayerService,
   LayerUrlService,
 } from 'src/features/layer';
 import { OgcService } from 'src/features/ogc';
 import { WmtsService } from 'src/services/wmts.service';
 import { PickService } from 'src/services/pick.service';
 import { IonService } from 'src/services/ion.service';
+import { CesiumService } from 'src/services/cesium.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -51,6 +52,7 @@ export const registerAppContext = (
   );
 
   contexts.push(
+    makeProvider(CesiumService),
     makeProvider(ApiClient),
     makeProvider(WmtsService),
     makeProvider(OgcService),

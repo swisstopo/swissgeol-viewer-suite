@@ -6,8 +6,8 @@ import {
   Viewer,
 } from 'cesium';
 import { BaseService } from 'src/utils/base.service';
-import MainStore from 'src/store/main';
 import { filter, Observable, OperatorFunction, Subject } from 'rxjs';
+import { CesiumService } from 'src/services/cesium.service';
 
 export class GestureControlsService extends BaseService {
   private readonly mouseMoveSubject = new Subject<MoveGestureEvent>();
@@ -23,10 +23,8 @@ export class GestureControlsService extends BaseService {
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
 
-    MainStore.viewer.subscribe((viewer) => {
-      if (viewer !== null) {
-        this.subscribeToViewer(viewer);
-      }
+    CesiumService.inject().then((cesiumService) => {
+      this.subscribeToViewer(cesiumService.viewer);
     });
   }
 

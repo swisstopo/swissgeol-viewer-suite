@@ -1,21 +1,15 @@
 import { customElement, state } from 'lit/decorators.js';
 import { css, html } from 'lit';
-import { Viewer } from 'cesium';
 import { classMap } from 'lit/directives/class-map.js';
 import i18next from 'i18next';
 import { applyTypography, hostStyles } from 'src/styles/theme';
 import { CoreElement } from 'src/features/core';
-import { viewerContext } from 'src/context';
-import { consume } from '@lit/context';
 import { choose } from 'lit/directives/choose.js';
 
 @customElement('ngm-catalog-tabs')
 export class CatalogTabs extends CoreElement {
   @state()
   private accessor activeTab: Tab = Tab.Catalog;
-
-  @consume({ context: viewerContext })
-  accessor viewer!: Viewer;
 
   readonly render = () => html`
     <div class="tabs">

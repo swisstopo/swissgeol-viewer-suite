@@ -8,7 +8,6 @@ import {
 } from 'cesium';
 import { BehaviorSubject, filter, Observable, take } from 'rxjs';
 import { BaseService } from 'src/utils/base.service';
-import MainStore from 'src/store/main';
 import { Layer, LayerType } from 'src/features/layer';
 import {
   LayerInfoPicker,
@@ -25,6 +24,7 @@ import { Id } from 'src/models/id.model';
 import { run, tick } from 'src/utils/fn.utils';
 import { PickService } from 'src/services/pick.service';
 import { LayerInfoPickerForEarthquakes } from 'src/features/layer/info/pickers/layer-info-picker-for-earthquakes';
+import { CesiumService } from 'src/services/cesium.service';
 
 export class LayerInfoService extends BaseService {
   private layerService!: NewLayerService;
@@ -53,13 +53,10 @@ export class LayerInfoService extends BaseService {
       layerService.layerActivated$.subscribe(this.handleLayerActivated);
     });
 
-    MainStore.viewer.subscribe((viewer) => {
-      if (viewer === null) {
-        return;
-      }
-      this.viewer = viewer;
+    CesiumService.inject().then((cesiumService) => {
+      this.viewer = cesiumService.viewer;
 
-      const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
+      const eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
       eventHandler.setInputAction(
         async (event: ScreenSpaceEventHandler.PositionedEvent) => {
           if (DrawStore.drawStateValue) {

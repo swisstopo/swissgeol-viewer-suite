@@ -7,7 +7,7 @@ import {
   Viewer,
 } from 'cesium';
 import { BaseService } from 'src/utils/base.service';
-import MainStore from 'src/store/main';
+import { CesiumService } from 'src/services/cesium.service';
 
 export class PickService extends BaseService {
   private viewer: Viewer | null = null;
@@ -16,8 +16,9 @@ export class PickService extends BaseService {
 
   constructor() {
     super();
-    MainStore.viewer.subscribe(async (viewer) => {
-      this.viewer = viewer;
+
+    CesiumService.inject().then((cesiumService) => {
+      this.viewer = cesiumService.viewer;
     });
   }
 

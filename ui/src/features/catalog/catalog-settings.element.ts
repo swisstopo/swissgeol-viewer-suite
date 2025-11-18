@@ -1,5 +1,4 @@
 import { customElement, state } from 'lit/decorators.js';
-import { Viewer } from 'cesium';
 import { css, html } from 'lit';
 import i18next from 'i18next';
 import { debounce } from 'src/utils';
@@ -7,16 +6,13 @@ import { setExaggeration } from 'src/permalink';
 import NavToolsStore from 'src/store/navTools';
 import '../core';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
-import { viewerContext } from 'src/context';
 import { consume } from '@lit/context';
 import { CoreElement, tooltip } from 'src/features/core';
 import { LayerService } from 'src/features/layer';
+import { CesiumService } from 'src/services/cesium.service';
 
 @customElement('ngm-catalog-settings')
 export class LayerOptions extends CoreElement {
-  @consume({ context: viewerContext })
-  accessor viewer!: Viewer;
-
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
 
@@ -26,40 +22,44 @@ export class LayerOptions extends CoreElement {
   @state()
   private accessor isExaggerationHidden = false;
 
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
   connectedCallback() {
     super.connectedCallback();
 
-    this.exaggeration = this.viewer?.scene.verticalExaggeration ?? 1;
+    const { viewer } = this.cesiumService;
+    this.exaggeration = viewer.scene.verticalExaggeration ?? 1;
   }
 
   private toggleExaggerationVisibility() {
+    const { viewer } = this.cesiumService;
     this.isExaggerationHidden = !this.isExaggerationHidden;
     const exaggeration = this.isExaggerationHidden ? 1 : this.exaggeration;
-    this.viewer.scene.verticalExaggeration = exaggeration;
+    viewer.scene.verticalExaggeration = exaggeration;
     this.layerService.controllers.forEach((controller) =>
       controller.updateExaggeration(exaggeration),
     );
     NavToolsStore.exaggerationChanged.next(exaggeration);
-    this.viewer.scene.requestRender();
+    viewer.scene.requestRender();
   }
 
   private updateExaggeration(event: SliderChangeEvent) {
-    if (this.viewer == null) {
-      return;
-    }
+    const { viewer } = this.cesiumService;
     this.isExaggerationHidden = false;
     this.exaggeration = event.detail.value;
-    this.viewer.scene.verticalExaggeration = this.exaggeration;
+    viewer.scene.verticalExaggeration = this.exaggeration;
 
     // workaround for billboards positioning
-    setTimeout(() => this.viewer!.scene.requestRender(), 500);
+    setTimeout(() => viewer.scene.requestRender(), 500);
     setExaggeration(this.exaggeration);
     NavToolsStore.exaggerationChanged.next(this.exaggeration);
   }
 
   private propagateExaggerationChange() {
+    const { viewer } = this.cesiumService;
     this.layerService.controllers.forEach((controller) =>
-      controller.updateExaggeration(this.viewer.scene.verticalExaggeration),
+      controller.updateExaggeration(viewer.scene.verticalExaggeration),
     );
   }
 

@@ -2,9 +2,8 @@ import { LitElementI18n } from '../i18n';
 import { customElement, query, state } from 'lit/decorators.js';
 import { html } from 'lit';
 import draggable from '../elements/draggable';
-import type { CustomDataSource, Entity, Viewer } from 'cesium';
+import type { CustomDataSource, Entity } from 'cesium';
 import { Cartographic } from 'cesium';
-import MainStore from '../store/main';
 import {
   GEOMETRY_DATASOURCE_NAME,
   NO_EDIT_GEOMETRY_DATASOURCE_NAME,
@@ -23,6 +22,8 @@ import './ngm-geometry-edit';
 import { styleMap } from 'lit/directives/style-map.js';
 import { showSnackbarInfo } from '../notifications';
 import { dragArea } from '../elements/helperElements';
+import { CesiumService } from 'src/services/cesium.service';
+import { consume } from '@lit/context';
 
 @customElement('ngm-geometry-info')
 export class NgmGeometryInfo extends LitElementI18n {
@@ -38,15 +39,18 @@ export class NgmGeometryInfo extends LitElementI18n {
   accessor sliceActive = false;
   @query('.ngm-geom-info-body')
   accessor infoBodyElement;
-  private viewer: Viewer | null = null;
+
   private geometriesDataSource: CustomDataSource | undefined;
+
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
 
   constructor() {
     super();
-    MainStore.viewer.subscribe((viewer) => (this.viewer = viewer));
     ToolboxStore.openedGeometryOptions.subscribe((options) => {
+      const { viewer } = this.cesiumService;
       this.noEdit = false;
-      this.geometriesDataSource = this.viewer?.dataSources.getByName(
+      this.geometriesDataSource = viewer.dataSources.getByName(
         GEOMETRY_DATASOURCE_NAME,
       )[0];
       if (!options?.id) {
@@ -56,7 +60,7 @@ export class NgmGeometryInfo extends LitElementI18n {
       }
       let entity = this.geometriesDataSource?.entities.getById(options.id);
       if (!entity) {
-        this.geometriesDataSource = this.viewer?.dataSources.getByName(
+        this.geometriesDataSource = viewer.dataSources.getByName(
           NO_EDIT_GEOMETRY_DATASOURCE_NAME,
         )[0];
         entity = this.geometriesDataSource?.entities.getById(options.id);
@@ -91,7 +95,10 @@ export class NgmGeometryInfo extends LitElementI18n {
     if (geom.volumeShowed) {
       hideVolume(this.geomEntity!);
     } else {
-      updateEntityVolume(this.geomEntity!, this.viewer!.scene.globe);
+      updateEntityVolume(
+        this.geomEntity!,
+        this.cesiumService.viewer.scene.globe,
+      );
     }
     this.requestUpdate();
   }

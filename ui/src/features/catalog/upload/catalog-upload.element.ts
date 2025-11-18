@@ -2,13 +2,11 @@ import { customElement } from 'lit/decorators.js';
 import { css, html, unsafeCSS } from 'lit';
 import i18next from 'i18next';
 import type { KmlUploadEvent } from './catalog-upload-kml.element';
-import { Viewer } from 'cesium';
 import fomanticButtonCss from 'fomantic-ui-css/components/button.css?raw';
 import fomanticLoaderCss from 'fomantic-ui-css/components/loader.css?raw';
 import { CoreElement, CoreModal } from 'src/features/core';
 import { LayerService } from 'src/features/layer/layer.service';
 import { consume } from '@lit/context';
-import { viewerContext } from 'src/context';
 import { KmlLayer, LayerType } from 'src/features/layer';
 import { makeId } from 'src/models/id.model';
 
@@ -16,9 +14,6 @@ import { makeId } from 'src/models/id.model';
 export class CatalogUpload extends CoreElement {
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
-
-  @consume({ context: viewerContext })
-  accessor viewer!: Viewer;
 
   private modal: CoreModal | null = null;
 

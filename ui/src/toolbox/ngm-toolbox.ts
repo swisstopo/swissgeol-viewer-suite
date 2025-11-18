@@ -8,7 +8,7 @@ import './ngm-draw-section';
 import './ngm-profile-tool';
 import './ngm-measure';
 import i18next from 'i18next';
-import type { DataSource, Viewer } from 'cesium';
+import type { DataSource } from 'cesium';
 import { CustomDataSource, JulianDate } from 'cesium';
 import {
   DEFAULT_AOI_COLOR,
@@ -33,7 +33,7 @@ import { pairwise } from 'rxjs';
 import { consume } from '@lit/context';
 import { ApiClient } from '../api/api-client';
 import { CoreElement } from 'src/features/core';
-import { viewerContext } from 'src/context';
+import { CesiumService } from 'src/services/cesium.service';
 
 @customElement('ngm-tools')
 export class NgmToolbox extends CoreElement {
@@ -54,8 +54,8 @@ export class NgmToolbox extends CoreElement {
   @query('ngm-slicer')
   accessor slicerElement;
 
-  @consume({ context: viewerContext })
-  accessor viewer!: Viewer;
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
 
   geometriesDataSource: CustomDataSource = new CustomDataSource(
     GEOMETRY_DATASOURCE_NAME,
@@ -119,8 +119,10 @@ export class NgmToolbox extends CoreElement {
   connectedCallback() {
     super.connectedCallback();
 
-    this.viewer.dataSources.add(this.geometriesDataSource);
-    this.viewer.dataSources.add(this.noEditGeometriesDataSource);
+    const { viewer } = this.cesiumService;
+
+    viewer.dataSources.add(this.geometriesDataSource).then();
+    viewer.dataSources.add(this.noEditGeometriesDataSource).then();
 
     this.geometriesDataSource!.entities.collectionChanged.addEventListener(
       (_collection) => {
@@ -151,7 +153,7 @@ export class NgmToolbox extends CoreElement {
         ToolboxStore.setGeometries(
           this.entitiesList(this.geometriesDataSource),
         );
-        this.viewer!.scene.requestRender();
+        viewer.scene.requestRender();
         this.requestUpdate();
       },
     );
@@ -160,54 +162,47 @@ export class NgmToolbox extends CoreElement {
         ToolboxStore.setNoEditGeometries(
           this.entitiesList(this.noEditGeometriesDataSource),
         );
-        this.viewer!.scene.requestRender();
+        viewer.scene.requestRender();
         this.requestUpdate();
       },
     );
-    if (this.viewer) {
-      this.draw = new CesiumDraw(this.viewer, {
-        fillColor: DEFAULT_AOI_COLOR,
-      });
-      this.draw.active = false;
-      this.draw.addEventListener('statechanged', (evt) => {
-        DrawStore.setDrawState((<CustomEvent>evt).detail.active);
-        this.requestUpdate();
-        this.viewer!.scene.requestRender();
-      });
-      this.draw.addEventListener('leftdown', () => {
-        const volumeShowedProp = getValueOrUndefined(
-          this.draw!.entityForEdit!.properties!.volumeShowed,
-        );
-        const type = getValueOrUndefined(
-          this.draw!.entityForEdit!.properties!.type,
-        );
-        if (volumeShowedProp && type !== 'point') {
-          this.draw!.entityForEdit!.polylineVolume!.show = <any>false; // to avoid jumping when mouse over entity
-          if (type === 'line')
-            this.draw!.entityForEdit!.polyline!.show = <any>true;
-          else this.draw!.entityForEdit!.polygon!.show = <any>true;
-          this.viewer!.scene.requestRender();
-        }
-      });
-      this.draw.addEventListener('leftup', () => {
-        if (
-          getValueOrUndefined(this.draw!.entityForEdit!.properties!.type) ===
-          'point'
-        ) {
-          updateBoreholeHeights(this.draw!.entityForEdit!, this.julianDate);
-        } else if (
-          getValueOrUndefined(
-            this.draw!.entityForEdit!.properties!.volumeShowed,
-          )
-        ) {
-          updateEntityVolume(
-            this.draw!.entityForEdit!,
-            this.viewer!.scene.globe,
-          );
-        }
-      });
-      DrawStore.setDraw(this.draw);
-    }
+    this.draw = new CesiumDraw(viewer, {
+      fillColor: DEFAULT_AOI_COLOR,
+    });
+    this.draw.active = false;
+    this.draw.addEventListener('statechanged', (evt) => {
+      DrawStore.setDrawState((<CustomEvent>evt).detail.active);
+      this.requestUpdate();
+      viewer.scene.requestRender();
+    });
+    this.draw.addEventListener('leftdown', () => {
+      const volumeShowedProp = getValueOrUndefined(
+        this.draw!.entityForEdit!.properties!.volumeShowed,
+      );
+      const type = getValueOrUndefined(
+        this.draw!.entityForEdit!.properties!.type,
+      );
+      if (volumeShowedProp && type !== 'point') {
+        this.draw!.entityForEdit!.polylineVolume!.show = <any>false; // to avoid jumping when mouse over entity
+        if (type === 'line')
+          this.draw!.entityForEdit!.polyline!.show = <any>true;
+        else this.draw!.entityForEdit!.polygon!.show = <any>true;
+        viewer.scene.requestRender();
+      }
+    });
+    this.draw.addEventListener('leftup', () => {
+      if (
+        getValueOrUndefined(this.draw!.entityForEdit!.properties!.type) ===
+        'point'
+      ) {
+        updateBoreholeHeights(this.draw!.entityForEdit!, this.julianDate);
+      } else if (
+        getValueOrUndefined(this.draw!.entityForEdit!.properties!.volumeShowed)
+      ) {
+        updateEntityVolume(this.draw!.entityForEdit!, viewer.scene.globe);
+      }
+    });
+    DrawStore.setDraw(this.draw);
 
     this.geometryController = new GeometryController(
       this.geometriesDataSource,

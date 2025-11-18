@@ -46,14 +46,15 @@ import type { NgmSlowLoading } from './elements/ngm-slow-loading';
 import { Event, FrameRateMonitor, Globe, Viewer } from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
-import { clientConfigContext, viewerContext } from './context';
-import { consume, provide } from '@lit/context';
+import { clientConfigContext } from './context';
+import { consume } from '@lit/context';
 import { AppEnv, ClientConfig } from './api/client-config';
 import { CoreModal, CoreWindow } from 'src/features/core';
 import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
 import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { BaseService } from 'src/utils/base.service';
+import { CesiumService } from 'src/services/cesium.service';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -117,8 +118,8 @@ export class NgmApp extends LitElementI18n {
   @consume({ context: LayerInfoService.context() })
   accessor layerInfoService!: LayerInfoService;
 
-  @provide({ context: viewerContext })
-  accessor viewer: Viewer | null = null;
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
 
   constructor() {
     super();
@@ -247,13 +248,12 @@ export class NgmApp extends LitElementI18n {
     const viewer = await setupViewer(cesiumContainer, isLocalhost);
 
     if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
-      this.setResolutionScale();
+      this.setResolutionScale(viewer);
     }
 
     const l = (count: number) => {
       if (count === 0) {
-        this.viewer = viewer;
-        MainStore.setViewer(viewer);
+        this.cesiumService.initialize(viewer);
         viewer.scene.globe.tileLoadProgressEvent.removeEventListener(l);
       }
     };
@@ -378,9 +378,11 @@ export class NgmApp extends LitElementI18n {
     }
   }
 
-  setResolutionScale() {
-    if (!this.viewer) return;
-    const viewer = this.viewer;
+  setResolutionScale(viewer?: Viewer) {
+    viewer ??= this.cesiumService.viewerOrNull ?? undefined;
+    if (viewer === undefined) {
+      return;
+    }
     const frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
     const scaleDownFps = 20;
     const scaleUpFps = 30;
@@ -450,7 +452,7 @@ export class NgmApp extends LitElementI18n {
             <div class="logo-text visible-mobile">swissgeol</div>
           </a>
           <ngm-navigation-search
-            .viewer="${this.viewer}"
+            .viewer="${this.cesiumService.viewerOrNull}"
           ></ngm-navigation-search>
         </div>
         <ngm-layout-header-actions></ngm-layout-header-actions>
@@ -473,7 +475,8 @@ export class NgmApp extends LitElementI18n {
             >
           </div>
         </div>
-        ${this.viewer && html`<ngm-layout-sidebar></ngm-layout-sidebar>`}
+        ${this.cesiumService.viewerOrNull &&
+        html`<ngm-layout-sidebar></ngm-layout-sidebar>`}
         <div class="map" oncontextmenu="return false;">
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>
@@ -492,7 +495,7 @@ export class NgmApp extends LitElementI18n {
             <ngm-cam-configuration
               class="ngm-floating-window"
               .hidden=${!this.showCamConfig}
-              .viewer=${this.viewer}
+              .viewer=${this.cesiumService.viewer}
               @close=${() => (this.showCamConfig = false)}
             >
             </ngm-cam-configuration>

@@ -6,14 +6,14 @@ import { BBox, Feature, GeoJsonProperties } from 'geojson';
 import '@geoblocks/ga-search'; // <ga-search> component
 import {
   Cartographic,
-  Entity as CesiumEntity,
+  JulianDate,
   Math as CesiumMath,
   Rectangle,
   Viewer as CesiumViewer,
+  Entity,
 } from 'cesium';
 import { lv95ToDegrees } from 'src/projection';
 import { escapeRegExp } from 'src/utils';
-import { extractEntitiesAttributes } from 'src/query/objectInformation';
 import NavToolsStore from 'src/store/navTools';
 import { createRef, ref } from 'lit/directives/ref.js';
 import { clientConfigContext } from 'src/context';
@@ -182,7 +182,7 @@ export class NavigationSearch extends CoreElement {
     for (let i = 0, ii = dataSources.length; i < ii; i++) {
       const dataSource = dataSources.get(i);
       dataSource.entities.values.forEach((entity) => {
-        const attributes = extractEntitiesAttributes(entity);
+        const attributes = extractEntitiesAttributes(entity) as any;
         if (attributes && query.test(attributes.EventLocationName)) {
           results.push({
             entity: entity,
@@ -658,7 +658,7 @@ interface CoordinateItem {
 
 interface EntityItem {
   label: string;
-  entity: CesiumEntity;
+  entity: Entity;
   dataSourceName: string;
 }
 
@@ -731,4 +731,14 @@ const getIconForCategory = (category: SearchItemCategory): string => {
 };
 
 const isEntityItem = (item: SearchItem): item is EntityItem =>
-  'entity' in item && item.entity instanceof CesiumEntity;
+  'entity' in item && item.entity instanceof Entity;
+
+const extractEntitiesAttributes = (entity: Entity): object | null => {
+  if (!entity.properties) {
+    return null;
+  }
+  return {
+    id: entity.id,
+    ...entity.properties.getValue(JulianDate.fromDate(new Date())),
+  };
+};
