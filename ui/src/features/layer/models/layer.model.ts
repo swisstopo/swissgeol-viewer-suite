@@ -1,6 +1,6 @@
 import type { Id } from 'src/models/id.model';
 import type { Model } from 'src/models/model.model';
-import { BackgroundLayer, TiffLayer, WmtsLayer } from 'src/features/layer';
+import type { BackgroundLayer, TiffLayer, WmtsLayer } from 'src/features/layer';
 import { Tiles3dLayer } from 'src/features/layer/models/layer-tiles3d.model';
 import { VoxelLayer } from 'src/features/layer/models/layer-voxel.model';
 import { TranslatedString } from 'src/models/translated-string.model';
@@ -88,7 +88,7 @@ export interface BaseLayer extends Model {
    * Whether the layer is local-only, i.e. relies on the current browser or client.
    * If this is `true`, it indicates that the layer should not be shared via permalinks and the likes.
    */
-  isLocal?: boolean
+  isLocal?: boolean;
 }
 
 export enum LayerType {

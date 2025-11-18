@@ -1,6 +1,8 @@
 import { Given } from '@badeball/cypress-cucumber-preprocessor';
-import type { ClientConfig } from '../../../src/api/client-config';
 import type { Viewer } from 'cesium';
+
+//@ts-ignore
+import type { ClientConfig } from '../../../src/api/client-config';
 
 let cachedConfig: ClientConfig | null = null;
 

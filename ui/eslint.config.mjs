@@ -14,7 +14,7 @@ const compat = new FlatCompat({
 });
 
 const sharedConfig = {
-  ignores: ['node_modules/**', 'dist/**'],
+  ignores: ['node_modules/**', 'dist/**', 'src/layertree.ts'],
   languageOptions: {
     globals: globals.browser,
     ecmaVersion: 2018,
