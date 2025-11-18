@@ -139,6 +139,8 @@ export class LayerApiService extends BaseService {
           id: base.id as Id<TiffLayer>,
           type,
         } satisfies TiffLayer;
+      case LayerType.Kml:
+        throw new Error('The API does not expose any KML layers.');
     }
   }
 

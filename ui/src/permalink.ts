@@ -5,13 +5,10 @@ import { getURLSearchParams, parseJson, setURLSearchParams } from './utils';
 import {
   ASSET_IDS_URL_PARAM,
   EXAGGERATION_PARAM,
-  ION_TOKEN_URL_PARAM,
   LAYERS_TIMESTAMP_URL_PARAM,
   LAYERS_TRANSPARENCY_URL_PARAM,
   LAYERS_URL_PARAM,
   LAYERS_VISIBILITY_URL_PARAM,
-  MAP_TRANSPARENCY_URL_PARAM,
-  MAP_URL_PARAM,
   PROJECT_PARAM,
   SLICE_PARAM,
   TARGET_PARAM,
@@ -20,8 +17,6 @@ import {
   ZOOM_TO_PARAM,
 } from './constants';
 import type { ProjectParamSubject, TopicParamSubject } from './store/dashboard';
-
-import { LayerService } from 'src/features/layer';
 
 export type LayerFromParam = {
   layer: string;
@@ -111,104 +106,6 @@ export function getLayerParams(): LayerFromParam[] {
 export function getAssetIds() {
   const params = getURLSearchParams();
   return safeSplit(params.get(ASSET_IDS_URL_PARAM));
-}
-
-export function addAssetId(id: number) {
-  const params = getURLSearchParams();
-  const assetIds = safeSplit(params.get(ASSET_IDS_URL_PARAM));
-
-  if (assetIds.length) {
-    assetIds.push(id.toString());
-    params.set(ASSET_IDS_URL_PARAM, assetIds.join(','));
-  } else {
-    params.append(ASSET_IDS_URL_PARAM, id.toString());
-  }
-
-  setURLSearchParams(params);
-}
-
-export function getIonToken() {
-  const params = getURLSearchParams();
-  return params.get(ION_TOKEN_URL_PARAM);
-}
-
-export function setIonToken(token: string) {
-  const params = getURLSearchParams();
-  params.set(ION_TOKEN_URL_PARAM, token);
-  setURLSearchParams(params);
-}
-
-export function syncLayersParam(layerService: LayerService) {
-  const params = getURLSearchParams();
-  const layerNames: string[] = [];
-  const layersTransparency: string[] = [];
-  const layersTimestamps: string[] = [];
-  const layersVisibility: boolean[] = [];
-  layerService.activeLayers.forEach((l) => {
-    if (!l.customAsset && !(l as LayerConfig).notSaveToPermalink && l.layer) {
-      layerNames.push(l.layer);
-      const transparency = !l.opacity || isNaN(l.opacity) ? 0 : 1 - l.opacity;
-      layersTransparency.push(transparency.toFixed(2));
-      layersVisibility.push(!!l.visible);
-      layersTimestamps.push(l.wmtsCurrentTime ?? '');
-    }
-  });
-
-  if (layerNames.length) {
-    params.set(LAYERS_URL_PARAM, layerNames.join(','));
-    params.set(LAYERS_VISIBILITY_URL_PARAM, layersVisibility.join(','));
-    params.set(LAYERS_TRANSPARENCY_URL_PARAM, layersTransparency.join(','));
-    params.set(LAYERS_TIMESTAMP_URL_PARAM, layersTimestamps.join(','));
-  } else {
-    params.delete(LAYERS_URL_PARAM);
-    params.delete(LAYERS_TRANSPARENCY_URL_PARAM);
-    params.delete(LAYERS_VISIBILITY_URL_PARAM);
-    params.delete(LAYERS_TIMESTAMP_URL_PARAM);
-  }
-
-  const assetParams = getAssetIds();
-
-  if (assetParams.length) {
-    const assetIds = assetParams.filter((id) =>
-      layerService.activeLayers.find(
-        (l) => l.assetId === Number(id) && l.displayed,
-      ),
-    );
-    if (assetIds.length) {
-      params.set(ASSET_IDS_URL_PARAM, assetIds.join(','));
-    } else {
-      params.delete(ASSET_IDS_URL_PARAM);
-    }
-  }
-
-  setURLSearchParams(params);
-}
-
-export function isLabelOutlineEnabled() {
-  const params = getURLSearchParams();
-  return params.get('labelOutline') === 'true';
-}
-
-export function syncMapParam(layerName) {
-  const params = getURLSearchParams();
-  params.set(MAP_URL_PARAM, layerName);
-  setURLSearchParams(params);
-}
-
-export function getMapParam() {
-  const params = getURLSearchParams();
-  return params.get(MAP_URL_PARAM);
-}
-
-export function syncMapOpacityParam(opacity) {
-  const params = getURLSearchParams();
-  params.set(MAP_TRANSPARENCY_URL_PARAM, (1 - opacity).toFixed(2));
-  setURLSearchParams(params);
-}
-
-export function getMapOpacityParam() {
-  const params = getURLSearchParams();
-  return 1 - Number(params.get(MAP_TRANSPARENCY_URL_PARAM));
 }
 
 export function getZoomToPosition() {

@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
+    "composite": true,
     "module": "esnext",
     "target": "ES2020",
     "lib": ["es2022", "dom", "dom.iterable"],
     "declaration": true,
-    "outDir": "./types",
+    "outDir": "./dist/types",
     "rootDir": "./src",
     "strict": true,
     "strictNullChecks": true,
@@ -33,5 +34,10 @@
     "src/**/*.js",
     "node_modules/fomantic-ui-css/types/**/*.d.ts"
   ],
-  "exclude": ["src/test/**/*", "cypress/**/*", "src/elements/ngm-side-bar.ts", "src/layertree.ts"]
+  "exclude": [
+    "src/test/**/*",
+    "cypress/**/*",
+    "src/elements/ngm-side-bar.ts",
+    "src/layertree.ts"
+  ]
 }
