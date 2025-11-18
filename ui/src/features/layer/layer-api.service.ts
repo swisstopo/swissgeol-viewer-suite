@@ -3,6 +3,7 @@ import { BaseService } from 'src/utils/base.service';
 import { SessionService } from 'src/features/session';
 import {
   BaseLayer,
+  EarthquakesLayer,
   FilterOperator,
   getTranslationKeyForLayerAttributeName,
   Layer,
@@ -141,6 +142,13 @@ export class LayerApiService extends BaseService {
         } satisfies TiffLayer;
       case LayerType.Kml:
         throw new Error('The API does not expose any KML layers.');
+      case LayerType.Earthquakes:
+        return {
+          ...config.apply(this.mapConfigToEarthquakesLayer),
+          ...base,
+          id: base.id as Id<EarthquakesLayer>,
+          type,
+        } satisfies EarthquakesLayer;
     }
   }
 
@@ -252,6 +260,12 @@ export class LayerApiService extends BaseService {
             }) ?? null,
       }),
     ),
+  });
+
+  private readonly mapConfigToEarthquakesLayer = (
+    config: DynamicObject,
+  ): Specific<EarthquakesLayer> => ({
+    source: config.takeObject('source').apply(this.mapConfigToSource),
   });
 
   private readonly mapConfigToSource = (config: DynamicObject): LayerSource => {

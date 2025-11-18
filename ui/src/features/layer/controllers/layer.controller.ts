@@ -12,13 +12,15 @@ import MainStore from 'src/store/main';
 import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
 import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.controller';
 import { KmlLayerController } from 'src/features/layer/controllers/layer-kml.controller';
+import { EarthquakesLayerController } from 'src/features/layer/controllers/layer-earthquakes.controller';
 
 export type LayerController =
   | WmtsLayerController
   | Tiles3dLayerController
   | VoxelLayerController
   | TiffLayerController
-  | KmlLayerController;
+  | KmlLayerController
+  | EarthquakesLayerController;
 
 /**
  * A {@link LayerController} is responsible for managing how a {@link Layer} is displayed on the {@link Viewer}.

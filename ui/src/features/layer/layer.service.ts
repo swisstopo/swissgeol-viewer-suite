@@ -47,6 +47,7 @@ import { BackgroundLayerController } from 'src/features/layer/controllers/layer-
 import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
 import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.controller';
 import { KmlLayerController } from 'src/features/layer/controllers/layer-kml.controller';
+import { EarthquakesLayerController } from 'src/features/layer/controllers/layer-earthquakes.controller';
 
 export class LayerService extends BaseService {
   private viewer!: Viewer;
@@ -932,6 +933,8 @@ export class LayerService extends BaseService {
         return new TiffLayerController(layer);
       case LayerType.Kml:
         return new KmlLayerController(layer);
+      case LayerType.Earthquakes:
+        return new EarthquakesLayerController(layer);
     }
   }
 

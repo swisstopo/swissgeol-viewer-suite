@@ -4,7 +4,8 @@
 
 - cleanup translations
 - rename group ids
-- shared order_of_properties
+- shared order_of_properties / maybe for every layer?
+- custom properties (-> detailsUrl)?
 
 TODOs in Code
 
