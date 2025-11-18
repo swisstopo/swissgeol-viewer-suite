@@ -366,6 +366,8 @@
   "lyr_ch_swisstopo_geologie_bohrungen_tiefer_500_label": "Deep wells",
   "grp_1811_label": "Geophysics",
   "lyr_ch_swisstopo_geologie_reflexionsseismik_label": "Reflection seismic",
+  "seismic-from-ogc--line_01": "2D reflection seismic line I",
+  "seismic-from-ogc--line_02": "2D reflection seismic line II",
   "lyr_ch_swisstopo_geologie_gesteinsdichte_label": "Rock density",
   "lyr_ch_swisstopo_geologie_bodenunruhe_label": "Anthrop. seismic noise CH",
   "lyr_ch_swisstopo_geologie_dosisleistung_terrestrisch_label": "Terrestrial Radiation",

@@ -19,7 +19,7 @@ export class OgcService extends BaseService {
   }
 
   async isLayerSupported(layer: LayerTreeNode): Promise<boolean> {
-    return (await this.getInputForLayer(layer, [])) !== null;
+    return (await this.getInputForLayer(layer, [])).length !== 0;
   }
 
   async start(
@@ -34,9 +34,7 @@ export class OgcService extends BaseService {
         this.getInputForLayer(layer, shape, {
           shouldWarnIfNotAvailable: true,
         }).then((input) => {
-          if (input !== null) {
-            inputs.push(input);
-          }
+          inputs.push(...input);
         }),
       );
     }
@@ -192,7 +190,7 @@ export class OgcService extends BaseService {
     layer: LayerTreeNode,
     shape: Cartesian3[],
     options: { shouldWarnIfNotAvailable?: boolean } = {},
-  ): Promise<object | null> {
+  ): Promise<object[]> {
     const points = shape.map((position) => {
       const carto = Cartographic.fromCartesian(position);
       const lon = CesiumMath.toDegrees(carto.longitude);
@@ -212,10 +210,9 @@ export class OgcService extends BaseService {
     };
     if (layer.ogc !== undefined) {
       // A layer from the gst service, most likely a 3dtile.
-      return {
+      const request = {
         type: 'gst',
         id: layer.ogc.id,
-        requestedFormat: 'tiles3d',
 
         // The coordinate system used in the output file.
         requestSrs: {
@@ -233,33 +230,47 @@ export class OgcService extends BaseService {
           },
         },
       };
+      return [
+        {
+          ...request,
+          requestedFormat: 'gocad',
+        },
+        {
+          ...request,
+          requestedFormat: 'tiles3d',
+        },
+      ];
     }
     if (layer.type === LayerType.swisstopoWMTS) {
       const { imageryProvider } = (await (layer as unknown as LayerConfig)
         .promise) as ImageryLayer;
       if (imageryProvider instanceof UrlTemplateImageryProvider) {
         // It's a WMTS layer.
-        return {
-          type: 'wmts10',
-          identifier: 'wmts@swisstopo',
-          layer: layer.layer,
-          requestArea,
-        };
+        return [
+          {
+            type: 'wmts10',
+            identifier: 'wmts@swisstopo',
+            layer: layer.layer,
+            requestArea,
+          },
+        ];
       } else if (imageryProvider instanceof WebMapServiceImageryProvider) {
         // It's a WMS layer.
-        return {
-          type: 'wms13',
-          identifier: 'wms@swisstopo',
-          layer: layer.layer,
-          requestArea,
-        };
+        return [
+          {
+            type: 'wms13',
+            identifier: 'wms@swisstopo',
+            layer: layer.layer,
+            requestArea,
+          },
+        ];
       } else {
         if (options.shouldWarnIfNotAvailable) {
           console.warn(
             `Unable to query ogc service for ${layer.type} layer '${layer.layer ?? layer.label}'`,
           );
         }
-        return null;
+        return [];
       }
     }
 
@@ -268,7 +279,7 @@ export class OgcService extends BaseService {
         `Unable to query ogc service for ${layer.type} layer '${layer.layer ?? layer.label}'`,
       );
     }
-    return null;
+    return [];
   }
 }
 

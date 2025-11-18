@@ -1357,23 +1357,6 @@ const group_01: LayerTreeNode =
             children: [
               {
                 type: LayerType.tiles3d,
-                ogc: { id: 13327, styleId: 5 },
-                label: t('seismic-from-ogc--test'),
-                layer: 'seismic-from-ogc--test',
-                pickable: true,
-                opacity: DEFAULT_LAYER_OPACITY,
-              },
-              {
-                type: LayerType.tiles3d,
-                ogc: { id: 13328, styleId: 5 },
-                label: t('seismic-from-ogc--test2'),
-                layer: 'seismic-from-ogc--test2',
-                pickable: true,
-                opacity: DEFAULT_LAYER_OPACITY,
-              },
-
-              {
-                type: LayerType.tiles3d,
                 ogc: { id: 10486 },
                 label: t('lyr_top_omm_label'),
                 layer: 'top_omm',
@@ -1714,6 +1697,24 @@ const group_03: LayerTreeNode =
         queryType: 'geoadmin',
         geocatId: '61866340-a491-444a-8f60-9a6e70df37d8',
         legend: 'ch.swisstopo.geologie-reflexionsseismik',
+      },
+      // Layer - 2D-Reflection seismics - OGC-API: Line I
+      {
+        type: LayerType.tiles3d,
+        ogc: { id: 13327, styleId: 5 },
+        label: t('seismic-from-ogc--line_01'),
+        layer: 'seismic-from-ogc--line_01',
+        pickable: true,
+        opacity: DEFAULT_LAYER_OPACITY,
+      },
+      // Layer - 2D-Reflection seismics - OGC-API: Line II
+      {
+        type: LayerType.tiles3d,
+        ogc: { id: 13328, styleId: 5 },
+        label: t('seismic-from-ogc--line_02'),
+        layer: 'seismic-from-ogc--line_02',
+        pickable: true,
+        opacity: DEFAULT_LAYER_OPACITY,
       },
       // Layer - Rock density - WMTS
       {
