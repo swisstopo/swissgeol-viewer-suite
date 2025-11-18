@@ -50,7 +50,14 @@ import { classMap } from 'lit/directives/class-map.js';
 import { customElement, query, state } from 'lit/decorators.js';
 import { showSnackbarInfo } from './notifications';
 import type { NgmSlowLoading } from './elements/ngm-slow-loading';
-import { Event, FrameRateMonitor, Globe, ImageryLayer, Viewer } from 'cesium';
+import {
+  Event,
+  FrameRateMonitor,
+  Globe,
+  ImageryLayer,
+  NearFarScalar,
+  Viewer,
+} from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type { SideBar } from './elements/ngm-side-bar';
@@ -424,10 +431,7 @@ export class NgmApp extends LitElementI18n {
           );
           activeLayers.push(layer);
         }
-        this.updateBaseMapTranslucency(
-          background.opacity,
-          background.hasAlphaChannel,
-        );
+        this.updateBaseMapTranslucency(background.opacity);
         syncMapParam(background.id);
         Promise.all(readyPromises).then(() => this.requestViewerRender());
       });
@@ -444,10 +448,7 @@ export class NgmApp extends LitElementI18n {
           syncMapOpacityParam(background.opacity);
         }, 50) as unknown as number;
 
-        this.updateBaseMapTranslucency(
-          background.opacity,
-          background.hasAlphaChannel,
-        );
+        this.updateBaseMapTranslucency(background.opacity);
         this.requestViewerRender();
       });
 
@@ -467,17 +468,14 @@ export class NgmApp extends LitElementI18n {
       .pipe(distinctUntilKeyChanged('isVisible'))
       .subscribe((background) => {
         if (background.isVisible) {
-          this.updateBaseMapTranslucency(
-            background.opacity,
-            background.hasAlphaChannel,
-          );
+          this.updateBaseMapTranslucency(background.opacity);
           syncMapParam(background.id);
 
           if (isVisible !== background.isVisible) {
             setLayerVisibility(true);
           }
         } else {
-          this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
+          this.updateBaseMapTranslucency(0);
           syncMapParam('empty_map');
 
           if (isVisible !== background.isVisible) {
@@ -554,18 +552,19 @@ export class NgmApp extends LitElementI18n {
     super.updated(changedProperties);
   }
 
-  private updateBaseMapTranslucency(
-    opacity: number,
-    hasAlphaChannel: boolean,
-  ): void {
+  private updateBaseMapTranslucency(opacity: number): void {
     const { translucency } = this.viewer!.scene.globe;
-    translucency.frontFaceAlpha = opacity;
     if (opacity === 1) {
-      translucency.enabled = hasAlphaChannel;
-      translucency.backFaceAlpha = 1;
+      translucency.enabled = false;
+      translucency.frontFaceAlphaByDistance = undefined as any;
     } else {
-      translucency.backFaceAlpha = 0;
       translucency.enabled = true;
+      translucency.frontFaceAlphaByDistance = new NearFarScalar(
+        1.0,
+        opacity, // near, alpha
+        1.0e7,
+        opacity, // far, alpha
+      );
     }
   }
 

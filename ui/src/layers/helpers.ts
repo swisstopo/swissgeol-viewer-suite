@@ -33,6 +33,7 @@ import MainStore from '../store/main';
 import { GeoTIFFLayer, LayerConfig } from '../layertree';
 import { LayerTiffController } from 'src/features/layer';
 import { SessionService } from 'src/features/session';
+import { run } from 'src/utils/fn.utils';
 
 export interface PickableCesium3DTileset extends Cesium3DTileset {
   pickable?: boolean;
@@ -81,7 +82,16 @@ export async function create3DVoxelsTilesetFromConfig(
   config: LayerConfig,
   _,
 ): Promise<VoxelPrimitive> {
-  const provider = await Cesium3DTilesVoxelProvider.fromUrl(config.url!);
+  const resource = await run(async () => {
+    if (config.assetId) {
+      return await IonResource.fromAssetId(config.assetId, {
+        accessToken: config.ionToken,
+      });
+    }
+    return config.url!;
+  });
+
+  const provider = await Cesium3DTilesVoxelProvider.fromUrl(resource);
 
   const primitive: PickableVoxelPrimitive = new VoxelPrimitive({
     provider: provider,
@@ -96,6 +106,10 @@ export async function create3DVoxelsTilesetFromConfig(
   primitive.show = !!config.visible;
   primitive.pickable = config.pickable ?? false;
   primitive.layer = config.layer;
+
+  // Workaround to make exaggeration work on the voxel primitive.
+  const maxExaggerationFactor = 10;
+  primitive.maxClippingBounds.z = primitive.maxBounds.z * maxExaggerationFactor;
 
   viewer.scene.primitives.add(primitive);
 

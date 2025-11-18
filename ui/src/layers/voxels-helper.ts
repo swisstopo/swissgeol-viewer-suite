@@ -81,7 +81,7 @@ function createCustomShader(config: LayerTreeNode): CustomShader {
       }
 
       if (display) {
-        vec3 voxelNormal = normalize(czm_normal * fsInput.voxel.surfaceNormal);
+        vec3 voxelNormal = fsInput.attributes.normalEC;
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
         material.alpha = u_alpha;
@@ -192,7 +192,7 @@ function createSimpleCustomShader(config): CustomShader {
     {
         float value = fsInput.metadata.${config.voxelDataName};
 
-        vec3 voxelNormal = normalize(czm_normal * fsInput.voxel.surfaceNormal);
+        vec3 voxelNormal = fsInput.attributes.normalEC;
         float diffuse = max(0.0, dot(voxelNormal, czm_lightDirectionEC));
         float lighting = 0.5 + 0.5 * diffuse;
 
