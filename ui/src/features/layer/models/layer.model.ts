@@ -1,12 +1,13 @@
 import type { Id } from 'src/models/id.model';
 import type { Model } from 'src/models/model.model';
-import { WmtsLayer, TiffLayer } from 'src/features/layer';
+import { WmtsLayer, TiffLayer, BackgroundLayer } from 'src/features/layer';
 import { Tiles3dLayer } from 'src/features/layer/models/layer-tiles3d.model';
 import { VoxelLayer } from 'src/features/layer/models/layer-voxel.model';
 import { TranslatedString } from 'src/models/translated-string.model';
 import i18next from 'i18next';
 
 export type Layer = WmtsLayer | Tiles3dLayer | VoxelLayer | TiffLayer;
+export type AnyLayer = Layer | BackgroundLayer;
 
 export interface BaseLayer extends Model {
   type: LayerType | 'Background';
@@ -58,7 +59,7 @@ export interface BaseLayer extends Model {
   geocatId: string | null;
 
   /**
-   * A url from which a representation of the layer can be downloaded.
+   * An url from which a representation of the layer can be downloaded.
    */
   downloadUrl: TranslatedString | null;
 
@@ -80,5 +81,5 @@ export enum LayerType {
   Tiff = 'Tiff',
 }
 
-export const getLayerLabel = (layer: Layer): string =>
+export const getLayerLabel = (layer: AnyLayer): string =>
   layer.label ?? i18next.t(`layers:layers.${layer.id}`);

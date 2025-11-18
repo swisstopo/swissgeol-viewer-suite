@@ -35,6 +35,11 @@
   "layers": {
     "ch.swisstopo.geologie-geocover": "GeoCover - données vectorielles"
   },
+  "backgrounds": {
+    "ch.swisstopo.pixelkarte-grau": "Carte en niveaux de gris",
+    "ch.swisstopo.swissimage": "Carte aérienne",
+    "lakes_rivers_map": "Lacs et rivières"
+  },
   "geocatUrl": "https://www.geocat.ch/geonetwork/srv/fre/catalog.search#/metadata/{{id}}",
   "noData": "aucune valeur"
 }

@@ -16,7 +16,7 @@ import '@geoblocks/cesium-view-cube';
 import './elements/ngm-map-chooser';
 
 import 'src/features/core/core.module';
-import 'src/features/background/background.module';
+import 'src/features/layer/layer.module';
 import 'src/features/controls/controls.module';
 import 'src/features/layout/layout.module';
 import 'src/features/navigation/navigation.module';
@@ -28,14 +28,11 @@ import { addMantelEllipsoid, setupViewer } from './viewer';
 
 import {
   getCameraView,
-  getMapParam,
   getTopicOrProject,
   getZoomToPosition,
   rewriteParams,
   setCesiumToolbarParam,
   syncCamera,
-  syncMapOpacityParam,
-  syncMapParam,
   syncStoredView,
 } from './permalink';
 import i18next from 'i18next';
@@ -48,7 +45,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { customElement, query, state } from 'lit/decorators.js';
 import { showSnackbarInfo } from './notifications';
 import type { NgmSlowLoading } from './elements/ngm-slow-loading';
-import { Event, FrameRateMonitor, Globe, ImageryLayer, Viewer } from 'cesium';
+import { Event, FrameRateMonitor, Globe, Viewer } from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
 import type { SideBar } from './elements/ngm-side-bar';
@@ -57,11 +54,6 @@ import { clientConfigContext, viewerContext } from './context';
 import { consume, provide } from '@lit/context';
 import { AppEnv, ClientConfig } from './api/client-config';
 import { CoreModal, CoreWindow } from 'src/features/core';
-import { makeId } from 'src/models/id.model';
-import { BackgroundLayer } from 'src/features/layer/layer.model';
-import { distinctUntilKeyChanged, filter, take } from 'rxjs';
-import { addSwisstopoLayer } from 'src/swisstopoImagery';
-import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
 import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
@@ -120,17 +112,8 @@ export class NgmApp extends LitElementI18n {
   @query('ngm-cam-configuration')
   accessor camConfigElement;
 
-  @query('ngm-voxel-filter')
-  accessor voxelFilterElement;
-
-  @query('ngm-voxel-simple-filter')
-  accessor voxelSimpleFilterElement;
-
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
-
-  @consume({ context: BackgroundLayerService.context() })
-  accessor backgroundLayerService!: BackgroundLayerService;
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
@@ -140,9 +123,6 @@ export class NgmApp extends LitElementI18n {
 
   @provide({ context: viewerContext })
   accessor viewer: Viewer | null = null;
-
-  @provide({ context: BackgroundLayerService.backgroundContext })
-  accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
 
   constructor() {
     super();
@@ -167,7 +147,6 @@ export class NgmApp extends LitElementI18n {
   private waitForViewLoading = false;
   private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
   private disclaimer: CoreModal | null = null;
-  private viewerRenderTimeout: number | null = null;
 
   private openDisclaimer(): void {
     this.disclaimer = CoreModal.open(
@@ -225,15 +204,6 @@ export class NgmApp extends LitElementI18n {
     }
   }
 
-  onShowVoxelFilter(event: CustomEvent) {
-    const config = event.detail.config;
-    if (config.voxelFilter) {
-      this.voxelFilterElement.config = config;
-    } else {
-      this.voxelSimpleFilterElement.config = config;
-    }
-  }
-
   onStep2Finished(viewer) {
     if (!this.waitForViewLoading) {
       this.removeLoading();
@@ -247,13 +217,6 @@ export class NgmApp extends LitElementI18n {
     }
     this.slicer_ = new Slicer(viewer);
     ToolboxStore.setSlicer(this.slicer_);
-
-    MainStore.syncMap.subscribe(() => {
-      const id = makeId<BackgroundLayer>(getMapParam());
-      if (id != null) {
-        this.backgroundLayerService.setBackground(id);
-      }
-    });
 
     this.sidebar = this.querySelector('ngm-side-bar') as SideBar | null;
   }
@@ -369,121 +332,6 @@ export class NgmApp extends LitElementI18n {
         }
       });
     });
-
-    MainStore.viewer
-      .pipe(
-        filter((it) => it != null),
-        take(1),
-      )
-      .subscribe(() => this.initializeBackgroundLayers());
-  }
-
-  private initializeBackgroundLayers(): void {
-    this.backgroundLayerService.background$.subscribe(async (background) => {
-      this.background = background;
-      await import('src/features/layer/layer.module');
-    });
-
-    let activeLayers: ImageryLayer[] = [];
-    this.backgroundLayerService.background$
-      .pipe(distinctUntilKeyChanged('children'))
-      .subscribe((background) => {
-        activeLayers.forEach((layer) =>
-          this.viewer!.scene.imageryLayers.remove(layer),
-        );
-        activeLayers = [];
-        const readyPromises = [] as Array<Promise<void>>;
-        for (const sublayer of background.children) {
-          const layer = addSwisstopoLayer(
-            this.viewer!,
-            sublayer.id as string,
-            sublayer.format,
-            sublayer.maximumLevel,
-          );
-          layer.show = true;
-          readyPromises.push(
-            new Promise<void>((resolve) => {
-              layer.readyEvent.addEventListener(() => {
-                resolve();
-              });
-            }),
-          );
-          activeLayers.push(layer);
-        }
-        this.updateBaseMapTranslucency(
-          background.opacity,
-          background.hasAlphaChannel,
-        );
-        syncMapParam(background.id);
-        Promise.all(readyPromises).then(() => this.requestViewerRender());
-      });
-
-    let opacityTimeout: number | null = null;
-    this.backgroundLayerService.background$
-      .pipe(distinctUntilKeyChanged('opacity'))
-      .subscribe((background) => {
-        if (opacityTimeout !== null) {
-          clearTimeout(opacityTimeout);
-        }
-        opacityTimeout = setTimeout(() => {
-          opacityTimeout = null;
-          syncMapOpacityParam(background.opacity);
-        }, 50) as unknown as number;
-
-        this.updateBaseMapTranslucency(
-          background.opacity,
-          background.hasAlphaChannel,
-        );
-        this.requestViewerRender();
-      });
-
-    let isVisible = true;
-    const setLayerVisibility = (isVisible: boolean) => {
-      const off = this.viewer!.scene.postRender.addEventListener(() => {
-        off();
-        activeLayers.forEach((layer) => {
-          if (this.viewer!.scene.imageryLayers.contains(layer)) {
-            layer.show = isVisible;
-          }
-        });
-      });
-    };
-
-    this.backgroundLayerService.background$
-      .pipe(distinctUntilKeyChanged('isVisible'))
-      .subscribe((background) => {
-        if (background.isVisible) {
-          this.updateBaseMapTranslucency(
-            background.opacity,
-            background.hasAlphaChannel,
-          );
-          syncMapParam(background.id);
-
-          if (isVisible !== background.isVisible) {
-            setLayerVisibility(true);
-          }
-        } else {
-          this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
-          syncMapParam('empty_map');
-
-          if (isVisible !== background.isVisible) {
-            setLayerVisibility(false);
-          }
-        }
-
-        isVisible = background.isVisible;
-        this.requestViewerRender();
-      });
-  }
-
-  private requestViewerRender(): void {
-    if (this.viewerRenderTimeout != null) {
-      return;
-    }
-    this.viewerRenderTimeout = setTimeout(() => {
-      this.viewerRenderTimeout = null;
-      this.viewer!.scene.requestRender();
-    }) as unknown as number;
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -538,21 +386,6 @@ export class NgmApp extends LitElementI18n {
       }
     }
     super.updated(changedProperties);
-  }
-
-  private updateBaseMapTranslucency(
-    opacity: number,
-    hasAlphaChannel: boolean,
-  ): void {
-    const { translucency } = this.viewer!.scene.globe;
-    translucency.frontFaceAlpha = opacity;
-    if (opacity === 1) {
-      translucency.enabled = hasAlphaChannel;
-      translucency.backFaceAlpha = 1;
-    } else {
-      translucency.backFaceAlpha = 0;
-      translucency.enabled = true;
-    }
   }
 
   showSlowLoadingWindow() {
@@ -698,16 +531,6 @@ export class NgmApp extends LitElementI18n {
               @close=${() => (this.showProjectPopup = false)}
             >
             </ngm-project-popup>
-            <ngm-voxel-filter
-              class="ngm-floating-window"
-              .viewer=${this.viewer}
-              hidden
-            ></ngm-voxel-filter>
-            <ngm-voxel-simple-filter
-              class="ngm-floating-window"
-              .viewer=${this.viewer}
-              hidden
-            ></ngm-voxel-simple-filter>
             <ngm-coordinate-popup
               class="ngm-floating-window"
             ></ngm-coordinate-popup>
