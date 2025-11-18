@@ -1,7 +1,7 @@
 import { LitElementI18n } from '../i18n';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { html } from 'lit';
-import type { ConstantProperty, Event, Viewer } from 'cesium';
+import type { ConstantProperty, Event } from 'cesium';
 import {
   CustomDataSource,
   Entity,
@@ -10,7 +10,6 @@ import {
   PropertyBag,
 } from 'cesium';
 import i18next from 'i18next';
-import MainStore from '../store/main';
 import {
   getAreaProperties,
   hideVolume,
@@ -32,46 +31,63 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import './ngm-point-edit';
 import { skip, take } from 'rxjs';
+import { CesiumService } from 'src/services/cesium.service';
+import { consume } from '@lit/context';
 
 @customElement('ngm-geometry-edit')
 export class NgmGeometryEdit extends LitElementI18n {
   @property({ type: Object })
   accessor entity: Entity | undefined;
+
   @property({ type: Boolean })
   accessor volumeShowed = false;
+
   @query('.ngm-lower-limit-input')
   accessor lowerLimitInput;
+
   @query('.ngm-height-input')
   accessor heightInput;
+
   @state()
   accessor selectedColor = '';
+
   @state()
   accessor selectedSymbol = '';
+
   @state()
   accessor name = '';
+
   @state()
   accessor validLowerLimit = true;
+
   private editingEntity: Entity | undefined;
-  private viewer: Viewer | null | undefined;
+
   private readonly minVolumeHeight = 1;
+
   private readonly maxVolumeHeight = 30000;
+
   private readonly minVolumeLowerLimit = -30000;
+
   private readonly maxVolumeLowerLimit = 30000;
+
   private readonly julianDate = new JulianDate();
+
   private draw: CesiumDraw | undefined;
+
   private unsubscribeFromChanges: Event.RemoveCallback | undefined;
+
   private geometriesDataSource: CustomDataSource | undefined;
 
-  constructor() {
-    super();
-    MainStore.viewer.subscribe((viewer) => {
-      this.viewer = viewer;
-      if (this.viewer) {
-        this.geometriesDataSource = this.viewer.dataSources.getByName(
-          GEOMETRY_DATASOURCE_NAME,
-        )[0];
-      }
-    });
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    const { viewer } = this.cesiumService;
+    this.geometriesDataSource = viewer.dataSources.getByName(
+      GEOMETRY_DATASOURCE_NAME,
+    )[0];
   }
 
   update(changedProps) {
@@ -81,32 +97,34 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   @pauseGeometryCollectionEvents
   onEntityChange() {
-    if (this.entity && !this.editingEntity) {
-      this.editingEntity = new Entity({ properties: new PropertyBag() });
-      // deep clone entity and props
-      this.editingEntity.properties!.merge(this.entity.properties);
-      this.editingEntity.merge(this.entity);
-      this.viewer!.entities.add(this.editingEntity);
-      this.editingEntity.show = true;
-      this.entity.show = false;
-      this.selectedColor = getEntityColor(this.editingEntity)
-        .withAlpha(1)
-        .toCssColorString();
-      this.selectedSymbol = getValueOrUndefined(
-        this.editingEntity.billboard?.image,
+    if (!this.entity || this.editingEntity) {
+      return;
+    }
+    const { viewer } = this.cesiumService;
+    this.editingEntity = new Entity({ properties: new PropertyBag() });
+    // deep clone entity and props
+    this.editingEntity.properties!.merge(this.entity.properties);
+    this.editingEntity.merge(this.entity);
+    viewer.entities.add(this.editingEntity);
+    this.editingEntity.show = true;
+    this.entity.show = false;
+    this.selectedColor = getEntityColor(this.editingEntity)
+      .withAlpha(1)
+      .toCssColorString();
+    this.selectedSymbol = getValueOrUndefined(
+      this.editingEntity.billboard?.image,
+    );
+    this.name = this.editingEntity.name || '';
+    this.draw = DrawStore.drawValue;
+    this.unsubscribeFromChanges =
+      this.entity.properties!.definitionChanged.addEventListener((properties) =>
+        this.onEntityPropertyChange(properties),
       );
-      this.name = this.editingEntity.name || '';
-      this.draw = DrawStore.drawValue;
-      this.unsubscribeFromChanges =
-        this.entity.properties!.definitionChanged.addEventListener(
-          (properties) => this.onEntityPropertyChange(properties),
-        );
-      if (this.draw) {
-        this.cancelDraw();
-        this.draw.entityForEdit = this.editingEntity;
-        this.draw.type = this.editingEntity.properties!.type.getValue();
-        this.draw.active = true;
-      }
+    if (this.draw) {
+      this.cancelDraw();
+      this.draw.entityForEdit = this.editingEntity;
+      this.draw.type = this.editingEntity.properties!.type.getValue();
+      this.draw.active = true;
     }
   }
 
@@ -117,13 +135,14 @@ export class NgmGeometryEdit extends LitElementI18n {
       volumeShowed !==
       getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)
     ) {
+      const { viewer } = this.cesiumService;
       this.editingEntity!.properties!.volumeShowed = volumeShowed;
       if (volumeShowed) {
-        updateEntityVolume(this.editingEntity!, this.viewer!.scene.globe);
+        updateEntityVolume(this.editingEntity!, viewer.scene.globe);
       } else {
         hideVolume(this.editingEntity!);
       }
-      this.viewer?.scene.requestRender();
+      viewer.scene.requestRender();
       this.requestUpdate();
     }
   }
@@ -164,15 +183,12 @@ export class NgmGeometryEdit extends LitElementI18n {
   }
 
   updateVolumePositions() {
+    const { viewer } = this.cesiumService;
     const positions = this.editingEntity!.polylineVolume!.positions!.getValue(
       this.julianDate,
     );
-    updateVolumePositions(
-      this.editingEntity,
-      positions,
-      this.viewer!.scene.globe,
-    );
-    this.viewer!.scene.requestRender();
+    updateVolumePositions(this.editingEntity, positions, viewer.scene.globe);
+    viewer.scene.requestRender();
   }
 
   lowerLimitInputValidation() {
@@ -192,6 +208,7 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   @pauseGeometryCollectionEvents
   save() {
+    const { viewer } = this.cesiumService;
     if (this.entity && this.editingEntity) {
       this.entity.properties = <any>(
         getAreaProperties(
@@ -206,7 +223,7 @@ export class NgmGeometryEdit extends LitElementI18n {
         this.entity.billboard.color = this.editingEntity.billboard!.color;
         this.entity.billboard.image = this.editingEntity.billboard!.image;
         if (getValueOrUndefined(this.editingEntity.properties!.volumeShowed)) {
-          updateEntityVolume(this.entity!, this.viewer!.scene.globe);
+          updateEntityVolume(this.entity!, viewer.scene.globe);
         }
       } else if (this.entity.polyline) {
         const positions = this.editingEntity.polyline!.positions?.getValue(
@@ -225,7 +242,7 @@ export class NgmGeometryEdit extends LitElementI18n {
         getValueOrUndefined(this.editingEntity.properties!.volumeShowed) &&
         this.entity.polylineVolume
       ) {
-        updateEntityVolume(this.entity, this.viewer!.scene.globe);
+        updateEntityVolume(this.entity, viewer.scene.globe);
         this.entity.polylineVolume.outlineColor =
           this.editingEntity.polylineVolume!.outlineColor;
         this.entity.polylineVolume.material =
@@ -244,9 +261,10 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   removeEditingEntity() {
     if (!this.editingEntity) return;
-    this.viewer!.entities.removeById(this.editingEntity!.id);
+    const { viewer } = this.cesiumService;
+    viewer.entities.removeById(this.editingEntity!.id);
     this.editingEntity = undefined;
-    this.viewer!.scene.requestRender();
+    viewer.scene.requestRender();
   }
 
   endEditing() {
@@ -264,11 +282,12 @@ export class NgmGeometryEdit extends LitElementI18n {
   }
 
   onColorChange(color) {
+    const { viewer } = this.cesiumService;
     this.selectedColor = color.toCssColorString();
     if (!this.editingEntity) return;
     if (this.editingEntity.billboard) {
       this.editingEntity.billboard.color = color;
-      this.viewer!.scene.requestRender();
+      viewer.scene.requestRender();
       return;
     }
     color = color.withAlpha(0.3);
@@ -281,14 +300,15 @@ export class NgmGeometryEdit extends LitElementI18n {
       this.editingEntity.polylineVolume.material = color;
       this.editingEntity.polylineVolume.outlineColor = color;
     }
-    this.viewer!.scene.requestRender();
+    viewer.scene.requestRender();
   }
 
   onSymbolChange(image) {
+    const { viewer } = this.cesiumService;
     if (!this.editingEntity || !this.editingEntity.billboard) return;
     this.selectedSymbol = `/images/${image}`;
     this.editingEntity.billboard.image = <any>this.selectedSymbol;
-    this.viewer!.scene.requestRender();
+    viewer.scene.requestRender();
   }
 
   onNameChange(evt) {

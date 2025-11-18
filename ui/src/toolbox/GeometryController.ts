@@ -1,4 +1,3 @@
-import MainStore from '../store/main';
 import ToolboxStore, {
   GeometryAction,
   GeometryCreateOptions,
@@ -8,6 +7,7 @@ import DrawStore from '../store/draw';
 import { showBannerError, showSnackbarInfo } from '../notifications';
 import i18next from 'i18next';
 import { CesiumDraw, DrawEndDetails } from '../draw/CesiumDraw';
+import * as Cesium from 'cesium';
 import {
   Cartesian2,
   Cartographic,
@@ -56,23 +56,32 @@ import {
   POINT_SYMBOLS,
 } from '../constants';
 import { saveAs } from 'file-saver';
-import * as Cesium from 'cesium';
+import { CesiumService } from 'src/services/cesium.service';
 
 export class GeometryController {
+  private readonly viewer!: Viewer;
+
   private draw: CesiumDraw | undefined;
+
   private readonly toastPlaceholder: HTMLElement;
-  private viewer: Viewer | null = null;
+
   private readonly unlistenEditPostRender: Event.RemoveCallback | undefined;
+
   private readonly geometriesDataSource: CustomDataSource;
+
   private readonly julianDate = new JulianDate();
+
   private selectedArea: Entity | undefined;
+
   private screenSpaceEventHandler: ScreenSpaceEventHandler | undefined;
+
   private geometriesCounter: AreasCounter = {
     line: 0,
     point: 0,
     rectangle: 0,
     polygon: 0,
   };
+
   private readonly noEdit: boolean;
 
   constructor(
@@ -84,20 +93,16 @@ export class GeometryController {
     this.toastPlaceholder = toastPlaceholder;
     this.noEdit = noEdit;
 
-    MainStore.viewer.subscribe((viewer) => {
-      this.viewer = viewer;
-      if (viewer) {
-        this.screenSpaceEventHandler = new ScreenSpaceEventHandler(
-          this.viewer!.canvas,
-        );
-        this.screenSpaceEventHandler.setInputAction(
-          this.onClick_.bind(this),
-          ScreenSpaceEventType.LEFT_CLICK,
-        );
-      } else if (this.screenSpaceEventHandler) {
-        this.screenSpaceEventHandler.destroy();
-      }
-    });
+    this.viewer = CesiumService.get().viewer;
+
+    this.screenSpaceEventHandler = new ScreenSpaceEventHandler(
+      this.viewer.canvas,
+    );
+    this.screenSpaceEventHandler.setInputAction(
+      this.onClick_.bind(this),
+      ScreenSpaceEventType.LEFT_CLICK,
+    );
+
     if (!this.noEdit) {
       ToolboxStore.geometryToCreate.subscribe(
         (options: GeometryCreateOptions) => {

@@ -4,7 +4,6 @@ import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
 import { styleMap } from 'lit/directives/style-map.js';
 import { classMap } from 'lit-html/directives/class-map.js';
-import MainStore from '../../store/main';
 import ToolboxStore from '../../store/toolbox';
 import {
   getCameraView,
@@ -205,29 +204,6 @@ export class NgmDashboard extends LitElementI18n {
       await this.selectView(viewIndex);
     });
 
-    // TODO Check if we still need this.
-    // MainStore.layersRemoved.subscribe(async () => {
-    //   if (this.selectedViewIndx !== undefined && this.assets) {
-    //     await Promise.all(
-    //       this.assets.map(async (asset) => {
-    //         const layer = await asset.promise;
-    //         if (layer === undefined) {
-    //           return;
-    //         }
-    //         if (
-    //           !(layer instanceof EarthquakeVisualizer) &&
-    //           !(layer instanceof LayerTiffController)
-    //         ) {
-    //           layer.show = true;
-    //         }
-    //         if ('type' in layer && 'displayed' in layer) {
-    //           this.layerService.toggle(layer as unknown as LayerTreeNode);
-    //         }
-    //       }),
-    //     );
-    //   }
-    // });
-
     DashboardStore.geometriesUpdate.subscribe((geometries) => {
       if (this.selectedTopicOrProject) {
         this.selectTopicOrProject({
@@ -370,7 +346,6 @@ export class NgmDashboard extends LitElementI18n {
   }
 
   async setDataFromPermalink() {
-    MainStore.nextMapSync();
     const { destination, orientation } = getCameraView();
     if (destination && orientation)
       this.viewer!.camera.flyTo({

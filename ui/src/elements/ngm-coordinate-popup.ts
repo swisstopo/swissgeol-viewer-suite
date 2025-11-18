@@ -7,10 +7,11 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
 } from 'cesium';
-import MainStore from '../store/main';
 import { formatCartographicAs2DLv95, radToDeg } from '../projection';
 import i18next from 'i18next';
 import { PickService } from 'src/services/pick.service';
+import { consume } from '@lit/context';
+import { CesiumService } from 'src/services/cesium.service';
 
 @customElement('ngm-coordinate-popup')
 export class NgmCoordinatePopup extends LitElementI18n {
@@ -30,45 +31,44 @@ export class NgmCoordinatePopup extends LitElementI18n {
     maximumFractionDigits: 1,
   });
 
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
   connectedCallback() {
-    MainStore.viewer.subscribe((viewer) => {
-      if (viewer === null) {
+    super.connectedCallback();
+
+    const { viewer } = this.cesiumService;
+    const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
+
+    eventHandler.setInputAction(async (event) => {
+      this.opened = false;
+      const cartesian = PickService.get().pick(event.position);
+      if (!cartesian) {
         return;
       }
 
-      const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
-
-      eventHandler.setInputAction(async (event) => {
-        this.opened = false;
-        const cartesian = PickService.get().pick(event.position);
-        if (!cartesian) {
-          return;
-        }
-
-        const cartCoords = Cartographic.fromCartesian(cartesian);
-        this.coordinatesLv95 = formatCartographicAs2DLv95(cartCoords);
-        this.coordinatesWgs84 = [cartCoords.longitude, cartCoords.latitude].map(
-          radToDeg,
-        );
-        this.elevation = this.integerFormat.format(
-          cartCoords.height / viewer.scene.verticalExaggeration,
-        );
-        const altitude = viewer.scene.globe.getHeight(cartCoords) || 0;
-        this.terrainDistance = this.integerFormat.format(
-          Math.abs(cartCoords.height - altitude),
-        );
-        this.style.left = event.position.x + 'px';
-        this.style.top = event.position.y + 10 + 'px';
-        this.opened = true;
-      }, ScreenSpaceEventType.RIGHT_CLICK);
-      viewer.camera.moveStart.addEventListener(() => {
-        if (this.opened) this.opened = false;
-      });
-      eventHandler.setInputAction(() => {
-        if (this.opened) this.opened = false;
-      }, ScreenSpaceEventType.LEFT_DOWN);
+      const cartCoords = Cartographic.fromCartesian(cartesian);
+      this.coordinatesLv95 = formatCartographicAs2DLv95(cartCoords);
+      this.coordinatesWgs84 = [cartCoords.longitude, cartCoords.latitude].map(
+        radToDeg,
+      );
+      this.elevation = this.integerFormat.format(
+        cartCoords.height / viewer.scene.verticalExaggeration,
+      );
+      const altitude = viewer.scene.globe.getHeight(cartCoords) || 0;
+      this.terrainDistance = this.integerFormat.format(
+        Math.abs(cartCoords.height - altitude),
+      );
+      this.style.left = event.position.x + 'px';
+      this.style.top = event.position.y + 10 + 'px';
+      this.opened = true;
+    }, ScreenSpaceEventType.RIGHT_CLICK);
+    viewer.camera.moveStart.addEventListener(() => {
+      if (this.opened) this.opened = false;
     });
-    super.connectedCallback();
+    eventHandler.setInputAction(() => {
+      if (this.opened) this.opened = false;
+    }, ScreenSpaceEventType.LEFT_DOWN);
   }
 
   updated(changedProperties: PropertyValues) {

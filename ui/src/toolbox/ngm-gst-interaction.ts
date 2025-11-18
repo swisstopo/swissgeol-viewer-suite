@@ -4,7 +4,6 @@ import { cartesianToLv95, round } from '../projection';
 import { showSnackbarError, showSnackbarInfo } from '../notifications';
 import i18next from 'i18next';
 import { LitElementI18n } from '../i18n';
-import type { Viewer } from 'cesium';
 import {
   Cartographic,
   Color,
@@ -15,7 +14,6 @@ import {
 import './ngm-gst-modal';
 import '../elements/ngm-i18n-content.js';
 import 'fomantic-ui-css/components/popup.js';
-import MainStore from '../store/main';
 import type { NgmToolbox } from './ngm-toolbox';
 import { classMap } from 'lit-html/directives/class-map.js';
 import ToolboxStore from '../store/toolbox';
@@ -25,6 +23,7 @@ import { gstServiceContext } from '../context';
 import { consume } from '@lit/context';
 import { GstService } from '../gst.service';
 import $ from 'jquery';
+import { CesiumService } from 'src/services/cesium.service';
 
 export type OutputFormat = 'pdf' | 'png' | 'svg';
 
@@ -42,7 +41,6 @@ export class NgmGstInteraction extends LitElementI18n {
   @consume({ context: gstServiceContext })
   accessor gstService!: GstService;
 
-  private viewer: Viewer | null = null;
   private readonly minDepth_ = -6000;
   private readonly maxDepth_ = 1000;
   private outputFormat: OutputFormat = 'pdf';
@@ -50,21 +48,26 @@ export class NgmGstInteraction extends LitElementI18n {
   private extentInited = false;
   private extentPositions: Cartographic[] = [];
 
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
   constructor() {
     super();
-    MainStore.viewer.subscribe((viewer) => {
-      this.viewer = viewer;
-      this.initExtent().then(() => {
-        if (this.gstExtent?.show !== !this.hidden)
-          this.switchExtent(!this.hidden);
-      });
-    });
 
     document.addEventListener('keydown', (event) => {
       if (event.code === 'Escape') {
         this.abortController.abort();
         this.abortController = new AbortController();
       }
+    });
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.initExtent().then(() => {
+      if (this.gstExtent?.show !== !this.hidden)
+        this.switchExtent(!this.hidden);
     });
   }
 
@@ -88,15 +91,19 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   async initExtent() {
-    if (this.extentInited || !this.viewer) return;
+    const { viewer } = this.cesiumService;
+
+    if (this.extentInited) {
+      return;
+    }
     this.extentInited = true;
     const resource = await IonResource.fromAssetId(2315015);
     this.gstExtent = await KmlDataSource.load(resource, {
-      camera: this.viewer.scene.camera,
-      canvas: this.viewer.scene.canvas,
+      camera: viewer.scene.camera,
+      canvas: viewer.scene.canvas,
       clampToGround: true,
     });
-    await this.viewer.dataSources.add(this.gstExtent);
+    await viewer.dataSources.add(this.gstExtent);
     this.gstExtent.show = false;
     const entity = this.gstExtent.entities.values.find((ent) => !!ent.polygon);
     if (entity && entity.polygon) {
@@ -169,13 +176,14 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   set loading(loading) {
+    const { viewer } = this.cesiumService;
     const buttons = this.querySelectorAll('.buttons button');
 
     if (loading) {
-      this.viewer!.canvas.style.cursor = 'wait';
+      viewer.canvas.style.cursor = 'wait';
       buttons.forEach((button) => button.classList.add('disabled'));
     } else {
-      this.viewer!.canvas.style.cursor = 'default';
+      viewer.canvas.style.cursor = 'default';
       buttons.forEach((button) => button.classList.remove('disabled'));
     }
   }
@@ -201,9 +209,10 @@ export class NgmGstInteraction extends LitElementI18n {
   }
 
   switchExtent(show: boolean) {
+    const { viewer } = this.cesiumService;
     if (!this.gstExtent) return;
     this.gstExtent.show = show;
-    this.viewer!.scene.requestRender();
+    viewer.scene.requestRender();
   }
 
   onGeomClick(geom: NgmGeometry) {

@@ -8,9 +8,6 @@ import {
 import i18next from 'i18next';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
-import { Viewer } from 'cesium';
-import { viewerContext } from 'src/context';
-import { consume } from '@lit/context';
 import { TranslationKey } from 'src/models/translation-key.model';
 
 const numberFormat = new Intl.NumberFormat('de-CH', {
@@ -26,9 +23,6 @@ export class LayerInfoItem extends CoreElement {
   accessor isFirst!: boolean;
 
   private dragAnchorX: number | null = null;
-
-  @consume({ context: viewerContext })
-  accessor viewer!: Viewer;
 
   connectedCallback(): void {
     super.connectedCallback();

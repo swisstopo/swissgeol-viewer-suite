@@ -25,7 +25,6 @@ import './ngm-project-assets-section';
 import { MemberToAdd } from './ngm-add-member-form';
 import { isProject } from './helpers';
 import DashboardStore from '../../store/dashboard';
-import MainStore from '../../store/main';
 import { getPermalink } from 'src/permalink';
 import { consume } from '@lit/context';
 import { KmlLayer, LayerService, LayerType } from 'src/features/layer';
@@ -55,9 +54,8 @@ export class NgmProjectEdit extends LitElementI18n {
   accessor layerService!: LayerService;
 
   async onKmlUpload(file: File, shouldClampToGround: boolean) {
-    const viewer = MainStore.viewer.value;
     const { project } = this;
-    if (viewer == null || project == null) {
+    if (project == null) {
       return;
     }
     const key = await this.uploadKml(file);

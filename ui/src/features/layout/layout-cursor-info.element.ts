@@ -1,11 +1,9 @@
 import { CoreElement } from 'src/features/core';
-import { consume, ContextConsumer } from '@lit/context';
-import { viewerContext } from 'src/context';
+import { consume } from '@lit/context';
 import {
   Cartographic,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-  Viewer,
 } from 'cesium';
 import { css, html, PropertyValues } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
@@ -13,12 +11,10 @@ import { formatCartographicAs2DLv95 } from 'src/projection';
 import i18next from 'i18next';
 import { applyTypography } from 'src/styles/theme';
 import { PickService } from 'src/services/pick.service';
+import { CesiumService } from 'src/services/cesium.service';
 
 @customElement('ngm-layout-cursor-info')
 export class LayoutCursorInfo extends CoreElement {
-  @state()
-  private accessor viewer: Viewer | null = null;
-
   @state()
   accessor coordinates: string[] = [];
 
@@ -31,22 +27,16 @@ export class LayoutCursorInfo extends CoreElement {
   @consume({ context: PickService.context() })
   accessor pickService!: PickService;
 
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
   private static readonly HEIGHT_FORMAT = new Intl.NumberFormat('de-CH', {
     maximumFractionDigits: 1,
   });
 
   connectedCallback() {
     super.connectedCallback();
-    this.register(
-      new ContextConsumer(this, {
-        subscribe: true,
-        context: viewerContext,
-        callback: (viewer) => {
-          this.viewer = viewer ?? null;
-          this.initializeViewer();
-        },
-      }),
-    );
+    this.initializeViewer();
   }
 
   willUpdate(props: PropertyValues<this>): void {
@@ -56,7 +46,7 @@ export class LayoutCursorInfo extends CoreElement {
   }
 
   initializeViewer(): void {
-    const { viewer } = this;
+    const { viewer } = this.cesiumService;
     if (viewer === null) {
       return;
     }
@@ -74,7 +64,7 @@ export class LayoutCursorInfo extends CoreElement {
   private readonly handleMouseMove = (
     event: ScreenSpaceEventHandler.MotionEvent,
   ): void => {
-    const { viewer } = this;
+    const { viewer } = this.cesiumService;
     if (viewer === null) {
       return;
     }

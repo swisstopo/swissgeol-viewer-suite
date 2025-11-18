@@ -41,13 +41,13 @@ import {
 } from 'src/features/layer/controllers/layer.controller';
 import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
 import { Viewer } from 'cesium';
-import MainStore from 'src/store/main';
 import { Tiles3dLayerController } from 'src/features/layer/controllers/layer-tiles3d.controller';
 import { BackgroundLayerController } from 'src/features/layer/controllers/layer-background.controller';
 import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
 import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.controller';
 import { KmlLayerController } from 'src/features/layer/controllers/layer-kml.controller';
 import { EarthquakesLayerController } from 'src/features/layer/controllers/layer-earthquakes.controller';
+import { CesiumService } from 'src/services/cesium.service';
 
 export class LayerService extends BaseService {
   private viewer!: Viewer;
@@ -169,11 +169,9 @@ export class LayerService extends BaseService {
   constructor() {
     super();
 
-    MainStore.viewer.subscribe((viewer) => {
-      if (viewer !== null) {
-        this.viewer = viewer;
-        this.hasViewer$.next(true);
-      }
+    CesiumService.inject().then((cesiumService) => {
+      this.viewer = cesiumService.viewer;
+      this.hasViewer$.next(true);
     });
 
     LayerApiService.inject().then((service) => {
