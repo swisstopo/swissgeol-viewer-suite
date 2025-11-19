@@ -5,7 +5,7 @@ import {
   ScreenSpaceEventType,
   Viewer,
 } from 'cesium';
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { filter, Observable, OperatorFunction, Subject } from 'rxjs';
 import { CesiumService } from 'src/services/cesium.service';
 

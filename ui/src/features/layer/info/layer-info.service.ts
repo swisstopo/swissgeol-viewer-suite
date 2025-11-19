@@ -7,7 +7,7 @@ import {
   Viewer,
 } from 'cesium';
 import { BehaviorSubject, filter, Observable, take } from 'rxjs';
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { Layer, LayerType } from 'src/features/layer';
 import {
   LayerInfoPicker,

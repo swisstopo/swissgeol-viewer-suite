@@ -1,4 +1,4 @@
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { User } from 'src/features/session/user.model';

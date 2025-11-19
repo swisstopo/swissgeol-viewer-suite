@@ -1,4 +1,4 @@
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { Viewer } from 'cesium';
 import { BehaviorSubject, filter, firstValueFrom, map, Observable } from 'rxjs';
 

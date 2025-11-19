@@ -6,7 +6,7 @@ import {
   Ray,
   Viewer,
 } from 'cesium';
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
 
 export class PickService extends BaseService {

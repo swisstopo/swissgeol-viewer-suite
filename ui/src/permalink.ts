@@ -5,10 +5,6 @@ import { getURLSearchParams, parseJson, setURLSearchParams } from './utils';
 import {
   ASSET_IDS_URL_PARAM,
   EXAGGERATION_PARAM,
-  LAYERS_TIMESTAMP_URL_PARAM,
-  LAYERS_TRANSPARENCY_URL_PARAM,
-  LAYERS_URL_PARAM,
-  LAYERS_VISIBILITY_URL_PARAM,
   PROJECT_PARAM,
   SLICE_PARAM,
   TARGET_PARAM,
@@ -17,13 +13,6 @@ import {
   ZOOM_TO_PARAM,
 } from './constants';
 import type { ProjectParamSubject, TopicParamSubject } from './store/dashboard';
-
-export type LayerFromParam = {
-  layer: string;
-  opacity: number;
-  visible: boolean;
-  timestamp?: string;
-};
 
 export function rewriteParams() {
   const params = getURLSearchParams();
@@ -79,28 +68,6 @@ export function syncCamera(camera: Camera) {
 
 function safeSplit(str): string[] {
   return str ? str.split(',') : [];
-}
-
-/**
- * Parses the URL and returns an array of layer configs.
- */
-export function getLayerParams(): LayerFromParam[] {
-  const params = getURLSearchParams();
-  const layersTransparency = safeSplit(
-    params.get(LAYERS_TRANSPARENCY_URL_PARAM),
-  );
-  const layersVisibility = safeSplit(params.get(LAYERS_VISIBILITY_URL_PARAM));
-  const layersTimestamp = safeSplit(params.get(LAYERS_TIMESTAMP_URL_PARAM));
-  const layers = safeSplit(params.get(LAYERS_URL_PARAM));
-
-  return layers.map((layer, key) => {
-    return {
-      layer: layer,
-      opacity: Number(1 - Number(layersTransparency[key])),
-      visible: layersVisibility[key] === 'true',
-      timestamp: layersTimestamp[key] || undefined,
-    };
-  });
 }
 
 export function getAssetIds() {

@@ -53,7 +53,7 @@ import { CoreModal, CoreWindow } from 'src/features/core';
 import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
 import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
 
 const SKIP_STEP2_TIMEOUT = 5000;
@@ -206,10 +206,7 @@ export class NgmApp extends LitElementI18n {
       'none';
   }
 
-  /**
-   * @param {import ('cesium').Viewer} viewer
-   */
-  startCesiumLoadingProcess(viewer) {
+  startCesiumLoadingProcess(viewer: Viewer) {
     const globe = viewer.scene.globe;
 
     // Temporarily increasing the maximum screen space error to load low LOD tiles.
