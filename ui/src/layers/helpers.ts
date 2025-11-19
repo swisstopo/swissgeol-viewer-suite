@@ -24,6 +24,7 @@ import {
   Viewer,
   VoxelPrimitive,
 } from 'cesium';
+import { OBJECT_HIGHLIGHT_NORMALIZED_RGB } from 'src/constants';
 import { getSwisstopoImagery } from '../swisstopoImagery';
 import { LayerType } from '../constants';
 import { isLabelOutlineEnabled } from '../permalink';
@@ -37,6 +38,7 @@ import { run } from 'src/utils/fn.utils';
 
 export interface PickableCesium3DTileset extends Cesium3DTileset {
   pickable?: boolean;
+  customProperties: { [x: string]: unknown };
 }
 export interface PickableVoxelPrimitive extends VoxelPrimitive {
   pickable?: boolean;
@@ -181,15 +183,12 @@ export async function create3DTilesetFromConfig(
     throw new Error(`layer is missing a usable source: ${config.layer}`);
   }
 
-  const tileset: PickableCesium3DTileset = await Cesium3DTileset.fromUrl(
-    resource,
-    {
-      show: !!config.visible,
-      backFaceCulling: false,
-      enableCollision: true,
-      maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
-    },
-  );
+  const tileset = (await Cesium3DTileset.fromUrl(resource, {
+    show: !!config.visible,
+    backFaceCulling: false,
+    enableCollision: true,
+    maximumScreenSpaceError: tileLoadCallback ? Number.NEGATIVE_INFINITY : 16, // 16 - default value
+  })) as PickableCesium3DTileset;
 
   if (config.style) {
     if (config.layer === 'ch.swisstopo.swissnames3d.3d') {
@@ -221,12 +220,19 @@ export async function create3DTilesetFromConfig(
             material.specular = vec3(0.0);   // no view-dependent spec
             material.occlusion = 1.0;        // full diffuse
             material.alpha = u_alpha;
+            if (u_is_highlighted) {
+              material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}); // highlight color
+            }
           }
         `,
         uniforms: {
           u_alpha: {
             type: UniformType.FLOAT,
             value: opacity,
+          },
+          u_is_highlighted: {
+            type: UniformType.BOOL,
+            value: false,
           },
         },
       });
@@ -257,8 +263,22 @@ export async function create3DTilesetFromConfig(
     );
   }
 
-  if (config.propsOrder && tileset.properties) {
-    tileset.properties.propsOrder = config.propsOrder;
+  if (tileset.properties === undefined) {
+    const metadata = tileset['metadata'];
+    const properties = metadata
+      .getPropertyIds()
+      .reduce((acc: Record<string, unknown>, id: string) => {
+        return {
+          ...acc,
+          [id]: metadata.getProperty(id)[0],
+        };
+      }, {});
+    tileset.customProperties = properties;
+  } else {
+    tileset.customProperties = tileset.properties;
+  }
+  if (config.propsOrder) {
+    tileset.customProperties.propsOrder = config.propsOrder;
   }
   if (config.heightOffset) {
     const cartographic = Cartographic.fromCartesian(
