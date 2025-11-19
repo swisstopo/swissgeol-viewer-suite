@@ -107,5 +107,12 @@
   "Status": "Statut",
   "temp_c": "Température (°C)",
   "Type": "Type de faille",
-  "Version": "Version"
+  "Version": "Version",
+  "chrono": "Chronostratigraphie",
+  "download_ASCII": "Télécharger",
+  "horizon_modelled": "Horizon",
+  "id": "ID",
+  "kind": "Typ",
+  "source": "Source",
+  "version": "Version"
 }

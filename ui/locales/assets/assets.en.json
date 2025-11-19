@@ -107,5 +107,12 @@
   "Status": "Status",
   "temp_c": "Temperature (°C)",
   "Type": "Fault type",
-  "Version": "Version"
+  "Version": "Version",
+  "chrono": "Chronostratigraphy",
+  "download_ASCII": "Download",
+  "horizon_modelled": "Horizon",
+  "id": "ID",
+  "kind": "Type",
+  "source": "Source",
+  "version": "Version"
 }

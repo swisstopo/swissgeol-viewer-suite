@@ -25,6 +25,18 @@ import {
 } from 'src/constants';
 import NavToolsStore from 'src/store/navTools';
 import { TemplateResult } from 'lit';
+import { PickableCesium3DTileset } from 'src/layers/helpers';
+
+const PROPERTIES_TO_EXCLUDE = [
+  'propsOrder',
+  'color_blue',
+  'color_green',
+  'color_red',
+  'model_feature',
+  'm_alias',
+  'oname',
+  'style_transparency',
+];
 
 export class LayerInfoPickerFor3dTiles implements LayerInfoPicker {
   constructor(
@@ -41,8 +53,18 @@ export class LayerInfoPickerFor3dTiles implements LayerInfoPicker {
     if (feature === null) {
       return [];
     }
+    // TODO: This is a workaround due to missing types in CesiumJS. Refactor once they are exposed.
+    if (
+      !(feature instanceof Cesium3DTileFeature) &&
+      (feature as any).content?._tileset?.customProperties
+    ) {
+      return this.pickFeatureForNewTileset(
+        pick,
+        (feature as any).content._tileset as PickableCesium3DTileset,
+      );
+    }
     if (feature instanceof Cesium3DTileFeature) {
-      return this.pickFeature(pick, feature);
+      return this.pickFeatureForOldTileset(pick, feature);
     }
     if (
       typeof feature === 'object' &&
@@ -61,7 +83,28 @@ export class LayerInfoPickerFor3dTiles implements LayerInfoPicker {
 
   destroy(): void {}
 
-  private pickFeature(
+  private pickFeatureForNewTileset(
+    pick: LayerPickData,
+    tileset: PickableCesium3DTileset,
+  ) {
+    if (!tileset.pickable) {
+      return [];
+    }
+
+    const attributes: LayerInfoAttribute[] = extractTilesetAttributes(tileset);
+
+    return [
+      new LayerInfoFor3dTile(this.viewer, {
+        feature: tileset,
+        position: pick.cartesian,
+        attributes,
+        source: this.source,
+        title: this.layer.label,
+      }),
+    ];
+  }
+
+  private pickFeatureForOldTileset(
     pick: LayerPickData,
     feature: Cesium3DTileFeature,
   ): LayerInfo[] {
@@ -142,15 +185,13 @@ class LayerInfoFor3dTile implements LayerInfo {
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
-  private readonly feature: Cesium3DTileFeature;
+  private readonly feature: Cesium3DTileFeature | PickableCesium3DTileset;
   private readonly position: Cartesian3;
-
-  private readonly originalColor: Color;
 
   constructor(
     private readonly viewer: Viewer,
     data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
-      feature: Cesium3DTileFeature;
+      feature: Cesium3DTileFeature | PickableCesium3DTileset;
       source: LayerTreeNode;
       position: Cartesian3;
     },
@@ -161,10 +202,11 @@ class LayerInfoFor3dTile implements LayerInfo {
     this.title = data.title;
     this.attributes = data.attributes;
 
-    this.originalColor = Color.clone(this.feature.color);
-    this.feature.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(
-      this.feature.color.alpha,
-    );
+    if (this.feature instanceof Cesium3DTileFeature) {
+      this.feature.tileset.customShader!.setUniform('u_is_highlighted', true);
+    } else {
+      this.feature.customShader!.setUniform('u_is_highlighted', true);
+    }
   }
 
   zoomToObject(): void {
@@ -189,7 +231,11 @@ class LayerInfoFor3dTile implements LayerInfo {
   deactivateHighlight() {}
 
   destroy() {
-    this.feature.color = this.originalColor;
+    if (this.feature instanceof Cesium3DTileFeature) {
+      this.feature.tileset.customShader!.setUniform('u_is_highlighted', false);
+    } else {
+      this.feature.customShader!.setUniform('u_is_highlighted', false);
+    }
   }
 }
 
@@ -259,13 +305,35 @@ class LayerInfoForEntity implements LayerInfo {
   }
 }
 
+const extractTilesetAttributes = (
+  tileset: PickableCesium3DTileset,
+): LayerInfoAttribute[] => {
+  const attributes: LayerInfoAttribute[] = [];
+  const propertyNames = sortPropertyNames(
+    Object.keys(tileset.customProperties),
+    tileset.customProperties.propsOrder as string[],
+  );
+
+  for (const propertyName of propertyNames) {
+    const value = tileset.customProperties[propertyName] as any;
+    if (
+      (typeof value === 'number' || !!value) &&
+      !PROPERTIES_TO_EXCLUDE.includes(propertyName)
+    ) {
+      attributes.push({ key: `assets:${propertyName}`, value });
+    }
+  }
+  return attributes;
+};
+
 const extractFeatureAttributes = (
   feature: Cesium3DTileFeature,
 ): LayerInfoAttribute[] => {
   const attributes: LayerInfoAttribute[] = [];
   const propertyNames = sortPropertyNames(
     feature.getPropertyIds(),
-    feature.tileset.properties?.propsOrder ?? [],
+    ((feature.tileset as PickableCesium3DTileset).customProperties
+      ?.propsOrder as string[]) ?? [],
   );
   for (const propertyName of propertyNames) {
     const value = feature.getProperty(propertyName);

@@ -107,5 +107,12 @@
   "Status": "Stato",
   "temp_c": "Temperatura (°C)",
   "Type": "Tipo di faglia",
-  "Version": "Versione"
+  "Version": "Versione",
+  "chrono": "Chronostratigraphie",
+  "download_ASCII": "Download",
+  "horizon_modelled": "Orizzonte",
+  "id": "ID",
+  "kind": "Tipo",
+  "source": "Origine",
+  "version": "Versione"
 }
