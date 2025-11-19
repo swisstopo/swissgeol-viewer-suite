@@ -55,6 +55,7 @@ import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
+import { when } from 'lit/directives/when.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -171,7 +172,7 @@ export class NgmApp extends LitElementI18n {
       }
 
       infoWindow = CoreWindow.open({
-        title: () => i18next.t('layers:infoWindow.title'),
+        title: () => i18next.t('layers:info_window.title'),
         body: () => html`<ngm-layer-info-list></ngm-layer-info-list>`,
         onClose: () => {
           infoWindow = null;
@@ -311,7 +312,7 @@ export class NgmApp extends LitElementI18n {
         (<HTMLElement>(
           document.querySelector('.ngm-cam-lock-info')
         ))?.parentElement?.remove();
-      } else if (this.camConfigElement.lockType) {
+      } else if (this.camConfigElement?.lockType) {
         let message = '';
         switch (this.camConfigElement.lockType) {
           case 'angle':
@@ -472,27 +473,37 @@ export class NgmApp extends LitElementI18n {
             >
           </div>
         </div>
-        ${this.cesiumService.viewerOrNull &&
-        html`<ngm-layout-sidebar></ngm-layout-sidebar>`}
+        ${when(
+          this.cesiumService.isReady,
+          () => html`<ngm-layout-sidebar></ngm-layout-sidebar> `,
+        )}
         <div class="map" oncontextmenu="return false;">
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>
-            <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
-            <ngm-topo-profile-modal
-              class="ngm-floating-window"
-            ></ngm-topo-profile-modal>
-            <ngm-nav-tools
-              class="ngm-floating-window"
-              .showCamConfig=${this.showCamConfig}
-              @togglecamconfig=${() =>
-                (this.showCamConfig = !this.showCamConfig)}
-              @axisstate=${(evt) => (this.showAxisOnMap = evt.detail.showAxis)}
-            >
-            </ngm-nav-tools>
+            ${when(
+              this.cesiumService.isReady,
+              () => html`
+                <ngm-geometry-info
+                  class="ngm-floating-window"
+                ></ngm-geometry-info>
+                <ngm-topo-profile-modal
+                  class="ngm-floating-window"
+                ></ngm-topo-profile-modal>
+                <ngm-nav-tools
+                  class="ngm-floating-window"
+                  .showCamConfig=${this.showCamConfig}
+                  @togglecamconfig=${() =>
+                    (this.showCamConfig = !this.showCamConfig)}
+                  @axisstate=${(evt) =>
+                    (this.showAxisOnMap = evt.detail.showAxis)}
+                >
+                </ngm-nav-tools>
+              `,
+            )}
             <ngm-cam-configuration
               class="ngm-floating-window"
               .hidden=${!this.showCamConfig}
-              .viewer=${this.cesiumService.viewer}
+              .viewer=${this.cesiumService.viewerOrNull}
               @close=${() => (this.showCamConfig = false)}
             >
             </ngm-cam-configuration>
@@ -504,9 +515,15 @@ export class NgmApp extends LitElementI18n {
               @close=${() => (this.showProjectPopup = false)}
             >
             </ngm-project-popup>
-            <ngm-coordinate-popup
-              class="ngm-floating-window"
-            ></ngm-coordinate-popup>
+            ${when(
+              this.cesiumService.isReady,
+              () => html`
+                <ngm-coordinate-popup
+                  class="ngm-floating-window"
+                ></ngm-coordinate-popup>
+              `,
+            )}
+
             <div class="on-map-menu">
               <cesium-view-cube
                 ?hidden=${this.mobileView || this.showAxisOnMap}
@@ -520,9 +537,10 @@ export class NgmApp extends LitElementI18n {
               ></ngm-map-chooser>
             </div>
           </div>
-          ${this.showCesiumToolbar
-            ? html` <cesium-toolbar></cesium-toolbar>`
-            : ''}
+          ${when(
+            this.showCesiumToolbar,
+            () => html`<cesium-toolbar></cesium-toolbar>`,
+          )}
         </div>
       </main>
     `;

@@ -6,7 +6,13 @@ import {
   Viewer,
 } from 'cesium';
 import { BaseService } from 'src/services/base.service';
-import { filter, Observable, OperatorFunction, Subject } from 'rxjs';
+import {
+  filter,
+  firstValueFrom,
+  Observable,
+  OperatorFunction,
+  Subject,
+} from 'rxjs';
 import { CesiumService } from 'src/services/cesium.service';
 
 export class GestureControlsService extends BaseService {
@@ -23,9 +29,11 @@ export class GestureControlsService extends BaseService {
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
 
-    CesiumService.inject().then((cesiumService) => {
-      this.subscribeToViewer(cesiumService.viewer);
-    });
+    CesiumService.inject()
+      .then((s) => firstValueFrom(s.viewer$))
+      .then((viewer) => {
+        this.subscribeToViewer(viewer);
+      });
   }
 
   private subscribeToViewer(viewer: Viewer) {

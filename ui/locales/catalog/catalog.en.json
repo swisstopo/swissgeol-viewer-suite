@@ -10,7 +10,7 @@
     "legend": "Legend",
     "download": "Download / Legend",
     "filter": "Open Filter",
-    "timeTravel": "Journey through time",
+    "time_travel": "Journey through time",
     "remove": "Remove"
   },
   "exaggeration": {
@@ -32,12 +32,28 @@
     }
   },
   "add_content_from_cesium_ion": "Add content from Cesium ion",
+  "times_window": {
+    "all": "All"
+  },
+  "voxel_filter_window": {
+    "items": {
+      "select_all": "Select all",
+      "deselect_all": "Unselect all"
+    },
+    "range": {
+      "min": "Min",
+      "max": "Max",
+      "should_include_undefined": "Always display undefined values?"
+    },
+    "operators": {
+      "And": "AND",
+      "Or": "OR",
+      "Xor": "XOR"
+    }
+  },
   "tiffBandsWindow": {
     "title": "{{ layer }} - Bands",
     "open": "Show bands",
     "legend": "Legend"
-  },
-  "timesWindow": {
-    "all": "All"
   }
 }

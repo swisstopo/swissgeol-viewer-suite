@@ -1,20 +1,7 @@
 {
-  "catalog": {
-    "filter": "Filter öffnen"
-  },
-  "infoWindow": {
-    "title": "Info",
-    "zoomToObject": "Auf Objekt zoomen"
-  },
-  "units": {
-    "Meters": {
-      "name": "Meter",
-      "symbol": "m"
-    },
-    "MetersAboveSeaLevel": {
-      "name": "Meter über dem Meer",
-      "symbol": "m.ü.M"
-    }
+  "values": {
+    "no_data": "kein Wert",
+    "undefined": "undefiniert"
   },
   "layers": {
     "ch.swisstopo.geologie-geocover": "GeoCover - Vektordaten",
@@ -39,14 +26,9 @@
     "grp_1818_label": "Erdmagnetfeld",
     "grp_15070_label": "Geoenergie"
   },
-  "backgrounds": {
-    "ch.swisstopo.pixelkarte-grau": "Karte Grau",
-    "ch.swisstopo.swissimage": "Luftbild",
-    "lakes_rivers_map": "Seen & Flüsse"
-  },
-  "attributes": {
+  "properties": {
     "Voxel": {
-      "cellCenter": "",
+      "cell_center": "",
       "logk": "Hydraulische Leitfähigkeit",
       "Index": "Modelliereinheit",
       "Klasse": "Durchlässigkeit"
@@ -65,9 +47,24 @@
       "prev_Author": "Vorherige Version – numerische Autoren-ID"
     }
   },
-  "values": {
-    "noData": "kein Wert",
-    "undefined": "undefiniert"
+  "backgrounds": {
+    "ch.swisstopo.pixelkarte-grau": "Karte Grau",
+    "ch.swisstopo.swissimage": "Luftbild",
+    "lakes_rivers_map": "Seen & Flüsse"
   },
-  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/{{id}}"
+  "units": {
+    "Meters": {
+      "name": "Meter",
+      "symbol": "m"
+    },
+    "MetersAboveSeaLevel": {
+      "name": "Meter über dem Meer",
+      "symbol": "m.ü.M"
+    }
+  },
+  "geocat_url": "https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/{{id}}",
+  "info_window": {
+    "title": "Info",
+    "zoom_to_object": "Auf Objekt zoomen"
+  }
 }

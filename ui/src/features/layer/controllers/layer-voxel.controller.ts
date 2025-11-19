@@ -245,7 +245,7 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
     );
 
     const code = `
-      const float NO_DATA_VALUE = ${mapFloatToShader(layer.values.noData)};
+      const float NO_DATA_VALUE = ${mapFloatToShader(layer.values.no_data)};
       const float UNDEFINED_VALUE = ${mapFloatToShader(layer.values.undefined)};
 
       const vec4 TRANSPARENT = vec4(0.0, 0.0, 0.0, 0.0);

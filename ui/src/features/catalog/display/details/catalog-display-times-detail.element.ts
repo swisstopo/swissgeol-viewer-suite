@@ -45,7 +45,7 @@ export class CatalogDisplayTimes extends CoreElement {
   private readonly renderItem = (time: string) => {
     const title = run(() => {
       if (time === '9999') {
-        return i18next.t('catalog:timesWindow.all');
+        return i18next.t('catalog:times_window.all');
       }
       if (time.length > 4) {
         return time.substring(0, 4);
