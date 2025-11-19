@@ -10,7 +10,7 @@ import {
   AnyBaseServiceType,
   BaseService,
   ServiceContext,
-} from 'src/utils/base.service';
+} from 'src/services/base.service';
 import { GstService } from 'src/gst.service';
 import { ControlsService } from 'src/features/controls/controls.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';

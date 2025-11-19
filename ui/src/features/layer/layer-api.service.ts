@@ -1,5 +1,5 @@
 import { API_BY_PAGE_HOST } from 'src/constants';
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { SessionService } from 'src/features/session';
 import {
   BaseLayer,

@@ -5,7 +5,7 @@ import type {
 } from '../elements/dashboard/ngm-dashboard';
 import { Subject, switchMap } from 'rxjs';
 import { NgmGeometry } from '../toolbox/interfaces';
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { SessionService } from 'src/features/session';
 
 export class ApiClient extends BaseService {

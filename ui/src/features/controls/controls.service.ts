@@ -1,4 +1,4 @@
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Control2dController } from 'src/features/controls/controls/control2d.controller';
 import { CesiumService } from 'src/services/cesium.service';

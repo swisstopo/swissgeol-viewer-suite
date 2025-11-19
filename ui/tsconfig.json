@@ -34,10 +34,5 @@
     "src/**/*.js",
     "node_modules/fomantic-ui-css/types/**/*.d.ts"
   ],
-  "exclude": [
-    "src/test/**/*",
-    "cypress/**/*",
-    "src/elements/ngm-side-bar.ts",
-    "src/layertree.ts"
-  ]
+  "exclude": ["src/test/**/*", "cypress/**/*", "src/layertree.ts"]
 }
