@@ -54,10 +54,10 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
     const { layer } = this.controller;
     const attributes = this.controller.layer.bands.map((band) => {
       return {
-        key: `layers:attributes.${layer.id}.${band.name}`,
+        key: `layers:properties.${layer.id}.${band.name}`,
         get value(): string | number {
           return (
-            data.bands[band.index - 1] ?? i18next.t('layers:values.noData')
+            data.bands[band.index - 1] ?? i18next.t('layers:values.no_data')
           );
         },
       };

@@ -164,14 +164,14 @@ export class CatalogDisplayTimes extends CoreElement {
           size="small"
           @click="${() => this.setAllMappingItems(index, true)}"
         >
-          ${i18next.t('catalog:voxelFilterWindow.items.select_all')}
+          ${i18next.t('catalog:voxel_filter_window.items.select_all')}
         </sgc-button>
         <sgc-button
           color="secondary"
           size="small"
           @click="${() => this.setAllMappingItems(index, false)}"
         >
-          ${i18next.t('catalog:voxelFilterWindow.items.deselect_all')}
+          ${i18next.t('catalog:voxel_filter_window.items.deselect_all')}
         </sgc-button>
       </div>
 
@@ -205,7 +205,7 @@ export class CatalogDisplayTimes extends CoreElement {
       <h3>${getLayerAttributeName(this.layer, mapping.key)}</h3>
       <div class="fields">
         <label class="field">
-          ${i18next.t('catalog:voxelFilterWindow.range.min')}
+          ${i18next.t('catalog:voxel_filter_window.range.min')}
           <input
             required
             type="number"
@@ -221,7 +221,7 @@ export class CatalogDisplayTimes extends CoreElement {
           />
         </label>
         <label class="field">
-          ${i18next.t('catalog:voxelFilterWindow.range.max')}
+          ${i18next.t('catalog:voxel_filter_window.range.max')}
           <input
             required
             type="number"
@@ -244,7 +244,9 @@ export class CatalogDisplayTimes extends CoreElement {
             @checkboxChange=${() => this.toggleUndefinedAlwaysEnabled(index)}
           >
           </sgc-checkbox>
-          ${i18next.t('catalog:voxelFilterWindow.range.shouldIncludeUndefined')}
+          ${i18next.t(
+            'catalog:voxel_filter_window.range.should_include_undefined',
+          )}
         </label>
       </div>
     </li>
@@ -260,7 +262,7 @@ export class CatalogDisplayTimes extends CoreElement {
             .isActive="${live(this.layer.filterOperator === operator)}"
             @click="${() => this.updateOperator(operator)}"
           >
-            ${i18next.t(`catalog:voxelFilterWindow.operators.${operator}`)}
+            ${i18next.t(`catalog:voxel_filter_window.operators.${operator}`)}
           </ngm-core-radio>
         `,
       )}

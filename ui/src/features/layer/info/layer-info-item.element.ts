@@ -100,7 +100,7 @@ export class LayerInfoItem extends CoreElement {
     </label>
     <div class="content">
       <sgc-button color="secondary" @click="${this.zoomToObject}">
-        ${i18next.t('layers:infoWindow.zoomToObject')}
+        ${i18next.t('layers:info_window.zoom_to_object')}
         <ngm-core-icon icon="zoomPlus"></ngm-core-icon>
       </sgc-button>
       <div class="attributes">

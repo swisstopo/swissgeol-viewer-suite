@@ -10,7 +10,7 @@
     "legend": "Legende",
     "download": "Herunterladen / Legende",
     "filter": "Filter öffnen",
-    "timeTravel": "Zeitreise",
+    "time_travel": "Zeitreise",
     "remove": "Entfernen"
   },
   "exaggeration": {
@@ -32,10 +32,10 @@
     }
   },
   "add_content_from_cesium_ion": "Inhalte von Cesium ion hinzufügen",
-  "timesWindow": {
+  "times_window": {
     "all": "Alle"
   },
-  "voxelFilterWindow": {
+  "voxel_filter_window": {
     "items": {
       "select_all": "alles aktivieren",
       "deselect_all": "alles deaktivieren"
@@ -43,7 +43,7 @@
     "range": {
       "min": "Min",
       "max": "Max",
-      "shouldIncludeUndefined": "undefinierte Werte immer anzeigen?"
+      "should_include_undefined": "undefinierte Werte immer anzeigen?"
     },
     "operators": {
       "And": "AND",

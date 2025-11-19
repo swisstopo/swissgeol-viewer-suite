@@ -41,7 +41,7 @@ export class LayerTiffBands extends CoreElement {
   `;
 
   private readonly renderBand = (band: TiffLayerBand, index: number) => {
-    const name = i18next.t(`layers:attributes.${this.layerId}.${band.name}`);
+    const name = i18next.t(`layers:properties.${this.layerId}.${band.name}`);
     const [unitSymbol, unitName] =
       band.unit === null
         ? [null, null]

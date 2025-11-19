@@ -20,6 +20,10 @@ export class CesiumService extends BaseService {
     return firstValueFrom(this.viewer$.pipe(map(() => {})));
   }
 
+  get isReady(): boolean {
+    return this.viewerOrNull !== null;
+  }
+
   get viewer$(): Observable<Viewer> {
     return this.viewerSubject.pipe(filter((viewer) => viewer !== null));
   }

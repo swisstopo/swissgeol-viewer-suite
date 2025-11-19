@@ -45,8 +45,8 @@ export class NgmGeometryInfo extends LitElementI18n {
   @consume({ context: CesiumService.context() })
   accessor cesiumService!: CesiumService;
 
-  constructor() {
-    super();
+  connectedCallback() {
+    super.connectedCallback();
     ToolboxStore.openedGeometryOptions.subscribe((options) => {
       const { viewer } = this.cesiumService;
       this.noEdit = false;
@@ -81,13 +81,10 @@ export class NgmGeometryInfo extends LitElementI18n {
     ToolboxStore.noEditGeometries.subscribe(
       () => (this.geometry = ToolboxStore.openedGeometry),
     );
-  }
 
-  connectedCallback() {
     draggable(this, {
       allowFrom: '.drag-handle',
     });
-    super.connectedCallback();
   }
 
   @pauseGeometryCollectionEvents

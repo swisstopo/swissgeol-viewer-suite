@@ -6,7 +6,13 @@ import {
   ScreenSpaceEventType,
   Viewer,
 } from 'cesium';
-import { BehaviorSubject, filter, Observable, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  firstValueFrom,
+  Observable,
+  take,
+} from 'rxjs';
 import { BaseService } from 'src/services/base.service';
 import { Layer, LayerType } from 'src/features/layer';
 import {
@@ -53,20 +59,21 @@ export class LayerInfoService extends BaseService {
       layerService.layerActivated$.subscribe(this.handleLayerActivated);
     });
 
-    CesiumService.inject().then((cesiumService) => {
-      this.viewer = cesiumService.viewer;
-
-      const eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-      eventHandler.setInputAction(
-        async (event: ScreenSpaceEventHandler.PositionedEvent) => {
-          if (DrawStore.drawStateValue) {
-            return;
-          }
-          this.pick2d(event.position);
-        },
-        ScreenSpaceEventType.LEFT_CLICK,
-      );
-    });
+    CesiumService.inject()
+      .then((s) => firstValueFrom(s.viewer$))
+      .then((viewer) => {
+        this.viewer = viewer;
+        const eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+        eventHandler.setInputAction(
+          async (event: ScreenSpaceEventHandler.PositionedEvent) => {
+            if (DrawStore.drawStateValue) {
+              return;
+            }
+            this.pick2d(event.position);
+          },
+          ScreenSpaceEventType.LEFT_CLICK,
+        );
+      });
   }
 
   get infos$(): Observable<readonly LayerInfo[]> {

@@ -1,5 +1,3 @@
-- re-add zoom to object on permalink (see behavior in old sidebar)
-
 - add 3dtiles v1.1 code to refactored layers (+ attempt to use shader instead of alpha color)
 
 - cleanup translations

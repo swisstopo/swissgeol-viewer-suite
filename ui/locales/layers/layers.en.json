@@ -1,14 +1,38 @@
 {
-  "catalog": {
-    "filter": "Open filter"
+  "values": {
+    "no_data": "no value",
+    "undefined": "undefined"
   },
-  "infoWindow": {
-    "title": "Info",
-    "zoomToObject": "Zoom to object"
+  "layers": {
+    "ch.swisstopo.geologie-geocover": "GeoCover - Vector Datasets",
+    "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen": "Lithology 500",
+    "top_omm": "Top Upper Marine Molasse",
+    "top_usm": "Top Lower Freshwater Molasse",
+    "top_umm": "Top Lower Marine Molasse",
+    "top_muschelkalk": "Top Muschelkalk"
   },
-  "swissBEDROCK": {
-    "title": "swissBEDROCK",
-    "bands": {
+  "groups": {
+    "grp_1786_label": "Maps, cross-sections & models",
+    "grp_1787_label": "Geological maps",
+    "grp_1793_label": "Thematic maps",
+    "grp_15174_label": "Historical maps",
+    "grp_1799_label": "Sheet divisions",
+    "grp_15143_label": "Cross-sections",
+    "grp_1855_label": "3D models",
+    "grp_1802_label": "Borehole data",
+    "grp_1811_label": "Geophysics",
+    "grp_1812_label": "Earth's gravity field",
+    "grp_1818_label": "Earth's magnetic field",
+    "grp_15070_label": "Geoenergy"
+  },
+  "properties": {
+    "Voxel": {
+      "cell_center": "",
+      "logk": "Hydraulic Conductivity",
+      "Index": "Modelling Unit",
+      "Klasse": "Permeability"
+    },
+    "ch.swisstopo.swissbedrock-geotiff": {
       "BEM": "Bedrock elevation model",
       "TMUD": "Thickness model of unconsolidated deposits",
       "Uncertainty": "Uncertainty",
@@ -22,6 +46,11 @@
       "prev_Author": "Previous version numeric author ID"
     }
   },
+  "backgrounds": {
+    "ch.swisstopo.pixelkarte-grau": "Grey map",
+    "ch.swisstopo.swissimage": "Aerial map",
+    "lakes_rivers_map": "Lakes & rivers"
+  },
   "units": {
     "Meters": {
       "name": "meters",
@@ -32,30 +61,9 @@
       "symbol": "m.a.s.l."
     }
   },
-  "layers": {
-    "ch.swisstopo.geologie-geocover": "GeoCover - Vector Datasets",
-    "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen": "Lithology 500",
-    "top_omm": "Top Upper Marine Molasse",
-    "top_usm": "Top Lower Freshwater Molasse",
-    "top_umm": "Top Lower Marine Molasse",
-    "top_muschelkalk": "Top Muschelkalk"
-  },
-  "backgrounds": {
-    "ch.swisstopo.pixelkarte-grau": "Grey map",
-    "ch.swisstopo.swissimage": "Aerial map",
-    "lakes_rivers_map": "Lakes & rivers"
-  },
-  "attributes": {
-    "Voxel": {
-      "cellCenter": "",
-      "logk": "Hydraulic Conductivity",
-      "Index": "Modelling Unit",
-      "Klasse": "Permeability"
-    }
-  },
-  "values": {
-    "noData": "no value",
-    "undefined": "undefined"
-  },
-  "geocatUrl": "https://www.geocat.ch/geonetwork/srv/eng/catalog.search#/metadata/{{id}}"
+  "geocat_url": "https://www.geocat.ch/geonetwork/srv/eng/catalog.search#/metadata/{{id}}",
+  "info_window": {
+    "title": "Info",
+    "zoom_to_object": "Zoom to object"
+  }
 }

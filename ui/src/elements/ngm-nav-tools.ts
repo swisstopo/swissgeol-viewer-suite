@@ -125,6 +125,7 @@ export class NgmNavTools extends CoreElement {
   accessor cesiumService!: CesiumService;
 
   async connectedCallback() {
+    super.connectedCallback();
     const { viewer } = this.cesiumService;
     this.axisDataSource = await viewer.dataSources.add(
       new CustomDataSource('navigationAxes'),
@@ -184,7 +185,6 @@ export class NgmNavTools extends CoreElement {
     draggable(this, {
       allowFrom: '.ngm-drag-area',
     });
-    super.connectedCallback();
 
     // Create the rotate/tilt indicator.
     this.register(

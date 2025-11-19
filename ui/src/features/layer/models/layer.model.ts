@@ -120,7 +120,7 @@ export const getTranslationKeyForLayerAttributeName = (
   attribute: string,
 ): TranslationKey =>
   makeTranslationKey(
-    `layers:attributes.${layer.id}.${attribute}`,
-    `layers:attributes.${layer.type}.${attribute}`,
-    `layers:attributes.${attribute}`,
+    `layers:properties.${layer.id}.${attribute}`,
+    `layers:properties.${layer.type}.${attribute}`,
+    `layers:properties.${attribute}`,
   );

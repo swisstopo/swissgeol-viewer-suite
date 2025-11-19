@@ -232,7 +232,7 @@ export class CatalogDisplayListItem extends CoreElement {
         () => html`
           <ngm-core-dropdown-item role="link">
             <a
-              href="${i18next.t('layers:geocatUrl', {
+              href="${i18next.t('layers:geocat_url', {
                 id: this.layer.geocatId,
               })}"
               target="_blank"
@@ -287,7 +287,7 @@ export class CatalogDisplayListItem extends CoreElement {
               @click="${this.openTiffFilter}"
             >
               <ngm-core-icon icon="filter"></ngm-core-icon>
-              ${i18next.t('layers:geoTIFF.bandsWindow.open')}
+              ${i18next.t('catalog:tiffBandsWindow.open')}
             </ngm-core-dropdown-item>
           `
         : ''}
@@ -296,7 +296,7 @@ export class CatalogDisplayListItem extends CoreElement {
         () => html`
           <ngm-core-dropdown-item role="button" @click="${this.openTimes}">
             <ngm-core-icon icon="turnPage"></ngm-core-icon>
-            ${i18next.t('catalog:display.timeTravel')}
+            ${i18next.t('catalog:display.time_travel')}
           </ngm-core-dropdown-item>
         `,
       )}

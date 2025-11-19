@@ -169,10 +169,12 @@ export class LayerService extends BaseService {
   constructor() {
     super();
 
-    CesiumService.inject().then((cesiumService) => {
-      this.viewer = cesiumService.viewer;
-      this.hasViewer$.next(true);
-    });
+    CesiumService.inject()
+      .then((s) => firstValueFrom(s.viewer$))
+      .then((viewer) => {
+        this.viewer = viewer;
+        this.hasViewer$.next(true);
+      });
 
     LayerApiService.inject().then((service) => {
       this.layerApiService = service;

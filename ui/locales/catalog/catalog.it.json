@@ -10,7 +10,7 @@
     "legend": "Leggenda",
     "download": "Scaricare / Scala",
     "filter": "Aprire il filtro",
-    "timeTravel": "Viaggio nel tempo",
+    "time_travel": "Viaggio nel tempo",
     "remove": "Rimuovere"
   },
   "exaggeration": {
@@ -32,12 +32,28 @@
     }
   },
   "add_content_from_cesium_ion": "Aggiunta di contenuti da cesium ion",
+  "times_window": {
+    "all": "Tutti"
+  },
+  "voxel_filter_window": {
+    "items": {
+      "select_all": "Selezionare tutti",
+      "deselect_all": "Deselezionare tutti"
+    },
+    "range": {
+      "min": "Min",
+      "max": "Max",
+      "should_include_undefined": "Visualizzare sempre i valori non definiti?"
+    },
+    "operators": {
+      "And": "AND",
+      "Or": "OR",
+      "Xor": "XOR"
+    }
+  },
   "tiffBandsWindow": {
     "title": "{{ layer }} - Bande",
     "open": "Visualizzare le bande",
     "legend": "Legenda"
-  },
-  "timesWindow": {
-    "all": "Tutti"
   }
 }

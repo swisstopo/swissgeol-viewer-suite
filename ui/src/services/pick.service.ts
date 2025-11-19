@@ -6,6 +6,7 @@ import {
   Ray,
   Viewer,
 } from 'cesium';
+import { firstValueFrom } from 'rxjs';
 import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
 
@@ -17,9 +18,11 @@ export class PickService extends BaseService {
   constructor() {
     super();
 
-    CesiumService.inject().then((cesiumService) => {
-      this.viewer = cesiumService.viewer;
-    });
+    CesiumService.inject()
+      .then((s) => firstValueFrom(s.viewer$))
+      .then((viewer) => {
+        this.viewer = viewer;
+      });
   }
 
   /**
