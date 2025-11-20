@@ -265,15 +265,17 @@ export async function create3DTilesetFromConfig(
 
   if (tileset.properties === undefined) {
     const metadata = tileset['metadata'];
-    const properties = metadata
-      .getPropertyIds()
-      .reduce((acc: Record<string, unknown>, id: string) => {
-        return {
-          ...acc,
-          [id]: metadata.getProperty(id)[0],
-        };
-      }, {});
-    tileset.customProperties = properties;
+    if (metadata) {
+      const properties = metadata
+        .getPropertyIds()
+        .reduce((acc: Record<string, unknown>, id: string) => {
+          return {
+            ...acc,
+            [id]: metadata.getProperty(id)[0],
+          };
+        }, {});
+      tileset.customProperties = properties;
+    }
   } else {
     tileset.customProperties = tileset.properties;
   }
