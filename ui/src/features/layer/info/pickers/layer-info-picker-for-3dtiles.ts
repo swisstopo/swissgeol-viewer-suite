@@ -308,6 +308,9 @@ class LayerInfoForEntity implements LayerInfo {
 const extractTilesetAttributes = (
   tileset: PickableCesium3DTileset,
 ): LayerInfoAttribute[] => {
+  if (!tileset.customProperties) {
+    return [];
+  }
   const attributes: LayerInfoAttribute[] = [];
   const propertyNames = sortPropertyNames(
     Object.keys(tileset.customProperties),

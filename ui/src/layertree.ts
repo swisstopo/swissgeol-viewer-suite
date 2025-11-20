@@ -1359,6 +1359,7 @@ const group_01: LayerTreeNode =
                 // TOMM
                 type: LayerType.tiles3d,
                 ogc: { id: 10486 },
+                assetId: 3955170,
                 label: t('lyr_top_omm_label'),
                 layer: 'top_omm',
                 opacity: DEFAULT_LAYER_OPACITY,
