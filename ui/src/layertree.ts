@@ -1402,6 +1402,7 @@ const group_01: LayerTreeNode =
                 previewColor: '#d3cfc0',
               },
               {
+                // BCen
                 type: LayerType.tiles3d,
                 assetId: 3955446,
                 ogc: { id: 10489 },
