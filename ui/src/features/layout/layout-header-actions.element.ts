@@ -2,8 +2,8 @@ import { CoreElement } from 'src/features/core';
 import { customElement } from 'lit/decorators.js';
 import { css, html } from 'lit';
 import { CesiumService } from 'src/services/cesium.service';
-import { when } from 'lit/directives/when.js';
 import { consume } from '@lit/context';
+import { until } from 'lit/directives/until.js';
 
 @customElement('ngm-layout-header-actions')
 export class LayoutHeaderActions extends CoreElement {
@@ -11,9 +11,10 @@ export class LayoutHeaderActions extends CoreElement {
   accessor cesiumService!: CesiumService;
 
   readonly render = () => html`
-    ${when(
-      this.cesiumService.isReady,
-      () => html`<ngm-layout-cursor-info></ngm-layout-cursor-info>`,
+    ${until(
+      this.cesiumService.ready.then(
+        () => html`<ngm-layout-cursor-info></ngm-layout-cursor-info>`,
+      ),
     )}
     <div class="separator"></div>
     <div class="suffix">

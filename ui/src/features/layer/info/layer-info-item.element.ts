@@ -1,4 +1,4 @@
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { css, html, TemplateResult } from 'lit';
 import {
@@ -9,6 +9,8 @@ import i18next from 'i18next';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
 import { TranslationKey } from 'src/models/translation-key.model';
+import { consume } from '@lit/context';
+import { getLayerAttributeName, Layer, LayerService } from 'src/features/layer';
 
 const numberFormat = new Intl.NumberFormat('de-CH', {
   maximumFractionDigits: 20,
@@ -22,10 +24,22 @@ export class LayerInfoItem extends CoreElement {
   @property({ type: Boolean })
   accessor isFirst!: boolean;
 
+  @state()
+  accessor layer!: Layer;
+
   private dragAnchorX: number | null = null;
+
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
 
   connectedCallback(): void {
     super.connectedCallback();
+
+    this.register(
+      this.layerService.layer$(this.info.layerId).subscribe((layer) => {
+        this.layer = layer;
+      }),
+    );
 
     this.addEventListener('mouseenter', () => {
       this.info.activateHighlight();
@@ -92,56 +106,76 @@ export class LayerInfoItem extends CoreElement {
     return value;
   }
 
-  readonly render = () => html`
-    <label class="toggle">
-      <input type="checkbox" />
-      ${i18next.t(this.info.title)}
-      <sgc-icon name="chevronDown"></sgc-icon>
-    </label>
-    <div class="content">
-      <sgc-button color="secondary" @click="${this.zoomToObject}">
-        ${i18next.t('layers:info_window.zoom_to_object')}
-        <ngm-core-icon icon="zoomPlus"></ngm-core-icon>
-      </sgc-button>
-      <div class="attributes">
-        <ul class="attribute-names">
-          ${repeat(
-            this.info.attributes,
-            (it) => it.key,
-            (it) => {
-              const translatedKey = translate(it.key);
-              return html`<li title="${translatedKey}">${translatedKey}</li>`;
-            },
-          )}
-        </ul>
-        <div class="divider" @mousedown="${this.startResizing}"></div>
-        <ul class="attribute-values">
-          ${repeat(
-            this.info.attributes,
-            (it) => it.key,
-            (it) => {
-              if (
-                typeof it.value === 'string' &&
-                (it.value.startsWith('https://') ||
-                  it.value.startsWith('http://'))
-              ) {
-                return html`<li>
-                  <a
-                    href="${it.value}"
-                    rel="external noopener nofollow"
-                    target="_blank"
-                    >${it.value}</a
-                  >
+  private makeCustomAttributes(): LayerInfoAttribute[] {
+    return Object.entries(this.layer.customProperties).map(([key, value]) => ({
+      key: getLayerAttributeName(this.layer, key),
+      value,
+    }));
+  }
+
+  readonly render = () => {
+    const attributes = [
+      ...this.info.attributes,
+      ...this.makeCustomAttributes(),
+    ];
+    return html`
+      <label class="toggle">
+        <input type="checkbox" />
+        ${i18next.t(this.info.title)}
+        <sgc-icon name="chevronDown"></sgc-icon>
+      </label>
+      <div class="content">
+        <sgc-button color="secondary" @click="${this.zoomToObject}">
+          ${i18next.t('layers:info_window.zoom_to_object')}
+          <ngm-core-icon icon="zoomPlus"></ngm-core-icon>
+        </sgc-button>
+        <div class="attributes">
+          <ul class="attribute-names">
+            ${repeat(
+              attributes,
+              (it) => it.key,
+              (it) => {
+                const translatedKey = translate(it.key);
+                return html` <li title="${translatedKey}">
+                  ${translatedKey}
                 </li>`;
-              }
-              const value = this.formatValue(it.value);
-              return html`<li title="${value}">${value}</li>`;
-            },
-          )}
-        </ul>
+              },
+            )}
+          </ul>
+          <div class="divider" @mousedown="${this.startResizing}"></div>
+          <ul class="attribute-values">
+            ${repeat(
+              attributes,
+              (it) => it.key,
+              (it) => {
+                const value =
+                  typeof it.value === 'string' &&
+                  (it.value.startsWith('https://') ||
+                    it.value.startsWith('http://'))
+                    ? { url: it.value }
+                    : it.value;
+                if (typeof value === 'object' && 'url' in value) {
+                  return html`
+                    <li>
+                      <a
+                        href="${value.url}"
+                        title="${value.url}"
+                        rel="external noopener nofollow"
+                        target="_blank"
+                        >${value.name ?? value.url}</a
+                      >
+                    </li>
+                  `;
+                }
+                const formatted = this.formatValue(it.value);
+                return html` <li title="${formatted}">${formatted}</li>`;
+              },
+            )}
+          </ul>
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  };
 
   static readonly styles = css`
     :host,
@@ -156,6 +190,7 @@ export class LayerInfoItem extends CoreElement {
     }
 
     /* toggle */
+
     .toggle {
       cursor: pointer;
       display: flex;
@@ -179,6 +214,7 @@ export class LayerInfoItem extends CoreElement {
     }
 
     /* content */
+
     .content {
       display: flex;
       flex-direction: column;
@@ -191,6 +227,7 @@ export class LayerInfoItem extends CoreElement {
     }
 
     /* attributes */
+
     .attributes {
       position: relative;
       display: grid;
