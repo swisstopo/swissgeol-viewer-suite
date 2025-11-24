@@ -40,11 +40,13 @@ export class Catalog extends CoreElement {
     }
 
     :host {
+      --header-height: 64px;
+
       display: flex;
       flex-direction: column;
       gap: 16px;
 
-      height: calc(var(--panel-height) - 64px);
+      height: calc(var(--panel-height) - var(--header-height));
     }
 
     /* sections */

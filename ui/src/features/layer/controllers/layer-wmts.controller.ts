@@ -104,7 +104,7 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
     } else {
       // Replace an existing Cesium layer.
       const i = imageryLayers.indexOf(this._imagery);
-      this.removeFromViewer();
+      this.removeLayerFromViewer();
       imageryLayers.add(imagery, i);
     }
     this._imagery = imagery;

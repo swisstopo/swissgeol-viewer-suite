@@ -192,7 +192,6 @@ export class LayerInfoService extends BaseService {
       // If there is no next pick queued up, we can display the results.
       this.infosSubject.next(infos);
       this.viewer.canvas.style.cursor = 'default';
-      console.log('rerender!');
       this.viewer.scene.requestRender();
     } else {
       // If there is already a new pick queued, we simply destroy our results.
