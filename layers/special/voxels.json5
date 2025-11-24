@@ -31,6 +31,9 @@
       geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502",
     }
   ],
+
+  // TODO translate labels
+
   voxel_mappings: {
     lithology: {
       key: 'Index',
