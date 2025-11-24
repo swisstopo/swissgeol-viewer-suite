@@ -63,16 +63,15 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
       return [];
     }
 
-    const entities: LayerInfo[] = [];
+    const entities: Array<Promise<LayerInfo>> = [];
     for (const result of results) {
       if (result.geometry == null) {
         continue;
       }
       const entity = this.createEntityForGeometry(result.geometry);
-      const info = await this.getInfoForResult(result, entity);
-      entities.push(info);
+      entities.push(this.getInfoForResult(result, entity));
     }
-    return entities;
+    return Promise.all(entities);
   }
 
   destroy(): void {

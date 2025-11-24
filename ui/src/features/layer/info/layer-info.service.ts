@@ -53,7 +53,6 @@ export class LayerInfoService extends BaseService {
     PickService.inject().then((pickService) => {
       this.pickService = pickService;
     });
-
     NewLayerService.inject().then((layerService) => {
       this.layerService = layerService;
       layerService.layerActivated$.subscribe(this.handleLayerActivated);
