@@ -1,7 +1,7 @@
+use std::collections::HashMap;
 use crate::data::TranslatedString;
 use crate::layers::config::{Parse, ParseContext};
-use serde::{Deserialize, Deserializer, Serialize};
-use serde::de::Unexpected;
+use serde::{Deserialize, Serialize};
 
 mod config;
 pub use config::LayerConfig;
@@ -62,6 +62,10 @@ pub struct Layer {
     /// If absent, then the layer doesn't have any such legend.
     #[serde(default, skip_serializing)]
     pub access: Option<LayerAccess>,
+
+    /// A mapping of custom properties that should be appended to each pick info on the layer.
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub custom_properties: HashMap<String, String>,
 
     /// Details depending on the actual type of layer.
     #[serde(flatten)]

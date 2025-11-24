@@ -91,6 +91,11 @@ export interface BaseLayer extends Model {
   legend: true | string | null;
 
   /**
+   * A mapping of custom properties that should be appended to each pick info on the layer.
+   */
+  customProperties: Record<string, string>;
+
+  /**
    * Whether the layer is local-only, i.e. relies on the current browser or client.
    * If this is `true`, it indicates that the layer should not be shared via permalinks and the likes.
    */

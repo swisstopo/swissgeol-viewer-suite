@@ -10,6 +10,9 @@
       },
       opacity: 0.7,
       geocat_id: 'fab0e70e-6e33-4ba9-8c42-2b8ac1578384',
+      custom_properties: {
+        details_url: 'http://www.seismo.ethz.ch'
+      }
     }
   ],
   groups: [

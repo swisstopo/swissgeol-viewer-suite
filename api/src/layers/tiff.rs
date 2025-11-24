@@ -39,7 +39,6 @@ pub struct TiffLayerBand {
     /// will produce the translation key providing the display name for this band.
     pub name: String,
 
-    // TODO can this be moved into the band display?
     /// The unit of the band's values.
     /// This is used to format and annotate the bands legend and picks.
     ///

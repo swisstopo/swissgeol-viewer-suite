@@ -103,6 +103,7 @@ export class LayerApiService extends BaseService {
       isVisible: false,
       geocatId: config.takeNullable('geocatId'),
       downloadUrl: config.takeNullable('downloadUrl'),
+      customProperties: config.takeNullable('customProperties') ?? {},
       legend,
     };
 

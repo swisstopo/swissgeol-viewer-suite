@@ -2,7 +2,7 @@ import { Cartesian2, Cartesian3, Cartographic } from 'cesium';
 
 import { LayerInfo } from 'src/features/layer/info/layer-info.model';
 import { Layer } from 'src/features/layer';
-import { Id } from '@swissgeol/ui-core';
+import { Id } from 'src/models/id.model';
 
 export interface LayerInfoPicker {
   readonly layerId: Id<Layer>;

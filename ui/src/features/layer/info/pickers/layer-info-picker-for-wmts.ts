@@ -24,8 +24,8 @@ import {
   LayerInfoAttribute,
 } from 'src/features/layer/info/layer-info.model';
 import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
-import { Id } from '@swissgeol/ui-core';
 import { WmtsLayer } from 'src/features/layer';
+import { Id } from 'src/models/id.model';
 
 export class LayerInfoPickerForWmts implements LayerInfoPicker {
   private readonly highlights: CustomDataSource;

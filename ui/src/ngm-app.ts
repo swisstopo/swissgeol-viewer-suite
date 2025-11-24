@@ -56,6 +56,7 @@ import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
 import { when } from 'lit/directives/when.js';
+import { until } from 'lit/directives/until.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -253,6 +254,7 @@ export class NgmApp extends LitElementI18n {
       if (count === 0) {
         this.cesiumService.initialize(viewer);
         viewer.scene.globe.tileLoadProgressEvent.removeEventListener(l);
+        this.requestUpdate();
       }
     };
     viewer.scene.globe.tileLoadProgressEvent.addEventListener(l);
@@ -473,32 +475,34 @@ export class NgmApp extends LitElementI18n {
             >
           </div>
         </div>
-        ${when(
-          this.cesiumService.isReady,
-          () => html`<ngm-layout-sidebar></ngm-layout-sidebar> `,
+        ${until(
+          this.cesiumService.ready.then(
+            () => html`<ngm-layout-sidebar></ngm-layout-sidebar> `,
+          ),
         )}
         <div class="map" oncontextmenu="return false;">
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>
-            ${when(
-              this.cesiumService.isReady,
-              () => html`
-                <ngm-geometry-info
-                  class="ngm-floating-window"
-                ></ngm-geometry-info>
-                <ngm-topo-profile-modal
-                  class="ngm-floating-window"
-                ></ngm-topo-profile-modal>
-                <ngm-nav-tools
-                  class="ngm-floating-window"
-                  .showCamConfig=${this.showCamConfig}
-                  @togglecamconfig=${() =>
-                    (this.showCamConfig = !this.showCamConfig)}
-                  @axisstate=${(evt) =>
-                    (this.showAxisOnMap = evt.detail.showAxis)}
-                >
-                </ngm-nav-tools>
-              `,
+            ${until(
+              this.cesiumService.ready.then(
+                () => html`
+                  <ngm-geometry-info
+                    class="ngm-floating-window"
+                  ></ngm-geometry-info>
+                  <ngm-topo-profile-modal
+                    class="ngm-floating-window"
+                  ></ngm-topo-profile-modal>
+                  <ngm-nav-tools
+                    class="ngm-floating-window"
+                    .showCamConfig=${this.showCamConfig}
+                    @togglecamconfig=${() =>
+                      (this.showCamConfig = !this.showCamConfig)}
+                    @axisstate=${(evt) =>
+                      (this.showAxisOnMap = evt.detail.showAxis)}
+                  >
+                  </ngm-nav-tools>
+                `,
+              ),
             )}
             <ngm-cam-configuration
               class="ngm-floating-window"
@@ -515,13 +519,14 @@ export class NgmApp extends LitElementI18n {
               @close=${() => (this.showProjectPopup = false)}
             >
             </ngm-project-popup>
-            ${when(
-              this.cesiumService.isReady,
-              () => html`
-                <ngm-coordinate-popup
-                  class="ngm-floating-window"
-                ></ngm-coordinate-popup>
-              `,
+            ${until(
+              this.cesiumService.ready.then(
+                () => html`
+                  <ngm-coordinate-popup
+                    class="ngm-floating-window"
+                  ></ngm-coordinate-popup>
+                `,
+              ),
             )}
 
             <div class="on-map-menu">

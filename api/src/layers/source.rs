@@ -13,7 +13,6 @@ pub enum LayerSource {
     Url {
         /// The url at which the file can be found.
         url: String,
-        // TODO Decide how to handle `detailsUrl`.
     },
 
     #[serde(rename_all(serialize = "camelCase"))]
