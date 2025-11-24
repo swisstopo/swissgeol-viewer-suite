@@ -1,6 +1,7 @@
 use crate::data::TranslatedString;
 use crate::layers::config::{Parse, ParseContext};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+use serde::de::Unexpected;
 
 mod config;
 pub use config::LayerConfig;
@@ -28,6 +29,9 @@ pub use source::*;
 
 mod access;
 pub use access::*;
+
+mod opacity;
+pub use opacity::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
@@ -67,19 +71,6 @@ pub struct Layer {
     /// This is used to ensure that the layer is not unused.
     #[serde(skip, default)]
     pub use_count: u32,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum LayerOpacity {
-    Default(f32),
-    Disabled,
-}
-
-impl Default for LayerOpacity {
-    fn default() -> Self {
-        Self::Default(1.0)
-    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
