@@ -5,7 +5,7 @@
       id: "voxel_aaretal_lithology",
       source: {
         type: "CesiumIon",
-        asset_id: 3882543,
+        asset_id: 3882886,
       },
       data_key: "Index",
       mappings: ['conductivity','lithology'],
@@ -20,7 +20,7 @@
       id: "voxel_aaretal_conductivity",
       source: {
         type: "CesiumIon",
-        asset_id: 3882543,
+        asset_id: 3882886,
       },
       data_key: "logk",
       mappings: ['conductivity', 'lithology'],

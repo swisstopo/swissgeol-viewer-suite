@@ -128,7 +128,7 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
     primitive.depthTest = true;
     primitive.customShader = this.createShader();
 
-    // Hide the layer until its ready.
+    // Hide the layer until it's ready.
     primitive.show = false;
 
     // Extract the step size from the url.
@@ -245,7 +245,7 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
     );
 
     const code = `
-      const float NO_DATA_VALUE = ${mapFloatToShader(layer.values.no_data)};
+      const float NO_DATA_VALUE = ${mapFloatToShader(layer.values.noData)};
       const float UNDEFINED_VALUE = ${mapFloatToShader(layer.values.undefined)};
 
       const vec4 TRANSPARENT = vec4(0.0, 0.0, 0.0, 0.0);
