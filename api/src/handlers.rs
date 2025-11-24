@@ -552,11 +552,19 @@ async fn save_assets(client: Client, project_assets: &Vec<Asset>) {
             .is_ok();
 
         if source_exists && !destination_exists {
-            client
-                .copy_object()
+            let obj = client
+                .get_object()
                 .bucket(&bucket)
-                .copy_source(format!("{}/{}", &bucket, &temp_key))
+                .key(&temp_key)
+                .send()
+                .await
+                .unwrap();
+
+            client
+                .put_object()
+                .bucket(&bucket)
                 .key(&permanent_key)
+                .body(obj.body)
                 .send()
                 .await
                 .unwrap();
