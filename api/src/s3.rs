@@ -44,6 +44,7 @@ impl S3 {
                 .region(Region::new(self.s3_aws_region.to_owned()))
                 .endpoint_url(endpoint.to_string())
                 .credentials_provider(creds)
+                .force_path_style(true)
                 .build();
 
             return Client::from_conf(config);
