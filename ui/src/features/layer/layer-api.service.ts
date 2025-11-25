@@ -294,6 +294,10 @@ export class LayerApiService extends BaseService {
           type: LayerSourceType.Ogc,
           id: config.take('id'),
           styleId: config.takeNullable('styleId') ?? undefined,
+          displaySource:
+            config
+              .takeNullableObject('displaySource')
+              ?.apply(this.mapConfigToSource) ?? undefined,
         };
     }
   };

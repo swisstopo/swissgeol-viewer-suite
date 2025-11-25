@@ -111,6 +111,14 @@ export async function setupViewer(container: Element) {
     // maximumRenderTimeChange: 10,
   });
 
+  // Print errors to console.
+  // Might be a good idea to create an alert for this at some point,
+  // as these errors can break the viewer.
+  viewer.scene.renderError.addEventListener((_scene, error) => {
+    console.error(String(error));
+    viewer.scene.requestRender();
+  });
+
   viewer.scene.postProcessStages.ambientOcclusion.enabled = false;
 
   const scene = viewer.scene;

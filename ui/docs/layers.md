@@ -25,6 +25,7 @@ Layers are divided into the following types:
 - `Voxel` layers are collections of 3d voxel tiles.
 - `Kml` layers are layers created from KML files.
   Note that unlike most other layers, KMLs can only be uploaded at runtime and cannot be defined in the app's configuration.
+- `Earthquakes` layers are layers that display 3d entities representing earthquake epicenters.
 
 There is another type of layer, `Background`, which represents the base layer, i.e. the terrain and the map draped right on top of it.
 The background behaves a bit differently from most other layers.
