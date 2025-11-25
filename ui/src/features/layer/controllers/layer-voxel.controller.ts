@@ -20,12 +20,9 @@ import {
 } from 'cesium';
 import { OBJECT_HIGHLIGHT_NORMALIZED_RGB } from 'src/constants';
 import { sleep } from 'src/utils/fn.utils';
-import { PickService, ScenePickingLock } from 'src/services/pick.service';
 
 export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
   private _primitive!: VoxelPrimitive;
-
-  private scenePickingLock: ScenePickingLock | null = null;
 
   private knownKeys!: string[];
 
@@ -144,10 +141,6 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
     primitive.maxClippingBounds.z =
       primitive.maxBounds.z * maxExaggerationFactor;
 
-    // Lock scene picking while tiles are loading.
-    const pickService = PickService.get();
-    const scenePickingLock = pickService.acquireScenePickingLock();
-
     const { primitives } = this.viewer.scene;
     const i =
       this._primitive === null
@@ -162,19 +155,6 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
       primitives.add(primitive, i);
     }
     this._primitive = primitive;
-
-    // Disable scene picking while any tiles are being loaded.
-    this.scenePickingLock = scenePickingLock;
-    primitive.loadProgress.addEventListener(
-      (numberOfPendingRequests: number, numberOfTilesProcessing: number) => {
-        if (numberOfPendingRequests === 0 && numberOfTilesProcessing === 0) {
-          this.scenePickingLock?.release();
-          this.scenePickingLock = null;
-        } else {
-          this.scenePickingLock ??= pickService.acquireScenePickingLock();
-        }
-      },
-    );
 
     // Wait for the primitive to become ready, then make it visible.
     while (!primitive.ready) {
@@ -192,9 +172,6 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
     primitives.remove(primitive);
 
     this._primitive = undefined as unknown as VoxelPrimitive;
-
-    this.scenePickingLock?.release();
-    this.scenePickingLock = null;
   }
 
   /**

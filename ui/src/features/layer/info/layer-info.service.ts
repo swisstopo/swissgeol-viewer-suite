@@ -178,14 +178,14 @@ export class LayerInfoService extends BaseService {
 
     this.viewer.canvas.style.cursor = 'progress';
     await tick();
+    for (const info of this.infosSubject.value) {
+      info.destroy();
+    }
     const infos: LayerInfo[] = [];
     const picks = this.pickers.map(async (picker) => {
       const pickedInfos = await picker.pick(data);
       infos.push(...pickedInfos);
     });
-    for (const info of this.infosSubject.value) {
-      info.destroy();
-    }
     await Promise.all(picks);
     if (this.nextPick === null) {
       // If there is no next pick queued up, we can display the results.
