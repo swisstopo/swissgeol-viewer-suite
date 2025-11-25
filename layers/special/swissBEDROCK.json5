@@ -4,7 +4,10 @@
       // Layer Top Bedrock Geotiff
       type: 'Tiff',
       id: 'ch.swisstopo.swissbedrock-geotiff',
-      url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+      source:  {
+        type: 'Url',
+        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+      },
       opacity: 0.5,
       download_url: {
         de: 'https://www.swisstopo.admin.ch/de/swissbedrock-de',
@@ -90,7 +93,10 @@
       // Layer Top Bedrock Geotiff with Terrain
       type: 'Tiff',
       id: 'ch.swisstopo.swissbedrock-geotiff-with-terrain',
-      url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+      source:  {
+        type: 'Url',
+        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+      },
       terrain: {
         type: 'CesiumIon',
         asset_id: 3914142,

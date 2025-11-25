@@ -233,10 +233,11 @@ export class LayerApiService extends BaseService {
   private readonly mapConfigToTiffLayer = (
     config: DynamicObject,
   ): Specific<TiffLayer> => ({
-    ...config.takeKeys<TiffLayer>()('url', 'cellSize'),
+    source: config.takeObject('source').apply(this.mapConfigToSource),
     terrain:
       config.takeNullableObject('terrain')?.apply(this.mapConfigToSource) ??
       null,
+    cellSize: config.take('cellSize'),
     bandIndex: 0,
     bands: config.takeAll(
       'bands',

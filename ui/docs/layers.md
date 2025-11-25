@@ -5,7 +5,7 @@ They represent the application's core data and are subject to most of its functi
 
 ## Configuration
 
-Layers are configured in [layers/layers.json5](../../layers/layers.json5) and exposed via the API.
+Layers are configured in [layers/layertree.json5](../../layers/layertree.json5) and exposed via the API.
 
 > The structure of layers within the application can differ from
 > how they are defined within their configuration files.

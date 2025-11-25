@@ -21,7 +21,7 @@ FROM alpine:3.17
 ARG APP_VERSION
 ENV APP_VERSION=${APP_VERSION}
 ENV COLORMAP_DIR_PATH="/app/colormaps"
-ENV LAYERS_FILE=/configs/layers/layers.json5
+ENV LAYERS_FILE=/configs/layers/layertree.json5
 
 RUN apk add --no-cache util-linux curl
 

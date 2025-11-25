@@ -1,4 +1,7 @@
-import { BaseLayerController } from 'src/features/layer/controllers/layer.controller';
+import {
+  BaseLayerController,
+  mapLayerSourceToResource,
+} from 'src/features/layer/controllers/layer.controller';
 import {
   LayerType,
   TiffLayer,
@@ -103,8 +106,9 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
         this.watch(layer.bandIndex);
       }
 
-      protected override makeProvider(): WmtsImageryProvider {
+      protected override async makeProvider(): Promise<WmtsImageryProvider> {
         const layer = getLayer();
+        const resource = await mapLayerSourceToResource(layer.source);
         const band = layer.bands[layer.bandIndex];
         const noDataParam =
           band.display?.noData === null ? '' : '&nodata={nodata}';
@@ -114,7 +118,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
         const provider = new UrlTemplateImageryProvider({
           url: `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url={url}&bidx={bidx}&colormap_name={colormap}${rescaleParam}${noDataParam}`,
           customTags: {
-            url: () => layer.url,
+            url: () => resource.url,
             bidx: () => band.index,
             colormap: () => band.display!.colorMap,
             min: () => band.display!.bounds[0],

@@ -88,9 +88,9 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
     });
   }
 
-  protected override addToViewer(): void {
+  protected override async addToViewer(): Promise<void> {
     // Create new instances of both the provider and layer.
-    this.provider = this.makeProvider();
+    this.provider = await this.makeProvider();
     (this.provider as { controller?: WmtsLayerController }).controller = this;
     const imagery = new ImageryLayer(this.provider, {
       show: this.layer.isVisible,
@@ -153,7 +153,7 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
    * Creates a provider instance based on the layer's source type.
    * @private
    */
-  protected makeProvider(): WmtsImageryProvider {
+  protected async makeProvider(): Promise<WmtsImageryProvider> {
     switch (this.layer.source) {
       case WmtsLayerSource.WMS:
         return this.makeProviderForWms();

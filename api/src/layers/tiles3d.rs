@@ -7,12 +7,12 @@ use crate::layers::config::{Parse, ParseContext};
 #[serde(deny_unknown_fields, rename_all(serialize = "camelCase"))]
 pub struct Tiles3dLayer {
     /// The layer's source, defining where the layer is loaded from.
-    source: LayerSource,
+    pub source: LayerSource,
 
     /// The order in which the layer's properties are sorted when displayed.
     /// Keys that are left out will be sorted below any sorted ones, in default order.
     #[serde(default, skip_serializing_if = "Tiles3dLayerOrderOfProperties::is_empty")]
-    order_of_properties: Tiles3dLayerOrderOfProperties,
+    pub order_of_properties: Tiles3dLayerOrderOfProperties,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
