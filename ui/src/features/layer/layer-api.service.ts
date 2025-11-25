@@ -88,11 +88,12 @@ export class LayerApiService extends BaseService {
     const opacity: number | 'Disabled' = config.takeNullable('opacity') ?? 1;
     const canUpdateOpacity = opacity !== 'Disabled';
     const legend = run(() => {
-      const legendValue: string | null = config.takeNullable('legend');
+      const legendValue: string | boolean | null =
+        config.takeNullable('legend');
       if (legendValue === null) {
         return null;
       }
-      return legendValue === 'id' ? true : legendValue;
+      return legendValue || null;
     });
     const base: BaseLayer = {
       type,

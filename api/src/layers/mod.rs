@@ -80,8 +80,7 @@ pub struct Layer {
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum LayerLegend {
-    #[serde(rename = "id")]
-    Id,
+    IdOrDisabled(bool),
     CustomId(String),
 }
 
