@@ -33,5 +33,11 @@ pub enum LayerSource {
         /// If left out, the collection's default download is used.
         #[serde(default, skip_serializing_if = "Option::is_none")]
         style_id: Option<u32>,
+
+        /// An optional source that will be used when displaying the layer.
+        /// When this is set, the OGC API will only be used for layer exports.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        display_source: Option<Box<LayerSource>>,
+
     },
 }

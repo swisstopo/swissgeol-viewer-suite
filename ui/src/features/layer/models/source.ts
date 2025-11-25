@@ -46,4 +46,10 @@ export interface LayerSourceForOgc {
    * If left out, the collection's default download is used.
    */
   styleId?: number;
+
+  /**
+   * An optional source that will be used when displaying the layer.
+   * When this is set, the OGC API will only be used for layer exports.
+   */
+  displaySource?: LayerSource;
 }

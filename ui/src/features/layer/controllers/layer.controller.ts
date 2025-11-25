@@ -355,6 +355,10 @@ export const mapLayerSourceToResource = async (
         key: source.key,
       });
     case LayerSourceType.Ogc: {
+      if (source.displaySource !== undefined) {
+        return mapLayerSourceToResource(source.displaySource);
+      }
+
       // TODO At some point, we will have to differentiate between different formats.
       //      Right now, only 3dtiles can be fetched via OGC.
       const url =

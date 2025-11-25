@@ -5,7 +5,6 @@
 /ui/src/environments
 /ui/manuals/dist
 /ui/types
-/docs
 /secrets.txt
 
 # JetBrains IDE files
@@ -14,3 +13,5 @@
 # Local Docker volumes
 /volumes/
 
+
+/public2

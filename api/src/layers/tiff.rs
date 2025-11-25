@@ -34,13 +34,11 @@ pub struct TiffLayerBand {
     pub index: u32,
 
     /// The band's name.
-    ///
-    /// It is assumed that joining this name with the layers `label` as in `{label}.bands.{name}`
-    /// will produce the translation key providing the display name for this band.
+    /// To translate this name, it will be treated as a property of the layer.
     pub name: String,
 
     /// The unit of the band's values.
-    /// This is used to format and annotate the bands legend and picks.
+    /// This is used to format and annotate the band's legend and picks.
     ///
     /// If this is left out, then the band values will be shown as-is.
     #[serde(default, skip_serializing_if = "Option::is_none")]

@@ -29,7 +29,7 @@ pub struct VoxelLayerValues {
     /// The value that represents a datapoint without a value.
     /// The datapoint still exists and should be displayed, it just isn't backed by a meaningful value.
     ///
-    /// The main use of undefined values are datapoints that are only meaningful for specific mappings.
+    /// The main use of undefined values is for datapoints that are only meaningful for specific mappings.
     /// If a datapoint is undefined on all mapped keys, it may be treated as `no_data`.
     pub undefined: i32,
 }

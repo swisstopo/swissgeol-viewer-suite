@@ -58,14 +58,14 @@ pub struct Layer {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legend: Option<LayerLegend>,
 
+    /// A mapping of custom properties that should be appended to each pick info on the layer.
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub custom_properties: HashMap<String, String>,
+
     /// Where the legend for the layer can found.
     /// If absent, then the layer doesn't have any such legend.
     #[serde(default, skip_serializing)]
     pub access: Option<LayerAccess>,
-
-    /// A mapping of custom properties that should be appended to each pick info on the layer.
-    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
-    pub custom_properties: HashMap<String, String>,
 
     /// Details depending on the actual type of layer.
     #[serde(flatten)]
