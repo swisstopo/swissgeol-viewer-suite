@@ -126,7 +126,6 @@ export class EarthquakesLayerController extends BaseLayerController<EarthquakesL
       cameraDistance,
     );
     const color = getColorFromTime(entry.Time);
-    // entry['Details'] = this.layer.detailsUrl; // TODO add this
     this.dataSource.entities.add({
       position: position,
       ellipsoid: {
@@ -139,7 +138,6 @@ export class EarthquakesLayerController extends BaseLayerController<EarthquakesL
       },
       properties: {
         ...entry,
-        // propsOrder: this.config.propsOrder, // TODO add this
         zoomHeadingPitchRange: zoomHeadingPitchRange,
       },
     });

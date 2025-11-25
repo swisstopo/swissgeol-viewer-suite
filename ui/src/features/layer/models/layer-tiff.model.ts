@@ -5,9 +5,9 @@ export interface TiffLayer extends BaseLayer {
   type: LayerType.Tiff;
 
   /**
-   * The url at which the tiff can be accessed.
+   * The layer's source, defining where the layer is loaded from.
    */
-  url: string;
+  source: LayerSource;
 
   /**
    * The source for the layer's terrain.

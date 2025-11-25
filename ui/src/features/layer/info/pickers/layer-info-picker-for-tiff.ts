@@ -17,7 +17,7 @@ import {
   Resource,
   Viewer,
 } from 'cesium';
-import { TiffLayer } from 'src/features/layer';
+import { mapLayerSourceToResource, TiffLayer } from 'src/features/layer';
 import i18next from 'i18next';
 import {
   LayerInfo,
@@ -83,7 +83,8 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
     }
 
     const { layer } = this.controller;
-    const url = `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/point/${longitude},${latitude}?url=${layer.url}`;
+    const resource = await mapLayerSourceToResource(layer.source);
+    const url = `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/point/${longitude},${latitude}?url=${resource.url}`;
     const json: Json = await Resource.fetchJson({ url });
     try {
       const activeBandIndex = layer.bands[layer.bandIndex].index;
@@ -151,7 +152,11 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
       height: number;
     }
 
-    const url = `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/info?url=${this.controller.layer.url}`;
+    const resource = await mapLayerSourceToResource(
+      this.controller.layer.source,
+    );
+
+    const url = `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/info?url=${resource.url}`;
     const json: Json = await Resource.fetchJson({ url });
 
     const [minX, minY, maxX, maxY] = json.bounds;

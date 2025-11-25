@@ -12,8 +12,8 @@ use crate::LayerSource;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all(serialize = "camelCase"))]
 pub struct TiffLayer {
-    /// The url at which the tiff can be accessed.
-    pub url: String,
+    /// The layer's source, defining where the layer is loaded from.
+    pub source: LayerSource,
 
     /// The source for the layer's terrain.
     /// If absent, the TIFF is draped directly onto the default terrain.
