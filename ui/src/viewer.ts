@@ -49,10 +49,7 @@ export interface BaseLayerConfig {
   hasAlphaChannel?: boolean;
 }
 
-export async function setupViewer(
-  container: Element,
-  rethrowRenderErrors: boolean,
-) {
+export async function setupViewer(container: Element) {
   const searchParams = new URLSearchParams(location.search);
 
   const zExaggeration = getExaggeration();
@@ -92,7 +89,7 @@ export async function setupViewer(
   };
   const viewer = new Viewer(container, {
     contextOptions: contextOptions,
-    showRenderLoopErrors: rethrowRenderErrors,
+    showRenderLoopErrors: false,
     animation: false,
     baseLayerPicker: false,
     fullscreenButton: false,
@@ -122,7 +119,7 @@ export async function setupViewer(
   scene.fog.enabled = false;
   scene.globe.showGroundAtmosphere = false;
 
-  scene.rethrowRenderErrors = rethrowRenderErrors;
+  scene.rethrowRenderErrors = false;
   // remove the default behaviour of calling 'zoomTo' on the double clicked entity
   viewer.screenSpaceEventHandler.removeInputAction(
     ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
