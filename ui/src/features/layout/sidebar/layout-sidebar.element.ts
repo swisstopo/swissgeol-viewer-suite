@@ -80,6 +80,16 @@ export class LayoutSidebar extends CoreElement {
     return this;
   }
 
+  updated(): void {
+    requestAnimationFrame(() => {
+      const panel = this.querySelector('ngm-navigation-panel');
+      document.body.style.setProperty(
+        '--sidebar-offset',
+        `${panel?.getBoundingClientRect().width ?? 0}px`,
+      );
+    });
+  }
+
   readonly render = () => html`
     <!-- Inject the "local" styles as global, as we currently disable the shadow dom on this component. -->
     <style>

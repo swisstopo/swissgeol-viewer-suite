@@ -12,11 +12,9 @@ import {
   ImageryLayer,
   Ion,
   IonResource,
-  JulianDate,
   Rectangle,
   RequestScheduler,
   ScreenSpaceEventType,
-  SunLight,
   Viewer,
   WebGLOptions,
 } from 'cesium';
@@ -116,6 +114,8 @@ export async function setupViewer(
     // maximumRenderTimeChange: 10,
   });
 
+  viewer.scene.postProcessStages.ambientOcclusion.enabled = false;
+
   const scene = viewer.scene;
 
   // Hide underground fog.
@@ -140,44 +140,23 @@ export async function setupViewer(
     globe.cartographicLimitRectangle = rectangle;
   }
 
-  // Position the sun the that shadows look nice
-  let sunDate = new Date('2018-06-21T10:00:00.000Z');
-  if (searchParams.has('date')) {
-    const betterDate = new Date(searchParams.get('date') ?? '');
-    if (Number.isNaN(betterDate.getDate())) {
-      console.error(`Provided date is wrong: ${searchParams.get('date')}`);
-    } else {
-      sunDate = betterDate;
-    }
-  }
-  viewer.clock.currentTime = JulianDate.fromDate(sunDate);
+  // Disable underground fog.
+  viewer.scene.fog.enabled = false;
 
-  if (searchParams.has('light')) {
-    const p = searchParams.get('light')?.split('-').map(parseFloat) as number[];
-    scene.light = new DirectionalLight({
-      direction: new Cartesian3(p[0], p[1], p[2]),
-      color: Color.WHITE,
-      intensity: p[3],
-    });
-  } else {
-    // Use sun lighting above ground
-    const sunLight = new SunLight();
-    // Define a flashlight for viewing underground
-    const flashlight = new DirectionalLight({
-      direction: scene.camera.directionWC,
-    });
-    scene.preRender.addEventListener((scene) => {
-      if (scene.cameraUnderground) {
-        flashlight.direction = Cartesian3.clone(
-          scene.camera.directionWC,
-          flashlight.direction,
-        );
-        scene.light = flashlight;
-      } else {
-        scene.light = sunLight;
-      }
-    });
-  }
+  // Create a directional light aligned with the camera.
+  const light = new DirectionalLight({
+    direction: Cartesian3.clone(scene.camera.directionWC),
+    intensity: 2,
+  });
+  scene.light = light;
+
+  // Update the light position when the camera moves.
+  scene.preRender.addEventListener(() => {
+    light.direction = Cartesian3.clone(
+      scene.camera.directionWC,
+      light.direction,
+    );
+  });
 
   // Limit the volume inside which the user can navigate
   if (!hasNoLimit) {
@@ -212,5 +191,6 @@ export async function setupViewer(
       inspector.viewModel.wireframe = true;
     }
   }
+
   return viewer;
 }

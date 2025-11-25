@@ -56,7 +56,6 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
 
   protected async addToViewer(): Promise<void> {
     const resource = await mapLayerSourceToResource(this.layer.source);
-
     const tileset = await Cesium3DTileset.fromUrl(resource, {
       show: true,
       backFaceCulling: false,

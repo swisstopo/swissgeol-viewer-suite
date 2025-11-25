@@ -1,5 +1,12 @@
 export const run = <T>(action: () => T): T => action();
 
+export const sleep = (millis: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, millis);
+  });
+
+export const tick = () => new Promise<void>((resolve) => setTimeout(resolve));
+
 export function debounce<T extends (...args: any[]) => void>(
   func: T,
   wait?: number,
@@ -46,8 +53,3 @@ export function throttle<T extends (...args: any[]) => void>(
     }
   };
 }
-
-export const sleep = (millis: number) =>
-  new Promise<void>((resolve) => setTimeout(resolve, millis));
-
-export const tick = () => new Promise<void>((resolve) => setTimeout(resolve));

@@ -277,6 +277,7 @@ export class NgmDashboard extends LitElementI18n {
         geocatId: null,
         downloadUrl: null,
         legend: null,
+        customProperties: {},
         isLocal: true,
       } satisfies KmlLayer);
       layerIds.push(id);

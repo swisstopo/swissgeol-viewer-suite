@@ -287,6 +287,12 @@ export class LayerApiService extends BaseService {
           bucket: config.take('bucket'),
           key: config.take('key'),
         };
+      case LayerSourceType.Ogc:
+        return {
+          type: LayerSourceType.Ogc,
+          id: config.take('id'),
+          styleId: config.takeNullable('styleId') ?? undefined,
+        };
     }
   };
 }

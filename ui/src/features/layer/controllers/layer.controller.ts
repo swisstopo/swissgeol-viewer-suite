@@ -354,5 +354,19 @@ export const mapLayerSourceToResource = async (
         bucket: source.bucket,
         key: source.key,
       });
+    case LayerSourceType.Ogc: {
+      // TODO At some point, we will have to differentiate between different formats.
+      //      Right now, only 3dtiles can be fetched via OGC.
+      const url =
+        source.styleId === undefined
+          ? `https://ogc-api.gst-viewer.swissgeol.ch/collections/${source.id}/download_format/tiles3d`
+          : `https://ogc-api.gst-viewer.swissgeol.ch/collections/${source.id}/styles/${source.styleId}/download_format/tiles3d`;
+      return new Resource({
+        url,
+        headers: {
+          Authorization: `Basic ${import.meta.env['VITE_OGC_GST_BASIC_AUTH']}`,
+        },
+      });
+    }
   }
 };

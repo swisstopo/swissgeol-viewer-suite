@@ -73,7 +73,9 @@ export class CatalogDisplayList extends CoreElement {
       return;
     }
 
-    this.sortable?.destroy();
+    if (this.sortable?.el != null) {
+      this.sortable.destroy();
+    }
     this.sortable = Sortable.create(listElement, {
       animation: 150,
       forceFallback: false,

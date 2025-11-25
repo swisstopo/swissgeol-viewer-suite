@@ -7,6 +7,7 @@ import {
   BoundingSphere,
   Cartesian3,
   Cesium3DTileFeature,
+  Cesium3DTileset,
   Color,
   ColorMaterialProperty,
   Entity,
@@ -26,6 +27,16 @@ import NavToolsStore from 'src/store/navTools';
 import { TemplateResult } from 'lit';
 import { BaseLayerController, Layer } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
+
+const PROPERTIES_TO_EXCLUDE = [
+  'color_blue',
+  'color_green',
+  'color_red',
+  'model_feature',
+  'm_alias',
+  'oname',
+  'style_transparency',
+];
 
 export abstract class LayerInfoDrillPicker<T extends Layer>
   implements LayerInfoPicker
@@ -50,6 +61,13 @@ export abstract class LayerInfoDrillPicker<T extends Layer>
     }
     if (feature instanceof Cesium3DTileFeature) {
       return this.pickFeature(pick, feature);
+    }
+
+    const tileset = (feature as any).content?._tileset as
+      | Cesium3DTileset
+      | undefined;
+    if (tileset !== undefined && 'metadata' in tileset) {
+      return this.pickFeatureForNewTileset(pick, tileset);
     }
     if (
       typeof feature === 'object' &&
@@ -81,6 +99,25 @@ export abstract class LayerInfoDrillPicker<T extends Layer>
     return [
       new LayerInfoForFeature(this.viewer, {
         feature,
+        position: pick.globePosition.cartesian,
+        attributes,
+        layerId: this.controller.layer.id,
+        title: `layers:layers.${this.controller.layer.id}`,
+      }),
+    ];
+  }
+
+  private pickFeatureForNewTileset(
+    pick: LayerPickData,
+    tileset: Cesium3DTileset,
+  ) {
+    const attributes: LayerInfoAttribute[] = extractTilesetAttributes(
+      tileset,
+      this.orderOfProperties,
+    );
+    return [
+      new LayerInfoForFeature(this.viewer, {
+        feature: tileset,
         position: pick.globePosition.cartesian,
         attributes,
         layerId: this.controller.layer.id,
@@ -148,15 +185,13 @@ class LayerInfoForFeature implements LayerInfo {
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
-  private readonly feature: Cesium3DTileFeature;
+  private readonly feature: Cesium3DTileFeature | Cesium3DTileset;
   private readonly position: Cartesian3;
-
-  private readonly originalColor: Color;
 
   constructor(
     private readonly viewer: Viewer,
     data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
-      feature: Cesium3DTileFeature;
+      feature: Cesium3DTileFeature | Cesium3DTileset;
       layerId: Id<Layer>;
       position: Cartesian3;
     },
@@ -167,10 +202,11 @@ class LayerInfoForFeature implements LayerInfo {
     this.title = data.title;
     this.attributes = data.attributes;
 
-    this.originalColor = Color.clone(this.feature.color);
-    this.feature.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(
-      this.feature.color.alpha,
-    );
+    if (this.feature instanceof Cesium3DTileFeature) {
+      this.feature.tileset.customShader!.setUniform('u_isHighlighted', true);
+    } else {
+      this.feature.customShader!.setUniform('u_isHighlighted', true);
+    }
   }
 
   zoomToObject(): void {
@@ -195,7 +231,11 @@ class LayerInfoForFeature implements LayerInfo {
   deactivateHighlight() {}
 
   destroy() {
-    this.feature.color = this.originalColor;
+    if (this.feature instanceof Cesium3DTileFeature) {
+      this.feature.tileset.customShader!.setUniform('u_isHighlighted', false);
+    } else {
+      this.feature.customShader!.setUniform('u_isHighlighted', false);
+    }
   }
 }
 
@@ -325,6 +365,42 @@ const extractEntityAttributes = (
       (typeof value === 'string' && /[A-Za-z0-9]/g.test(value))
     ) {
       attributes.push({ key, value });
+    }
+  }
+  return attributes;
+};
+
+const extractTilesetAttributes = (
+  tileset: Cesium3DTileset,
+  orderOfProperties: string[],
+): LayerInfoAttribute[] => {
+  const metadata = tileset['metadata'];
+  if (metadata == null) {
+    return [];
+  }
+
+  const properties: Record<string, unknown> = metadata
+    .getPropertyIds()
+    .reduce((acc: Record<string, unknown>, id: string) => {
+      return {
+        ...acc,
+        [id]: metadata.getProperty(id)[0],
+      };
+    }, {});
+
+  const attributes: LayerInfoAttribute[] = [];
+  const propertyNames = sortPropertyNames(
+    Object.keys(properties),
+    orderOfProperties,
+  );
+
+  for (const propertyName of propertyNames) {
+    const value = properties[propertyName] as any;
+    if (
+      (typeof value === 'number' || !!value) &&
+      !PROPERTIES_TO_EXCLUDE.includes(propertyName)
+    ) {
+      attributes.push({ key: `assets:${propertyName}`, value });
     }
   }
   return attributes;

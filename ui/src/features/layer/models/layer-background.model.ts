@@ -79,6 +79,7 @@ export const BACKGROUND_LAYER: BackgroundLayer = {
   legend: null,
   activeVariantId: DEFAULT_BACKGROUND_VARIANT.id,
   variants: makeModelMapping(LAYERS),
+  customProperties: {},
 };
 
 export const isBackgroundLayer = (value: unknown): value is BackgroundLayer =>

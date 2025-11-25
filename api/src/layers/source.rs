@@ -23,4 +23,15 @@ pub enum LayerSource {
         /// The key to the file.
         key: String,
     },
+
+    #[serde(rename_all(serialize = "camelCase"))]
+    Ogc {
+        /// The id of the collection representing the layer.
+        id: u32,
+
+        /// The id of the style with which the layer should be rendered.
+        /// If left out, the collection's default download is used.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        style_id: Option<u32>,
+    },
 }
