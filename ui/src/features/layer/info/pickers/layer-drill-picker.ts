@@ -203,7 +203,9 @@ class LayerInfoForFeature implements LayerInfo {
     this.attributes = data.attributes;
 
     if (this.feature instanceof Cesium3DTileFeature) {
-      this.feature.tileset.customShader!.setUniform('u_isHighlighted', true);
+      this.feature.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(
+        this.feature.color.alpha,
+      );
     } else {
       this.feature.customShader!.setUniform('u_isHighlighted', true);
     }
@@ -232,7 +234,7 @@ class LayerInfoForFeature implements LayerInfo {
 
   destroy() {
     if (this.feature instanceof Cesium3DTileFeature) {
-      this.feature.tileset.customShader!.setUniform('u_isHighlighted', false);
+      this.feature.color = Color.WHITE;
     } else {
       this.feature.customShader!.setUniform('u_isHighlighted', false);
     }
