@@ -1,15 +1,14 @@
-import { BaseService } from 'src/utils/base.service';
-import { LayerConfig, LayerTreeNode, LayerType } from 'src/layertree';
-import {
-  Cartesian3,
-  Cartographic,
-  ImageryLayer,
-  UrlTemplateImageryProvider,
-  WebMapServiceImageryProvider,
-  Math as CesiumMath,
-} from 'cesium';
+import { Cartesian3, Cartographic, Math as CesiumMath } from 'cesium';
 import { sleep } from 'src/utils/fn.utils';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { BaseService } from 'src/services/base.service';
+import {
+  Layer,
+  LayerSourceType,
+  LayerType,
+  WmtsLayerSource,
+} from 'src/features/layer';
+import { Id } from 'src/models/id.model';
 
 export class OgcService extends BaseService {
   private readonly jobsSubject = new BehaviorSubject<OgcJob[]>([]);
@@ -18,13 +17,13 @@ export class OgcService extends BaseService {
     return this.jobsSubject.asObservable();
   }
 
-  async isLayerSupported(layer: LayerTreeNode): Promise<boolean> {
+  async isLayerSupported(layer: Layer): Promise<boolean> {
     return (await this.getInputForLayer(layer, [])).length !== 0;
   }
 
   async start(
     title: string,
-    layers: LayerTreeNode[],
+    layers: Layer[],
     shape: Cartesian3[],
   ): Promise<OgcJob | null> {
     const inputs: object[] = [];
@@ -74,7 +73,7 @@ export class OgcService extends BaseService {
     const job: OgcJob = {
       id: result.jobID,
       title,
-      layers,
+      layerIds: layers.map((it) => it.id),
     };
     this.jobsSubject.next([...this.jobsSubject.value, job]);
     return job;
@@ -187,7 +186,7 @@ export class OgcService extends BaseService {
   }
 
   private async getInputForLayer(
-    layer: LayerTreeNode,
+    layer: Layer,
     shape: Cartesian3[],
     options: { shouldWarnIfNotAvailable?: boolean } = {},
   ): Promise<object[]> {
@@ -208,11 +207,15 @@ export class OgcService extends BaseService {
       },
       polygon: points,
     };
-    if (layer.ogc !== undefined) {
+
+    if (
+      layer.type === LayerType.Tiles3d &&
+      layer.source.type === LayerSourceType.Ogc
+    ) {
       // A layer from the gst service, most likely a 3dtile.
       const request = {
         type: 'gst',
-        id: layer.ogc.id,
+        id: layer.source.id,
 
         // The coordinate system used in the output file.
         requestSrs: {
@@ -241,42 +244,32 @@ export class OgcService extends BaseService {
         },
       ];
     }
-    if (layer.type === LayerType.swisstopoWMTS) {
-      const { imageryProvider } = (await (layer as unknown as LayerConfig)
-        .promise) as ImageryLayer;
-      if (imageryProvider instanceof UrlTemplateImageryProvider) {
-        // It's a WMTS layer.
-        return [
-          {
-            type: 'wmts10',
-            identifier: 'wmts@swisstopo',
-            layer: layer.layer,
-            requestArea,
-          },
-        ];
-      } else if (imageryProvider instanceof WebMapServiceImageryProvider) {
-        // It's a WMS layer.
-        return [
-          {
-            type: 'wms13',
-            identifier: 'wms@swisstopo',
-            layer: layer.layer,
-            requestArea,
-          },
-        ];
-      } else {
-        if (options.shouldWarnIfNotAvailable) {
-          console.warn(
-            `Unable to query ogc service for ${layer.type} layer '${layer.layer ?? layer.label}'`,
-          );
-        }
-        return [];
+    if (layer.type === LayerType.Wmts) {
+      switch (layer.source) {
+        case WmtsLayerSource.WMS:
+          return [
+            {
+              type: 'wms13',
+              identifier: 'wms@swisstopo',
+              layer: layer.id,
+              requestArea,
+            },
+          ];
+        case WmtsLayerSource.WMTS:
+          return [
+            {
+              type: 'wmts10',
+              identifier: 'wmts@swisstopo',
+              layer: layer.id,
+              requestArea,
+            },
+          ];
       }
     }
 
     if (options.shouldWarnIfNotAvailable) {
       console.warn(
-        `Unable to query ogc service for ${layer.type} layer '${layer.layer ?? layer.label}'`,
+        `Unable to query ogc service for ${layer.type} layer '${layer.id}'`,
       );
     }
     return [];
@@ -287,7 +280,7 @@ export type BBox = [number, number, number, number];
 
 export interface OgcJob {
   id: string;
-  layers: LayerTreeNode[];
+  layerIds: Array<Id<Layer>>;
   title: string;
 }
 

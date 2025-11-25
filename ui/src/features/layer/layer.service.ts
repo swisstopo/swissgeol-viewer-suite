@@ -553,6 +553,15 @@ export class LayerService extends BaseService {
   }
 
   /**
+   * An observable emitting the ids of all active layers.
+   */
+  get activeLayers$(): Observable<Layer[]> {
+    return this.activeLayerIds$.pipe(
+      map((ids) => ids.map((id) => this.layer(id))),
+    );
+  }
+
+  /**
    * Whether a specific layer is currently active.
    *
    * Note that the background layer counts as permanently active.

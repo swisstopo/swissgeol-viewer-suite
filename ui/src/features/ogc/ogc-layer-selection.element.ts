@@ -5,10 +5,11 @@ import { OgcService } from 'src/features/ogc/ogc.service';
 import { applyTypography } from 'src/styles/theme';
 import { LayerService } from 'src/features/layer/layer.service';
 import { consume } from '@lit/context';
-import { LayerTreeNode } from 'src/layertree';
 import { repeat } from 'lit/directives/repeat.js';
 import i18next from 'i18next';
 import { Cartesian3 } from 'cesium';
+import { getLayerLabel, Layer } from 'src/features/layer';
+import { Id } from 'src/models/id.model';
 
 @customElement('ngm-ogc-layer-selection')
 export class OgcLayerSelection extends CoreElement {
@@ -25,11 +26,11 @@ export class OgcLayerSelection extends CoreElement {
   accessor ogcService!: OgcService;
 
   @state()
-  accessor layers: readonly LayerTreeNode[] = [];
+  accessor layers: readonly Layer[] = [];
 
-  private readonly activeLayers = new Set<LayerTreeNode>();
+  private readonly selectedLayerIds = new Set<Id<Layer>>();
 
-  private readonly disabledLayers = new Set<LayerTreeNode>();
+  private readonly disabledLayers = new Set<Id<Layer>>();
 
   private isSubmitting = false;
 
@@ -37,27 +38,30 @@ export class OgcLayerSelection extends CoreElement {
     super.connectedCallback();
 
     this.register(
-      this.layerService.activeLayers$.subscribe((layers) => {
+      this.layerService.activeLayers$.subscribe(async (layers) => {
         this.layers = layers;
 
         this.disabledLayers.clear();
-        for (const layer of layers) {
-          this.ogcService.isLayerSupported(layer).then((isSupported) => {
-            if (!isSupported) {
-              this.disabledLayers.add(layer);
-              this.requestUpdate();
+        await Promise.all(
+          layers.map(async (layer) => {
+            const isSupported = await this.ogcService.isLayerSupported(layer);
+            if (isSupported) {
+              this.disabledLayers.delete(layer.id);
+            } else {
+              this.disabledLayers.add(layer.id);
             }
-          });
-        }
+          }),
+        );
+        this.requestUpdate();
       }),
     );
   }
 
-  private readonly toggle = (layer: LayerTreeNode): void => {
-    if (this.activeLayers.has(layer)) {
-      this.activeLayers.delete(layer);
+  private readonly toggle = (id: Id<Layer>): void => {
+    if (this.selectedLayerIds.has(id)) {
+      this.selectedLayerIds.delete(id);
     } else {
-      this.activeLayers.add(layer);
+      this.selectedLayerIds.add(id);
     }
     this.requestUpdate();
   };
@@ -70,7 +74,9 @@ export class OgcLayerSelection extends CoreElement {
     this.close();
     const job = await this.ogcService.start(
       this.title,
-      [...this.activeLayers],
+      [...this.selectedLayerIds.values()].map((id) =>
+        this.layerService.layer(id),
+      ),
       this.shape,
     );
     if (job === null) {
@@ -89,11 +95,7 @@ export class OgcLayerSelection extends CoreElement {
       <h2>${i18next.t('toolbox:ogc.layer-selection.title')}</h2>
     </div>
     <ul class="content">
-      ${repeat(
-        this.layers,
-        (it) => it.layer ?? it.assetId ?? it,
-        this.renderLayer,
-      )}
+      ${repeat(this.layers, (it) => it.id, this.renderLayer)}
     </ul>
     <div class="actions">
       <sgc-button color="secondary" @click="${this.close}">
@@ -101,16 +103,16 @@ export class OgcLayerSelection extends CoreElement {
       </sgc-button>
       <sgc-button
         @click="${this.confirm}"
-        .isDisabled="${this.activeLayers.size === 0}"
+        .isDisabled="${this.selectedLayerIds.size === 0}"
       >
         ${i18next.t('toolbox:ogc.layer-selection.confirm')}
       </sgc-button>
     </div>
   `;
 
-  private readonly renderLayer = (layer: LayerTreeNode) => {
-    const isActive = this.activeLayers.has(layer);
-    const isDisabled = this.disabledLayers.has(layer);
+  private readonly renderLayer = (layer: Layer) => {
+    const isActive = this.selectedLayerIds.has(layer.id);
+    const isDisabled = this.disabledLayers.has(layer.id);
     return html`
       <li>
         <sgc-button
@@ -118,14 +120,14 @@ export class OgcLayerSelection extends CoreElement {
           justify="start"
           ?disabled="${isDisabled}"
           .isActive="${isActive}"
-          @click="${() => this.toggle(layer)}"
+          @click="${() => this.toggle(layer.id)}"
         >
           <ngm-core-checkbox
             ?disabled="${isDisabled}"
             .isActive="${isActive}"
-            @update="${() => this.toggle(layer)}"
+            @update="${() => this.toggle(layer.id)}"
           ></ngm-core-checkbox>
-          ${i18next.t(layer.label)}
+          ${getLayerLabel(layer)}
         </sgc-button>
       </li>
     `;

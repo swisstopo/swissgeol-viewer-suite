@@ -2,8 +2,11 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { css, html, TemplateResult } from 'lit';
 import {
+  isLayerInfoUrl,
   LayerInfo,
   LayerInfoAttribute,
+  LayerInfoUrl,
+  LayerInfoValue,
 } from 'src/features/layer/info/layer-info.model';
 import i18next from 'i18next';
 import { repeat } from 'lit/directives/repeat.js';
@@ -94,9 +97,7 @@ export class LayerInfoItem extends CoreElement {
     this.style.setProperty('--divider-offset', `${offset}px`);
   };
 
-  private formatValue(
-    value: LayerInfoAttribute['value'],
-  ): string | TemplateResult {
+  private formatValue(value: LayerInfoValue): string | TemplateResult {
     if (typeof value === 'number') {
       return numberFormat.format(value);
     }
@@ -148,13 +149,13 @@ export class LayerInfoItem extends CoreElement {
               attributes,
               (it) => it.key,
               (it) => {
-                const value =
+                const value: LayerInfoValue | LayerInfoUrl =
                   typeof it.value === 'string' &&
                   (it.value.startsWith('https://') ||
                     it.value.startsWith('http://'))
                     ? { url: it.value }
                     : it.value;
-                if (typeof value === 'object' && 'url' in value) {
+                if (isLayerInfoUrl(value)) {
                   return html`
                     <li>
                       <a
@@ -167,7 +168,7 @@ export class LayerInfoItem extends CoreElement {
                     </li>
                   `;
                 }
-                const formatted = this.formatValue(it.value);
+                const formatted = this.formatValue(value);
                 return html` <li title="${formatted}">${formatted}</li>`;
               },
             )}

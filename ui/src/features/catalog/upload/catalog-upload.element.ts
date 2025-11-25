@@ -30,6 +30,7 @@ export class CatalogUpload extends CoreElement {
       geocatId: null,
       downloadUrl: null,
       legend: null,
+      customProperties: {},
       isLocal: true,
     } satisfies KmlLayer);
   }

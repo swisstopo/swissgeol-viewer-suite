@@ -7,6 +7,8 @@ import { applyTypography } from 'src/styles/theme';
 import { repeat } from 'lit/directives/repeat.js';
 import { when } from 'lit/directives/when.js';
 import i18next from 'i18next';
+import { getLayerLabel, Layer, LayerService } from 'src/features/layer';
+import { combineLatest } from 'rxjs';
 
 @customElement('ngm-ogc-queue-item')
 export class OgcQueue extends CoreElement {
@@ -16,11 +18,17 @@ export class OgcQueue extends CoreElement {
   @consume({ context: OgcService.context() })
   accessor ogcService!: OgcService;
 
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
   @state()
   accessor stage: OgcJobStage | null = null;
 
   @state()
   accessor progress: number | null = null;
+
+  @state()
+  accessor layers: Layer[] = [];
 
   connectedCallback() {
     super.connectedCallback();
@@ -37,6 +45,14 @@ export class OgcQueue extends CoreElement {
           await this.ogcService.complete(this.job);
         }
       });
+
+    this.register(
+      combineLatest(
+        this.job.layerIds.map((id) => this.layerService.layer$(id)),
+      ).subscribe((layers) => {
+        this.layers = layers;
+      }),
+    );
   }
 
   private get isOngoing(): boolean {
@@ -64,9 +80,9 @@ export class OgcQueue extends CoreElement {
     <div class="content">
       <ul class="layers">
         ${repeat(
-          this.job.layers,
-          (layer) => layer.layer ?? layer.assetId ?? layer.label,
-          (layer) => html`<li>${i18next.t(layer.label)}</li>`,
+          this.layers,
+          (layer) => layer.id,
+          (layer) => html`<li>${getLayerLabel(layer)}</li>`,
         )}
       </ul>
       ${this.stage === null

@@ -3,9 +3,14 @@
     {
       type: 'Tiles3d',
       id: 'top_omm',
+//      source: {
+//        type: 'CesiumIon',
+//        asset_id: 3955170
+//      },
+
       source: {
-        type: 'CesiumIon',
-        asset_id: 267959,
+        type: 'Ogc',
+        id: 10486,
       },
       order_of_properties: 'consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-UpperMarineMolasse.zip',

@@ -161,6 +161,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
       label: null,
       legend: null,
       orderOfProperties: [],
+      customProperties: {},
 
       // Make the layer partially transparent to hide parts that are not covered by the imagery.
       isPartiallyTransparent: true,
@@ -187,6 +188,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
       geocatId: null,
       downloadUrl: null,
       legend: null,
+      customProperties: {},
 
       // Standalone bands inherit the opacity and visibility of the tiff.
       // Non-standalone bands have these at static values, as they are set on the terrain.

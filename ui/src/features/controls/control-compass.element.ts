@@ -2,7 +2,6 @@ import { CoreElement } from 'src/features/core';
 import { customElement } from 'lit/decorators.js';
 import { css, html } from 'lit';
 import { consume } from '@lit/context';
-import { viewerContext } from 'src/context';
 import {
   BoundingSphere,
   Cartesian2,
@@ -11,16 +10,21 @@ import {
   Math as CesiumMath,
   Viewer,
 } from 'cesium';
+import { CesiumService } from 'src/services/cesium.service';
 
 @customElement('control-compass')
 export class ControlCompass extends CoreElement {
-  @consume({ context: viewerContext })
-  accessor viewer!: Viewer;
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
+  private viewer!: Viewer;
 
   connectedCallback(): void {
     super.connectedCallback();
     this.role = 'button';
     this.addEventListener('click', this.toggle);
+
+    this.viewer = this.cesiumService.viewer;
 
     this.viewer.camera.changed.addEventListener(this.handleCameraChange);
     this.register(() =>

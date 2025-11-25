@@ -190,7 +190,7 @@ export default class NgmGeometriesSimpleList extends CoreElement {
         ${geom.type === 'polygon' || geom.type === 'rectangle'
           ? html` <div
               class="item ${classMap({
-                disabled: this.layerService.activeLayers.length === 0,
+                disabled: this.layerService.activeLayerIds.length === 0,
               })}"
               @click=${() => this.export(geom)}
             >

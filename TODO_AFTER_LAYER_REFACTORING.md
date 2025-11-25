@@ -11,3 +11,6 @@ Nils to Test:
 - Background behavior
 - Slicing behavior
 - Drawing lines on underground layers
+
+
+- tiff with source?

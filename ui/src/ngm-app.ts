@@ -9,7 +9,6 @@ import './cesium-toolbar';
 import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
-import '@geoblocks/cesium-view-cube';
 import './elements/ngm-map-chooser';
 import './elements/ngm-confirmation-modal';
 
@@ -19,6 +18,7 @@ import 'src/features/controls/controls.module';
 import 'src/features/layout/layout.module';
 import 'src/features/navigation/navigation.module';
 import 'src/features/session/session.module';
+import 'src/features/ogc/ogc.module';
 
 import { DEFAULT_VIEW } from './constants';
 
@@ -530,17 +530,14 @@ export class NgmApp extends LitElementI18n {
             )}
 
             <div class="on-map-menu">
-              <cesium-view-cube
-                ?hidden=${this.mobileView || this.showAxisOnMap}
-                .scene="${this.viewer?.scene}"
-              ></cesium-view-cube>
-
               <ngm-map-chooser
                 .hidden=${this.mobileView}
                 class="ngm-bg-chooser-map"
                 .initiallyOpened=${false}
               ></ngm-map-chooser>
             </div>
+
+            <ngm-ogc-queue></ngm-ogc-queue>
           </div>
           ${when(
             this.showCesiumToolbar,

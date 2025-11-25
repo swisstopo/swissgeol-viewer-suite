@@ -1,7 +1,7 @@
 import { BaseService } from 'src/services/base.service';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-import { Control2dController } from 'src/features/controls/controls/control2d.controller';
 import { CesiumService } from 'src/services/cesium.service';
+import { Control2dController } from 'src/features/controls/control-2d.controller';
 
 export class ControlsService extends BaseService {
   private readonly is2DActiveSubject = new BehaviorSubject(false);

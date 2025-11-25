@@ -44,6 +44,7 @@ export class IonService extends BaseService {
           legend: null,
           orderOfProperties: [],
           isPartiallyTransparent: false,
+          customProperties: {},
         } satisfies Tiles3dLayer;
       default:
         throw new Error(`Unsupported asset type: ${asset.type}`);

@@ -160,6 +160,7 @@ export class NgmIonModal extends CoreElement {
           legend: null,
           orderOfProperties: [],
           isPartiallyTransparent: false,
+          customProperties: {},
         } satisfies Tiles3dLayer;
         break;
       default:
