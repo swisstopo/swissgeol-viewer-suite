@@ -12,7 +12,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
-      legend: 'id',
+      legend: true,
       access: {
         env: ['local']
       }
@@ -25,7 +25,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '258814a5-8fcf-47df-b0c6-160602b0078c',
-      legend: 'id'
+      legend: true
     },
 
     // Layer - Lithology 500 - WMTS
@@ -35,7 +35,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '435522fb-599e-41c0-a7c0-49d922ea6acf',
-      legend: 'id'
+      legend: true
     },
 
     // Layer - Geological profiles GA25 - WMTS
@@ -45,7 +45,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '345d02a3-9628-46d7-9e57-e0ab1d9faf8a',
-      legend: 'id'
+      legend: true
     },
 
     // Layer - Cross sections GeoMol
@@ -85,7 +85,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '1964cc81-5298-460f-9228-41120315bea8',
-      legend: 'id'
+      legend: true
     }
   ],
 

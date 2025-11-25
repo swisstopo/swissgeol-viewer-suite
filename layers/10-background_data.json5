@@ -6,7 +6,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '22287cd6-b75b-4caf-9413-aa3f196548b2',
-      legend: 'id',
+      legend: true,
     }
   ],
   groups: [
