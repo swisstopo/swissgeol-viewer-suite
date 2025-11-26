@@ -183,8 +183,12 @@ export class LayerInfoService extends BaseService {
     }
     const infos: LayerInfo[] = [];
     const picks = this.pickers.map(async (picker) => {
-      const pickedInfos = await picker.pick(data);
-      infos.push(...pickedInfos);
+      try {
+        const pickedInfos = await picker.pick(data);
+        infos.push(...pickedInfos);
+      } catch (e) {
+        console.error(`Picking on ${picker.layerId} failed`, e);
+      }
     });
     await Promise.all(picks);
     if (this.nextPick === null) {
