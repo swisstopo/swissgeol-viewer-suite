@@ -34,7 +34,7 @@ pub struct LayerConfig {
     /// Each entry's key is used to identify it within this config.
     #[serde(default, skip_serializing)]
     pub tiff_displays: HashMap<String, TiffLayerBandDisplayDefinition>,
-    
+
     /// A list of tiles3d property orders what may be reused by multiple layers.
     /// Each entry's key is used to identify it within this config.
     #[serde(default, skip_serializing)]

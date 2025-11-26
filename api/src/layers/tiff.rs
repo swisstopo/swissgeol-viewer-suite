@@ -1,3 +1,4 @@
+use crate::LayerSource;
 use crate::layers::config::{Parse, ParseContext};
 use anyhow::anyhow;
 use serde::{Deserialize, Serialize, Serializer};
@@ -7,7 +8,6 @@ use std::iter::Iterator;
 use std::path::Path;
 use std::sync::LazyLock;
 use strum::{EnumIter, IntoEnumIterator};
-use crate::LayerSource;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all(serialize = "camelCase"))]
@@ -282,11 +282,9 @@ impl TiffLayerBandDisplayDefinition {
         let values = labels
             .into_iter()
             .enumerate()
-            .map(|(i, label)| {
-                TiffLayerBandStepValue::Labelled {
-                    label,
-                    value: (min + ratio * (base * (i as f32) + offset)).round() as i32
-                }
+            .map(|(i, label)| TiffLayerBandStepValue::Labelled {
+                label,
+                value: (min + ratio * (base * (i as f32) + offset)).round() as i32,
             })
             .collect();
         TiffLayerBandSteps::Values(values)

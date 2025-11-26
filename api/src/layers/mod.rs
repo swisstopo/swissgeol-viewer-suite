@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use crate::data::TranslatedString;
 use crate::layers::config::{Parse, ParseContext};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 mod config;
 pub use config::LayerConfig;

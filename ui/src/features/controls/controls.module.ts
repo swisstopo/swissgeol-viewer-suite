@@ -1,1 +1,1 @@
-import './controls-2d-action.element';
+import './control-2d.element';

@@ -107,6 +107,8 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
       this.removeLayerFromViewer();
       imageryLayers.add(imagery, i);
     }
+
+    // imagery.imageryProvider.
     this._imagery = imagery;
   }
 

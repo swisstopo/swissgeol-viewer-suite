@@ -244,7 +244,7 @@ export class NgmApp extends LitElementI18n {
     setTimeout(() => (this.determinateLoading = true), 3000);
     rewriteParams();
     const cesiumContainer = this.querySelector('#cesium')!;
-    const viewer = await setupViewer(cesiumContainer, isLocalhost);
+    const viewer = await setupViewer(cesiumContainer);
 
     if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
       this.setResolutionScale(viewer);

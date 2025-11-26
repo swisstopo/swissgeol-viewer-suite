@@ -6,7 +6,7 @@ import { PropertyValues } from '@lit/reactive-element';
 import { consume } from '@lit/context';
 import { ControlsService } from 'src/features/controls/controls.service';
 
-@customElement('controls-2d-action')
+@customElement('control-2d')
 export class Controls2dAction extends CoreElement {
   @consume({ context: ControlsService.context() })
   accessor controlsService!: ControlsService;

@@ -38,6 +38,5 @@ pub enum LayerSource {
         /// When this is set, the OGC API will only be used for layer exports.
         #[serde(default, skip_serializing_if = "Option::is_none")]
         display_source: Option<Box<LayerSource>>,
-
     },
 }

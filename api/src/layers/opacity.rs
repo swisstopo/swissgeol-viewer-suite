@@ -1,6 +1,6 @@
+use serde::de::Unexpected;
 use serde::{Deserialize, Deserializer};
 use serde::{Serialize, Serializer};
-use serde::de::Unexpected;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum LayerOpacity {
@@ -22,13 +22,17 @@ impl<'de> Deserialize<'de> for LayerOpacity {
         let v = serde_json::Value::deserialize(deserializer)?;
 
         match v {
-            serde_json::Value::Number(n) => {
-                n.as_f64()
-                    .map(|f| LayerOpacity::Default(f as f32))
-                    .ok_or_else(|| serde::de::Error::invalid_type(Unexpected::Other("non-float"), &"float"))
-            }
+            serde_json::Value::Number(n) => n
+                .as_f64()
+                .map(|f| LayerOpacity::Default(f as f32))
+                .ok_or_else(|| {
+                    serde::de::Error::invalid_type(Unexpected::Other("non-float"), &"float")
+                }),
             serde_json::Value::String(s) if s == "Disabled" => Ok(LayerOpacity::Disabled),
-            _ => Err(serde::de::Error::invalid_value(Unexpected::Other(&format!("{v}")), &"number or \"Disabled\"")),
+            _ => Err(serde::de::Error::invalid_value(
+                Unexpected::Other(&format!("{v}")),
+                &"number or \"Disabled\"",
+            )),
         }
     }
 }
