@@ -6,7 +6,7 @@ import { Id } from 'src/models/id.model';
 import { DEFAULT_VIEW } from 'src/constants';
 
 export class BackgroundLayerController extends BaseLayerController<BackgroundLayer> {
-  private children = new Map<Id<WmtsLayer>, WmtsLayerController>();
+  private readonly children = new Map<Id<WmtsLayer>, WmtsLayerController>();
 
   get type(): 'Background' {
     return 'Background';
@@ -79,7 +79,7 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
         // Opacity and visibility are directly set on the globe.
         // There is no way to detach globe and imagery, so updating both would essentially just double the opacity.
         // Instead, we set default values here and just modify the globe.
-        opacity: 1.0,
+        opacity: 1,
         isVisible: true,
       });
       this.children.set(childId, childController);
@@ -92,6 +92,7 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
     const childLayers = new Set(
       [...this.children.values()].map((it) => it.imagery),
     );
+
     for (let i = 0; i < viewer.scene.imageryLayers.length; i++) {
       const imagery = viewer.scene.imageryLayers.get(index);
       const isChild = childLayers.has(imagery);

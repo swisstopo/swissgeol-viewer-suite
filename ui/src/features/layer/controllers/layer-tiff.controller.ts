@@ -116,7 +116,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
           ? ''
           : '&rescale={min},{max}';
         const provider = new UrlTemplateImageryProvider({
-          url: `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url={url}&bidx={bidx}&colormap_name={colormap}${rescaleParam}${noDataParam}`,
+          url: `${TITILER_BY_PAGE_HOST[globalThis.location.host]}/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url={url}&bidx={bidx}&colormap_name={colormap}${rescaleParam}${noDataParam}`,
           customTags: {
             url: () => resource.url,
             bidx: () => band.index,

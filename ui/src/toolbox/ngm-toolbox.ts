@@ -191,15 +191,18 @@ export class NgmToolbox extends CoreElement {
       }
     });
     this.draw.addEventListener('leftup', () => {
+      const { draw } = this;
+      if (draw?.entityForEdit == null) {
+        return;
+      }
       if (
-        getValueOrUndefined(this.draw!.entityForEdit!.properties!.type) ===
-        'point'
+        getValueOrUndefined(draw.entityForEdit.properties!.type) === 'point'
       ) {
-        updateBoreholeHeights(this.draw!.entityForEdit!, this.julianDate);
+        updateBoreholeHeights(draw.entityForEdit, this.julianDate);
       } else if (
-        getValueOrUndefined(this.draw!.entityForEdit!.properties!.volumeShowed)
+        getValueOrUndefined(draw.entityForEdit.properties!.volumeShowed)
       ) {
-        updateEntityVolume(this.draw!.entityForEdit!, viewer.scene.globe);
+        updateEntityVolume(draw.entityForEdit, viewer.scene.globe);
       }
     });
     DrawStore.setDraw(this.draw);

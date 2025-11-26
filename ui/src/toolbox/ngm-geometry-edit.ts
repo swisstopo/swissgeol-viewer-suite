@@ -130,17 +130,22 @@ export class NgmGeometryEdit extends LitElementI18n {
 
   @pauseGeometryCollectionEvents
   onEntityPropertyChange(properties) {
+    const { editingEntity } = this;
+    if (editingEntity === undefined) {
+      return;
+    }
+
     const volumeShowed = getValueOrUndefined(properties.volumeShowed);
     if (
       volumeShowed !==
-      getValueOrUndefined(this.editingEntity!.properties!.volumeShowed)
+      getValueOrUndefined(editingEntity.properties!.volumeShowed)
     ) {
       const { viewer } = this.cesiumService;
-      this.editingEntity!.properties!.volumeShowed = volumeShowed;
+      editingEntity.properties!.volumeShowed = volumeShowed;
       if (volumeShowed) {
-        updateEntityVolume(this.editingEntity!, viewer.scene.globe);
+        updateEntityVolume(editingEntity, viewer.scene.globe);
       } else {
-        hideVolume(this.editingEntity!);
+        hideVolume(editingEntity);
       }
       viewer.scene.requestRender();
       this.requestUpdate();
@@ -223,7 +228,7 @@ export class NgmGeometryEdit extends LitElementI18n {
         this.entity.billboard.color = this.editingEntity.billboard!.color;
         this.entity.billboard.image = this.editingEntity.billboard!.image;
         if (getValueOrUndefined(this.editingEntity.properties!.volumeShowed)) {
-          updateEntityVolume(this.entity!, viewer.scene.globe);
+          updateEntityVolume(this.entity, viewer.scene.globe);
         }
       } else if (this.entity.polyline) {
         const positions = this.editingEntity.polyline!.positions?.getValue(
