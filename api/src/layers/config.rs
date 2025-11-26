@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all(serialize = "camelCase"))]
 pub struct LayerConfig {
     /// A list of configs that should be merged into this one.
@@ -97,7 +97,8 @@ impl ParseContext {
 
 impl LayerConfig {
     pub fn parse(layers_file_path: &Path) -> anyhow::Result<Self> {
-        let config = Self::parse_inclusion(layers_file_path)
+        let config = Self::default()
+            .parse_inclusion(layers_file_path)
             .map_err(|err| anyhow!("Failed to resolve layers: {err}"))?;
         for layer in &config.layers {
             if layer.use_count == 0 {
@@ -107,7 +108,7 @@ impl LayerConfig {
         Ok(config)
     }
 
-    fn parse_inclusion(layers_file_path: &Path) -> anyhow::Result<Self> {
+    fn parse_inclusion(&self, layers_file_path: &Path) -> anyhow::Result<Self> {
         let layers_file_path_with_ext = format!("{}.json5", layers_file_path.display());
         let layers_file_path = if layers_file_path.to_str().unwrap().ends_with(".json5") {
             layers_file_path
@@ -117,12 +118,18 @@ impl LayerConfig {
         let layers_text = std::fs::read_to_string(layers_file_path)
             .map_err(|err| anyhow!("Failed to read \"{}\": {err}", layers_file_path.display()))?;
 
-        let config: Self = json5::from_str(&layers_text).map_err(|err| {
+        let mut config: Self = json5::from_str(&layers_text).map_err(|err| {
             anyhow!(
                 "Invalid layer config at \"{}\": {err}",
                 layers_file_path.display()
             )
         })?;
+
+        config
+            .order_of_properties
+            .extend(self.order_of_properties.clone());
+        config.voxel_mappings.extend(self.voxel_mappings.clone());
+        config.tiff_displays.extend(self.tiff_displays.clone());
 
         config.parse_as_root(layers_file_path)
     }
@@ -132,9 +139,9 @@ impl LayerConfig {
             include: vec![],
             layers: vec![],
             groups: vec![],
+            order_of_properties: std::mem::take(&mut self.order_of_properties),
             voxel_mappings: std::mem::take(&mut self.voxel_mappings),
             tiff_displays: Default::default(),
-            order_of_properties: std::mem::take(&mut self.order_of_properties),
         };
 
         let mut context = ParseContext {
@@ -149,7 +156,7 @@ impl LayerConfig {
                 .parent()
                 .unwrap_or_else(|| Path::new("/"))
                 .join(&inclusion);
-            let file = Self::parse_inclusion(&resolved_path)?;
+            let file = context.config.parse_inclusion(&resolved_path)?;
             context.merge(file)?;
         }
 
