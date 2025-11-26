@@ -37,11 +37,13 @@ export class BackgroundLayerSelect extends CoreElement {
         this.background?.variants.values() ?? [],
         (variant) => variant.id,
         (variant) => html`
-          <li role="button" @click="${() => this.selectVariant(variant.id)}">
+          <li>
             <ngm-background-layer-item
               .variant="${variant}"
               .isActive="${variant.id === this.background.activeVariantId}"
               data-cy="${variant.id}"
+              role="button"
+              @click="${() => this.selectVariant(variant.id)}"
             ></ngm-background-layer-item>
           </li>
         `,

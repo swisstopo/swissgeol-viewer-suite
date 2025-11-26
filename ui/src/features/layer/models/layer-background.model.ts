@@ -30,11 +30,6 @@ export interface BackgroundLayerVariant {
   id: Id<BackgroundLayerVariant>;
 
   /**
-   * The url path at which the variant's thumbnail can be found.
-   */
-  thumbnailPath: string;
-
-  /**
    * The WMTS layers that will be rendered.
    */
   children: ReadonlyArray<Id<WmtsLayer>>;
@@ -42,28 +37,33 @@ export interface BackgroundLayerVariant {
 
 const GREY_BACKGROUND: BackgroundLayerVariant = {
   id: makeId('ch.swisstopo.pixelkarte-grau'),
-  thumbnailPath: 'images/grey.png',
   children: [makeId('ch.swisstopo.pixelkarte-grau')],
 };
 
 const SATELLITE_BACKGROUND: BackgroundLayerVariant = {
   id: makeId('ch.swisstopo.swissimage'),
-  thumbnailPath: 'images/arealimage.png',
   children: [makeId('ch.swisstopo.swissimage')],
 };
 
 const WATERS_BACKGROUND: BackgroundLayerVariant = {
   id: makeId('lakes_rivers_map'),
-  thumbnailPath: 'images/lakes_rivers.png',
   children: [
     makeId('ch.bafu.vec25-gewaessernetz_2000'),
     makeId('ch.bafu.vec25-seen'),
   ],
 };
 
-const LAYERS = [SATELLITE_BACKGROUND, GREY_BACKGROUND, WATERS_BACKGROUND].map(
-  Object.freeze,
-) as BackgroundLayerVariant[];
+const TRANSPARENT_BACKGROUND: BackgroundLayerVariant = {
+  id: makeId('transparent'),
+  children: [],
+};
+
+const LAYERS = [
+  SATELLITE_BACKGROUND,
+  GREY_BACKGROUND,
+  WATERS_BACKGROUND,
+  TRANSPARENT_BACKGROUND,
+].map(Object.freeze) as BackgroundLayerVariant[];
 
 export const DEFAULT_BACKGROUND_VARIANT = GREY_BACKGROUND;
 
