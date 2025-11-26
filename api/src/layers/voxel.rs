@@ -1,7 +1,7 @@
+use crate::LayerSource;
 use crate::layers::config::{Parse, ParseContext};
 use anyhow::anyhow;
 use serde::{Deserialize, Deserializer, Serialize};
-use crate::LayerSource;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all(serialize = "camelCase"))]
@@ -60,7 +60,6 @@ impl Parse for VoxelLayer {
         Ok(self)
     }
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -138,6 +137,10 @@ impl<'de> Deserialize<'de> for VoxelItemMappingItem {
             pub color: String,
         }
         let (value, item) = <(i32, Item)>::deserialize(d)?;
-        Ok(Self { label: item.label, value, color: item.color })
+        Ok(Self {
+            label: item.label,
+            value,
+            color: item.color,
+        })
     }
 }
