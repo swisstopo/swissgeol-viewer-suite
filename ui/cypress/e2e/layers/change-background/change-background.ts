@@ -13,7 +13,7 @@ Given(/^the topographic map is displayed in the 3D scene$/, () => {
   cy.get('.ngm-selected-map-container > ngm-background-layer-item').click();
   cy.get('ngm-background-layer-select')
     .shadow()
-    .find('ul > li[role="button"]:nth-child(2)')
+    .find('ul > li:nth-child(2)')
     .click();
   cy.get('ngm-background-layer-select + .ngm-close-icon').click();
   hasViewerBackground(TOPOGRAPHIC_LAYER);
