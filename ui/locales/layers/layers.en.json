@@ -10,9 +10,15 @@
     "ch.swisstopo.geologie-geologische_karte":"Geology 500",
     "ch.swisstopo.geologie-tektonische_karte":"Tectonics 500",
     "ch.swisstopo.geologie-eiszeit-lgm-raster":"Last glacial maximum (map) 500",
+    "ch.swisstopo.geologie-bohrungen_tiefer_500":"Deep wells",
+    "ch.swisstopo.geologie-reflexionsseismik":"Reflection seismic",
+    "seismic_2d_21_egeo_001":"21-EGEO-001",
+    "seismic_2d_21_egeo_002":"21-EGEO-002",
+    "seismic_3d_E11":"Eclépens, 3D 2023",
     "ch.swisstopo.geologie-geologische_3dmodelle":"3D geological models",
     "ch.swisstopo.swissbedrock-geotiff":"swissBEROCK 2D",
     "ch.swisstopo.swissbedrock-geotiff-with-terrain":"swissBEROCK 3D",
+    "voxel_geomol_temp_c":"GeoMol Temperature model",
     "geomol_cs":"GeoMol Cross sections",
     "top_omm": "Top Upper Marine Molasse",
     "top_usm": "Top Lower Freshwater Molasse",
@@ -37,7 +43,9 @@
     "voxel_genf_conductivity":"Unconsolidated rocks Genf - Hydraulic conductivity",
     "voxel_sgrheintal_conductivity":"Unconsolidated rocks SG-Rheintal - Hydraulic conductivity",
     "voxel_visp_modelling_units":"Unconsolidated rocks Visp - Modelling units",
-    "voxel_visp_conductivity":"Unconsolidated rocks Visp - Hydraulic conductivity"
+    "voxel_visp_conductivity":"Unconsolidated rocks Visp - Hydraulic conductivity",
+    "ch.swisstopo.zeitreihen":"Journey through time - Maps",
+    "swiss_buildings":"swissBUILDSINGS3D"
   },
   "groups": {
     "maps_and_models": "Maps, cross-sections & models",
@@ -57,7 +65,8 @@
     "geophysics": "Geophysics",
     "grp_1812_label": "Earth's gravity field",
     "grp_1818_label": "Earth's magnetic field",
-    "grp_15070_label": "Geoenergy"
+    "geoenergy": "Geoenergy",
+    "background_data":"Background data"
   },
   "properties": {
     "Voxel": {

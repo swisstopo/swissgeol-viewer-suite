@@ -105,16 +105,34 @@
     {
       id: 'boreholes',
       children: [
-
+        'ch.swisstopo.geologie-bohrungen_tiefer_500'
       ]
     },
     // 01 Topic - Geophysics
     {
       id: 'geophysics',
       children: [
-
+        'ch.swisstopo.geologie-reflexionsseismik',
+        'seismic_2d_21_egeo_001',
+        'seismic_2d_21_egeo_002',
+        'seismic_3d_E11'
       ]
     },
+    // 01 Topic - Geopenergy
+    {
+      id: 'geoenergy',
+      children: [
+        'voxel_geomol_temp_c'
+      ]
+    },
+    // 01 Topic - Background data
+    {
+      id: 'background_data',
+      children: [
+        'ch.swisstopo.zeitreihen',
+        'swiss_buildings'
+      ]
+    }
 
 
   ]

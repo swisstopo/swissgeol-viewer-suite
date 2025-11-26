@@ -14,6 +14,42 @@
     },
 
     layers: [
+        // 2DSesimik
+        // 2D-Seismik EGEO 001
+        {
+            type: 'Tiles3d',
+            id: 'seismic_2d_21_egeo_001',
+            source: {
+                type: 'Ogc',
+                id: 13327,
+                style_id: 5,
+            }
+        },
+        // 2D-Seismik EGEO 002
+        {
+            type: 'Tiles3d',
+            id: 'seismic_2d_21_egeo_002',
+            source: {
+                type: 'Ogc',
+                id: 13327,
+                style_id: 5,
+            }
+        },
+        // 3D-Seismik
+        // 3D-Seismik - Eclépens 2023
+        {
+            type: 'Tiles3d',
+            id: 'seismic_3d_E11',
+            source: {
+                type: 'Ogc',
+                id: 14279,
+                style_id: 5,
+            },
+            access: {
+                env: ['local', 'dev']
+            }
+        },
+        
         // GeoMol
         
         // GeoMol-Profile
@@ -264,7 +300,18 @@
             },
             download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
             geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
-        }
+        },
+        // swissBuildings
+        {
+            type: 'Tiles3d',
+            id: 'swiss_buildings',
+            source: {
+                type: 'Url',
+                url:'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20201020/tileset.json',
+            },
+            geocat_id: '21c98c73-48da-408b-ab73-8f1ab9d5fbe4',
+        },
+
             
     ]
 }

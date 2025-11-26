@@ -1,5 +1,22 @@
 {
   layers: [
+    // GeoMol Temperature Model
+    {
+      type: "Voxel",
+      id: "voxel_geomol_temp_c",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4135841
+      },
+      data_key: "Temp_C",
+      mappings:['geomol_temp_c'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2"
+    },
+    
     // Aaretal - Modelling Units
     {
       type: "Voxel",
@@ -14,7 +31,7 @@
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502",
+      geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502"
     },
     // Aaretal - Hydraulic Conductivity
     {
@@ -134,7 +151,7 @@
       id: "voxel_sgrheintal_conductivity",
       source: {
         type: "CesiumIon",
-        asset_id: 3939135,
+        asset_id: 4071931,
       },
       data_key: "Klasse",
       mappings: ['sg_rheintal_conductivity'],
@@ -151,6 +168,45 @@
   // Legende integrieren
 
   voxel_mappings: {
+    // GeoMol Tamp_C Mapping
+    geomol_temp_c: {
+      key: 'Temp_C',
+      range:[10, 300],
+      colors: [
+        'rgb(10, 0, 121)',
+        'rgb(40, 0, 150)',
+        'rgb(20, 5, 175)',
+        'rgb(0, 10, 200)',
+        'rgb(0, 25, 212)',
+        'rgb(0, 40, 224)',
+        'rgb(26, 102, 240)',
+        'rgb(13, 129, 248)',
+        'rgb(25, 175, 255)',
+        'rgb(50, 190, 255)',
+        'rgb(68, 202, 255)',
+        'rgb(97, 225, 240)',
+        'rgb(106, 235, 225)',
+        'rgb(124, 235, 200)',
+        'rgb(138, 236, 174)',
+        'rgb(172, 245, 168)',
+        'rgb(205, 255, 162)',
+        'rgb(223, 245, 141)',
+        'rgb(240, 236, 121)',
+        'rgb(247, 215, 104)',
+        'rgb(255, 189, 87)',
+        'rgb(255, 160, 69)',
+        'rgb(244, 117, 75)',
+        'rgb(238, 80, 78)',
+        'rgb(255, 90, 90)',
+        'rgb(255, 124, 124)',
+        'rgb(255, 158, 158)',
+        'rgb(245, 179, 174)',
+        'rgb(255, 196, 196)',
+        'rgb(255, 215, 215)',
+        'rgb(255, 235, 235)',
+        'rgb(255, 255, 255)',
+      ]
+    },
     // Aaretal Mapping
     aaretal_lithology: {
       key: 'Index',
