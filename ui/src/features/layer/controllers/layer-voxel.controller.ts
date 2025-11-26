@@ -379,6 +379,12 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
       }
 
       bool isMatching${mappingIndex}(float value) {
+        // Undefined values always match.
+        // Without this, a data point that has any undefined value may never be visible.
+        if (isUndefined(value) || isNoData(value)) {
+          return true;
+        }
+
         int index = ${prefix}_findIndex(value);
         if (index < 0 || index > ${prefix}_ITEM_COUNT) {
           return false;
@@ -441,6 +447,11 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
       }
 
       bool isMatching${mappingIndex}(float value) {
+        // Undefined values always match.
+        // Without this, a data point that has any undefined value may never be visible.
+        if (isUndefined(value)) {
+          return true;
+        }
         return
           // Match if the value is within the enabled range.
           (u_${prefix}_enabledRange_min <= value && value <= u_${prefix}_enabledRange_max);
