@@ -1,0 +1,270 @@
+{
+    // Shared order of properties
+    order_of_properties: {
+        geomol_consolidated_rocks: [
+            'Name',
+            'Horizon',
+            'HARMOS-ORIGINAL',
+            'Download Move',
+            'Download GoCad',
+            'Download DXF',
+            'Download ASCII',
+            'Download All data'
+        ]
+    },
+
+    layers: [
+        // GeoMol
+        
+        // GeoMol-Profile
+        {
+            type: 'Tiles3d',
+            id: 'geomol_cs',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 452436
+            },
+            //order_of_properties: 'consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Cross-Sections.zip',
+            geocat_id: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
+        },
+        
+        // Horizons
+        // TOMM
+        {
+            type: 'Tiles3d',
+            id: 'top_omm',
+            source: {
+                type: 'Ogc',
+                id: 10486,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 3955170
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-UpperMarineMolasse.zip',
+            geocat_id: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
+        },
+        //TUSM
+        {   
+            type: 'Tiles3d',
+            id: 'top_usm',
+            source: {
+                type: 'Ogc',
+                id: 10487,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 3955284
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-LowerFreshwaterMolasse.zip',
+            geocat_id: '2d7a0729-dd29-40fa-ad4f-b09f94b7fb00',
+        },
+        // TUMM
+        {
+            type: 'Tiles3d',
+            id: 'top_umm',
+            source: {
+                type: 'Ogc',
+                id: 10485,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 3955372
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-LowerMarineMolasse.zip',
+            geocat_id: 'fedb8d24-a000-4b78-9e6e-fb90305ad3ea',
+        },
+        // BCen
+        {
+            type: 'Tiles3d',
+            id: 'base_cen',
+            source: {
+                type: 'Ogc',
+                id: 10489,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 3955446
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Base-Cenozoic.zip',
+            geocat_id: '0e780e6c-18e2-4014-ad16-b35124706580',
+        },
+        // TCret
+        {
+            type: 'Tiles3d',
+            id: 'top_cret',
+            source: {
+                type: 'Ogc',
+                id: 10488,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267958
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Cretaceous.zip',
+            geocat_id: '09334747-14e7-40d6-881b-00e552b71f61',
+        },
+        // TUMa
+        {
+            type: 'Tiles3d',
+            id: 'top_uma',
+            source: {
+                type: 'Ogc',
+                id: 10468,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267962
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-UpperMalm.zip',
+            geocat_id: '2378cab1-4673-4837-b12e-a35aefab389a',
+        },
+        // TLMa
+        {
+            type: 'Tiles3d',
+            id: 'top_lma',
+            source: {
+                type: 'Ogc',
+                id: 10490,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267963
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-LowerMalm.zip',
+            geocat_id: 'af51f4eb-1430-4e4e-a679-3c0eefb4a6b3',
+        },
+        // TDo
+        {
+            type: 'Tiles3d',
+            id: 'top_do',
+            source: {
+                type: 'Ogc',
+                id: 10491,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267957
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Dogger.zip',
+            geocat_id: '0dea083d-23b0-4c5b-b82d-1cd7bda3d583',
+        },
+        // TLi
+        {
+            type: 'Tiles3d',
+            id: 'top_li',
+            source: {
+                type: 'Ogc',
+                id: 10492,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267899
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Lias.zip',
+            geocat_id: '793a40d6-ab83-4e1e-80d7-d7c49bf00f3c'
+        },
+        // TKeu
+        {
+            type: 'Tiles3d',
+            id: 'top_keu',
+            source: {
+                type: 'Ogc',
+                id: 10497,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267960
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Keuper.zip',
+            geocat_id: 'e2344c21-2139-4494-8679-36fe30d034f9'
+        },
+        //TMus
+        {
+            type: 'Tiles3d',
+            id: 'top_mus',
+            source: {
+                type: 'Ogc',
+                id: 10498,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267953
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Muschelkalk.zip',
+            geocat_id: 'dae3dd91-a04c-46c5-aa49-de6235c0478a',
+        },
+        //BMes
+        {
+            type: 'Tiles3d',
+            id: 'base_mes',
+            source: {
+                type: 'Ogc',
+                id: 10496,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267952
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Base-Mesozoic.zip',
+            geocat_id: 'ec67a58d-531e-4dae-98da-85c49525b4d2',
+        },
+        //BPC
+        {
+            type: 'Tiles3d',
+            id: 'base_pc',
+            source: {
+                type: 'Ogc',
+                id: 10494,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267965
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Permocarboniferous.zip',
+            geocat_id: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
+        },
+        //BPC
+        {
+            type: 'Tiles3d',
+            id: 'base_pc_vermutet',
+            source: {
+                type: 'Ogc',
+                id: 10495,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 267964
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Permocarboniferous-inferred.zip',
+            geocat_id: '0f1acc23-bdfc-40bf-94b7-7be10f0f78ed',
+        },
+        // Faults
+        {
+            type: 'Tiles3d',
+            id: 'geomol_faults',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 267872
+            },
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
+            geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+        }
+            
+    ]
+}

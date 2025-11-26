@@ -1,15 +1,121 @@
 {
   include: [
-    '01-maps_and_models',
-    '02-borehole_data',
-    '07-natural_hazards',
-    '10-background_data',
+    'layers_wmts',
+    'layers_3dtiles',
+    'special/voxels',
+    'special/swissBEDROCK'
+
   ],
 
   groups: [
-    { id: 'grp_1786_label' },
-    { id: 'grp_1802_label' },
-    { id: 'grp_1858_label' },
-    { id: 'grp_1890_label' },
+    // 01 Topic - Maps, cross-sections & models
+    {
+      id: 'maps_and_models',
+      children: [
+        // 02 - Geol_maps
+        {
+          id: 'geol_maps',
+          children: [
+            'ch.swisstopo.geologie-geocover',
+            'ch.swisstopo.geologie-geologischer_atlas',
+            'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
+            'ch.swisstopo.geologie-geologische_karte',
+            'ch.swisstopo.geologie-tektonische_karte',
+          ]
+        },
+        // 02 - Thematic_maps
+        {
+          id: 'thematic_maps',
+          children: [
+            'ch.swisstopo.geologie-eiszeit-lgm-raster',
+        ]
+        },
+        // 02 - Weitere Gruppen
+        // ...
+        // 02 - 3D models
+        {
+          id: '3d_models',
+          children: [
+            'ch.swisstopo.geologie-geologische_3dmodelle',
+            // National models
+            {
+              id: 'nat_3d_models',
+              children: [
+                // swissBEDROCK
+                'ch.swisstopo.swissbedrock-geotiff',
+                'ch.swisstopo.swissbedrock-geotiff-with-terrain',
+                // Jura 3D
+                {
+                  id: 'jura_3d_models',
+                  children: [
+                    // Profile
+                    // Horizont
+
+                  ]
+                },
+                // GeolMol
+                {
+                  id: 'geomol_models',
+                  children: [
+                    'geomol_cs',
+                    {
+                      id: 'geomol_horizons',
+                      children: [
+                        'top_omm',
+                        'top_usm',
+                        'top_umm',
+                        'base_cen',
+                        'top_cret',
+                        'top_uma',
+                        'top_lma',
+                        'top_do',
+                        'top_li',
+                        'top_keu',
+                        'top_mus',
+                        'base_mes',
+                        'base_pc',
+                        'base_pc_vermutet'
+                      ]
+                    },
+                    'geomol_faults'
+                  ]
+                }
+              ]
+            },
+            // Regional models
+            {
+              id: 'region_3d_models',
+              children: [
+                'voxel_aaretal_modelling_units',
+                'voxel_aaretal_conductivity',
+                'voxel_birr_modelling_units',
+                'voxel_birr_conductivity',
+                'voxel_genf_modelling_units',
+                'voxel_genf_conductivity',
+                'voxel_sgrheintal_conductivity',
+                'voxel_visp_modelling_units',
+                'voxel_visp_conductivity'
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    // 01 Topic - Boreholes
+    {
+      id: 'boreholes',
+      children: [
+
+      ]
+    },
+    // 01 Topic - Geophysics
+    {
+      id: 'geophysics',
+      children: [
+
+      ]
+    },
+
+
   ]
 }

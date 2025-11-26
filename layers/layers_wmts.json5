@@ -1,0 +1,63 @@
+{
+    layers: [
+// Geol maps
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geocover', 
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
+            legend: 'true'
+        },
+                {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geologischer_atlas', 
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '258814a5-8fcf-47df-b0c6-160602b0078c',
+            legend: 'true'
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '435522fb-599e-41c0-a7c0-49d922ea6acf',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geologische_karte',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'ca917a71-dcc9-44b6-8804-823c694be516',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-tektonische_karte',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'a4cdef47-505e-41ab-b6a7-ad5b92d80e41',
+            legend: true
+        },
+// Thematic maps
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-eiszeit-lgm-raster',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'f1455593-7571-48b0-8603-307ec59a6702',
+            legend: true
+        },
+// 3D models
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geologische_3dmodelle',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '11836d3b-181e-4078-b83f-f55fc44b5776',
+            legend: true           
+        }
+    ]
+}
