@@ -236,7 +236,9 @@ export abstract class BaseLayerController<T extends BaseLayer> {
    *
    * @param _exaggeration
    */
-  updateExaggeration(_exaggeration: number): void {}
+  updateExaggeration(_exaggeration: number): void {
+    // Nop-op by default, as the scene's exaggeration is enough for most layers.
+  }
 
   /**
    * Checks if the Cesium layer needs to be adjusted based on the current layer data.

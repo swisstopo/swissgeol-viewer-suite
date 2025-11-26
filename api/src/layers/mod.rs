@@ -100,7 +100,7 @@ impl Parse for Layer {
             LayerDetail::Voxel(detail) => LayerDetail::Voxel(detail.parse(context)?),
             LayerDetail::Tiff(detail) => LayerDetail::Tiff(detail.parse(context)?),
             LayerDetail::Tiles3d(detail) => LayerDetail::Tiles3d(detail.parse(context)?),
-            detail @ _ => detail,
+            detail => detail,
         };
         Ok(self)
     }

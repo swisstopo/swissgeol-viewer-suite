@@ -89,13 +89,15 @@ export class NgmGeometryInfo extends LitElementI18n {
 
   @pauseGeometryCollectionEvents
   toggleGeomVolume(geom: NgmGeometry) {
+    const { geomEntity } = this;
+    if (geomEntity === undefined) {
+      return;
+    }
+
     if (geom.volumeShowed) {
-      hideVolume(this.geomEntity!);
+      hideVolume(geomEntity);
     } else {
-      updateEntityVolume(
-        this.geomEntity!,
-        this.cesiumService.viewer.scene.globe,
-      );
+      updateEntityVolume(geomEntity, this.cesiumService.viewer.scene.globe);
     }
     this.requestUpdate();
   }

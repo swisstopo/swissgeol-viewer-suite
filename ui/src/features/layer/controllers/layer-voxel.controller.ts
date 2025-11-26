@@ -136,7 +136,9 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
     // Smaller means finer, providing accuracy at the cost of performance.
     const searchParams = new URLSearchParams(location.search);
     if (searchParams.has('stepSize')) {
-      primitive.stepSize = parseFloat(searchParams.get('stepSize') ?? '1');
+      primitive.stepSize = Number.parseFloat(
+        searchParams.get('stepSize') ?? '1',
+      );
     }
 
     // Workaround to make exaggeration work on the voxel primitive.
@@ -322,13 +324,13 @@ export class VoxelLayerController extends BaseLayerController<VoxelLayer> {
         // The index of the currently highlighted tile.
         u_selectedTile: {
           type: UniformType.INT,
-          value: -1.0,
+          value: -1,
         },
 
         // The index of the currently highlighted sample.
         u_selectedSample: {
           type: UniformType.INT,
-          value: -1.0,
+          value: -1,
         },
 
         u_filterOperator: {
@@ -514,5 +516,5 @@ const makeItemMappingFlags = (mapping: VoxelItemMapping): Cartesian4 => {
   }
 
   // Ensure that each flag is an integer.
-  return Cartesian4.fromArray(Array.from(words.map((flag) => flag | 0)));
+  return Cartesian4.fromArray(Array.from(words.map(Math.trunc)));
 };

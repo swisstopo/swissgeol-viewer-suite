@@ -64,13 +64,13 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       maximumScreenSpaceError: 16,
       cullWithChildrenBounds: true,
       cullRequestsWhileMoving: true,
-      cullRequestsWhileMovingMultiplier: 100.0,
+      cullRequestsWhileMovingMultiplier: 100,
       preloadWhenHidden: false,
       preferLeaves: true,
       dynamicScreenSpaceError: true,
       foveatedScreenSpaceError: true,
       foveatedConeSize: 0.2,
-      foveatedMinimumScreenSpaceErrorRelaxation: 3.0,
+      foveatedMinimumScreenSpaceErrorRelaxation: 3,
       foveatedTimeDelay: 0.2,
     });
 

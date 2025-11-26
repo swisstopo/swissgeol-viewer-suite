@@ -59,19 +59,21 @@ export class LayerService extends BaseService {
    * A mapping of all currently known layers.
    * @private
    */
-  private layers: IdMapping<Layer, LayerEntry> = new Map();
+  private readonly layers: IdMapping<Layer, LayerEntry> = new Map();
 
   /**
    * A mapping of all currently known groups.
    * @private
    */
-  private groups: IdMapping<LayerGroup, GroupEntry> = new Map();
+  private readonly groups: IdMapping<LayerGroup, GroupEntry> = new Map();
 
   /**
    * The ids of all root (i.e. top level) groups.
    * @private
    */
-  private _rootGroupIds$ = new BehaviorSubject<IdArray<LayerGroup>>([]);
+  private readonly _rootGroupIds$ = new BehaviorSubject<IdArray<LayerGroup>>(
+    [],
+  );
 
   /**
    * The ids of all currently active layers.
@@ -273,9 +275,7 @@ export class LayerService extends BaseService {
           state$: previousLayer.state$,
         };
         this.layers.set(layer.id, updated);
-        (updated.controller as BaseLayerController<Layer> | null)?.update(
-          layer,
-        );
+        updated.controller?.update(layer);
         updated.state$.next(layer);
       }
     };
@@ -356,7 +356,7 @@ export class LayerService extends BaseService {
 
     // Back up the old layers, as we might want to reuse some of them.
     // After the state update, this array will contain only the layers that are not in use anymore.
-    const previousLayers = new Map([...this.layers]);
+    const previousLayers = new Map(this.layers);
 
     // Clear the old layers.
     this.layers.clear();
@@ -629,7 +629,6 @@ export class LayerService extends BaseService {
 
     // Cast the id and entry to usable types.
     const layerId = id as Id<Layer>;
-    const layerEntry = entry as LayerEntry;
 
     // Check if the layer is already activated and return if it is.
     const activeLayers = this._activeLayerIds$.value;
@@ -646,18 +645,18 @@ export class LayerService extends BaseService {
 
     // Mark the layer as visible.
     const value = {
-      ...layerEntry.state$.value,
+      ...entry.state$.value,
       isVisible: true,
     } satisfies Layer;
 
     // Create a controller for the layer and add it to the viewer.
-    layerEntry.controller = this.makeController(value);
-    layerEntry.controller.add().then(() => {
+    entry.controller = this.makeController(value);
+    entry.controller.add().then(() => {
       this.viewer.scene.requestRender();
     });
 
     // Publish the new state.
-    layerEntry.state$.next(value);
+    entry.state$.next(value);
     this._activeLayerIds$.next([layerId, ...activeLayers]);
   }
 

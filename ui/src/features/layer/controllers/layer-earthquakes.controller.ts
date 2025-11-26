@@ -78,11 +78,11 @@ export class EarthquakesLayerController extends BaseLayerController<EarthquakesL
               break;
             case 'Magnitude':
               earthquakeData[propsArr[i]] =
-                parseFloat(valuesArr[i]).toFixed(1) + ' MLhc';
+                Number.parseFloat(valuesArr[i]).toFixed(1) + ' MLhc';
               break;
             case 'Depthkm':
               earthquakeData[propsArr[i]] =
-                parseFloat(valuesArr[i]).toFixed(1) + ' km';
+                Number.parseFloat(valuesArr[i]).toFixed(1) + ' km';
               break;
             case 'EventLocationName':
             case 'Latitude':

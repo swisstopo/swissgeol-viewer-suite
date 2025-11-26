@@ -157,7 +157,7 @@ export class LayerUrlService extends BaseService {
   ): Promise<boolean> {
     // Load custom Cesium Ion layers.
     // These were most likely included via the Cesium Ion upload modal.
-    const assetId = parseInt(String(id));
+    const assetId = Number.parseInt(String(id));
     if (!Number.isNaN(assetId)) {
       this.temporaryIonLayers ??= await this.ionService.fetchLayers({
         accessToken: params.ionAccessToken ?? undefined,

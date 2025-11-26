@@ -25,10 +25,14 @@ import {
 } from 'src/constants';
 import NavToolsStore from 'src/store/navTools';
 import { TemplateResult } from 'lit';
-import { BaseLayerController, Layer } from 'src/features/layer';
+import {
+  BaseLayerController,
+  getLayerAttributeName,
+  Layer,
+} from 'src/features/layer';
 import { Id } from 'src/models/id.model';
 
-const PROPERTIES_TO_EXCLUDE = [
+const PROPERTIES_TO_EXCLUDE = new Set([
   'color_blue',
   'color_green',
   'color_red',
@@ -36,7 +40,7 @@ const PROPERTIES_TO_EXCLUDE = [
   'm_alias',
   'oname',
   'style_transparency',
-];
+]);
 
 export abstract class LayerInfoDrillPicker<T extends Layer>
   implements LayerInfoPicker
@@ -84,7 +88,9 @@ export abstract class LayerInfoDrillPicker<T extends Layer>
     return [];
   }
 
-  destroy(): void {}
+  destroy(): void {
+    // Nothing to do here.
+  }
 
   abstract get orderOfProperties(): string[];
 
@@ -94,6 +100,7 @@ export abstract class LayerInfoDrillPicker<T extends Layer>
   ): LayerInfo[] {
     const attributes = extractFeatureAttributes(
       feature,
+      this.layer,
       this.orderOfProperties,
     );
     return [
@@ -113,6 +120,7 @@ export abstract class LayerInfoDrillPicker<T extends Layer>
   ) {
     const attributes: LayerInfoAttribute[] = extractTilesetAttributes(
       tileset,
+      this.layer,
       this.orderOfProperties,
     );
     return [
@@ -228,9 +236,13 @@ class LayerInfoForFeature implements LayerInfo {
     });
   }
 
-  activateHighlight() {}
+  activateHighlight() {
+    // Highlights are not supported here.
+  }
 
-  deactivateHighlight() {}
+  deactivateHighlight() {
+    // Highlights are not supported here.
+  }
 
   destroy() {
     if (this.feature instanceof Cesium3DTileFeature) {
@@ -264,15 +276,15 @@ class LayerInfoForEntity implements LayerInfo {
     this.attributes = data.attributes;
 
     this.geometry = this.findGeometry();
-    if (this.geometry !== null) {
+    if (this.geometry === null) {
+      this.originalColor = Color.TRANSPARENT;
+    } else {
       this.originalColor = Color.clone(
         this.geometry.material.getValue(JulianDate.now()).color,
       );
-      this.geometry!.material = new ColorMaterialProperty(
+      this.geometry.material = new ColorMaterialProperty(
         OBJECT_HIGHLIGHT_COLOR.withAlpha(this.originalColor!.alpha),
       );
-    } else {
-      this.originalColor = Color.TRANSPARENT;
     }
   }
 
@@ -295,20 +307,25 @@ class LayerInfoForEntity implements LayerInfo {
     this.viewer.zoomTo(this.entity, props?.zoomHeadingPitchRange).then();
   }
 
-  activateHighlight() {}
+  activateHighlight() {
+    // Highlights are not supported here.
+  }
 
-  deactivateHighlight() {}
+  deactivateHighlight() {
+    // Highlights are not supported here.
+  }
 
   destroy() {
     if (this.geometry === null) {
       return;
     }
-    this.geometry.material = new ColorMaterialProperty(this.originalColor!);
+    this.geometry.material = new ColorMaterialProperty(this.originalColor);
   }
 }
 
 const extractFeatureAttributes = (
   feature: Cesium3DTileFeature,
+  layer: Layer,
   orderOfProperties: string[],
 ): LayerInfoAttribute[] => {
   const attributes: LayerInfoAttribute[] = [];
@@ -319,8 +336,10 @@ const extractFeatureAttributes = (
   for (const propertyName of propertyNames) {
     const value = feature.getProperty(propertyName);
     if (typeof value === 'number' || !!value) {
-      // TODO move these into `layers:attributes`.
-      attributes.push({ key: `assets:${propertyName}`, value });
+      attributes.push({
+        key: getLayerAttributeName(layer, propertyName),
+        value,
+      });
     }
   }
   return attributes;
@@ -374,6 +393,7 @@ const extractEntityAttributes = (
 
 const extractTilesetAttributes = (
   tileset: Cesium3DTileset,
+  layer: Layer,
   orderOfProperties: string[],
 ): LayerInfoAttribute[] => {
   const metadata = tileset['metadata'];
@@ -400,9 +420,12 @@ const extractTilesetAttributes = (
     const value = properties[propertyName] as any;
     if (
       (typeof value === 'number' || !!value) &&
-      !PROPERTIES_TO_EXCLUDE.includes(propertyName)
+      !PROPERTIES_TO_EXCLUDE.has(propertyName)
     ) {
-      attributes.push({ key: `assets:${propertyName}`, value });
+      attributes.push({
+        key: getLayerAttributeName(layer, propertyName),
+        value,
+      });
     }
   }
   return attributes;

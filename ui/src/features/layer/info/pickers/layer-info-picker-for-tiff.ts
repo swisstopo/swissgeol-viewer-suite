@@ -84,7 +84,7 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
 
     const { layer } = this.controller;
     const resource = await mapLayerSourceToResource(layer.source);
-    const url = `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/point/${longitude},${latitude}?url=${resource.url}`;
+    const url = `${TITILER_BY_PAGE_HOST[globalThis.location.host]}/cog/point/${longitude},${latitude}?url=${resource.url}`;
     const json: Json = await Resource.fetchJson({ url });
     try {
       const activeBandIndex = layer.bands[layer.bandIndex].index;
@@ -156,7 +156,7 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
       this.controller.layer.source,
     );
 
-    const url = `${TITILER_BY_PAGE_HOST[window.location.host]}/cog/info?url=${resource.url}`;
+    const url = `${TITILER_BY_PAGE_HOST[globalThis.location.host]}/cog/info?url=${resource.url}`;
     const json: Json = await Resource.fetchJson({ url });
 
     const [minX, minY, maxX, maxY] = json.bounds;
