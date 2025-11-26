@@ -1,6 +1,6 @@
 {
   include:[
-    '01-maps_and_models/consolidated_rocks',
+    '01-maps_and_models/01-06-3d_models/01-06-01-nat_models/01-06-02-geomol/01-06-02-02-horizons/consolidated_rocks',
     'special/swissBEDROCK',
     'special/voxels',
   ],
