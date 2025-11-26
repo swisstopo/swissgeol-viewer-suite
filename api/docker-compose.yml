@@ -20,7 +20,7 @@ services:
       - minio
 
   db:
-    image: camptocamp/postgres:14-postgis-3
+    image: camptocamp/postgres:16-postgis-3
     platform: linux/amd64
     ports:
       - "5432:5432"
@@ -30,7 +30,6 @@ services:
       POSTGRES_DB: ${PGDATABASE}
     volumes:
       - db:/var/lib/postgresql/data
-      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}" ]
       interval: 10s
