@@ -1,13 +1,12 @@
 import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
-import { Viewer } from 'cesium';
+import { getViewer } from '../../common/viewer';
 
 When(/^the user clicks on the 2d control$/, () => {
   cy.get('control-2d').click();
 });
 
 Then(/^the map is in 3d mode$/, () => {
-  cy.get('ngm-app').then(async (app$) => {
-    const { viewer } = app$[0] as unknown as { viewer: Viewer };
+  getViewer().then(async (viewer) => {
     const cameraController = viewer.scene.screenSpaceCameraController;
     expect(cameraController.lookEventTypes).to.not.be.empty;
     expect(cameraController.tiltEventTypes).to.not.be.empty;
@@ -16,8 +15,7 @@ Then(/^the map is in 3d mode$/, () => {
 });
 
 Then(/^the map is in 2d mode$/, () => {
-  cy.get('ngm-app').then(async (app$) => {
-    const { viewer } = app$[0] as unknown as { viewer: Viewer };
+  getViewer().then(async (viewer) => {
     const cameraController = viewer.scene.screenSpaceCameraController;
     expect(cameraController.lookEventTypes).to.be.empty;
     expect(cameraController.tiltEventTypes).to.be.empty;

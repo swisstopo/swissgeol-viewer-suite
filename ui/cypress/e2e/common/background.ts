@@ -3,6 +3,7 @@ import type { Viewer } from 'cesium';
 
 //@ts-ignore
 import type { ClientConfig } from '../../../src/api/client-config';
+import { getViewer } from './viewer';
 
 let cachedConfig: ClientConfig | null = null;
 
@@ -35,15 +36,13 @@ Given(/^the data panel is open$/, () => {
     .shadow()
     .find('.box')
     .click();
-  cy.get('ngm-catalog').then((it) => console.log(it, it.is(':visible')));
-  cy.get('ngm-catalog').should('not.have.attr', 'hidden');
+  cy.get('ngm-catalog', { timeout: 10_000 }).should('be.visible');
 });
 
 Given(/^the map has been loaded in$/, () => {
   // Wait for the first tile load.
   // This can take quite some time, sadly.
-  cy.get('ngm-app').then({ timeout: 60_000 }, ($app) => {
-    const { viewer } = $app[0] as unknown as { viewer: Viewer };
+  getViewer().then({ timeout: 60_000 }, (viewer) => {
     return new Cypress.Promise((resolve) => {
       const handle = (count: number) => {
         if (count === 0) {
