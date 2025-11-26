@@ -72,7 +72,7 @@ export interface VoxelItemMappingItem {
   /**
    * The translation key providing the display name for the item.
    */
-  label: TranslationKey;
+  label: TranslationKey | string;
 
   /**
    * The value that the data points matching this item have.

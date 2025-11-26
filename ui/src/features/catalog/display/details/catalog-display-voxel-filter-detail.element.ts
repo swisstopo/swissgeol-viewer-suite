@@ -154,48 +154,53 @@ export class CatalogDisplayTimes extends CoreElement {
   private readonly renderItemMapping = (
     mapping: VoxelItemMapping,
     index: number,
-  ) => html`
-    <li class="filter is-items ui form">
-      <h3>${getLayerAttributeName(this.layer, mapping.key)}</h3>
+  ) => {
+    return html`
+      <li class="filter is-items ui form">
+        <h3>${getLayerAttributeName(this.layer, mapping.key)}</h3>
 
-      <div class="controls">
-        <sgc-button
-          color="secondary"
-          size="small"
-          @click="${() => this.setAllMappingItems(index, true)}"
-        >
-          ${i18next.t('catalog:voxel_filter_window.items.select_all')}
-        </sgc-button>
-        <sgc-button
-          color="secondary"
-          size="small"
-          @click="${() => this.setAllMappingItems(index, false)}"
-        >
-          ${i18next.t('catalog:voxel_filter_window.items.deselect_all')}
-        </sgc-button>
-      </div>
+        <div class="controls">
+          <sgc-button
+            color="secondary"
+            size="small"
+            @click="${() => this.setAllMappingItems(index, true)}"
+          >
+            ${i18next.t('catalog:voxel_filter_window.items.select_all')}
+          </sgc-button>
+          <sgc-button
+            color="secondary"
+            size="small"
+            @click="${() => this.setAllMappingItems(index, false)}"
+          >
+            ${i18next.t('catalog:voxel_filter_window.items.deselect_all')}
+          </sgc-button>
+        </div>
 
-      <ul class="items">
-        ${repeat(
-          mapping.items,
-          (item) => item.value,
-          (item, i) => {
-            const label = i18next.t(item.label);
-            return html`
-              <label class="is-inline" title="${label}">
-                <sgc-checkbox
-                  .value="${item.isEnabled}"
-                  @checkboxChange=${() => this.toggleMappingItem(index, i)}
-                ></sgc-checkbox>
-                <div class="color" style="--color: ${item.color}"></div>
-                <span class="text">${label}</span>
-              </label>
-            `;
-          },
-        )}
-      </ul>
-    </li>
-  `;
+        <ul class="items">
+          ${repeat(
+            mapping.items,
+            (item) => item.value,
+            (item, i) => {
+              const label =
+                item.value === this.layer.values.undefined
+                  ? i18next.t(item.label)
+                  : getLayerAttributeName(this.layer, item.label as string);
+              return html`
+                <label class="is-inline" title="${label}">
+                  <sgc-checkbox
+                    .value="${item.isEnabled}"
+                    @checkboxChange=${() => this.toggleMappingItem(index, i)}
+                  ></sgc-checkbox>
+                  <div class="color" style="--color: ${item.color}"></div>
+                  <span class="text">${label}</span>
+                </label>
+              `;
+            },
+          )}
+        </ul>
+      </li>
+    `;
+  };
 
   private readonly renderRangeMapping = (
     mapping: VoxelRangeMapping,
