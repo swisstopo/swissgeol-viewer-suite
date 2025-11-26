@@ -20,7 +20,7 @@
       id: 'top_usm',
       source: {
         type: 'CesiumIon',
-        asset_id: 267961
+        asset_id: 267961,
       },
       order_of_properties: 'consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-LowerFreshwaterMolasse.zip',

@@ -122,7 +122,7 @@ export class LayerTiffLegend extends CoreElement {
 
   readonly render = () => html`
     <div class="title">
-      ${i18next.t('layers:geoTIFF.bandsWindow.legend')}
+      ${i18next.t('catalog:tiffBandsWindow.legend')}
       ${this.band.unit === null
         ? ''
         : html`

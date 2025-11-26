@@ -1,41 +1,214 @@
 {
   layers: [
+    // GeoMol Temperature Model
     {
       type: "Voxel",
-      id: "voxel_aaretal_lithology",
+      id: "voxel_geomol_temp_c",
       source: {
         type: "CesiumIon",
-        asset_id: 3882886,
+        asset_id: 4135841
+      },
+      data_key: "Temp_C",
+      mappings:['geomol_temp_c'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2"
+    },
+    
+    // Aaretal - Modelling Units
+    {
+      type: "Voxel",
+      id: "voxel_aaretal_modelling_units",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4079378,
       },
       data_key: "Index",
-      mappings: ['conductivity','lithology'],
+      mappings: ['conductivity','aaretal_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502"
+    },
+    // Aaretal - Hydraulic Conductivity
+    {
+      type: "Voxel",
+      id: "voxel_aaretal_conductivity",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4079378,
+      },
+      data_key: "logk",
+      mappings: ['conductivity', 'aaretal_lithology'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
       geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502",
     },
+    // Birr - Modelling Units
     {
       type: "Voxel",
-      id: "voxel_aaretal_conductivity",
+      id: "voxel_birr_modelling_units",
       source: {
         type: "CesiumIon",
-        asset_id: 3882886,
+        asset_id: 4070346,
       },
-      data_key: "logk",
-      mappings: ['conductivity', 'lithology'],
+      data_key: "Index",
+      mappings: ['conductivity', 'birr_lithology'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502",
+      geocat_id: "f56c9c6c-ff59-463d-ba66-477fd2d92f39",
+    },
+    // Birr - Hydraulic Conductivity
+    {
+      type: "Voxel",
+      id: "voxel_birr_conductivity",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4070346,
+      },
+      data_key: "logk",
+      mappings: ['conductivity', 'birr_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "f56c9c6c-ff59-463d-ba66-477fd2d92f39",
+    },
+    // Genf - Modelling Units
+    {
+      type: "Voxel",
+      id: "voxel_genf_modelling_units",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4070290,
+      },
+      data_key: "Index",
+      mappings: ['conductivity', 'genf_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "4a4a530f-6a2a-423d-834e-2831d70fde20",
+    },
+    // Genf - Hydraulic Conductivity
+    {
+      type: "Voxel",
+      id: "voxel_genf_conductivity",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4070290,
+      },
+      data_key: "logk",
+      mappings: ['conductivity', 'genf_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "4a4a530f-6a2a-423d-834e-2831d70fde20",
+    },
+    // Visp - Modelling Units
+    {
+      type: "Voxel",
+      id: "voxel_visp_modelling_units",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4069970,
+      },
+      data_key: "Index",
+      mappings: ['conductivity', 'visp_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "f7847c2c-bd3a-4dda-99c7-d50453b24c3d",
+    },
+    // Visp - Hydraulic Conductivity
+    {
+      type: "Voxel",
+      id: "voxel_visp_conductivity",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4069970,
+      },
+      data_key: "logk",
+      mappings: ['conductivity', 'visp_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: 0,
+      },
+      geocat_id: "f7847c2c-bd3a-4dda-99c7-d50453b24c3d",
+    },
+    // SG Rheintal - Conductivity
+    {
+      type: "Voxel",
+      id: "voxel_sgrheintal_conductivity",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4071931,
+      },
+      data_key: "Klasse",
+      mappings: ['sg_rheintal_conductivity'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "",
     }
+
   ],
 
   // TODO translate labels
+  // Legende integrieren
 
   voxel_mappings: {
-    lithology: {
+    // GeoMol Tamp_C Mapping
+    geomol_temp_c: {
+      key: 'Temp_C',
+      range:[10, 300],
+      colors: [
+        'rgb(10, 0, 121)',
+        'rgb(40, 0, 150)',
+        'rgb(20, 5, 175)',
+        'rgb(0, 10, 200)',
+        'rgb(0, 25, 212)',
+        'rgb(0, 40, 224)',
+        'rgb(26, 102, 240)',
+        'rgb(13, 129, 248)',
+        'rgb(25, 175, 255)',
+        'rgb(50, 190, 255)',
+        'rgb(68, 202, 255)',
+        'rgb(97, 225, 240)',
+        'rgb(106, 235, 225)',
+        'rgb(124, 235, 200)',
+        'rgb(138, 236, 174)',
+        'rgb(172, 245, 168)',
+        'rgb(205, 255, 162)',
+        'rgb(223, 245, 141)',
+        'rgb(240, 236, 121)',
+        'rgb(247, 215, 104)',
+        'rgb(255, 189, 87)',
+        'rgb(255, 160, 69)',
+        'rgb(244, 117, 75)',
+        'rgb(238, 80, 78)',
+        'rgb(255, 90, 90)',
+        'rgb(255, 124, 124)',
+        'rgb(255, 158, 158)',
+        'rgb(245, 179, 174)',
+        'rgb(255, 196, 196)',
+        'rgb(255, 215, 215)',
+        'rgb(255, 235, 235)',
+        'rgb(255, 255, 255)',
+      ]
+    },
+    // Aaretal Mapping
+    aaretal_lithology: {
       key: 'Index',
       items: [
         [3, { label: 'Verlandungssedimente, Sumpf, Ried', color: 'rgb(92, 255, 105)' }],
@@ -61,6 +234,135 @@
         [23, { label: 'Alte Seetone', color: 'rgb(0, 102, 9)' }]
       ],
     },
+    // Birr Mapping
+    birr_lithology: {
+      key: 'Index',
+      items: [
+        [46, {  label:  'Überschwemmungssedimente' , color:'rgb(137, 255, 147)'}],
+        [53, {  label:  'Verlandungssedimente' , color:'rgb(121, 255, 132)'}],
+        [3, {  label:  'Bachschutt' , color:'rgb(0, 255, 234)'}],
+        [16, {  label:  'Hanglehm' , color:'rgb(173, 173, 173)'}],
+        [40, {  label:  'Schwemmlehm' , color:'rgb(105, 255, 117)'}],
+        [17, {  label:  'Hangschutt' , color:'rgb(143, 143, 143)'}],
+        [38, {  label:  'Rutschungsschutt' , color:'rgb(112, 112, 112)'}],
+        [24, {  label:  'Löss' , color:'rgb(170, 0, 255)'}],
+        [42, {  label:  'Stetten-Lehm' , color:'rgb(89, 255, 102)'}],
+        [61, {  label:  'Eiszeitliche Seesedimente' , color:'rgb(255, 255, 255)'}],
+        [31, {  label:  'Pulveren-Moräne' , color:'rgb(208, 224, 161)'}],
+        [44, {  label:  'Tanklager-Formation' , color:'rgb(72, 255, 88)'}],
+        [26, {  label:  'Mellingen-Lehm' , color:'rgb(56, 255, 73)'}],
+        [27, {  label:  'Mellingen-Moräne' , color:'rgb(199, 218, 143)'}],
+        [62, {  label:  'Mellingen-Schotter' , color:'rgb(255, 255, 255)'}],
+        [60, {  label:  'Birmenstorf-Glazigene Sed.' , color:'rgb(255, 255, 255)'}],
+        [14, {  label:  'Gruemet-Schotter' , color:'rgb(140, 217, 255)'}],
+        [1, {  label:  'Aaretal-Schotter' , color:'rgb(128, 212, 255)'}],
+        [34, {  label:  'Reusstal-Schotter' , color:'rgb(115, 208, 255)'}],
+        [23, {  label:  'Limmattal-Schotter' , color:'rgb(102, 204, 255)'}],
+        [51, {  label:  'Dättwil-Schotter' , color:'rgb(77, 195, 255)'}],
+        [8, {  label:  'Bünztalschotter' , color:'rgb(64, 191, 255)'}],
+        [29, {  label:  'Oberhard-Moräne' , color:'rgb(190, 212, 126)'}],
+        [30, {  label:  'Othmarsingen-Moräne' , color:'rgb(181, 206, 108)'}],
+        [13, {  label:  'Flüefeld-Schotter' , color:'rgb(255, 255, 255)'}],
+        [5, {  label:  'Birr-Schotter' , color:'rgb(38, 183, 255)'}],
+        [36, {  label:  'Rüsshalde-Formation' , color:'rgb(40, 255, 58)'}],
+        [2, {  label:  'Ämmert-Moräne' , color:'rgb(173, 200, 90)'}],
+        [47, {  label:  'Aemmert-Schotter' , color:'rgb(26, 178, 255)'}],
+        [28, {  label:  'Mülligen-Schotter' , color:'rgb(13, 175, 255)'}],
+        [21, {  label:  'Hinterbänkler-Formation' , color:'rgb(255, 255, 255)'}],
+        [10, {  label:  'Dättwil-Lehm' , color:'rgb(24, 255, 43)'}],
+        [41, {  label:  'Seebli-Formation' , color:'rgb(0, 170, 255)'}],
+        [11, {  label:  'Fahracher-Formation' , color:'rgb(8, 255, 29)'}],
+        [18, {  label:  'Hard-Schotter' , color:'rgb(255, 255, 255)'}],
+        [25, {  label:  'Lupfig-Schotter' , color:'rgb(0, 153, 230)'}],
+        [48, {  label:  'Reusstal-Sand' , color:'rgb(255, 255, 0)'}],
+        [33, {  label:  'Reusstal-Lehm' , color:'rgb(0, 247, 21)'}],
+        [56, {  label:  'Vogelsang-Formation' , color:'rgb(0, 231, 19)'}],
+        [12, {  label:  'Fislisbach-Schotter' , color:'rgb(0, 144, 217)'}],
+        [9, {  label:  'Burghalden-Moräne' , color:'rgb(164, 194, 73)'}],
+        [35, {  label:  'Rüfenach-Moräne' , color:'rgb(108, 129, 43)'}],
+        [49, {  label:  'Rüfenach-Schotter' , color:'rgb(0, 93, 140)'}],
+        [50, {  label:  'Ruckfeld-Schotter' , color:'rgb(255, 255, 255)'}],
+        [19, {  label:  'Hausen-Lehm' , color:'rgb(0, 215, 18)'}],
+        [39, {  label:  'Schlattboden-Schotter' , color:'rgb(255, 255, 255)'}],
+        [63, {  label:  'Remigen-Moräne' , color:'rgb(255, 255, 255)'}],
+        [32, {  label:  'Remigen-Schotter' , color:'rgb(0, 127, 191)'}],
+        [64, {  label:  'Remigen-Sediment' , color:'rgb(0, 127, 191)'}],
+        [20, {  label:  'Hausen-Moräne' , color:'rgb(152, 182, 61)'}],
+        [4, {  label:  'Birr-Lehm' , color:'rgb(0, 199, 17)'}],
+        [45, {  label:  'Tannholz-Formation' , color:'rgb(0, 183, 15)'}],
+        [52, {  label:  'Buenztal-Lehm' , color:'rgb(0, 134, 11)'}],
+        [54, {  label:  'Birch-Formation' , color:'rgb(0, 166, 14)'}],
+        [37, {  label:  'Rütenen-Moräne' , color:'rgb(137, 165, 55)'}],
+        [43, {  label:  'Strick-Schotter' , color:'rgb(255, 255, 255)'}],
+        [57, {  label:  'Oetlisberg-Schotter' , color:'rgb(0, 110, 166)'}],
+        [15, {  label:  'Habsburg-Schotter' , color:'rgb(0, 102, 153)'}],
+        [6, {  label:  'Brand-Formation' , color:'rgb(51, 51, 51)'}],
+        [55, {  label:  'Moos-Lehm' , color:'rgb(0, 150, 13)'}],
+        [7, {  label:  'Brand-Moräne' , color:'rgb(123, 147, 49)'}],
+        [65, {  label:  'Riniken-Moräne' , color:'rgb(255, 255, 255)'}],
+        [66, {  label:  'Riniken-Seesedimente' , color:'rgb(255, 255, 255)'}],
+        [67, {  label:  'Bruggerberg-Schotter' , color:'rgb(255, 255, 255)'}],
+      ],
+    },
+    // Genf Mapping
+    genf_lithology: {
+      key: 'Index',
+      items: [
+        [ 3000, { label:  'Eboulis, Formations de pente, Colluvions, Limons de ruissellement', color: 'rgb(55, 169, 0)'}],
+        [ 4000, { label:  'Alluvions de terrasses', color: 'rgb(55, 169, 0)'}],
+        [ 5000, { label:  'Dépôts ou vases lacustres, tourbe, craie lacustre', color: 'rgb(115, 223, 254)'}],
+        [ 6000, { label:  'Formations supraglaciaires de retrait würmiens', color: 'rgb(167, 111, 0)'}],
+        [ 7000, { label:  'Moraine würmienne à cailloux et blocs alpins', color: 'rgb(0, 94, 230)'}],
+        [ 8000, { label:  'Dépôts intramorainiques ou intraformationnels würmiens', color: 'rgb(253, 169, 0)'}],
+        [ 9000, { label:  'Cailloutis morainiques profonds ou « Alluvion Ancienne »', color: 'rgb(254, 190, 232)'}],
+        [ 10000, { label:  'Interglaciaire Riss-Würm', color: 'rgb(150, 120, 255)'}],
+        [ 11000, { label:  'Formations de retrait rissiens', color: 'rgb(255, 255, 0)'}],
+        [ 12000, { label:  'Moraines à cailloux et blocs alpins rissiens', color: 'rgb(168, 168, 0)'}]
+      ],
+    },
+    // SG-Rheintal Mapping
+    sg_rheintal_conductivity: {
+      key: 'Klasse',
+      items: [
+        [1, { label:  'vox_filter_klasse_1', color:  'rgb(0, 0, 255)'}],
+        [2, { label:  'vox_filter_klasse_2', color:  'rgb(30, 144, 255)'}],
+        [3, { label:  'vox_filter_klasse_3', color:  'rgb(173, 216, 230)',}],
+        [4, { label:  'vox_filter_klasse_4', color:  'rgb(144, 238, 144)',}],
+        [5, { label:  'vox_filter_klasse_5', color:  'rgb(255, 165, 0)',}],
+        [6, { label:  'vox_filter_klasse_6', color:  'rgb(255, 255, 0)',}]
+      ],
+    },
+
+    // Visp Mapping
+    visp_lithology: {
+      key: 'Index',
+      items: [
+        [54,{ label:  'Künstliche Ablagerung Lonzadeponie', color: 'rgb(255, 0, 150)', }],
+        [14,{ label:  'Gehängeschutt', color: 'rgb(217, 191, 191)', }],
+        [16,{ label:  'Bergsturzmaterial', color: 'rgb(179, 128, 128)', }],
+        [31,{ label:  'Felssackung', color: 'rgb(128, 77, 77)', }],
+        [30,{ label:  'Sackungsmasse Riedberg', color: 'rgb(64, 38, 38)', }],
+        [40,{ label:  'Bachschuttablagerung', color: 'rgb(0, 255, 234)', }],
+        [41,{ label:  'Bachschuttablagerung Baltschiederbach', color: 'rgb(0, 255, 234)', }],
+        [44,{ label:  'Bachschuttablagerung Gamsa', color: 'rgb(0, 255, 234)', }],
+        [42,{ label:  'Bachschuttablagerung Bietschbach', color: 'rgb(0, 255, 234)', }],
+        [43,{ label:  'Bachschuttablagerung Chelchbach', color: 'rgb(0, 255, 234)', }],
+        [45,{ label:  'Bachschuttablagerung Jolibach', color: 'rgb(0, 255, 234)', }],
+        [46,{ label:  'Bachschuttablagerung Lonza', color: 'rgb(0, 255, 234)', }],
+        [47,{ label:  'Bachschuttablagerung Saltina', color: 'rgb(0, 255, 234)', }],
+        [48,{ label:  'Bachschuttablagerung Vispa', color: 'rgb(0, 159, 238)', }],
+        [9,{ label:  'Rhoneschotter und Rhonesande', color: 'rgb(119, 210, 255)', }],
+        [7,{ label:  'Obere Limnische Ablagerungen oli', color: 'rgb(216, 255, 197)', }],
+        [8,{ label:  'Untere Limnische Ablagerungen uli', color: 'rgb(23, 246, 39)', }],
+        [1,{ label:  'Limnische Ablagerungen', color: 'rgb(100, 255, 22)', }],
+        [2,{ label:  'Limnische Ablagerungen 2', color: 'rgb(73, 219, 0)', }],
+        [3,{ label:  'Limnische Ablagerungen 4', color: 'rgb(53, 160, 0)', }],
+        [4,{ label:  'Limnische Ablagerungen 5', color: 'rgb(34, 102, 0)', }],
+        [6,{ label:  'Moränenmaterial', color: 'rgb(199, 207, 175)', }],
+      ],
+    },
+
+    // Conductivity mapping for all GeoQuat models
     conductivity: {
       key: 'logk',
       range: [-9, -1],
