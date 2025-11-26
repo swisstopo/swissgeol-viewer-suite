@@ -40,7 +40,10 @@ export class PickService extends BaseService {
       this.viewer.scene.pickPositionSupported &&
       this.viewer.scene.globe.show
     ) {
-      return this.tryPickWithSceneOrFallback(windowPosition);
+      return (
+        this.tryPickWithSceneOrFallback(windowPosition) ??
+        this.pickWithMath(windowPosition)
+      );
     } else {
       return this.pickWithMath(windowPosition);
     }
@@ -69,15 +72,24 @@ export class PickService extends BaseService {
   }
 
   private pickWithMath(position: Cartesian2): Cartesian3 | null {
+    const { viewer } = this;
+    if (viewer === null) {
+      return null;
+    }
+
     // Determine the position of the click on the globe via a ray cast onto the WGS ellipsoid.
     // This method works even with the globe turned off, unlike `scene.pickPosition`.
     // It also doesn't trigger any weird errors happening around picking while specific tiles aren't fully loaded yet.
     // However, it may not be as accurate as `scene.pickPosition`,
     // especially in regard to specific positions on elevated or sunken terrain.
-    const ray = this.viewer!.camera.getPickRay(position);
+    const ray = viewer!.camera.getPickRay(position);
     if (ray === undefined) {
       return null;
     }
+    if (viewer.scene.globe.show) {
+      return viewer.scene.globe.pick(ray, viewer.scene) ?? null;
+    }
+
     const interval = IntersectionTests.rayEllipsoid(ray, Ellipsoid.WGS84);
     if (interval === undefined) {
       return null;
