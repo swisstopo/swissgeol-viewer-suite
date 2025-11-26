@@ -158,60 +158,64 @@ export class CatalogDisplayListItem extends CoreElement {
     50,
   );
 
-  readonly render = () => html`
-    <div class="main">
-      <ngm-core-button
-        transparent
-        variant="tertiary"
-        shape="icon"
-        data-cy="visibility"
-        @click="${this.toggleVisibility}"
-      >
-        <ngm-core-icon
-          icon="${this.layer.isVisible ? 'visible' : 'hidden'}"
-        ></ngm-core-icon>
-      </ngm-core-button>
+  readonly render = () => {
+    const title = isBackgroundLayer(this.layer)
+      ? i18next.t(`layers:backgrounds.${this.layer.activeVariantId}`)
+      : getLayerLabel(this.layer);
+    this.setAttribute('title', title);
+    return html`
+      ${when(!isBackgroundLayer(this.layer), this.renderDragHandle)}
 
-      <span class="title">
-        ${isBackgroundLayer(this.layer)
-          ? i18next.t(`layers:backgrounds.${this.layer.activeVariantId}`)
-          : getLayerLabel(this.layer)}
-      </span>
-
-      <div class="suffix">
-        ${when(
-          isBackgroundLayer(this.layer),
-          () => html`
-            <span
-              class="label ${classMap({
-                'is-active': this.isBackgroundActive,
-              })}"
-              role="button"
-              data-cy="background"
-              @click="${this.toggleBackgroundActive}"
-              >${i18next.t('catalog:display.background')}</span
-            >
-          `,
-        )}
+      <div class="main">
         <ngm-core-button
           transparent
-          variant="secondary"
-          shape="chip"
-          class="opacity-toggle"
-          ?active="${this.isOpacityActive}"
-          ?disabled="${!this.layer.isVisible || !this.layer.canUpdateOpacity}"
-          data-cy="opacity"
-          @click="${this.toggleOpacityActive}"
+          variant="tertiary"
+          shape="icon"
+          data-cy="visibility"
+          @click="${this.toggleVisibility}"
         >
-          ${Math.round(this.layer.opacity * 100)}%
+          <ngm-core-icon
+            icon="${this.layer.isVisible ? 'visible' : 'hidden'}"
+          ></ngm-core-icon>
         </ngm-core-button>
-        ${tooltip(i18next.t('catalog:display.opacity'))}
-        ${when(!isBackgroundLayer(this.layer), this.renderActions)}
+
+        <span class="title">${title}</span>
+
+        <div class="suffix">
+          ${when(
+            isBackgroundLayer(this.layer),
+            () => html`
+              <span
+                class="label ${classMap({
+                  'is-active': this.isBackgroundActive,
+                })}"
+                role="button"
+                data-cy="background"
+                @click="${this.toggleBackgroundActive}"
+                >${i18next.t('catalog:display.background')}</span
+              >
+            `,
+          )}
+          <ngm-core-button
+            transparent
+            variant="secondary"
+            shape="chip"
+            class="opacity-toggle"
+            ?active="${this.isOpacityActive}"
+            ?disabled="${!this.layer.isVisible || !this.layer.canUpdateOpacity}"
+            data-cy="opacity"
+            @click="${this.toggleOpacityActive}"
+          >
+            ${Math.round(this.layer.opacity * 100)}%
+          </ngm-core-button>
+          ${tooltip(i18next.t('catalog:display.opacity'))}
+          ${when(!isBackgroundLayer(this.layer), this.renderActions)}
+        </div>
       </div>
-    </div>
-    ${when(this.isOpacityActive, this.renderOpacity)}
-    ${when(this.isBackgroundActive, this.renderBackground)}
-  `;
+      ${when(this.isOpacityActive, this.renderOpacity)}
+      ${when(this.isBackgroundActive, this.renderBackground)}
+    `;
+  };
 
   private readonly renderActions = () => html`
     <ngm-core-button
@@ -323,6 +327,14 @@ export class CatalogDisplayListItem extends CoreElement {
   private readonly renderBackground = () => html`
     <hr />
     <ngm-background-layer-select></ngm-background-layer-select>
+  `;
+
+  readonly renderDragHandle = () => html`
+    <div class="handle">
+      <ngm-core-button variant="tertiary" shape="icon">
+        <ngm-core-icon icon="grab"></ngm-core-icon>
+      </ngm-core-button>
+    </div>
   `;
 
   static readonly styles = css`
