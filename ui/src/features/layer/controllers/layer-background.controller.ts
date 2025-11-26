@@ -47,11 +47,7 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
     this.children.forEach((child) =>
       child.update({ ...child.layer, isVisible, opacity }),
     );
-    if (opacity === 1) {
-      translucency.enabled = false;
-    } else {
-      translucency.enabled = true;
-    }
+    translucency.enabled = opacity !== 1;
   }
 
   protected async addToViewer(): Promise<void> {
