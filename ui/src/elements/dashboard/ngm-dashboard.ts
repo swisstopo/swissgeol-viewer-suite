@@ -656,8 +656,10 @@ export class NgmDashboard extends LitElementI18n {
             }}
           >
             ${i18next.t('dashboard_my_projects')}
-            (${this.projects.filter((p) => p.owner.email === this.user?.email)
-              .length})
+            (${this.projects.filter(
+              (p) =>
+                p.owner.email.toLowerCase() === this.user?.email.toLowerCase(),
+            ).length})
           </div>
           <div
             class=${classMap({ active: this.activeTab === 'shared' })}
@@ -670,8 +672,10 @@ export class NgmDashboard extends LitElementI18n {
             }}
           >
             ${i18next.t('dashboard_shared_projects')}
-            (${this.projects.filter((p) => p.owner.email !== this.user?.email)
-              .length})
+            (${this.projects.filter(
+              (p) =>
+                p.owner.email.toLowerCase() !== this.user?.email.toLowerCase(),
+            ).length})
           </div>
         </div>
         <div
