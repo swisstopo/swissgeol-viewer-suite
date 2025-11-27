@@ -205,7 +205,10 @@ export class NgmDashboard extends LitElementI18n {
     DashboardStore.selectedTopicOrProject.subscribe((topicOrProject) => {
       this.selectedTopicOrProject = topicOrProject;
       if (isProject(topicOrProject)) {
-        if (topicOrProject.owner.email === this.user?.email) {
+        if (
+          topicOrProject.owner.email.toLowerCase() ===
+          this.user?.email.toLowerCase()
+        ) {
           this.activeTab = 'projects';
         } else {
           this.activeTab = 'shared';
@@ -712,7 +715,11 @@ export class NgmDashboard extends LitElementI18n {
           </div>
           <div class="ngm-projects-list">
             ${this.projects
-              .filter((p) => p.owner.email === this.user?.email)
+              .filter(
+                (p) =>
+                  p.owner.email.toLowerCase() ===
+                  this.user?.email.toLowerCase(),
+              )
               .map((data) => this.previewTemplate(data))}
             <div
               class="ngm-proj-preview ngm-proj-create"
@@ -729,7 +736,11 @@ export class NgmDashboard extends LitElementI18n {
           </div>
           <div class="ngm-projects-list">
             ${this.projects
-              .filter((p) => p.owner.email !== this.user?.email)
+              .filter(
+                (p) =>
+                  p.owner.email.toLowerCase() !==
+                  this.user?.email.toLowerCase(),
+              )
               .map((data) => this.previewTemplate(data))}
           </div>
         </div>

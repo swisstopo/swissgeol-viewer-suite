@@ -199,9 +199,10 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       ? `url('${this.topicOrProject.image}')`
       : 'none';
     const editorEmails = project?.editors?.map((m) => m.email) || [];
-    const isProjectModerator = [ownerEmail, ...editorEmails].includes(
-      this.userEmail,
-    );
+    const isProjectModerator = [
+      ownerEmail?.toLowerCase(),
+      ...editorEmails.map((mail) => mail.toLowerCase()),
+    ].includes(this.userEmail.toLowerCase());
 
     return html`
       <ngm-confirmation-modal
