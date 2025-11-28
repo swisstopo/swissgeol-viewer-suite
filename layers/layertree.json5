@@ -1,3 +1,13 @@
+/*
+// Group name
+  {
+    id: '',
+    children: [
+      ''
+    ]
+  },
+*/
+
 {
   include: [
     'layers_wmts',
@@ -21,6 +31,8 @@
             'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
             'ch.swisstopo.geologie-geologische_karte',
             'ch.swisstopo.geologie-tektonische_karte',
+            'ch.swisstopo.geologie-geotechnik-gk500-gesteinsklassierung',
+            'ch.swisstopo.geologie-geotechnik-gk500-genese',
           ]
         },
         // 02 - Thematic_maps
@@ -28,23 +40,57 @@
           id: 'thematic_maps',
           children: [
             'ch.swisstopo.geologie-eiszeit-lgm-raster',
+            'ch.swisstopo.geologie-eiszeit-lgm',
+            'ch.swisstopo.geologie-gletschermaechtigkeit',
+            'ch.swisstopo.geologie-gletscherausdehnung',
+            'ch.swisstopo.geologie-geomorphologie'
         ]
         },
-        // 02 - Weitere Gruppen
-        // ...
+        // 02 - Historic_maps
+        {
+          id: 'historic_maps',
+          children: [
+            'ch.swisstopo.geologie-generalkarte-ggk200'
+        ]
+        },
+        // 02 - Sheet divisions
+        {
+          id: 'sheet_divisions',
+          children: [
+            'ch.swisstopo.geologie-generalkarte-ggk200.metadata',
+            'ch.swisstopo.geologie-spezialkarten_schweiz.metadata',
+            'ch.swisstopo.geologie-spezialkarten_schweiz_vector.metadata',
+            'ch.swisstopo.geologie-geologischer_atlas.metadata',
+            'ch.swisstopo.geologie-geocover.metadata'
+        ]
+        },
+        // 02 - Cross-sections
+        {
+          id: 'cross-sections',
+          children: [
+            'ch.swisstopo.geologie-geologischer_atlas_profile',
+            'geomol_cs',
+            'geoquat_aaretal_cs'
+        ]
+        },
         // 02 - 3D models
         {
           id: '3d_models',
           children: [
             'ch.swisstopo.geologie-geologische_3dmodelle',
-            // National models
+            // 03 - National models
             {
               id: 'nat_3d_models',
               children: [
-                // swissBEDROCK
-                'ch.swisstopo.swissbedrock-geotiff',
-                'ch.swisstopo.swissbedrock-geotiff-with-terrain',
-                // Jura 3D
+                // 04 - Uncon. rocks and bedrock
+                {
+                  id: 'uncon_rocks_bedrock',
+                  children: [
+                    'ch.swisstopo.swissbedrock-geotiff',
+                    'ch.swisstopo.swissbedrock-geotiff-with-terrain',
+                  ]
+                },
+                // 04 - Jura 3D
                 {
                   id: 'jura_3d_models',
                   children: [
@@ -53,11 +99,12 @@
 
                   ]
                 },
-                // GeolMol
+                // 04 - GeoMol
                 {
                   id: 'geomol_models',
                   children: [
                     'geomol_cs',
+                    // 05 - GeoMol horizons
                     {
                       id: 'geomol_horizons',
                       children: [
@@ -82,7 +129,7 @@
                 }
               ]
             },
-            // Regional models
+            // 03 - Regional models
             {
               id: 'region_3d_models',
               children: [
@@ -96,6 +143,13 @@
                 'voxel_visp_modelling_units',
                 'voxel_visp_conductivity'
               ]
+            },
+            // 03 - Local models
+            {
+              id: 'local_3d_models',
+              children: [
+                'local_model_city_berne'
+              ]
             }
           ]
         }
@@ -105,7 +159,9 @@
     {
       id: 'boreholes',
       children: [
-        'ch.swisstopo.geologie-bohrungen_tiefer_500'
+        'ch.swisstopo.geologie-bohrungen_tiefer_500',
+        'boreholes_public',
+        'boreholes_private'
       ]
     },
     // 01 Topic - Geophysics
@@ -115,14 +171,64 @@
         'ch.swisstopo.geologie-reflexionsseismik',
         'seismic_2d_21_egeo_001',
         'seismic_2d_21_egeo_002',
-        'seismic_3d_E11'
+        'seismic_3d_E11',
+        'ch.swisstopo.geologie-gesteinsdichte',
+        'ch.swisstopo.geologie-bodenunruhe',
+        'ch.swisstopo.geologie-dosisleistung-terrestrisch',
+        {
+          id: 'earth_gravity_filed',
+          children: [
+            'ch.swisstopo.landesschwerenetz',
+          ]
+        },
+        {
+          id: 'earth_magnetic_filed',
+          children: [
+            'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_schweiz',
+          ]
+        },
       ]
     },
     // 01 Topic - Geopenergy
     {
       id: 'geoenergy',
       children: [
-        'voxel_geomol_temp_c'
+        'ch.swisstopo.geologie-tiefengeothermie_projekte',
+        'ch.swisstopo.geologie-bohrungen_tiefer_500',
+        'ch.swisstopo.geologie-reflexionsseismik',
+        'ch.swisstopo.geologie-thermale_waesser',
+        'ch.bfe.grundwasserwaermenutzungspotential',
+        'ch.swisstopo.geologie-geothermische_potenzialstudien_regional',
+        {
+          id: 'temp_models',
+          children: [
+            'ch.swisstopo.geologie-geophysik-geothermie',
+            'voxel_geomol_temp_c',
+            'temp_iso_60',
+            'temp_iso_100',
+            'temp_iso_150',
+            'temp_tomm',
+            'temp_tuma',
+            'temp_tums',
+            'temp_depth_500',
+            'temp_depth_1000',
+            'temp_depth_1500',
+            'temp_depth_2000',
+            'temp_depth_3000',
+            'temp_depth_4000'
+          ]
+        },
+      ]
+    },
+    // 01 Topic - Underground space
+    {
+      id: 'underground_space',
+      children: [
+        'ch.swisstopo.geologie-felslabore',
+        'ch.bfe.sachplan-geologie-tiefenlager',
+        'tunnel_road',
+        'tunnel_railway',
+        'tunnel_water'
       ]
     },
     // 01 Topic - Background data
@@ -133,7 +239,5 @@
         'swiss_buildings'
       ]
     }
-
-
   ]
 }

@@ -10,11 +10,100 @@
             'Download DXF',
             'Download ASCII',
             'Download All data'
+        ],
+        geoquat_cs: [
+            'CS-AAT-Cross-section',
+            'CS-AAT-Lithostratigraphy',
+            'CS-AAT-Type',
+            'CS-AAT-Legend',
+            'CS-AAT-Report',
+        ],
+        city_berne: [
+            '3DBern-Unit',
+            '3DBern-Link',
+            '3DBern-Lithology',
+            '3DBern-TectonicUnit',
+            '3DBern-ChronoB-T',
+            '3DBern-OrigDesc',
+            '3DBern-Version',
+            '3DBern-Aothor',
+            '3DBern-Purpose',
+            '3DBern-Download',
+        ],
+        boreholes_2021: [
+            'bh_pub_XCOORD',
+            'bh_pub_YCOORD',
+            'bh_pub_ZCOORDB',
+            'bh_pub_ORIGNAME',
+            'bh_pub_NAMEPUB',
+            'bh_pub_SHORTNAME',
+            'bh_pub_BOHREDAT',
+            'bh_pub_BOHRTYP',
+            'bh_pub_GRUND',
+            'bh_pub_RESTRICTIO',
+            'bh_pub_TIEFEMD',
+            'bh_pub_DEPTHFROM',
+            'bh_pub_DEPTHTO',
+            'bh_pub_LAYERDESC',
+            'bh_pub_ORIGGEOL',
+            'bh_pub_LITHOLOGY',
+            'bh_pub_LITHOSTRAT',
+            'bh_pub_CHRONOSTR',
+            'bh_pub_TECTO',
+            'bh_pub_USCS1',
+            'bh_pub_USCS2',
+            'bh_pub_USCS3',
         ]
     },
 
     layers: [
-        // 2DSesimik
+/*
+        // Topic Title
+        // Layer title
+        {
+            type: 'Tiles3d',
+            id: '',
+            source: {
+                type: '',
+                id: ,
+                style_id: ,
+            }
+            order_of_properties: '',
+            download_url: 'https://download.swissgeol.ch/ XXXX',
+            geocat_id: '',
+        },
+*/
+        // Topic Boreholes
+        // Boreholes 2021 - Public
+        {
+            type: 'Tiles3d',
+            id: 'boreholes_public',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 287568,
+            },
+            order_of_properties: 'boreholes_2021',
+            download_url: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
+            geocat_id: '3996dfad-69dd-418f-a4e6-5f32b96c760a',
+        },
+        // Boreholes 2021 - Private
+        {
+            type: 'Tiles3d',
+            id: 'boreholes_private',
+            source: {
+                type: 'S3',
+                bucket:'ngm-protected-prod',
+                key: 'tiles/bh_private_20210201_00/tileset.json'
+            },
+            access: {
+                env: ['local', 'dev'],
+                groups: ['ngm-dev-privileged']
+            },
+            order_of_properties: 'boreholes_2021',
+            download_url: '',
+            geocat_id: '',
+        },
+        // 2DSeismik
         // 2D-Seismik EGEO 001
         {
             type: 'Tiles3d',
@@ -23,6 +112,9 @@
                 type: 'Ogc',
                 id: 13327,
                 style_id: 5,
+            },
+            access: {
+                env: ['local', 'dev']
             }
         },
         // 2D-Seismik EGEO 002
@@ -49,10 +141,130 @@
                 env: ['local', 'dev']
             }
         },
-        
-        // GeoMol
-        
-        // GeoMol-Profile
+        // Geoenergy
+        {
+            type: 'Tiles3d',
+            id: 'temp_iso_60',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251755,
+            },
+            geocat_id: '6edca35d-0f08-43b9-9faf-4c7b207888a1'
+        },    
+        {
+            type: 'Tiles3d',
+            id: 'temp_iso_100',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251787,
+            },
+            geocat_id: '8681fb45-6220-41ef-825a-86210d8a72fc'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_iso_150',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251783,
+            },
+            geocat_id: '31dc428e-a62b-4f6b-a263-e5eca9d9a074'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_tomm',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251747,
+            },
+            geocat_id: '4f9e3f59-891e-434b-bba5-40db1b9495e0'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_tuma',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251782,
+            },
+            geocat_id: '613cdc6f-0237-416d-af16-ae5d2f1934ff'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_tums',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251781,
+            },
+            geocat_id: 'e0be0de5-4ed0-488a-a952-5eb385fd5595'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_depth_500',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251756,
+            },
+            geocat_id: '08e66941-4ebb-4017-8018-b39caa8fd107'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_depth_1000',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251788,
+            },
+            geocat_id: '5e32ea72-a356-4250-b40a-a441165fd936'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_depth_1500',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251790,
+            },
+            geocat_id: '162989d7-5c1c-48fb-8d16-2ccf5be339b9'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_depth_2000',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251786,
+            },
+            geocat_id: 'ac604460-7a7a-44c5-bc5a-41062fbd21ff'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_depth_3000',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251785,
+            },
+            geocat_id: '47f79661-212e-4297-b048-2606db7affa8'
+        }, 
+        {
+            type: 'Tiles3d',
+            id: 'temp_depth_4000',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 251789,
+            },
+            geocat_id: '739e9095-77f6-462d-9a1e-438898cf0c9c'
+        }, 
+
+        // GeoQuat
+        // GeoQuat Cross-sections
+        {
+            type: 'Tiles3d',
+            id: 'geoquat_aaretal_cs',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 472446,
+            },
+            order_of_properties: 'geoquat_cs',
+            geocat_id: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a'
+        },        
+        // GeoMol      
+        // GeoMol-Cross-sections
         {
             type: 'Tiles3d',
             id: 'geomol_cs',
@@ -60,9 +272,8 @@
                 type: 'CesiumIon',
                 asset_id: 452436
             },
-            //order_of_properties: 'consolidated_rocks',
             download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Cross-Sections.zip',
-            geocat_id: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
+            geocat_id: '2cec200c-a47b-4934-8dc1-62c19c39a3dd'
         },
         
         // Horizons
@@ -301,6 +512,46 @@
             download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
             geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
         },
+        // City of Berne
+        {
+            type: 'Tiles3d',
+            id: 'local_model_city_berne',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 493224,
+            },
+            order_of_properties: 'city_berne',
+            geocat_id: '372c25ac-fb8a-44ee-8f81-6427939f6353',
+        },
+        // Tunnel
+        {
+            type: 'Tiles3d',
+            id: 'tunnel_road',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 244982
+            },
+            geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+        },
+        {
+            type: 'Tiles3d',
+            id: 'tunnel_railway',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 244984,
+            },
+            geocat_id: '4897848c-3777-4636-9c7e-16ef91c723f6',
+        },
+        {
+            type: 'Tiles3d',
+            id: 'tunnel_water',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 244985,
+            },
+            geocat_id: '71ee97cb-91f8-427d-b217-f293a0a9760a',
+        },
+
         // swissBuildings
         {
             type: 'Tiles3d',

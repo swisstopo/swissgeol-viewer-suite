@@ -1,3 +1,14 @@
+/*
+        {
+            type: 'Wmts',
+            id: '',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '',
+            legend: true
+        },
+*/
+
 {
     layers: [
 // Geol maps
@@ -41,6 +52,22 @@
             geocat_id: 'a4cdef47-505e-41ab-b6a7-ad5b92d80e41',
             legend: true
         },
+                {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geotechnik-gk500-gesteinsklassierung',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'f2c81b93-f0c5-4899-83a9-974ce36c48e6',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geotechnik-gk500-genese',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '65652bdd-76e3-4df2-9329-140a04a2a66c',
+            legend: true
+        },
 // Thematic maps
         {
             type: 'Wmts',
@@ -48,6 +75,97 @@
             max_level: 18,
             opacity: 0.7,
             geocat_id: 'f1455593-7571-48b0-8603-307ec59a6702',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-eiszeit-lgm',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '75c2f212-413c-4d55-8a93-c021c8bbfc95',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-gletschermaechtigkeit',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '57052989-5074-4841-abb6-22d1989d615f',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-gletscherausdehnung',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'f6fb6139-f13e-4a56-bf01-01b7dd4358d5',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geomorphologie',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '1bf16162-a44c-4970-9da1-044383bacff8',
+            legend: true
+        },
+// Historic maps
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-generalkarte-ggk200',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'f6416e51-bf55-445a-946e-3eee2134d131',
+            legend: true
+        },
+// Sheet divisions
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-generalkarte-ggk200.metadata',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'c17ba742-9a43-4ed2-9331-e776d6e9065d',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-spezialkarten_schweiz.metadata',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '5a7e79b5-0aef-4514-9df4-62fb92edee97',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-spezialkarten_schweiz_vector.metadata',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'b15b89ac-d7e5-412c-bd4a-5077c935806c',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geologischer_atlas.metadata',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'a891e1e7-7f85-4c92-94d9-7120edf91a9c',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geocover.metadata',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'f7485f4f-2224-4b76-a43c-52cbf8883a42',
+            legend: true
+        },
+// Cross-sections
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geologischer_atlas_profile',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '345d02a3-9628-46d7-9e57-e0ab1d9faf8a',
             legend: true
         },
 // 3D models
@@ -79,12 +197,114 @@
         },
         {
             type: 'Wmts',
+            id: 'ch.swisstopo.geologie-gesteinsdichte',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'c4a7ceb5-8bf5-457d-ab0a-57216dafce53',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-bodenunruhe',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '4dba9c57-2e2b-4b69-844b-bd2001fa53a8',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-dosisleistung-terrestrisch',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'eccbc751-9928-4221-89e1-1184cbb3aff5',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.landesschwerenetz',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '95879cd4-e93d-4d4d-af57-4ec6731b9c97',
+            legend: true
+        },
+        // --> ADD more data for Earth Gravitry field
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_schweiz',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '4cc706a2-0005-4cc6-8326-7b944a1d5b05',
+            legend: true
+        },
+        // --> ADD more data for Earth Magnetic field
+// Geoenergy
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-tiefengeothermie_projekte',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '2df11e59-d85a-40cf-98cf-4b941577e23c',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-thermale_waesser',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '04fb057a-4c46-4d6d-8a64-8003df749762',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bfe.grundwasserwaermenutzungspotential',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'd64de95f-1b3d-4df3-b395-68b0404ac8ca',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geothermische_potenzialstudien_regional',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '1c050393-fe3a-41b1-a31e-3173f51181d8',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geophysik-geothermie',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '2d8174b2-8c4a-44ea-b470-cb3f216b90d1',
+            legend: true,
+        },
+// Underground space
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-felslabore',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'f995a522-62cb-4316-a762-f6a319985ed7',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bfe.sachplan-geologie-tiefenlager',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '7162f14b-4c16-4ec3-8ac6-b158136e65c7',
+            legend: true,
+        },
+// Background
+        {
+            type: 'Wmts',
             id: 'ch.swisstopo.zeitreihen',
             max_level: 18,
             opacity: 0.7,
             geocat_id: '22287cd6-b75b-4caf-9413-aa3f196548b2',
             legend: true,
         },
+
 
 
     ]
