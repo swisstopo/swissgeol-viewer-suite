@@ -1,20 +1,10 @@
-/*
-// Group name
-  {
-    id: '',
-    children: [
-      ''
-    ]
-  },
-*/
-
 {
   include: [
     'layers_wmts',
     'layers_3dtiles',
     'special/voxels',
-    'special/swissBEDROCK'
-
+    'special/swissBEDROCK',
+    'layers_earthquakes'
   ],
 
   groups: [
@@ -176,15 +166,26 @@
         'ch.swisstopo.geologie-bodenunruhe',
         'ch.swisstopo.geologie-dosisleistung-terrestrisch',
         {
-          id: 'earth_gravity_filed',
+          id: 'earth_gravity_field',
           children: [
             'ch.swisstopo.landesschwerenetz',
+            'ch.swisstopo.geologie-geodaesie-isostatische_anomalien',
+            'ch.swisstopo.geologie-geodaesie-bouguer_anomalien',
+            'ch.swisstopo.geologie-gravimetrischer_atlas',
+            'ch.swisstopo.geologie-gravimetrischer_atlas.messpunkte',
+            'ch.swisstopo.geoidmodell-ch1903'
           ]
         },
         {
-          id: 'earth_magnetic_filed',
+          id: 'earth_magnetic_field',
           children: [
             'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_schweiz',
+            'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_jura',
+            'ch.nagra.aeromagnetische-karte_1100',
+            'ch.nagra.aeromagnetische-karte_1500',
+            'ch.swisstopo.geologie-geophysik-deklination',
+            'ch.swisstopo.geologie-geophysik-inklination',
+            'ch.swisstopo.geologie-geophysik-totalintensitaet'
           ]
         },
       ]
@@ -220,6 +221,147 @@
         },
       ]
     },
+    // 01 Topic - Mineral resourcesroup name
+    {
+      id: 'mineral_resources',
+      children: [
+        {
+          id: 'construct_raw_material',
+          children: [
+            'ch.swisstopo.geologie-rohstoffe-zement_abbau_verarbeitung',
+            'ch.swisstopo.geologie-hartsteinabbau',
+            'ch.swisstopo.geologie-hartsteinvorkommen',
+            'ch.swisstopo.geologie-rohstoffe-kies_abbau_verarbeitung',
+            'ch.swisstopo.geologie-rohstoffe-gebrochene_gesteine_abbau',
+            'ch.swisstopo.geologie-rohstoffe-ziegel_abbau',
+            'ch.swisstopo.geologie-rohstoffe-naturwerksteine_abbau',
+            'ch.swisstopo.geologie-geotechnik-steine_historische_bauwerke'
+          ]
+        },
+        {
+          id: 'metallic_raw_material',
+          children: [
+            'ch.swisstopo.geologie-rohstoffe-vererzungen'
+          ]
+        },
+        {
+          id: 'industrial_minerals',
+          children: [
+            'ch.swisstopo.geologie-rohstoffe-gips_abbau_verarbeitung',
+            'ch.swisstopo.geologie-rohstoffe-salz_abbau_verarbeitung',
+            'ch.swisstopo.geologie-rohstoffe-industrieminerale'
+          ]
+        },
+        {
+          id: 'energy_raw_materials',
+          children: [
+            'ch.swisstopo.geologie-rohstoffe-kohlen_bitumen_erdgas'
+          ]
+        },
+      ]
+    },
+    // 01 Topic - Groundwater
+    {
+      id: 'groundwater',
+      children: [
+        'ch.swisstopo.geologie-thermale_waesser',
+        'ch.bafu.hydrogeologie-uebersichtskarte',
+        'ch.swisstopo.geologie-hydrogeologische_karte-grundwasservorkommen',
+        'ch.swisstopo.geologie-hydrogeologische_karte-grundwasservulnerabilitaet',
+        'ch.bafu.hydrogeologische-karte_100',
+        'ch.bafu.grundwasserkoerper',
+        // 02 Topic - Groundwater quantity
+      {
+        id: 'groundwater_quantity',
+        children: [
+          'ch.bafu.hydroweb-messstationen_grundwasser',
+          'ch.bafu.hydroweb-messstationen_grundwasserzustand'
+        ]
+      },
+      'ch.bafu.hydrogeologie-markierversuche',
+      // 02 Topic - Groundwater quality
+      {
+        id: 'groundwater_quality',
+        children: [
+          'ch.bafu.naqua-grundwasser_nitrat',
+          'ch.bafu.naqua-grundwasser_voc'
+        ]
+      }
+      ]
+    },
+    // 01 Topic - Natural hazards
+    {
+      id: 'natural hazards',
+      children: [
+        // 02 Topic - Mass movements
+        {
+          id: 'mass_movements',
+          children: [
+            'ch.bafu.silvaprotect-lawinen',
+            'ch.bafu.silvaprotect-hangmuren',
+            'ch.bafu.silvaprotect-murgang',
+            'ch.bafu.silvaprotect-sturz',
+            'ch.bafu.silvaprotect-uebersarung'
+          ]
+        },
+        // 02 Topic - Earthquakes
+        {
+          id: 'earthquakes',
+          children: [
+            'ch.bafu.gefahren-historische_erdbeben',
+            'earthquakes_recent',
+            'earthquakes_mag_3',
+            'ch.bafu.gefahren-gefaehrdungszonen',
+            'ch.bafu.gefahren-baugrundklassen',
+            'ch.bafu.gefahren-spektral'
+          ]
+        },
+        // 02 Topic - Permafrost
+        {
+          id: 'permafrost',
+          children: [
+            'ch.bafu.permafrost'
+          ]
+        },
+        // 02 Topic - Floods
+        {
+          id: 'floods',
+          children: [
+            'ch.bafu.gefaehrdungskarte-oberflaechenabfluss',
+            'ch.bafu.aquaprotect_050',
+            'ch.bafu.aquaprotect_100',
+            'ch.bafu.aquaprotect_250',
+            'ch.bafu.aquaprotect_500',
+            'ch.bafu.hydroweb-messstationen_gefahren',
+            'ch.bafu.hydroweb-messstationen_vorhersage',
+            'ch.bafu.hydroweb-warnkarte_national'
+          ]
+        }
+      ]
+    },
+    // 01 Topic - Geotourism
+    {
+      id: 'geotourism',
+      children: [
+        {
+          id: 'experience_geol',
+          children: [
+            'ch.swisstopo.geologie-geoevents_demnaechst',
+            'ch.swisstopo.geologie-geoevents_anfrage',
+            'ch.swisstopo.geologie-geosites',
+            'ch.swisstopo.geologie-geowege'
+          ]
+        },
+        {
+          id: 'geotopes',
+          children: [
+            'ch.swisstopo.geologie-geotope',
+            'ch.swisstopo.geologie-geotope_kantone_stand'
+          ]
+        },
+
+      ]
+    },
     // 01 Topic - Underground space
     {
       id: 'underground_space',
@@ -236,6 +378,11 @@
       id: 'background_data',
       children: [
         'ch.swisstopo.zeitreihen',
+        'ch.kantone.cadastralwebmap-farbe',
+        'ch.swisstopo.swissimage-product',
+        'ch.swisstopo.swissalti3d-reliefschattierung_monodirektional',
+        'ch.swisstopo.swissalti3d-reliefschattierung',
+        'ch.swisstopo.swissbathy3d-reliefschattierung',
         'swiss_buildings'
       ]
     }

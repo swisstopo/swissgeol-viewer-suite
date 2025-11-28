@@ -1,14 +1,3 @@
-/*
-        {
-            type: 'Wmts',
-            id: '',
-            max_level: 18,
-            opacity: 0.7,
-            geocat_id: '',
-            legend: true
-        },
-*/
-
 {
     layers: [
 // Geol maps
@@ -219,6 +208,7 @@
             geocat_id: 'eccbc751-9928-4221-89e1-1184cbb3aff5',
             legend: true
         },
+        // Earth's gravity field
         {
             type: 'Wmts',
             id: 'ch.swisstopo.landesschwerenetz',
@@ -227,7 +217,47 @@
             geocat_id: '95879cd4-e93d-4d4d-af57-4ec6731b9c97',
             legend: true
         },
-        // --> ADD more data for Earth Gravitry field
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geodaesie-isostatische_anomalien',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '7234896a-842c-4524-8710-5d900953cb1d',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geodaesie-bouguer_anomalien',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '618c9697-129f-47c7-830a-7a256b4c2499',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-gravimetrischer_atlas',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '732cb247-8307-4cc7-8c31-b1c505a94633',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-gravimetrischer_atlas.messpunkte',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '297a1958-3636-45af-a17c-e90120605132',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geoidmodell-ch1903',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'b20aece-5cb1-41f1-a618-7c6e1ff6a81b',
+            legend: true
+        },
+        // Earth's magnetic field
         {
             type: 'Wmts',
             id: 'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_schweiz',
@@ -236,7 +266,55 @@
             geocat_id: '4cc706a2-0005-4cc6-8326-7b944a1d5b05',
             legend: true
         },
-        // --> ADD more data for Earth Magnetic field
+
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geophysik-aeromagnetische_karte_jura',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'f952b9be-9a11-478c-a21c-9d5e8631c7c2',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.nagra.aeromagnetische-karte_1100',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '2ffdbb13-27dc-4380-8349-8debfeca4fd9',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.nagra.aeromagnetische-karte_1500',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'b814401b-9eb2-4e6c-b4a9-f24df7b8bba6',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geophysik-deklination',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '8f38b25f-f984-450a-ae48-02290e82136c',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geophysik-inklination',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '639c0536-bfea-44d3-b088-ed7b6b43cde9',
+            legend: true
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geophysik-totalintensitaet',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '132d9ff6-92de-4c02-87a7-72df26bcb33e',
+            legend: true
+        },
 // Geoenergy
         {
             type: 'Wmts',
@@ -278,6 +356,397 @@
             geocat_id: '2d8174b2-8c4a-44ea-b470-cb3f216b90d1',
             legend: true,
         },
+// Mineral resources
+        // Construction raw materials
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-zement_abbau_verarbeitung',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '9128ae2a-acdf-42cf-bb67-00755f0857fb',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-hartsteinabbau',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'fa939fea-8a3f-4911-ad83-33be66daa45c',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-hartsteinvorkommen',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '258c7ccf-5e7f-4759-9c09-519d41ba4d02',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-kies_abbau_verarbeitung',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '734f4f95-2d81-459b-b8fc-1b1b8a249d14',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-gebrochene_gesteine_abbau',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'bb682732-ca6d-43f4-8c95-760b76004b22',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-ziegel_abbau',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '3d0120f4-34b2-40cf-b61c-127bd9a27522',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-naturwerksteine_abbau',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '0b22a108-693c-4b6e-9e43-7614eb0e0bc3',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geotechnik-steine_historische_bauwerke',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'efe1b3cf-dac4-4660-a5bd-a9269a3d97db',
+            legend: true,
+        },
+        // Metallic raw materials
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-vererzungen',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '46dd5d50-6f7e-4175-ab64-051b16750e38',
+            legend: true,
+        },
+        // Industrial minerals
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-gips_abbau_verarbeitung',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '33f974a7-8852-449d-ba68-646b10710f60',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-salz_abbau_verarbeitung',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'e5bed380-6a35-46c9-97c9-0cbf5875f292',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-industrieminerale',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'ec3471db-6e86-4148-abbf-d702196381bd',
+            legend: true,
+        },
+        // Energy raw materials
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-rohstoffe-kohlen_bitumen_erdgas',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'ee51374d-1472-44bd-a5a7-c65c4e46f3b4',
+            legend: true,
+        },
+// Groundwater
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.hydrogeologie-uebersichtskarte',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'e238580b-a03d-45c2-9ea6-f6634ff9c64c',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-hydrogeologische_karte-grundwasservorkommen',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'f198f6f6-8efa-4235-a55f-99767ea0206c',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-hydrogeologische_karte-grundwasservulnerabilitaet',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'b8efde6b-7323-4496-aa70-b976ec55cec9',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.hydrogeologische-karte_100',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'b01523a1-9f61-43a2-95cb-be843cc1b18a',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.grundwasserkoerper',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '2bd1ab86-83ec-4c3e-b937-ab81b4968bc6',
+            legend: true,
+        },
+        // Groundwter quantity
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.hydroweb-messstationen_grundwasser',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '6146dc21-18b6-4d94-8865-8c2b99256e1b',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.hydroweb-messstationen_grundwasserzustand',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'f87d692e-8d65-4188-94ba-61b4c61d621c',
+            legend: true,
+        },
+        // Tracer tests
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.hydrogeologie-markierversuche',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '',
+            legend: true,
+        },
+        // Groundwter quality
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.naqua-grundwasser_nitrat',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'ea282e54-364b-4023-87c1-cdccbac295b1',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.naqua-grundwasser_voc',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'c5f01eb1-d755-4450-bc4f-3871589de62f',
+            legend: true,
+        },
+// Natural hatards
+        // Mass movements
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.silvaprotect-lawinen',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '8e350471-6259-4142-ad00-d99ddcefd2a4',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.silvaprotect-hangmuren',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'e1f63878-1ddd-4a51-9d3b-f0f077990357',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.silvaprotect-murgang',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '36f3b788-9d79-40f4-a69e-8c742729a745',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.silvaprotect-sturz',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '238d97d6-8853-4e26-af30-dc5cbadd58dc',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.silvaprotect-uebersarung',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '7c608bf9-bddf-490b-8a46-3415f3c74cf3',
+            legend: true,
+        },
+        // Earthquakes
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.gefahren-historische_erdbeben',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '3d1d7649-8c27-435c-ae74-7c0f2e3fbcf1',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.gefahren-gefaehrdungszonen',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '239a4b60-9478-4120-87d9-5671c4516269',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.gefahren-baugrundklassen',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '812485e6-821c-412d-8504-459c6b314d1c',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.gefahren-spektral',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'a869c0d0-ff03-4cbf-93e8-c568f01bf9bc',
+            legend: true,
+        },
+        // Permafrost
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.permafrost',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '71d087ef-6531-4131-98ea-88ff655d8a63',
+            legend: true,
+        },
+        // Floods
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.gefaehrdungskarte-oberflaechenabfluss',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '6b59f9ee-9e5f-4b12-86cf-f8afb539ae5d',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.aquaprotect_050',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'e7f4931d-2010-4ab2-b4ef-edbc47074ca9',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.aquaprotect_100',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'a71453bf-e515-4f70-98cc-c939510dd4b1',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.aquaprotect_250',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'a889473d-cbe4-454c-838b-aac6b174e46e',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.aquaprotect_500',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '7609e210-80c7-4acc-b7b4-b569f0e5679e',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.hydroweb-messstationen_gefahren',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '7c64e2fa-1afe-41f4-9f91-ed251079965c',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.hydroweb-messstationen_vorhersage',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '6655ccdb-fb9b-4049-8bf5-4d5a0b3bfe4f',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.bafu.hydroweb-warnkarte_national',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'e1d0c17a-0dbd-4455-bc83-1606e1e04298',
+            legend: true,
+        },
+// Geotourism
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geoevents_demnaechst',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '64508bcc-8a66-4d90-bb9a-bc83c931b0c6',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geoevents_anfrage',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '6f4fc3a9-8dc0-4cc2-b176-f804e5157dab',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geosites',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'af46b0e7-25b4-49ca-a357-c0ab6e794dd6',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geowege',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '3356602e-23d5-4e42-9d75-55fe9cc2daba',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geotope',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'e7dd54e9-fc98-4e5c-b46a-694d1ba6c84e',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.geologie-geotope_kantone_stand',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'c4d2c1b0-b075-4d7b-be7c-54d26411cda3',
+            legend: true,
+        },
 // Underground space
         {
             type: 'Wmts',
@@ -302,6 +771,46 @@
             max_level: 18,
             opacity: 0.7,
             geocat_id: '22287cd6-b75b-4caf-9413-aa3f196548b2',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.kantone.cadastralwebmap-farbe',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'cf93dfb6-ffff-43ce-bd9b-271baba2d217',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.swissimage-product',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: 'b5a52b4-0f5f-4998-a9a8-dd9539f93809',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.swissalti3d-reliefschattierung_monodirektional',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '376f86bd-c46c-4b89-8f36-717641706226',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.swissalti3d-reliefschattierung',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '1964cc81-5298-460f-9228-41120315bea8',
+            legend: true,
+        },
+        {
+            type: 'Wmts',
+            id: 'ch.swisstopo.swissbathy3d-reliefschattierung',
+            max_level: 18,
+            opacity: 0.7,
+            geocat_id: '1949e93-f552-42b6-ab4b-5a2d529a7768',
             legend: true,
         },
 

@@ -123,7 +123,7 @@
             id: 'seismic_2d_21_egeo_002',
             source: {
                 type: 'Ogc',
-                id: 13327,
+                id: 13328,
                 style_id: 5,
             }
         },
