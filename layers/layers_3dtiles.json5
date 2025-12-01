@@ -313,7 +313,7 @@
                 id: 10486,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 3955170
+                    asset_id: 4180339
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
