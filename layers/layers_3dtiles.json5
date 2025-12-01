@@ -26,7 +26,7 @@
             '3DBern-ChronoB-T',
             '3DBern-OrigDesc',
             '3DBern-Version',
-            '3DBern-Aothor',
+            '3DBern-Author',
             '3DBern-Purpose',
             '3DBern-Download',
         ],
@@ -81,6 +81,10 @@
             source: {
                 type: 'CesiumIon',
                 asset_id: 287568,
+            },
+            access: {
+                env: ['local', 'dev'],
+                groups: ['ngm-dev-privileged']
             },
             order_of_properties: 'boreholes_2021',
             download_url: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
@@ -262,7 +266,30 @@
             },
             order_of_properties: 'geoquat_cs',
             geocat_id: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a'
-        },        
+        },
+        // Jura 3D
+        // Horizon        
+        {
+            type: 'Tiles3d',
+            id: 'j3d_horizon',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 4171530
+            },
+            //order_of_properties: '',
+            geocat_id: ''
+        },
+        // Faults        
+        {
+            type: 'Tiles3d',
+            id: 'j3d_faults',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 4171517
+            },
+            //order_of_properties: '',
+            geocat_id: ''
+        },
         // GeoMol      
         // GeoMol-Cross-sections
         {

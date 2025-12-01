@@ -84,9 +84,14 @@
                 {
                   id: 'jura_3d_models',
                   children: [
-                    // Profile
-                    // Horizont
-
+                    {
+                      id: 'j3d_ma_01',
+                      children: [
+                        'j3d_horizon',
+                        'j3d_faults'
+                        // Profile
+                      ]
+                    }
                   ]
                 },
                 // 04 - GeoMol
@@ -204,7 +209,7 @@
           id: 'temp_models',
           children: [
             'ch.swisstopo.geologie-geophysik-geothermie',
-            'voxel_geomol_temp_c',
+            // 'voxel_geomol_temp_c', // Temporaly de-published
             'temp_iso_60',
             'temp_iso_100',
             'temp_iso_150',
