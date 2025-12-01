@@ -100,7 +100,7 @@ export class WmtsService extends BaseService {
         type: LayerType.Wmts,
         id: makeId(`${layerName}`),
         label: layerTitle ?? null,
-        source: WmtsLayerSource.WMTS,
+        source: WmtsLayerSource.WMS,
         opacity: 1,
         canUpdateOpacity: true,
         isVisible: true,
