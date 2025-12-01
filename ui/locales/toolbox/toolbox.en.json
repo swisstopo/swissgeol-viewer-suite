@@ -1,0 +1,21 @@
+{
+  "actions": {
+    "export": "Export data"
+  },
+  "ogc": {
+    "layer-selection": {
+      "title": "Export",
+      "confirm": "Export"
+    },
+    "queue": {
+      "title": "Export queue"
+    },
+    "stage": {
+      "Prepare": "Preparing download on the server",
+      "Running": "Executing export",
+      "Success": "Export successfully completed",
+      "Failure": "Export failed",
+      "Complete": "Export completed"
+    }
+  }
+}
