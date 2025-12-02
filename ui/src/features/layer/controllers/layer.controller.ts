@@ -134,6 +134,28 @@ export abstract class BaseLayerController<T extends BaseLayer> {
 
   private _viewer!: Viewer;
 
+  /**
+   * A promise that represents the currently running update.
+   * This is `null` when there is no update running.
+   *
+   * This value is used to ensure that only a single update runs at a time.
+   *
+   * @private
+   */
+  private activeUpdate: Promise<void> | null = null;
+
+  /**
+   * The next queued update.
+   * This is only used when an {@link activeUpdate} is present,
+   * and will be resolved by the update process once it has concluded its current update.
+   *
+   * A queued update contains the updated value at index 0 and a callback at index 1.
+   * The callback is invoked once the queued update has been applied.
+   *
+   * @private
+   */
+  private nextUpdate: [T, () => void] | null = null;
+
   constructor(
     /**
      * The layer's initial data.
@@ -158,25 +180,85 @@ export abstract class BaseLayerController<T extends BaseLayer> {
 
   abstract get type(): LayerType | 'Background';
 
-  async add(): Promise<void> {
+  add(): Promise<void> {
     if (this.isInitialized) {
-      return;
+      return Promise.resolve();
     }
     this._viewer = CesiumService.get().viewerOrNull!;
     if (this._viewer === null) {
       throw new Error("Can't add controller before viewer initialization.");
     }
-    await this.addToViewer();
+
+    // Mark as initialized - updates will be queued, so this is safe.
     this.isInitialized = true;
+    return this.processUpdates(this.addToViewer());
   }
 
   /**
    * Updates the controller's current layer data,
    * adjusting the Cesium viewer where needed.
    *
+   * Note that updates are queued so only a single update runs at a time.
+   *
    * @param layer The updated layer data.
    */
-  async update(layer: T): Promise<void> {
+  update(layer: T): Promise<void> {
+    // If there is no active update, we can apply the new value immediately.
+    if (this.activeUpdate === null) {
+      return this.processUpdates(this.runUpdate(layer));
+    }
+
+    // We need to queue our update as there is already an active process.
+
+    // If there is no queued update, we can take that spot.
+    if (this.nextUpdate === null) {
+      return new Promise((resolve) => {
+        this.nextUpdate = [layer, resolve];
+      });
+    }
+
+    // There is already a queued update.
+    // We replace that queued value with our own (which is safe as we have a full copy of the layer data).
+    // It's important that we preserve all queued callbacks and run them after the update.
+    const [_previousUpdate, previousCallback] = this.nextUpdate;
+    return new Promise((resolve) => {
+      this.nextUpdate = [
+        layer,
+        () => {
+          previousCallback();
+          resolve();
+        },
+      ];
+    });
+  }
+
+  private processUpdates(process: Promise<void>): Promise<void> {
+    if (this.activeUpdate !== null) {
+      throw new Error(
+        "Can't process updates, there is already an update running.",
+      );
+    }
+    this.activeUpdate = process;
+    return new Promise((resolve) =>
+      process.then(() => {
+        resolve();
+        this.activeUpdate = null;
+
+        if (this.nextUpdate === null) {
+          return;
+        }
+
+        const [nextUpdate, callback] = this.nextUpdate;
+        this.nextUpdate = null;
+
+        this.update(nextUpdate).then(() => {
+          callback();
+        });
+      }),
+    );
+  }
+
+  private async runUpdate(layer: T): Promise<void> {
     // Update the local layer data.
     // Note that we do this *before* checking for changes, as change detection is handled via `watchedValues`.
     this._layer = layer;
@@ -256,7 +338,7 @@ export abstract class BaseLayerController<T extends BaseLayer> {
    *
    * @protected
    */
-  protected abstract addToViewer(): Promise<void> | void;
+  protected abstract addToViewer(): Promise<void>;
 
   /**
    * Removes the Cesium layer from the viewer, fully destroying it in the process.

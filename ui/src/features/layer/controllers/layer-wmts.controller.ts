@@ -108,7 +108,6 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
       imageryLayers.add(imagery, i);
     }
 
-    // imagery.imageryProvider.
     this._imagery = imagery;
   }
 

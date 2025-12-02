@@ -30,6 +30,7 @@ WORKDIR /app
 
 COPY --from=build /app/target/x86_64-unknown-linux-musl/release/api ./
 COPY ./titiler/colormaps /app/colormaps
+COPY ./layers /configs/layers
 
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -f http://localhost:3000/api/health_check || exit 1
