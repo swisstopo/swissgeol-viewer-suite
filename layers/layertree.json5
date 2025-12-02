@@ -122,7 +122,10 @@
                     },
                     'geomol_faults'
                   ]
-                }
+                },
+                'sa3d_aaremassive_horizons',
+                'sa3d_aaremassive_structures',
+                'sa3d_aaremassive_cs'
               ]
             },
             // 03 - Regional models

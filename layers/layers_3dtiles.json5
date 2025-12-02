@@ -317,7 +317,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-UpperMarineMolasse.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TOMM_OBJ.zip',
             geocat_id: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
         },
         //TUSM
@@ -333,7 +333,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-LowerFreshwaterMolasse.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUSM_OBJ.zip',
             geocat_id: '2d7a0729-dd29-40fa-ad4f-b09f94b7fb00',
         },
         // TUMM
@@ -349,7 +349,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-LowerMarineMolasse.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMM_OBJ.zip',
             geocat_id: 'fedb8d24-a000-4b78-9e6e-fb90305ad3ea',
         },
         // BCen
@@ -365,7 +365,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Base-Cenozoic.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BCen_OBJ.zip',
             geocat_id: '0e780e6c-18e2-4014-ad16-b35124706580',
         },
         // TCret
@@ -381,7 +381,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Cretaceous.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCret_OBJ.zip',
             geocat_id: '09334747-14e7-40d6-881b-00e552b71f61',
         },
         // TUMa
@@ -397,7 +397,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-UpperMalm.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMa_OBJ.zip',
             geocat_id: '2378cab1-4673-4837-b12e-a35aefab389a',
         },
         // TLMa
@@ -413,7 +413,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-LowerMalm.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLMa_OBJ.zip',
             geocat_id: 'af51f4eb-1430-4e4e-a679-3c0eefb4a6b3',
         },
         // TDo
@@ -429,7 +429,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Dogger.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TDo_OBJ.zip',
             geocat_id: '0dea083d-23b0-4c5b-b82d-1cd7bda3d583',
         },
         // TLi
@@ -445,7 +445,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Lias.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLi_OBJ.zip',
             geocat_id: '793a40d6-ab83-4e1e-80d7-d7c49bf00f3c'
         },
         // TKeu
@@ -457,11 +457,11 @@
                 id: 10497,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267960
+                    asset_id: 4182626
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Keuper.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TKeu_OBJ.zip',
             geocat_id: 'e2344c21-2139-4494-8679-36fe30d034f9'
         },
         //TMus
@@ -477,7 +477,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Muschelkalk.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TMus_OBJ.zip',
             geocat_id: 'dae3dd91-a04c-46c5-aa49-de6235c0478a',
         },
         //BMes
@@ -493,7 +493,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Base-Mesozoic.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BMes_OBJ.zip',
             geocat_id: 'ec67a58d-531e-4dae-98da-85c49525b4d2',
         },
         //TCarb
@@ -509,7 +509,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Permocarboniferous.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCarb_OBJ.zip',
             geocat_id: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
         },
         //BPC
@@ -525,7 +525,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Permocarboniferous.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_OBJ.zip',
             geocat_id: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
         },
         //BPC
@@ -541,7 +541,7 @@
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
-            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Permocarboniferous-inferred.zip',
+            download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_vermutet_OBJ.zip',
             geocat_id: '0f1acc23-bdfc-40bf-94b7-7be10f0f78ed',
         },
         // Faults
@@ -554,6 +554,52 @@
             },
             download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
             geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+        },
+        // SA3D
+        // SA3D - Aaremassive - Horizons
+        {
+            type: 'Tiles3d',
+            id: 'sa3d_aaremassive_horizons',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 4130307
+            },
+            access: {
+                env: ['local', 'dev'],
+                // groups: ['ngm-dev-privileged']
+            },
+            //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
+            //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+        },
+        // SA3D - Aaremassive - Structures
+        {
+            type: 'Tiles3d',
+            id: 'sa3d_aaremassive_structures',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 4130256
+            },
+            access: {
+                env: ['local', 'dev'],
+                // groups: ['ngm-dev-privileged']
+            },
+            //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
+            //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+        },
+        // SA3D - Aaremassive - Cross sections
+        {
+            type: 'Tiles3d',
+            id: 'sa3d_aaremassive_cs',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 4130065
+            },
+            access: {
+                env: ['local', 'dev'],
+                // groups: ['ngm-dev-privileged']
+            },
+            //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
+            //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
         },
         // City of Berne
         {
