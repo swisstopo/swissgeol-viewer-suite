@@ -1,0 +1,21 @@
+{
+  layers: [
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.zeitreihen',
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '22287cd6-b75b-4caf-9413-aa3f196548b2',
+      legend: true,
+    }
+  ],
+  groups: [
+    // Topic - Background data
+    {
+      id: 'grp_1890_label',
+      children: [
+        'ch.swisstopo.zeitreihen'
+      ]
+    }
+  ]
+}

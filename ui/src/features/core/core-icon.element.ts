@@ -16,6 +16,7 @@ export class CoreIcon extends LitElement {
 
   static readonly styles = css`
     :host {
+      box-sizing: border-box;
       display: inline-flex;
       color: currentColor;
       width: 24px;

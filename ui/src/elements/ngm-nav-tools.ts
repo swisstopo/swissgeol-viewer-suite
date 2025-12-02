@@ -15,8 +15,6 @@ import {
   JulianDate,
   Matrix4,
   PolylineCollection,
-  Scene,
-  Viewer,
 } from 'cesium';
 import type { Interactable } from '@interactjs/types';
 import { classMap } from 'lit/directives/class-map.js';
@@ -33,7 +31,6 @@ import { getTargetParam, syncTargetParam } from '../permalink';
 import NavToolsStore from '../store/navTools';
 import { dragArea } from './helperElements';
 import type { LockType } from './ngm-cam-configuration';
-import MainStore from '../store/main';
 import { consume } from '@lit/context';
 import { ControlsService } from 'src/features/controls/controls.service';
 import {
@@ -47,15 +44,13 @@ import {
 } from 'src/features/controls/gestures/gesture-controls.service';
 import { CoreElement } from 'src/features/core';
 import { debounceTime, Subscription } from 'rxjs';
+import { CesiumService } from 'src/services/cesium.service';
 
 const AXIS_WIDTH = 5;
 const AXIS_LENGTH = 120;
 
 @customElement('ngm-nav-tools')
 export class NgmNavTools extends CoreElement {
-  @property({ type: Object })
-  accessor viewer: Viewer | null = null;
-
   @property({ type: Boolean })
   accessor showCamConfig = false;
 
@@ -98,50 +93,54 @@ export class NgmNavTools extends CoreElement {
   private axisDataSource: CustomDataSource | undefined;
   private axisCenter: Cartesian3 | undefined;
   private readonly oldPolylineUpdate: any = PolylineCollection.prototype.update;
+
   private readonly xyAxisCalculation = (axis, side) => [
     this.axisCenter,
     positionFromPxDistance(
-      this.viewer!.scene,
+      this.cesiumService.viewer.scene,
       this.axisCenter!,
       AXIS_LENGTH,
       axis,
       side,
     ),
   ];
+
   private readonly xAxisCallback = new CallbackProperty(
     () => this.xyAxisCalculation('x', -1),
     false,
   );
+
   private readonly yAxisCallback = new CallbackProperty(
     () => this.xyAxisCalculation('y', 1),
     false,
   );
+
   private readonly zAxisCallback = new CallbackProperty(
     () => this.xyAxisCalculation('z', -1),
     false,
   );
   private exaggeration = 1;
 
-  constructor() {
-    super();
-    MainStore.viewer.subscribe(async (v) => {
-      this.viewer = v;
-      if (!this.viewer) return;
-      this.axisDataSource = await this.viewer!.dataSources.add(
-        new CustomDataSource('navigationAxes'),
-      );
-      this.toggleAxis(this.axisCenter);
-      this.exaggeration = this.viewer.scene.verticalExaggeration;
-    });
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
+  async connectedCallback() {
+    super.connectedCallback();
+    const { viewer } = this.cesiumService;
+    this.axisDataSource = await viewer.dataSources.add(
+      new CustomDataSource('navigationAxes'),
+    );
+    this.toggleAxis(this.axisCenter);
+    this.exaggeration = viewer.scene.verticalExaggeration;
+
     NavToolsStore.syncTargetPoint.subscribe(() => this.syncPoint());
     NavToolsStore.hideTargetPointListener.subscribe(() =>
       this.removeTargetPoint(),
     );
     NavToolsStore.cameraHeightUpdate.subscribe(async (height) => {
-      if (!this.viewer) return;
       this.showTargetPoint && this.stopTracking();
-      const pc = this.viewer.camera.positionCartographic;
-      this.viewer.camera.position = Cartesian3.fromRadians(
+      const pc = viewer.camera.positionCartographic;
+      viewer.camera.position = Cartesian3.fromRadians(
         pc.longitude,
         pc.latitude,
         height,
@@ -154,16 +153,15 @@ export class NgmNavTools extends CoreElement {
       this.lockType = type;
     });
     NavToolsStore.exaggerationChanged.subscribe((exaggeration) => {
-      if (!this.viewer) return;
       this.showTargetPoint && this.stopTracking();
       const exaggerationScale = exaggeration / this.exaggeration;
-      const pc = this.viewer.camera.positionCartographic;
-      const centerOfView = pickCenter(this.viewer.scene);
+      const pc = viewer.camera.positionCartographic;
+      const centerOfView = pickCenter(viewer.scene);
       if (centerOfView) {
         const cartographic = Cartographic.fromCartesian(centerOfView);
         const height = cartographic.height;
         const offset = height * exaggerationScale - height;
-        this.viewer.camera.position = Cartesian3.fromRadians(
+        viewer.camera.position = Cartesian3.fromRadians(
           pc.longitude,
           pc.latitude,
           pc.height + offset,
@@ -182,32 +180,11 @@ export class NgmNavTools extends CoreElement {
       }
       this.exaggeration = exaggeration;
     });
-  }
 
-  updated() {
-    if (this.viewer && !this.unlistenFromPostRender) {
-      const scene: Scene = this.viewer.scene;
-      this.unlistenFromPostRender = scene.postRender.addEventListener(() => {
-        const amount =
-          Math.abs(scene.camera.positionCartographic.height) / this.moveAmount;
-        if (this.zoomingIn) {
-          scene.camera.moveForward(amount);
-        } else if (this.zoomingOut) {
-          scene.camera.moveBackward(amount);
-        }
-      });
-      this.refIcon = this.viewer.entities.add(this.refIcon);
-
-      this.syncPoint();
-    }
-  }
-
-  connectedCallback() {
     document.addEventListener('pointerup', this.stopZoomFunction);
     draggable(this, {
       allowFrom: '.ngm-drag-area',
     });
-    super.connectedCallback();
 
     // Create the rotate/tilt indicator.
     this.register(
@@ -269,6 +246,27 @@ export class NgmNavTools extends CoreElement {
     super.disconnectedCallback();
   }
 
+  updated() {
+    if (this.unlistenFromPostRender) {
+      return;
+    }
+
+    const { viewer } = this.cesiumService;
+    const { scene } = viewer;
+    this.unlistenFromPostRender = scene.postRender.addEventListener(() => {
+      const amount =
+        Math.abs(scene.camera.positionCartographic.height) / this.moveAmount;
+      if (this.zoomingIn) {
+        scene.camera.moveForward(amount);
+      } else if (this.zoomingOut) {
+        scene.camera.moveBackward(amount);
+      }
+    });
+    this.refIcon = viewer.entities.add(this.refIcon);
+
+    this.syncPoint();
+  }
+
   syncPoint() {
     const initialTarget = getTargetParam();
     if (!initialTarget && !this.showTargetPoint) return;
@@ -276,16 +274,16 @@ export class NgmNavTools extends CoreElement {
   }
 
   startZoomIn(event) {
-    if (!this.viewer) return;
+    const { viewer } = this.cesiumService;
     this.zoomingIn = true;
-    this.viewer.scene.requestRender();
+    viewer.scene.requestRender();
     event.preventDefault();
   }
 
   startZoomOut(event) {
-    if (!this.viewer) return;
+    const { viewer } = this.cesiumService;
     this.zoomingOut = true;
-    this.viewer.scene.requestRender();
+    viewer.scene.requestRender();
     event.preventDefault();
   }
 
@@ -295,14 +293,15 @@ export class NgmNavTools extends CoreElement {
   }
 
   flyToHome() {
-    if (!this.viewer) return;
+    const { viewer } = this.cesiumService;
     this.showTargetPoint && this.removeTargetPoint();
-    this.viewer.camera.flyTo({
+    viewer.camera.flyTo({
       ...DEFAULT_VIEW,
     });
   }
 
   toggleReference(forcePosition?: Cartesian3) {
+    const { viewer } = this.cesiumService;
     let position: Cartesian3 | undefined = forcePosition;
     if (this.showTargetPoint && !forcePosition) {
       this.gestureSubscription?.unsubscribe();
@@ -328,7 +327,7 @@ export class NgmNavTools extends CoreElement {
       );
       this.gestureSubscription = subscription;
 
-      position = position || pickCenterOnMapOrObject(this.viewer!.scene);
+      position = position || pickCenterOnMapOrObject(viewer!.scene);
       if (!position) {
         showSnackbarError(i18next.t('nav_tools_out_glob_warn'));
         return;
@@ -348,10 +347,11 @@ export class NgmNavTools extends CoreElement {
   }
 
   removeTargetPoint() {
+    const { viewer } = this.cesiumService;
     document.removeEventListener('keydown', this.ctrlListener);
     this.showTargetPoint = false;
     this.refIcon.show = false;
-    this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
+    viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
     this.toggleAxis(undefined);
   }
 
@@ -361,7 +361,8 @@ export class NgmNavTools extends CoreElement {
   };
 
   onLeftDown(event: ButtonGestureEvent) {
-    const pickedObject = this.viewer!.scene.pick(event.position);
+    const { viewer } = this.cesiumService;
+    const pickedObject = viewer.scene.pick(event.position);
     if (
       pickedObject &&
       pickedObject.id &&
@@ -379,44 +380,47 @@ export class NgmNavTools extends CoreElement {
   }
 
   stopTracking() {
-    this.viewer!.scene.screenSpaceCameraController.enableInputs = false;
-    this.viewer!.scene.camera.lookAtTransform(Matrix4.IDENTITY);
+    const { viewer } = this.cesiumService;
+    viewer.scene.screenSpaceCameraController.enableInputs = false;
+    viewer.scene.camera.lookAtTransform(Matrix4.IDENTITY);
   }
 
   startTracking() {
+    const { viewer } = this.cesiumService;
     const center = this.refIcon.position!.getValue(this.julianDate)!;
     this.addTargetPoint(center);
-    const camera = this.viewer!.camera;
+    const camera = viewer.camera;
     lookAtPoint(center, camera);
     this.toggleAxis(center);
 
-    this.viewer!.scene.screenSpaceCameraController.enableInputs = true;
+    viewer.scene.screenSpaceCameraController.enableInputs = true;
 
     if (this.gestureSubscription === null) {
       this.gestureSubscription = this.gestureControlsService.mouseMove$
         .pipe(debounceTime(250))
         .subscribe(this.onMouseMove.bind(this));
     }
-    this.viewer!.scene.requestRender();
+    viewer.scene.requestRender();
   }
 
   onMouseMove(event: MoveGestureEvent) {
+    const { viewer } = this.cesiumService;
     if (this.moveRef) {
-      const position = pickPositionOrVoxel(this.viewer!.scene, event.position);
+      const position = pickPositionOrVoxel(viewer.scene, event.position);
       if (!position) return;
       this.addTargetPoint(position);
       syncTargetParam(Cartographic.fromCartesian(position));
-      this.viewer!.scene.requestRender();
+      viewer.scene.requestRender();
     } else {
-      const pickedObject = this.viewer!.scene.pick(event.position);
+      const pickedObject = viewer.scene.pick(event.position);
       if (
         pickedObject &&
         pickedObject.id &&
         pickedObject.id.id === this.refIcon.id
       )
-        this.viewer!.canvas.style.cursor = 'pointer';
-      else if (this.viewer!.canvas.style.cursor === 'pointer')
-        this.viewer!.canvas.style.cursor = '';
+        viewer.canvas.style.cursor = 'pointer';
+      else if (viewer.canvas.style.cursor === 'pointer')
+        viewer.canvas.style.cursor = '';
     }
   }
 
@@ -424,10 +428,8 @@ export class NgmNavTools extends CoreElement {
     if (this.controlsService.is2DActive) {
       return;
     }
-    const pickedPosition = pickPositionOrVoxel(
-      this.viewer!.scene,
-      event.position,
-    );
+    const { viewer } = this.cesiumService;
+    const pickedPosition = pickPositionOrVoxel(viewer.scene, event.position);
     this.toggleAxis(pickedPosition);
   };
 
@@ -461,6 +463,9 @@ export class NgmNavTools extends CoreElement {
   }
 
   toggleAxis(center: Cartesian3 | undefined) {
+    if (this.axisDataSource === undefined) {
+      return;
+    }
     this.axisCenter = center;
     if (!center) {
       this.axisDataSource!.entities.removeAll();
@@ -489,7 +494,6 @@ export class NgmNavTools extends CoreElement {
   }
 
   render() {
-    if (!this.viewer) return '';
     return html`
       <div class="ngm-nav-buttons">
         <div

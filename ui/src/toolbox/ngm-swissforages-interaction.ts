@@ -2,34 +2,36 @@ import { LitElementI18n } from '../i18n';
 import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import i18next from 'i18next';
-import type { CustomDataSource, Viewer } from 'cesium';
+import type { CustomDataSource } from 'cesium';
 import { Cartographic, JulianDate } from 'cesium';
 import { updateBoreholeHeights } from './helpers';
 import { SWISSFORAGES_EDITOR_URL, SWISSFORAGES_VIEWER_URL } from '../constants';
 import { lv95ToDegrees } from '../projection';
 import $ from 'jquery';
-import MainStore from '../store/main';
 import type { SwissforagesService } from './SwissforagesService';
 import type { NgmGeometry } from './interfaces';
 import { showSnackbarInfo } from '../notifications';
+import { CesiumService } from 'src/services/cesium.service';
+import { consume } from '@lit/context';
 
 @customElement('ngm-swissforages-interaction')
 export class NgmSwissforagesInteraction extends LitElementI18n {
   @property({ type: Object })
   accessor item: NgmGeometry | undefined;
+
   @property({ type: Object })
   accessor service: SwissforagesService | undefined;
+
   @property({ type: Object })
   accessor dataSource: CustomDataSource | undefined;
+
   @property({ type: Object })
   accessor updateModalOptions: CallableFunction | undefined;
-  private julianDate: JulianDate = new JulianDate();
-  private viewer: Viewer | null = null;
 
-  constructor() {
-    super();
-    MainStore.viewer.subscribe((viewer) => (this.viewer = viewer));
-  }
+  private julianDate: JulianDate = new JulianDate();
+
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
 
   firstUpdated() {
     $(this.querySelector('.ngm-tools-btn')!).popup({
@@ -66,6 +68,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
   }
 
   onSwissforagesBoreholeCreated(pointId, boreholeId, depth) {
+    const { viewer } = this.cesiumService;
     const entity = this.dataSource!.entities.getById(pointId);
     if (!entity || !entity.properties) return;
     entity.properties.swissforagesId = boreholeId;
@@ -78,7 +81,7 @@ export class NgmSwissforagesInteraction extends LitElementI18n {
       entity.properties.addProperty('website', url);
     }
     entity.ellipse!.show = <any>true;
-    this.viewer!.scene.requestRender();
+    viewer.scene.requestRender();
     window.open(`${SWISSFORAGES_EDITOR_URL}${boreholeId}`, '_blank');
     this.updateModalOptions!({
       show: false,

@@ -62,7 +62,7 @@ export class OgcQueue extends CoreElement {
       ${applyEffect('overlay-shadow')};
 
       position: absolute;
-      left: calc(8px + var(--sidebar-width, 0px));
+      left: calc(8px + var(--sidebar-offset, 0px));
       bottom: 0;
       background-color: var(--sgc-color-bg--white);
       border: 1px solid var(--sgc-color-border--default);

@@ -42,7 +42,7 @@ export class CoreModal extends LitElement {
     const close = () => {
       render(null, container);
       if (container.parentElement != null) {
-        root.removeChild(container);
+        container.remove();
       }
       if (props.onClose != null) {
         props.onClose();

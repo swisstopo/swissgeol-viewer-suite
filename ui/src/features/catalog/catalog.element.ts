@@ -1,0 +1,77 @@
+import { css, html } from 'lit';
+import { customElement, query } from 'lit/decorators.js';
+import { CoreElement } from 'src/features/core';
+
+@customElement('ngm-catalog')
+export class Catalog extends CoreElement {
+  @query('section.layers')
+  private accessor layersElement!: HTMLDivElement;
+
+  @query('section.tabs')
+  private accessor tabsElement!: HTMLDivElement;
+
+  firstUpdated() {
+    this.initializeHeightSync();
+  }
+
+  private initializeHeightSync(): void {
+    const observer = new ResizeObserver(() => {
+      const rect = this.layersElement.getBoundingClientRect();
+      this.tabsElement.style.setProperty('--layers-height', `${rect.height}px`);
+    });
+    observer.observe(this.layersElement);
+    this.register(() => observer.disconnect());
+  }
+
+  readonly render = () => html`
+    <section class="layers">
+      <ngm-catalog-display-list></ngm-catalog-display-list>
+    </section>
+    <hr />
+    <section class="tabs">
+      <ngm-catalog-tabs></ngm-catalog-tabs>
+    </section>
+  `;
+
+  static readonly styles = css`
+    :host,
+    :host * {
+      box-sizing: border-box;
+    }
+
+    :host {
+      --header-height: 64px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      height: calc(var(--panel-height) - var(--header-height));
+    }
+
+    /* sections */
+    section {
+      position: relative;
+      overflow-y: auto;
+    }
+
+    section.layers {
+      /*
+       * Layers can take up half of the available space,
+       * minus half the space reserved by the header and padding/gap.
+       */
+      max-height: calc(50% - var(--header-height) / 2 - 16px);
+    }
+
+    section.tabs {
+      max-height: calc(100% - var(--header-height) - var(--layers-height, 0));
+    }
+
+    hr {
+      height: 1px;
+      margin: 0 12px;
+      border: 0;
+      background-color: var(--color-border--emphasis-high);
+    }
+  `;
+}

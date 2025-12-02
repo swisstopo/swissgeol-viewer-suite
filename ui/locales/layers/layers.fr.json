@@ -1,22 +1,39 @@
 {
-  "catalog": {
-    "filter": "Ouvrir le filtre"
+  "values": {
+    "no_data": "aucune valeur",
+    "undefined": "indifinie"
   },
-  "infoWindow": {
-    "title": "Info",
-    "zoomToObject": "Zoom sur l'objet"
+  "layers": {
+    "ch.swisstopo.geologie-geocover": "GeoCover - données vectorielles",
+    "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen": "Lithologie 500",
+    "ch.swisstopo.swissbedrock-geotiff": "swissBEDROCK",
+    "top_omm": "Toit de la Molasse marine supérieure",
+    "top_usm": "Toit de la Molasse d'eau douce inférieure",
+    "top_umm": "Toit de la Molasse marine inférieure",
+    "top_muschelkalk": "Toit du Muschelkalk"
   },
-  "geoTIFF": {
-    "bandsWindow": {
-      "title": "{{ layer }} - Bandes",
-      "open": "Afficher les bandes",
-      "legend": "Légende"
+  "groups": {
+    "grp_1786_label": "Cartes, coupes & modèles",
+    "grp_1787_label": "Cartes géologiques",
+    "grp_1793_label": "Cartes thématiques",
+    "grp_15174_label": "Cartes historiques",
+    "grp_1799_label": "Découpages des feuilles",
+    "grp_15143_label": "Coupes",
+    "grp_1855_label": "Modèles 3D",
+    "grp_1802_label": "Données de forage",
+    "grp_1811_label": "Géophysique",
+    "grp_1812_label": "Champ gravimétrique terrestre",
+    "grp_1818_label": "Champ magnétique terrestre",
+    "grp_15070_label": "Géo-énergie"
+  },
+  "properties": {
+    "Voxel": {
+      "cell_center": "",
+      "logk": "Conductivité hydraulique",
+      "Index": "Unité de modélisation",
+      "Klasse": "Perméabilité"
     },
-    "noData": "aucune valeur"
-  },
-  "swissBEDROCK": {
-    "title": "swissBEDROCK",
-    "bands": {
+    "ch.swisstopo.swissbedrock-geotiff": {
       "BEM": "Modèle d’altitude du toit du rocher",
       "TMUD": "Modèle d’épaisseur des terrains meubles",
       "Uncertainty": "Incertitude",
@@ -30,6 +47,11 @@
       "prev_Author": "Version précédente – ID numérique de l’auteur"
     }
   },
+  "backgrounds": {
+    "ch.swisstopo.pixelkarte-grau": "Carte en niveaux de gris",
+    "ch.swisstopo.swissimage": "Carte aérienne",
+    "lakes_rivers_map": "Lacs et rivières"
+  },
   "units": {
     "Meters": {
       "name": "mètre",
@@ -39,5 +61,10 @@
       "name": "mètre au-dessus du niveau de la mer ",
       "symbol": "m s.n.m."
     }
+  },
+  "geocat_url": "https://www.geocat.ch/geonetwork/srv/fre/catalog.search#/metadata/{{id}}",
+  "info_window": {
+    "title": "Info",
+    "zoom_to_object": "Zoom sur l'objet"
   }
 }

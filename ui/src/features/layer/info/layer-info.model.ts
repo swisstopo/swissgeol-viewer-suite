@@ -1,6 +1,7 @@
-import { LayerTreeNode } from 'src/layertree';
-import { LayerTiffController } from 'src/features/layer';
+import { Layer } from 'src/features/layer';
 import { TemplateResult } from 'lit';
+import { TranslationKey } from 'src/models/translation-key.model';
+import { Id } from 'src/models/id.model';
 
 /**
  * `LayerInfo` represents the current data of a specific object on a layer.
@@ -10,7 +11,7 @@ export interface LayerInfo {
   /**
    * The layer that was picked.
    */
-  source: LayerInfoSource;
+  layerId: Id<Layer>;
 
   /**
    * The (translated) name of the picked object.
@@ -45,10 +46,13 @@ export interface LayerInfo {
 }
 
 export interface LayerInfoAttribute {
-  key: string;
-  value: ValueType | { url: string; name?: ValueType };
+  key: string | TranslationKey;
+  value: LayerInfoValue | LayerInfoUrl;
 }
 
-type ValueType = string | number | TemplateResult;
+export type LayerInfoValue = string | number | TemplateResult | TranslationKey;
+export type LayerInfoUrl = { url: string; name?: LayerInfoValue };
 
-export type LayerInfoSource = LayerTreeNode | LayerTiffController;
+export const isLayerInfoUrl = (
+  value: LayerInfoValue | LayerInfoUrl,
+): value is LayerInfoUrl => typeof value === 'object' && 'url' in value;

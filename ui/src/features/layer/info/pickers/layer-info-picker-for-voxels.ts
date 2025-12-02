@@ -3,53 +3,40 @@ import {
   LayerPickData,
 } from 'src/features/layer/info/pickers/layer-info-picker';
 import { LayerInfo, LayerInfoAttribute } from '../layer-info.model';
-import { LayerConfig, LayerTreeNode, voxelLayerToFilter } from 'src/layertree';
 import {
   BoundingSphere,
-  Math as CesiumMath,
   HeadingPitchRange,
+  Math as CesiumMath,
   Viewer,
   VoxelCell,
 } from 'cesium';
-import { PickableVoxelPrimitive } from 'src/layers/helpers';
-import i18next from 'i18next';
 import { formatCartesian3AsLv95 } from 'src/projection';
 import NavToolsStore from 'src/store/navTools';
+import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
+import { Id } from 'src/models/id.model';
+import {
+  getTranslationKeyForLayerAttributeName,
+  VoxelLayer,
+  VoxelLayerMappingType,
+} from 'src/features/layer';
 
 export class LayerInfoPickerForVoxels implements LayerInfoPicker {
   constructor(
-    private readonly layer: LayerTreeNode,
+    private readonly controller: VoxelLayerController,
     private readonly viewer: Viewer,
   ) {}
 
-  get source(): LayerTreeNode {
-    return this.layer;
+  get layerId(): Id<VoxelLayer> {
+    return this.controller.layer.id;
   }
 
   async pick(pick: LayerPickData): Promise<LayerInfo[]> {
-    const windowPosition = this.viewer.scene.cartesianToCanvasCoordinates(
-      pick.cartesian,
-    );
-    if (windowPosition === undefined) {
+    const cell = this.viewer.scene.pickVoxel(pick.windowPosition);
+    if (cell === undefined || cell.primitive !== this.controller.primitive) {
       return [];
     }
 
-    if (windowPosition === undefined) {
-      return [];
-    }
-
-    const primitive = await (this.layer as LayerConfig).promise;
-
-    const cell = this.viewer.scene.pickVoxel(windowPosition);
-    if (
-      cell === undefined ||
-      !isPickable(cell) ||
-      cell.primitive !== primitive
-    ) {
-      return [];
-    }
-
-    const attributes = extractVoxelAttributes(cell);
+    const attributes = this.extractVoxelAttributes(cell);
 
     const { customShader } = cell.primitive;
     customShader.setUniform('u_selectedTile', cell.tileIndex);
@@ -59,17 +46,66 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
       new LayerInfoForVoxels(this.viewer, {
         cell,
         attributes,
-        source: this.source,
-        title: this.layer.label,
+        layerId: this.controller.layer.id,
+        title: `layers:layers.${this.controller.layer.id}`,
       }),
     ];
   }
 
   destroy(): void {}
+
+  private extractVoxelAttributes(cell: VoxelCell): LayerInfoAttribute[] {
+    const cellCenter = cell.orientedBoundingBox.center;
+    const propertyNames: string[] = cell.getNames();
+    const { layer } = this.controller;
+    const attributes: LayerInfoAttribute[] = propertyNames.map(
+      (propertyName) => {
+        const keyLabels = getTranslationKeyForLayerAttributeName(
+          layer,
+          propertyName,
+        );
+        const value = cell.getProperty(propertyName)[0] as number;
+
+        const mapping = this.controller.layer.mappings.find(
+          (mapping) => mapping.key === propertyName,
+        );
+        if (
+          mapping !== undefined &&
+          mapping.type === VoxelLayerMappingType.Item
+        ) {
+          const valueLabel = mapping.items.find(
+            (it) => it.value === value,
+          )?.label;
+          if (valueLabel !== undefined) {
+            return { key: keyLabels, value: valueLabel };
+          }
+        }
+
+        const valueLabel =
+          value === this.controller.layer.values.undefined
+            ? getTranslationKeyForLayerAttributeName(
+                this.controller.layer,
+                'undefined',
+              )
+            : value;
+        return { key: keyLabels, value: valueLabel };
+      },
+    );
+    return [
+      ...attributes,
+      {
+        key: getTranslationKeyForLayerAttributeName(
+          this.controller.layer,
+          'cell_center',
+        ),
+        value: formatCartesian3AsLv95(cellCenter).join(', '),
+      },
+    ];
+  }
 }
 
 class LayerInfoForVoxels implements LayerInfo {
-  public readonly source: LayerTreeNode;
+  public readonly layerId: Id<VoxelLayer>;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
@@ -77,13 +113,13 @@ class LayerInfoForVoxels implements LayerInfo {
 
   constructor(
     private readonly viewer: Viewer,
-    data: Pick<LayerInfo, 'source' | 'title' | 'attributes'> & {
+    data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
       cell: VoxelCell;
-      source: LayerTreeNode;
+      layerId: Id<VoxelLayer>;
     },
   ) {
     this.cell = data.cell;
-    this.source = data.source;
+    this.layerId = data.layerId;
     this.title = data.title;
     this.attributes = data.attributes;
   }
@@ -119,59 +155,4 @@ class LayerInfoForVoxels implements LayerInfo {
     customShader.setUniform('u_selectedTile', -1);
     customShader.setUniform('u_selectedSample', -1);
   }
-}
-
-const isPickable = (object: VoxelCell) => {
-  const voxelPrimitive: PickableVoxelPrimitive = object.primitive;
-  return voxelPrimitive && voxelPrimitive.pickable;
-};
-
-export function extractVoxelAttributes(cell: VoxelCell): LayerInfoAttribute[] {
-  const cellCenter = cell.orientedBoundingBox.center;
-  const propertyNames: string[] = cell.getNames();
-  const primitive: PickableVoxelPrimitive = cell.primitive;
-  const layer = primitive.layer;
-  const attributes: LayerInfoAttribute[] = propertyNames.map((name) => {
-    const value = cell.getProperty(name);
-    if (name === 'Temp_C') {
-      return { key: i18next.t('vox_temperature'), value };
-    }
-    if (layer && voxelLayerToFilter[layer]) {
-      const filters = voxelLayerToFilter[layer];
-      if (name === filters.lithologyDataName) {
-        const label = filters.lithology.find(
-          (f) => f.value === value[0],
-        )?.label;
-        const title =
-          name === 'Klasse'
-            ? i18next.t('vox_filter_klasse')
-            : i18next.t('vox_filter_lithology');
-        return {
-          key: title,
-          value: label
-            ? i18next.t(label)
-            : i18next.t('vox_filter_undefined_lithology'),
-        };
-      }
-      if (name === filters.conductivityDataName) {
-        const valueOrUndefined =
-          value[0] <= -9999
-            ? i18next.t('vox_filter_undefined_lithology')
-            : value;
-
-        return {
-          key: i18next.t('vox_filter_hydraulic_conductivity'),
-          value: valueOrUndefined,
-        };
-      }
-    }
-    return { key: name, value };
-  });
-  return [
-    ...attributes,
-    {
-      key: i18next.t('vox_cell_center'),
-      value: formatCartesian3AsLv95(cellCenter).join(', '),
-    },
-  ];
 }

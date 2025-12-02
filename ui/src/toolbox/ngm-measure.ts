@@ -1,10 +1,8 @@
 import { customElement, state } from 'lit/decorators.js';
-import { LitElementI18n } from '../i18n';
 import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
 import { classMap } from 'lit-html/directives/class-map.js';
 import DrawStore from '../store/draw';
-import MainStore from '../store/main';
 import MeasureTool from '../measure/MeasureTool';
 import { DrawInfo } from '../draw/CesiumDraw';
 import {
@@ -13,9 +11,12 @@ import {
   HIGHLIGHTED_GEOMETRY_COLOR,
 } from '../constants';
 import './ngm-line-info';
+import { consume } from '@lit/context';
+import { CesiumService } from 'src/services/cesium.service';
+import { CoreElement } from 'src/features/core';
 
 @customElement('ngm-measure')
-export class NgmMeasure extends LitElementI18n {
+export class NgmMeasure extends CoreElement {
   @state()
   accessor active = false;
   @state()
@@ -25,26 +26,23 @@ export class NgmMeasure extends LitElementI18n {
     maximumFractionDigits: 1,
   });
 
-  constructor() {
-    super();
-    MainStore.viewer.subscribe((viewer) => {
-      if (!viewer) return;
-      this.measure = new MeasureTool(viewer, {
-        highlightColor: HIGHLIGHTED_GEOMETRY_COLOR,
-        lineColor: DEFAULT_AOI_COLOR.withAlpha(GEOMETRY_LINE_ALPHA),
-      });
-      this.measure.draw.addEventListener('drawinfo', (event) => {
-        const info: DrawInfo = (<CustomEvent>event).detail;
-        if (info.type === 'line') {
-          this.lineInfo = info;
-        }
-      });
-    });
-  }
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
 
   connectedCallback() {
     this.active = true;
     super.connectedCallback();
+
+    this.measure = new MeasureTool(this.cesiumService.viewer, {
+      highlightColor: HIGHLIGHTED_GEOMETRY_COLOR,
+      lineColor: DEFAULT_AOI_COLOR.withAlpha(GEOMETRY_LINE_ALPHA),
+    });
+    this.measure.draw.addEventListener('drawinfo', (event) => {
+      const info: DrawInfo = (<CustomEvent>event).detail;
+      if (info.type === 'line') {
+        this.lineInfo = info;
+      }
+    });
   }
 
   disconnectedCallback() {

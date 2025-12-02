@@ -3,7 +3,7 @@ import { html } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { LitElementI18n } from '../i18n';
-import type { Entity, Viewer } from 'cesium';
+import type { Entity } from 'cesium';
 import {
   Cartesian3,
   ConstantProperty,
@@ -12,7 +12,6 @@ import {
 } from 'cesium';
 import { getValueOrUndefined } from '../cesiumutils';
 import { updateBoreholeHeights } from './helpers';
-import MainStore from '../store/main';
 import {
   cartesianToDegrees,
   cartesianToLv95,
@@ -22,6 +21,8 @@ import 'fomantic-ui-css/components/transition.js';
 import 'fomantic-ui-css/components/dropdown.js';
 import $ from 'jquery';
 import { styleMap } from 'lit/directives/style-map.js';
+import { consume } from '@lit/context';
+import { CesiumService } from 'src/services/cesium.service';
 
 @customElement('ngm-point-edit')
 export class NgmPointEdit extends LitElementI18n {
@@ -39,15 +40,12 @@ export class NgmPointEdit extends LitElementI18n {
   minDepth = -30000;
   maxDepth = 30000;
   private readonly julianDate: JulianDate = new JulianDate();
-  private viewer: Viewer | null = null;
 
   @query('.dropdown')
   accessor dropdown;
 
-  constructor() {
-    super();
-    MainStore.viewer.subscribe((viewer) => (this.viewer = viewer));
-  }
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
 
   updated(changedProperties: PropertyValues) {
     $(this.dropdown).dropdown();
@@ -113,7 +111,7 @@ export class NgmPointEdit extends LitElementI18n {
     this.entity.position = <any>cartesianPosition;
     this.updateInputValues();
     updateBoreholeHeights(this.entity, this.julianDate);
-    this.viewer!.scene.requestRender();
+    this.cesiumService.viewer.scene.requestRender();
   }
 
   onDepthChange(event) {
@@ -129,7 +127,7 @@ export class NgmPointEdit extends LitElementI18n {
     const diameterProp = new ConstantProperty(diameter);
     this.entity.ellipse.semiMajorAxis = diameterProp;
     this.entity.ellipse.semiMinorAxis = diameterProp;
-    this.viewer!.scene.requestRender();
+    this.cesiumService.viewer.scene.requestRender();
   }
 
   createRenderRoot() {

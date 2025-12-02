@@ -1,7 +1,6 @@
-import { MANTEL_COLOR, SWITZERLAND_RECTANGLE } from './constants';
+import { SWITZERLAND_RECTANGLE } from './constants';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter';
-import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
 
 import {
@@ -10,7 +9,6 @@ import {
   CesiumTerrainProvider,
   Color,
   DirectionalLight,
-  Ellipsoid,
   ImageryLayer,
   Ion,
   IonResource,
@@ -20,7 +18,6 @@ import {
   Viewer,
   WebGLOptions,
 } from 'cesium';
-import MainStore from './store/main';
 import { getExaggeration } from './permalink';
 
 window['CESIUM_BASE_URL'] = './cesium';
@@ -52,10 +49,7 @@ export interface BaseLayerConfig {
   hasAlphaChannel?: boolean;
 }
 
-export async function setupViewer(
-  container: Element,
-  rethrowRenderErrors: boolean,
-) {
+export async function setupViewer(container: Element) {
   const searchParams = new URLSearchParams(location.search);
 
   const zExaggeration = getExaggeration();
@@ -95,7 +89,7 @@ export async function setupViewer(
   };
   const viewer = new Viewer(container, {
     contextOptions: contextOptions,
-    showRenderLoopErrors: rethrowRenderErrors,
+    showRenderLoopErrors: false,
     animation: false,
     baseLayerPicker: false,
     fullscreenButton: false,
@@ -117,10 +111,23 @@ export async function setupViewer(
     // maximumRenderTimeChange: 10,
   });
 
+  // Print errors to console.
+  // Might be a good idea to create an alert for this at some point,
+  // as these errors can break the viewer.
+  viewer.scene.renderError.addEventListener((_scene, error) => {
+    console.error(String(error));
+    viewer.scene.requestRender();
+  });
+
   viewer.scene.postProcessStages.ambientOcclusion.enabled = false;
 
   const scene = viewer.scene;
-  scene.rethrowRenderErrors = rethrowRenderErrors;
+
+  // Hide underground fog.
+  scene.fog.enabled = false;
+  scene.globe.showGroundAtmosphere = false;
+
+  scene.rethrowRenderErrors = false;
   // remove the default behaviour of calling 'zoomTo' on the double clicked entity
   viewer.screenSpaceEventHandler.removeInputAction(
     ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
@@ -141,7 +148,7 @@ export async function setupViewer(
   // Disable underground fog.
   viewer.scene.fog.enabled = false;
 
-  // Create a  directional light that is aligned with the camera.
+  // Create a directional light aligned with the camera.
   const light = new DirectionalLight({
     direction: Cartesian3.clone(scene.camera.directionWC),
     intensity: 2,
@@ -191,59 +198,4 @@ export async function setupViewer(
   }
 
   return viewer;
-}
-
-export function addMantelEllipsoid(viewer: Viewer) {
-  // Add Mantel ellipsoid
-  const earthRadii = Ellipsoid.WGS84.radii.clone();
-  const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
-  const mantelRadii = earthRadii.clone();
-  mantelRadii.x -= mantelDepth;
-  mantelRadii.y -= mantelDepth;
-  mantelRadii.z -= mantelDepth;
-
-  const entity = viewer.entities.add({
-    position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
-    ellipsoid: {
-      radii: mantelRadii,
-      material: MANTEL_COLOR,
-    },
-  });
-
-  if (!hasNoLimit) {
-    new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
-  }
-
-  // hacky way to show mantel also above the terrain.
-  // for some reason object placed below 21km doesn't show when the camera above the terrain. distanceDisplayCondition doesn't resolve the issue.
-  const mantelDepthAboveTerrain = 21000;
-  const mantelRadiiAboveTerrain = earthRadii.clone();
-  mantelRadiiAboveTerrain.x -= mantelDepthAboveTerrain;
-  mantelRadiiAboveTerrain.y -= mantelDepthAboveTerrain;
-  mantelRadiiAboveTerrain.z -= mantelDepthAboveTerrain;
-
-  let hasUsedUndergroundValue = !viewer.scene.cameraUnderground;
-  viewer.scene.postRender.addEventListener((scene) => {
-    if (!entity.ellipsoid) return;
-    const isVoxelVisible = MainStore.visibleVoxelLayers.length > 0;
-    const exaggeration = getExaggeration();
-    if ((exaggeration > 1 || isVoxelVisible) && entity.isShowing) {
-      entity.show = false;
-      viewer.scene.requestRender();
-    } else if (exaggeration === 1 && !isVoxelVisible && !entity.isShowing) {
-      entity.show = true;
-      viewer.scene.requestRender();
-    }
-    if (scene.cameraUnderground && !hasUsedUndergroundValue) {
-      (<any>entity.ellipsoid.radii) = mantelRadii;
-      hasUsedUndergroundValue = true;
-      if (!Color.equals(scene.backgroundColor, Color.TRANSPARENT))
-        scene.backgroundColor = Color.TRANSPARENT;
-    } else if (!scene.cameraUnderground && hasUsedUndergroundValue) {
-      (<any>entity.ellipsoid.radii) = mantelRadiiAboveTerrain;
-      hasUsedUndergroundValue = false;
-      if (isVoxelVisible && !Color.equals(scene.backgroundColor, MANTEL_COLOR))
-        scene.backgroundColor = MANTEL_COLOR;
-    }
-  });
 }

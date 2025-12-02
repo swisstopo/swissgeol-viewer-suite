@@ -190,7 +190,7 @@ export default class NgmGeometriesSimpleList extends CoreElement {
         ${geom.type === 'polygon' || geom.type === 'rectangle'
           ? html` <div
               class="item ${classMap({
-                disabled: this.layerService.activeLayers.length === 0,
+                disabled: this.layerService.activeLayerIds.length === 0,
               })}"
               @click=${() => this.export(geom)}
             >
@@ -250,7 +250,12 @@ export default class NgmGeometriesSimpleList extends CoreElement {
         >
           ${i18next.t('tbx_download_all_btn')}
         </div>
-        <div class="item" @click=${() => (this.deleteWarningModal.show = true)}>
+        <div
+          class="item"
+          @click=${() => {
+            this.deleteWarningModal.show = true;
+          }}
+        >
           ${i18next.t('tbx_remove_all_btn')}
         </div>
       </div>

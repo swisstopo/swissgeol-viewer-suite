@@ -3,7 +3,7 @@ import { Role } from '@swissgeol/ui-core';
 import { filter, firstValueFrom } from 'rxjs';
 
 const getSessionService = (): Cypress.Chainable<any> =>
-  cy.get('ngm-side-bar').then((sideBar$) => {
+  cy.get('ngm-session').then((sideBar$) => {
     const { sessionService } = sideBar$[0] as unknown as {
       sessionService: any;
     };

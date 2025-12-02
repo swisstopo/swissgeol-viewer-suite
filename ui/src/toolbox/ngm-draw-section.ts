@@ -1,4 +1,3 @@
-import { LitElementI18n } from '../i18n';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { PropertyValues } from 'lit';
 import { html } from 'lit';
@@ -10,11 +9,12 @@ import { clickOnElement } from '../utils';
 import DrawStore from '../store/draw';
 import { CesiumDraw, DrawInfo } from '../draw/CesiumDraw';
 import './ngm-line-info';
+import { CoreElement } from 'src/features/core';
 
 const fileUploadInputId = 'fileUpload';
 
 @customElement('ngm-draw-section')
-export class NgmDrawSection extends LitElementI18n {
+export class NgmDrawSection extends CoreElement {
   // show all draw types if undefined or passed types
   @property({ type: Array })
   accessor enabledTypes: GeometryTypes[] | undefined;
@@ -51,6 +51,7 @@ export class NgmDrawSection extends LitElementI18n {
 
   constructor() {
     super();
+
     DrawStore.draw.subscribe((draw) => {
       this.draw = draw;
       if (draw) {
@@ -97,8 +98,7 @@ export class NgmDrawSection extends LitElementI18n {
     if (this.draw === undefined) {
       return '';
     }
-
-    const isDisabled = !!(this.draw!.active && this.draw!.entityForEdit);
+    const isDisabled = !!(this.draw.active && this.draw.entityForEdit);
     return html`
       <div class="ngm-draw-list">
         ${this.shownDrawTypes.map((it) => {

@@ -25,57 +25,75 @@ import './ngm-project-assets-section';
 import { MemberToAdd } from './ngm-add-member-form';
 import { isProject } from './helpers';
 import DashboardStore from '../../store/dashboard';
-import { CustomDataSource } from 'cesium';
-import MainStore from '../../store/main';
-import { parseKml } from 'src/cesiumutils';
 import { getPermalink } from 'src/permalink';
 import { consume } from '@lit/context';
+import { KmlLayer, LayerService, LayerType } from 'src/features/layer';
+import { makeId } from 'src/models/id.model';
 
 @customElement('ngm-project-edit')
 export class NgmProjectEdit extends LitElementI18n {
   @property({ type: Object })
   accessor project: Project | CreateProject | undefined;
+
   @property({ type: Boolean })
   accessor saveOrCancelWarning = false;
+
   @property({ type: Boolean })
   accessor createMode = true;
+
   @property({ type: String })
   accessor userEmail: string = '';
-  @property({ type: Object })
-  accessor tempKmlDataSource: CustomDataSource | undefined;
+
   @query('.ngm-toast-placeholder')
   accessor toastPlaceholder;
 
   @consume({ context: ApiClient.context() })
   accessor apiClient!: ApiClient;
 
-  async onKmlUpload(file: File, clampToGround: boolean) {
-    if (!this.project) return;
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
+  async onKmlUpload(file: File, shouldClampToGround: boolean) {
+    const { project } = this;
+    if (project == null) {
+      return;
+    }
+    const key = await this.uploadKml(file);
+    if (key === null) {
+      return;
+    }
+
+    this.layerService.activateCustomLayer({
+      id: makeId(crypto.randomUUID()),
+      type: LayerType.Kml,
+      source: file,
+      shouldClampToGround,
+      label: null,
+      opacity: 1,
+      canUpdateOpacity: false,
+      isVisible: true,
+      geocatId: null,
+      downloadUrl: null,
+      legend: null,
+      customProperties: {},
+      isLocal: true,
+    } satisfies KmlLayer);
+
+    const assets = [
+      ...project.assets,
+      { name: file.name, key, clampToGround: shouldClampToGround },
+    ];
+    this.project = { ...project, assets };
+  }
+
+  private async uploadKml(file: File): Promise<string | null> {
     try {
       const response = await this.apiClient.uploadProjectAsset(file);
-      const key: string = (await response.json())?.key;
-      if (key) {
-        const assets = [
-          ...this.project!.assets,
-          { name: file.name, key, clampToGround },
-        ];
-        this.project = { ...this.project, assets };
-        const viewer = MainStore.viewer.value;
-        if (viewer && this.tempKmlDataSource) {
-          const name = await parseKml(
-            viewer,
-            file,
-            this.tempKmlDataSource,
-            clampToGround,
-          );
-          MainStore.addUploadedKmlName(name);
-          viewer.scene.requestRender();
-          viewer.flyTo(this.tempKmlDataSource);
-        }
-      }
+      return ((await response.json())?.key as string | undefined) ?? null;
     } catch (e) {
       console.error(e);
       showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
+      return null;
     }
   }
 

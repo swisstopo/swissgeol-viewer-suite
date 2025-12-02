@@ -1,3 +1,8 @@
+ngm-dashboard {
+  padding: 12px;
+  overflow: scroll;
+}
+
 ngm-dashboard .ngm-panel-header,
 .ngm-proj-title-icon,
 .ngm-projects-list {

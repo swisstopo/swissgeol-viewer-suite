@@ -1,11 +1,10 @@
 {
-  "name": "ngm",
+  "name": "swissgeol-viewer-ui",
   "private": true,
   "type": "module",
   "scripts": {
     "lint": "npx eslint && npx prettier --check .",
     "lint:fix": "npx eslint --fix && npx prettier . --write",
-    "extract-from-assets": "node scripts/get_assets_properties.js src/assets_properties.js",
     "extract-i18n": "i18next -c i18next-parser.config.cjs",
     "start": "npm run build:static && vite serve",
     "serve": "npm run build:static && npm run build:js && npx serve dist -l 8000",
@@ -18,11 +17,12 @@
     "build:js": "vite build",
     "check": "npm run check:src && npm run check:cypress",
     "check:src": "tsc -p tsconfig.json --noEmit",
-    "check:cypress": "cd cypress && tsc -p tsconfig.json --noEmit",
+    "check:cypress": "tsc -b . && cd cypress && tsc -p tsconfig.json --noEmit",
     "e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts",
     "cypress:run": "cypress run --config-file cypress/cypress.config.ts",
-    "analyze": "cross-env ANALYZE=true npx analyze"
+    "analyze": "cross-env ANALYZE=true npx analyze",
+    "config:validate": "docker compose run --rm --no-deps api sh -c \"cargo run -- --validate-only\""
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.768.0",
@@ -32,7 +32,7 @@
     "@geoblocks/ga-search": "0.0.22",
     "@lit/context": "^1.1.3",
     "@lit/task": "^1.0.1",
-    "@swissgeol/ui-core": "1.6.0-dev9",
+    "@swissgeol/ui-core": "1.7.0-dev3",
     "cesium": "1.135.0",
     "d3-array": "3.2.4",
     "d3-axis": "3.0.0",
@@ -51,7 +51,7 @@
     "loc-i18next": "0.1.6",
     "papaparse": "~5.5.2",
     "rxjs": "^7.8.1",
-    "vite": "^6.3.5"
+    "vite": "^6.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
@@ -109,6 +109,7 @@
     "stream-to-promise": "3.0.0",
     "style-loader": "^4.0.0",
     "typescript": "^5.8.2",
+    "undici-types": "^7.16.0",
     "vite-bundle-analyzer": "^0.18.0",
     "vite-plugin-static-copy": "^2.2.0"
   }

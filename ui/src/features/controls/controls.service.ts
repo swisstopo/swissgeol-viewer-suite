@@ -1,6 +1,6 @@
-import { BaseService } from 'src/utils/base.service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import MainStore from 'src/store/main';
+import { BaseService } from 'src/services/base.service';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { CesiumService } from 'src/services/cesium.service';
 import { Control2dController } from 'src/features/controls/control-2d.controller';
 
 export class ControlsService extends BaseService {
@@ -9,13 +9,12 @@ export class ControlsService extends BaseService {
   constructor() {
     super();
 
-    MainStore.viewer.subscribe((viewer) => {
-      if (viewer === null) {
-        return;
-      }
-      const control2d = new Control2dController(viewer);
-      this.is2DActive$.subscribe(control2d.toggle);
-    });
+    CesiumService.inject()
+      .then((s) => firstValueFrom(s.viewer$))
+      .then((viewer) => {
+        const control2d = new Control2dController(viewer);
+        this.is2DActive$.subscribe(control2d.toggle);
+      });
   }
 
   get is2DActive$(): Observable<boolean> {

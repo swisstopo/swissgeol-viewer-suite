@@ -1,0 +1,59 @@
+{
+  "tabs": {
+    "Catalog": "Catalogue de données",
+    "Upload": "Upload",
+    "Options": "Réglages"
+  },
+  "display": {
+    "background": "Fond",
+    "opacity": "Opacité",
+    "legend": "Légende",
+    "download": "Télécharger / Légende",
+    "filter": "Ouvrir le filtre",
+    "time_travel": "Voyage dans le temps",
+    "remove": "Enlever"
+  },
+  "exaggeration": {
+    "title": "Exagération verticale",
+    "show": "Montrer l'exagération",
+    "hide": "Cacher l'exagération"
+  },
+  "upload": {
+    "select_file": "Télécharger des données KML",
+    "select_file_hint": "Cliquez pour naviguer, ou glissez-déposez un fichier ici",
+    "file_not_selected": "Aucun fichier à télécharger",
+    "file_not_kml": "Format pas pris en charge. Seulement en format KML.",
+    "file_too_large": "La taille maximale du fichier est de {{limit}}",
+    "file_upload_error": "Erreur lors du téléchargement de KML",
+    "modal": {
+      "title": "Upload",
+      "should_clamp_to_ground": "Fixation au terrain",
+      "confirm": "Ajouter"
+    }
+  },
+  "add_content_from_cesium_ion": "Ajouter du contenu à propos de l'ion césium",
+  "times_window": {
+    "all": "Tous"
+  },
+  "voxel_filter_window": {
+    "items": {
+      "select_all": "Sélectionner tout",
+      "deselect_all": "Désélectionner tout"
+    },
+    "range": {
+      "min": "Min",
+      "max": "Max",
+      "should_include_undefined": "Toujours afficher les valeurs indéfinies?"
+    },
+    "operators": {
+      "And": "AND",
+      "Or": "OR",
+      "Xor": "XOR"
+    }
+  },
+  "tiffBandsWindow": {
+    "title": "{{ layer }} - Bandes",
+    "open": "Afficher les bandes",
+    "legend": "Légende"
+  }
+}

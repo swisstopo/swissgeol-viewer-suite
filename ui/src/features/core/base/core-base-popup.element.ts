@@ -93,6 +93,7 @@ export abstract class CoreBasePopup<
   disconnectedCallback(): void {
     this.unregisterTarget();
     this.box.removeEventListener('hide', this.hide);
+    this.box.remove();
     this.hide();
     super.disconnectedCallback();
   }

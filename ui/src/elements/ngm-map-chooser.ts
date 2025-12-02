@@ -1,16 +1,20 @@
-import { html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { consume } from '@lit/context';
-import { BackgroundLayerService } from 'src/features/background/background-layer.service';
-import { BackgroundLayer } from 'src/features/layer/layer.model';
-import 'src/features/background/background.module';
+
+import {
+  BACKGROUND_LAYER,
+  BackgroundLayer,
+  LayerService,
+} from 'src/features/layer';
+import { CoreElement } from 'src/features/core';
 
 @customElement('ngm-map-chooser')
-export class NgmMapChooser extends LitElement {
-  @consume({
-    context: BackgroundLayerService.backgroundContext,
-    subscribe: true,
-  })
+export class NgmMapChooser extends CoreElement {
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
+  @state()
   accessor background!: BackgroundLayer;
 
   @property({ type: Boolean })
@@ -18,6 +22,16 @@ export class NgmMapChooser extends LitElement {
 
   @state()
   accessor open = true;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.register(
+      this.layerService.layer$(BACKGROUND_LAYER.id).subscribe((layer) => {
+        this.background = layer;
+      }),
+    );
+  }
 
   protected firstUpdated() {
     setTimeout(() => {
@@ -41,7 +55,9 @@ export class NgmMapChooser extends LitElement {
       @click=${() => (this.open = true)}
     >
       <ngm-background-layer-item
-        .layer="${this.background}"
+        .variant="${this.background.variants.get(
+          this.background.activeVariantId,
+        )}"
         size="large"
       ></ngm-background-layer-item>
     </div>
