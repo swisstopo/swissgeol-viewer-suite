@@ -15,7 +15,7 @@ import NavToolsStore from 'src/store/navTools';
 import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
 import { Id } from 'src/models/id.model';
 import {
-  getTranslationKeyForLayerAttributeName,
+  getTranslationKeyForLayerPropertyName,
   VoxelLayer,
   VoxelLayerMappingType,
 } from 'src/features/layer';
@@ -61,7 +61,7 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
     const { layer } = this.controller;
     const attributes: LayerInfoAttribute[] = propertyNames.map(
       (propertyName) => {
-        const keyLabels = getTranslationKeyForLayerAttributeName(
+        const keyLabels = getTranslationKeyForLayerPropertyName(
           layer,
           propertyName,
         );
@@ -84,7 +84,7 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
 
         const valueLabel =
           value === this.controller.layer.values.undefined
-            ? getTranslationKeyForLayerAttributeName(
+            ? getTranslationKeyForLayerPropertyName(
                 this.controller.layer,
                 'undefined',
               )
@@ -95,7 +95,10 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
     return [
       ...attributes,
       {
-        key: makeTranslationKey('layers:properties.cell_center'),
+        key: getTranslationKeyForLayerPropertyName(
+          this.controller.layer,
+          'cell_center',
+        ),
         value: formatCartesian3AsLv95(cellCenter).join(', '),
       },
     ];

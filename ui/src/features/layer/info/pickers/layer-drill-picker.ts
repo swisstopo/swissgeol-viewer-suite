@@ -27,7 +27,7 @@ import NavToolsStore from 'src/store/navTools';
 import { TemplateResult } from 'lit';
 import {
   BaseLayerController,
-  getLayerAttributeName,
+  getLayerPropertyName,
   Layer,
 } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
@@ -337,7 +337,7 @@ const extractFeatureAttributes = (
     const value = feature.getProperty(propertyName);
     if (typeof value === 'number' || !!value) {
       attributes.push({
-        key: getLayerAttributeName(layer, propertyName),
+        key: getLayerPropertyName(layer, propertyName),
         value,
       });
     }
@@ -423,7 +423,7 @@ const extractTilesetAttributes = (
       !PROPERTIES_TO_EXCLUDE.has(propertyName)
     ) {
       attributes.push({
-        key: getLayerAttributeName(layer, propertyName),
+        key: getLayerPropertyName(layer, propertyName),
         value,
       });
     }

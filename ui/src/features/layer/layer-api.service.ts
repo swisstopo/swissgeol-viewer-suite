@@ -5,7 +5,7 @@ import {
   BaseLayer,
   EarthquakesLayer,
   FilterOperator,
-  getTranslationKeyForLayerAttributeName,
+  getTranslationKeyForLayerPropertyName,
   Layer,
   LayerGroup,
   LayerSource,
@@ -207,7 +207,7 @@ export class LayerApiService extends BaseService {
         items: [
           {
             value: layer.values.undefined,
-            label: getTranslationKeyForLayerAttributeName(
+            label: getTranslationKeyForLayerPropertyName(
               { type: LayerType.Voxel, id: layer.id },
               'undefined',
             ),

@@ -3,7 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import {
   FilterOperator,
-  getLayerAttributeName,
+  getLayerPropertyName,
   VoxelItemMapping,
   VoxelLayer,
   VoxelLayerMapping,
@@ -157,7 +157,7 @@ export class CatalogDisplayTimes extends CoreElement {
   ) => {
     return html`
       <li class="filter is-items ui form">
-        <h3>${getLayerAttributeName(this.layer, mapping.key)}</h3>
+        <h3>${getLayerPropertyName(this.layer, mapping.key)}</h3>
 
         <div class="controls">
           <sgc-button
@@ -184,7 +184,7 @@ export class CatalogDisplayTimes extends CoreElement {
               const label =
                 item.value === this.layer.values.undefined
                   ? i18next.t(item.label)
-                  : getLayerAttributeName(this.layer, item.label as string);
+                  : getLayerPropertyName(this.layer, item.label as string);
               return html`
                 <label class="is-inline" title="${label}">
                   <sgc-checkbox
@@ -207,7 +207,7 @@ export class CatalogDisplayTimes extends CoreElement {
     index: number,
   ) => html`
     <li class="filter is-range ui form">
-      <h3>${getLayerAttributeName(this.layer, mapping.key)}</h3>
+      <h3>${getLayerPropertyName(this.layer, mapping.key)}</h3>
       <div class="fields">
         <label class="field">
           ${i18next.t('catalog:voxel_filter_window.range.min')}

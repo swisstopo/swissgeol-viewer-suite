@@ -3,7 +3,12 @@ import { CoreElement } from 'src/features/core';
 import { css, html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
-import { LayerService, TiffLayer, TiffLayerBand } from 'src/features/layer';
+import {
+  getLayerPropertyName,
+  LayerService,
+  TiffLayer,
+  TiffLayerBand,
+} from 'src/features/layer';
 import i18next from 'i18next';
 import { Id } from 'src/models/id.model';
 import { consume } from '@lit/context';
@@ -41,7 +46,7 @@ export class LayerTiffBands extends CoreElement {
   `;
 
   private readonly renderBand = (band: TiffLayerBand, index: number) => {
-    const name = i18next.t(`layers:properties.${this.layerId}.${band.name}`);
+    const name = getLayerPropertyName(this.layer, band.name);
     const [unitSymbol, unitName] =
       band.unit === null
         ? [null, null]

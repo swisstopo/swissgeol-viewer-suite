@@ -13,7 +13,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { applyTypography } from 'src/styles/theme';
 import { TranslationKey } from 'src/models/translation-key.model';
 import { consume } from '@lit/context';
-import { getLayerAttributeName, Layer, LayerService } from 'src/features/layer';
+import { getLayerPropertyName, Layer, LayerService } from 'src/features/layer';
 
 const numberFormat = new Intl.NumberFormat('de-CH', {
   maximumFractionDigits: 20,
@@ -109,7 +109,7 @@ export class LayerInfoItem extends CoreElement {
 
   private makeCustomAttributes(): LayerInfoAttribute[] {
     return Object.entries(this.layer.customProperties).map(([key, value]) => ({
-      key: getLayerAttributeName(this.layer, key),
+      key: getLayerPropertyName(this.layer, key),
       value,
     }));
   }

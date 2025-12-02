@@ -114,13 +114,12 @@ export enum LayerType {
 export const getLayerLabel = (layer: AnyLayer): string =>
   layer.label ?? i18next.t(`layers:layers.${layer.id}`);
 
-export const getLayerAttributeName = (
+export const getLayerPropertyName = (
   layer: Pick<AnyLayer, 'id' | 'type'>,
   attribute: string,
-): string =>
-  i18next.t(getTranslationKeyForLayerAttributeName(layer, attribute));
+): string => i18next.t(getTranslationKeyForLayerPropertyName(layer, attribute));
 
-export const getTranslationKeyForLayerAttributeName = (
+export const getTranslationKeyForLayerPropertyName = (
   layer: Pick<AnyLayer, 'id' | 'type'>,
   attribute: string,
 ): TranslationKey =>
