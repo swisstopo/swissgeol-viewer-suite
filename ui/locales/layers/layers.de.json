@@ -42,6 +42,7 @@
     "top_keu":"Top Keuper",
     "top_mus": "Top Muschelkalk",
     "base_mes":"Basis Mesozoikum",
+    "top_carb":"Top Karbon",
     "base_pc":"Basis Permokarbon",
     "base_pc_vermutet":"Basis Permokarbon (vermutet)",
     "geomol_faults":"Störungszonen/Brüche Mitteland",
@@ -228,15 +229,14 @@
     "source":"Quelle",
     "version":"Version",
     "details_url":"URL",
-    "cell_center": "Zellzentrum",
-    "undefined":"undefined",
     "Voxel": {
       "cell_center": "Zellzentrum",
       "logk": "Hydraulische Leitfähigkeit",
       "Index": "Modelliereinheit",
-      "Klasse": "Durchlässigkeit"
+      "Klasse": "Durchlässigkeit",
+      "undefined":"undefined"
     },
-    "ch.swisstopo.swissbedrock-geotiff": {
+    "Tiff": {
       "BEM": "Höhenmodell der Felsoberfläche",
       "TMUD": "Mächtigkeitsmodell des Lockergesteins",
       "Uncertainty": "Unsicherheit",

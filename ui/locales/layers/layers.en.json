@@ -42,6 +42,7 @@
     "top_keu":"Top Keuper",
     "top_mus": "Top Muschelkalk",
     "base_mes":"Base Mesozoic",
+    "top_carb":"Top Carboniferous",
     "base_pc":"Base Permo-Carboniferous",
     "base_pc_vermutet":"Base Permo-Carboniferous supposed",
     "geomol_faults":"Fault zones Midlands",
@@ -236,7 +237,7 @@
       "Index": "Modelling Unit",
       "Klasse": "Permeability"
     },
-    "ch.swisstopo.swissbedrock-geotiff": {
+    "Tiff": {
       "BEM": "Bedrock elevation model",
       "TMUD": "Thickness model of unconsolidated deposits",
       "Uncertainty": "Uncertainty",

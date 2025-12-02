@@ -99,7 +99,7 @@
       },
       terrain: {
         type: 'CesiumIon',
-        asset_id: 3914142, // <-- Anpassen!!!
+        asset_id: 4182502, // <-- Anpassen!!!
       },
       opacity: 0.5,
       download_url: {

@@ -329,7 +329,7 @@
                 id: 10487,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 3955284
+                    asset_id: 4182186   
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -345,7 +345,7 @@
                 id: 10485,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 3955372
+                    asset_id: 4182207
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -361,7 +361,7 @@
                 id: 10489,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 3955446
+                    asset_id: 4182277
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -377,7 +377,7 @@
                 id: 10488,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267958
+                    asset_id: 4182209
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -393,7 +393,7 @@
                 id: 10468,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267962
+                    asset_id: 4182292
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -409,7 +409,7 @@
                 id: 10490,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267963
+                    asset_id: 4182306
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -425,7 +425,7 @@
                 id: 10491,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267957
+                    asset_id: 4182314
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -441,7 +441,7 @@
                 id: 10492,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267899
+                    asset_id: 4182351
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -473,7 +473,7 @@
                 id: 10498,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267953
+                    asset_id: 4182378
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -489,12 +489,28 @@
                 id: 10496,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267952
+                    asset_id: 4182395
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
             download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Base-Mesozoic.zip',
             geocat_id: 'ec67a58d-531e-4dae-98da-85c49525b4d2',
+        },
+        //TCarb
+        {
+            type: 'Tiles3d',
+            id: 'top_carb',
+            source: {
+                type: 'Ogc',
+                id: 10493,
+                display_source: {
+                    type: 'CesiumIon',
+                    asset_id: 4182413
+                }
+            },
+            order_of_properties: 'geomol_consolidated_rocks',
+            download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-Permocarboniferous.zip',
+            geocat_id: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
         },
         //BPC
         {
@@ -505,7 +521,7 @@
                 id: 10494,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267965
+                    asset_id: 4182446
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
@@ -521,7 +537,7 @@
                 id: 10495,
                 display_source: {
                     type: 'CesiumIon',
-                    asset_id: 267964
+                    asset_id: 4182486
                 }
             },
             order_of_properties: 'geomol_consolidated_rocks',
