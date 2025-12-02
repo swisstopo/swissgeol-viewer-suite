@@ -1,43 +1,36 @@
 import { LitElementI18n } from 'src/i18n';
 import { html, PropertyValues } from 'lit';
-import './elements/ngm-side-bar';
 import './elements/ngm-full-screen-view';
 import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
 import './toolbox/ngm-topo-profile-modal';
 import './toolbox/ngm-geometry-info';
-import './elements/ngm-layer-legend';
-import './elements/ngm-voxel-filter';
-import './elements/ngm-voxel-simple-filter';
 import './cesium-toolbar';
 import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
-import './elements/ngm-wmts-date-picker';
-import '@geoblocks/cesium-view-cube';
 import './elements/ngm-map-chooser';
+import './elements/ngm-confirmation-modal';
 
 import 'src/features/core/core.module';
-import 'src/features/background/background.module';
+import 'src/features/layer/layer.module';
 import 'src/features/controls/controls.module';
 import 'src/features/layout/layout.module';
 import 'src/features/navigation/navigation.module';
 import 'src/features/session/session.module';
+import 'src/features/ogc/ogc.module';
 
 import { DEFAULT_VIEW } from './constants';
 
-import { addMantelEllipsoid, setupViewer } from './viewer';
+import { setupViewer } from './viewer';
 
 import {
   getCameraView,
-  getCesiumToolbarParam,
-  getMapParam,
   getTopicOrProject,
   getZoomToPosition,
   rewriteParams,
+  setCesiumToolbarParam,
   syncCamera,
-  syncMapOpacityParam,
-  syncMapParam,
   syncStoredView,
 } from './permalink';
 import i18next from 'i18next';
@@ -50,24 +43,20 @@ import { classMap } from 'lit/directives/class-map.js';
 import { customElement, query, state } from 'lit/decorators.js';
 import { showSnackbarInfo } from './notifications';
 import type { NgmSlowLoading } from './elements/ngm-slow-loading';
-import { Event, FrameRateMonitor, Globe, ImageryLayer, Viewer } from 'cesium';
+import { Event, FrameRateMonitor, Globe, Viewer } from 'cesium';
 import LocalStorageController from './LocalStorageController';
 import DashboardStore from './store/dashboard';
-import type { SideBar } from './elements/ngm-side-bar';
-import { LayerConfig } from './layertree';
-import { clientConfigContext, viewerContext } from './context';
-import { consume, provide } from '@lit/context';
+import { clientConfigContext } from './context';
+import { consume } from '@lit/context';
 import { AppEnv, ClientConfig } from './api/client-config';
 import { CoreModal, CoreWindow } from 'src/features/core';
-import { makeId } from 'src/models/id.model';
-import { BackgroundLayer } from 'src/features/layer/layer.model';
-import { distinctUntilKeyChanged } from 'rxjs';
-import { addSwisstopoLayer } from 'src/swisstopoImagery';
-import { BackgroundLayerService } from 'src/features/background/background-layer.service';
 import { TrackingConsentModalEvent } from 'src/features/layout/layout-consent-modal.element';
 import { LayerService } from 'src/features/layer/layer.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
+import { CesiumService } from 'src/services/cesium.service';
+import { when } from 'lit/directives/when.js';
+import { until } from 'lit/directives/until.js';
 
 const SKIP_STEP2_TIMEOUT = 5000;
 
@@ -105,9 +94,6 @@ export class NgmApp extends LitElementI18n {
   accessor queueLength = 0;
 
   @state()
-  accessor legendConfigs: LayerConfig[] = [];
-
-  @state()
   accessor showProjectPopup = false;
 
   @state()
@@ -120,25 +106,13 @@ export class NgmApp extends LitElementI18n {
   accessor showProjectSelector = false;
 
   @state()
-  accessor showCesiumToolbar = getCesiumToolbarParam();
+  accessor showCesiumToolbar = false;
 
   @query('ngm-cam-configuration')
   accessor camConfigElement;
 
-  @query('ngm-voxel-filter')
-  accessor voxelFilterElement;
-
-  @query('ngm-voxel-simple-filter')
-  accessor voxelSimpleFilterElement;
-
-  @query('ngm-wmts-date-picker')
-  accessor wmtsDatePickerElement;
-
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
-
-  @consume({ context: BackgroundLayerService.context() })
-  accessor backgroundLayerService!: BackgroundLayerService;
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
@@ -146,11 +120,8 @@ export class NgmApp extends LitElementI18n {
   @consume({ context: LayerInfoService.context() })
   accessor layerInfoService!: LayerInfoService;
 
-  @provide({ context: viewerContext })
-  accessor viewer: Viewer | null = null;
-
-  @provide({ context: BackgroundLayerService.backgroundContext })
-  accessor background: BackgroundLayer = null as unknown as BackgroundLayer;
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
 
   constructor() {
     super();
@@ -164,13 +135,16 @@ export class NgmApp extends LitElementI18n {
       const boundingRect = document.body.getBoundingClientRect();
       this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
     });
+
+    MainStore.isDebugActive$.subscribe((isDebugActive) => {
+      this.showCesiumToolbar = isDebugActive;
+      setCesiumToolbarParam(isDebugActive);
+    });
   }
 
-  private sidebar: SideBar | null = null;
   private waitForViewLoading = false;
   private resolutionScaleRemoveCallback: Event.RemoveCallback | undefined;
   private disclaimer: CoreModal | null = null;
-  private viewerRenderTimeout: number | null = null;
 
   private openDisclaimer(): void {
     this.disclaimer = CoreModal.open(
@@ -188,21 +162,6 @@ export class NgmApp extends LitElementI18n {
 
     BaseService.initializeWith(this);
 
-    this.layerService.activeLayers$.subscribe(() => {
-      this.viewer?.scene.requestRender();
-    });
-
-    this.layerService.layerActivated$.subscribe((layer) => {
-      const config = layer as LayerConfig;
-      if (
-        this.slicer_ &&
-        this.slicer_!.active &&
-        config.promise !== undefined
-      ) {
-        this.slicer_!.applyClippingPlanesToTileset(config.promise);
-      }
-    });
-
     let infoWindow: CoreWindow | null = null;
     this.layerInfoService.infos$.subscribe((layers) => {
       if (layers.length === 0) {
@@ -214,7 +173,7 @@ export class NgmApp extends LitElementI18n {
       }
 
       infoWindow = CoreWindow.open({
-        title: () => i18next.t('layers:infoWindow.title'),
+        title: () => i18next.t('layers:info_window.title'),
         body: () => html`<ngm-layer-info-list></ngm-layer-info-list>`,
         onClose: () => {
           infoWindow = null;
@@ -226,38 +185,6 @@ export class NgmApp extends LitElementI18n {
     if (shouldShowDisclaimer) {
       this.openDisclaimer();
     }
-  }
-
-  onShowLayerLegend(event) {
-    const config = event.detail.config;
-    if (!this.legendConfigs.find((c) => c && c.layer === config.layer)) {
-      this.legendConfigs.push(config);
-      this.requestUpdate();
-    }
-  }
-
-  onShowVoxelFilter(event: CustomEvent) {
-    const config = event.detail.config;
-    if (config.voxelFilter) {
-      this.voxelFilterElement.config = config;
-    } else {
-      this.voxelSimpleFilterElement.config = config;
-    }
-  }
-
-  onShowWmtsDatePicker(event: CustomEvent) {
-    this.wmtsDatePickerElement.config = event.detail.config;
-  }
-
-  onCloseLayerLegend(event) {
-    const config = event.target.config;
-    const index = this.legendConfigs.findIndex(
-      (c) => c && c.layer === config.layer,
-    );
-    console.assert(index !== -1);
-    this.legendConfigs.splice(index, 1);
-    if (!this.legendConfigs.filter((c) => !!c).length) this.legendConfigs = [];
-    this.requestUpdate();
   }
 
   onStep2Finished(viewer) {
@@ -273,15 +200,6 @@ export class NgmApp extends LitElementI18n {
     }
     this.slicer_ = new Slicer(viewer);
     ToolboxStore.setSlicer(this.slicer_);
-
-    MainStore.syncMap.subscribe(() => {
-      const id = makeId<BackgroundLayer>(getMapParam());
-      if (id != null) {
-        this.backgroundLayerService.setBackground(id);
-      }
-    });
-
-    this.sidebar = this.querySelector('ngm-side-bar') as SideBar | null;
   }
 
   removeLoading() {
@@ -290,13 +208,8 @@ export class NgmApp extends LitElementI18n {
       'none';
   }
 
-  /**
-   * @param {import ('cesium').Viewer} viewer
-   */
-  startCesiumLoadingProcess(viewer) {
+  startCesiumLoadingProcess(viewer: Viewer) {
     const globe = viewer.scene.globe;
-
-    addMantelEllipsoid(viewer);
 
     // Temporarily increasing the maximum screen space error to load low LOD tiles.
     const searchParams = new URLSearchParams(document.location.search);
@@ -331,20 +244,27 @@ export class NgmApp extends LitElementI18n {
     setTimeout(() => (this.determinateLoading = true), 3000);
     rewriteParams();
     const cesiumContainer = this.querySelector('#cesium')!;
-    const viewer = await setupViewer(cesiumContainer, isLocalhost);
+    const viewer = await setupViewer(cesiumContainer);
 
     if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
-      this.setResolutionScale();
+      this.setResolutionScale(viewer);
     }
-    this.viewer = viewer;
+
+    const l = (count: number) => {
+      if (count === 0) {
+        this.cesiumService.initialize(viewer);
+        viewer.scene.globe.tileLoadProgressEvent.removeEventListener(l);
+        this.requestUpdate();
+      }
+    };
+    viewer.scene.globe.tileLoadProgressEvent.addEventListener(l);
+
     window['viewer'] = viewer; // for debugging
 
     this.startCesiumLoadingProcess(viewer);
     const topicOrProjectParam = getTopicOrProject();
     if (topicOrProjectParam) {
       this.waitForViewLoading = !!topicOrProjectParam.param.viewId;
-      !this.waitForViewLoading &&
-        (<SideBar>this.querySelector('ngm-side-bar')).togglePanel('dashboard');
       DashboardStore.setTopicOrProjectParam(topicOrProjectParam);
     } else {
       const storedView = LocalStorageController.storedView;
@@ -371,8 +291,6 @@ export class NgmApp extends LitElementI18n {
       });
     }
 
-    MainStore.setViewer(viewer);
-
     i18next.on('initialized', () => {
       this.showSlowLoadingWindow();
     });
@@ -388,116 +306,6 @@ export class NgmApp extends LitElementI18n {
         }
       });
     });
-
-    this.initializeBackgroundLayers();
-  }
-
-  private initializeBackgroundLayers(): void {
-    this.backgroundLayerService.background$.subscribe(async (background) => {
-      this.background = background;
-      await import('src/features/layer/layer.module');
-    });
-
-    let activeLayers: ImageryLayer[] = [];
-    this.backgroundLayerService.background$
-      .pipe(distinctUntilKeyChanged('children'))
-      .subscribe((background) => {
-        activeLayers.forEach((layer) =>
-          this.viewer!.scene.imageryLayers.remove(layer),
-        );
-        activeLayers = [];
-        const readyPromises = [] as Array<Promise<void>>;
-        for (const sublayer of background.children) {
-          const layer = addSwisstopoLayer(
-            this.viewer!,
-            sublayer.id as string,
-            sublayer.format,
-            sublayer.maximumLevel,
-          );
-          layer.show = true;
-          readyPromises.push(
-            new Promise<void>((resolve) => {
-              layer.readyEvent.addEventListener(() => {
-                resolve();
-              });
-            }),
-          );
-          activeLayers.push(layer);
-        }
-        this.updateBaseMapTranslucency(
-          background.opacity,
-          background.hasAlphaChannel,
-        );
-        syncMapParam(background.id);
-        Promise.all(readyPromises).then(() => this.requestViewerRender());
-      });
-
-    let opacityTimeout: number | null = null;
-    this.backgroundLayerService.background$
-      .pipe(distinctUntilKeyChanged('opacity'))
-      .subscribe((background) => {
-        if (opacityTimeout !== null) {
-          clearTimeout(opacityTimeout);
-        }
-        opacityTimeout = setTimeout(() => {
-          opacityTimeout = null;
-          syncMapOpacityParam(background.opacity);
-        }, 50) as unknown as number;
-
-        this.updateBaseMapTranslucency(
-          background.opacity,
-          background.hasAlphaChannel,
-        );
-        this.requestViewerRender();
-      });
-
-    let isVisible = true;
-    const setLayerVisibility = (isVisible: boolean) => {
-      const off = this.viewer!.scene.postRender.addEventListener(() => {
-        off();
-        activeLayers.forEach((layer) => {
-          if (this.viewer!.scene.imageryLayers.contains(layer)) {
-            layer.show = isVisible;
-          }
-        });
-      });
-    };
-
-    this.backgroundLayerService.background$
-      .pipe(distinctUntilKeyChanged('isVisible'))
-      .subscribe((background) => {
-        if (background.isVisible) {
-          this.updateBaseMapTranslucency(
-            background.opacity,
-            background.hasAlphaChannel,
-          );
-          syncMapParam(background.id);
-
-          if (isVisible !== background.isVisible) {
-            setLayerVisibility(true);
-          }
-        } else {
-          this.updateBaseMapTranslucency(0, background.hasAlphaChannel);
-          syncMapParam('empty_map');
-
-          if (isVisible !== background.isVisible) {
-            setLayerVisibility(false);
-          }
-        }
-
-        isVisible = background.isVisible;
-        this.requestViewerRender();
-      });
-  }
-
-  private requestViewerRender(): void {
-    if (this.viewerRenderTimeout != null) {
-      return;
-    }
-    this.viewerRenderTimeout = setTimeout(() => {
-      this.viewerRenderTimeout = null;
-      this.viewer!.scene.requestRender();
-    }) as unknown as number;
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -506,7 +314,7 @@ export class NgmApp extends LitElementI18n {
         (<HTMLElement>(
           document.querySelector('.ngm-cam-lock-info')
         ))?.parentElement?.remove();
-      } else if (this.camConfigElement.lockType) {
+      } else if (this.camConfigElement?.lockType) {
         let message = '';
         switch (this.camConfigElement.lockType) {
           case 'angle':
@@ -527,7 +335,7 @@ export class NgmApp extends LitElementI18n {
           class: 'ngm-cam-lock-info',
           actions: [
             {
-              text: i18next.t('app_cancel_btn_label'),
+              text: i18next.t('cancel'),
               click: () => this.camConfigElement.disableLock(),
             },
           ],
@@ -554,21 +362,6 @@ export class NgmApp extends LitElementI18n {
     super.updated(changedProperties);
   }
 
-  private updateBaseMapTranslucency(
-    opacity: number,
-    hasAlphaChannel: boolean,
-  ): void {
-    const { translucency } = this.viewer!.scene.globe;
-    translucency.frontFaceAlpha = opacity;
-    if (opacity === 1) {
-      translucency.enabled = hasAlphaChannel;
-      translucency.backFaceAlpha = 1;
-    } else {
-      translucency.backFaceAlpha = 0;
-      translucency.enabled = true;
-    }
-  }
-
   showSlowLoadingWindow() {
     const timeout = 10000;
     if (this.loading && performance.now() > timeout) {
@@ -585,9 +378,11 @@ export class NgmApp extends LitElementI18n {
     }
   }
 
-  setResolutionScale() {
-    if (!this.viewer) return;
-    const viewer = this.viewer;
+  setResolutionScale(viewer?: Viewer) {
+    viewer ??= this.cesiumService.viewerOrNull ?? undefined;
+    if (viewer === undefined) {
+      return;
+    }
     const frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
     const scaleDownFps = 20;
     const scaleUpFps = 30;
@@ -657,8 +452,7 @@ export class NgmApp extends LitElementI18n {
             <div class="logo-text visible-mobile">swissgeol</div>
           </a>
           <ngm-navigation-search
-            .viewer="${this.viewer}"
-            .sidebar="${this.sidebar}"
+            .viewer="${this.cesiumService.viewerOrNull}"
           ></ngm-navigation-search>
         </div>
         <ngm-layout-header-actions></ngm-layout-header-actions>
@@ -681,35 +475,39 @@ export class NgmApp extends LitElementI18n {
             >
           </div>
         </div>
-        <ngm-side-bar
-          .mobileView=${this.mobileView}
-          @showLayerLegend=${this.onShowLayerLegend}
-          @showVoxelFilter=${this.onShowVoxelFilter}
-          @showWmtsDatePicker=${this.onShowWmtsDatePicker}
-          @toggleDebugTools=${(evt) => {
-            this.showCesiumToolbar = evt.detail.active;
-          }}
-        >
-        </ngm-side-bar>
+        ${until(
+          this.cesiumService.ready.then(
+            () => html`<ngm-layout-sidebar></ngm-layout-sidebar> `,
+          ),
+        )}
         <div class="map" oncontextmenu="return false;">
           <div id="cesium">
             <ngm-slow-loading style="display: none;"></ngm-slow-loading>
-            <ngm-geometry-info class="ngm-floating-window"></ngm-geometry-info>
-            <ngm-topo-profile-modal
-              class="ngm-floating-window"
-            ></ngm-topo-profile-modal>
-            <ngm-nav-tools
-              class="ngm-floating-window"
-              .showCamConfig=${this.showCamConfig}
-              @togglecamconfig=${() =>
-                (this.showCamConfig = !this.showCamConfig)}
-              @axisstate=${(evt) => (this.showAxisOnMap = evt.detail.showAxis)}
-            >
-            </ngm-nav-tools>
+            ${until(
+              this.cesiumService.ready.then(
+                () => html`
+                  <ngm-geometry-info
+                    class="ngm-floating-window"
+                  ></ngm-geometry-info>
+                  <ngm-topo-profile-modal
+                    class="ngm-floating-window"
+                  ></ngm-topo-profile-modal>
+                  <ngm-nav-tools
+                    class="ngm-floating-window"
+                    .showCamConfig=${this.showCamConfig}
+                    @togglecamconfig=${() =>
+                      (this.showCamConfig = !this.showCamConfig)}
+                    @axisstate=${(evt) =>
+                      (this.showAxisOnMap = evt.detail.showAxis)}
+                  >
+                  </ngm-nav-tools>
+                `,
+              ),
+            )}
             <ngm-cam-configuration
               class="ngm-floating-window"
               .hidden=${!this.showCamConfig}
-              .viewer=${this.viewer}
+              .viewer=${this.cesiumService.viewerOrNull}
               @close=${() => (this.showCamConfig = false)}
             >
             </ngm-cam-configuration>
@@ -721,49 +519,30 @@ export class NgmApp extends LitElementI18n {
               @close=${() => (this.showProjectPopup = false)}
             >
             </ngm-project-popup>
-            ${[...this.legendConfigs].map((config) =>
-              config
-                ? html`
-                    <ngm-layer-legend
-                      class="ngm-floating-window"
-                      .config=${config}
-                      @close=${this.onCloseLayerLegend}
-                    ></ngm-layer-legend>
-                  `
-                : '',
+            ${until(
+              this.cesiumService.ready.then(
+                () => html`
+                  <ngm-coordinate-popup
+                    class="ngm-floating-window"
+                  ></ngm-coordinate-popup>
+                `,
+              ),
             )}
-            <ngm-voxel-filter
-              class="ngm-floating-window"
-              .viewer=${this.viewer}
-              hidden
-            ></ngm-voxel-filter>
-            <ngm-voxel-simple-filter
-              class="ngm-floating-window"
-              .viewer=${this.viewer}
-              hidden
-            ></ngm-voxel-simple-filter>
-            <ngm-coordinate-popup
-              class="ngm-floating-window"
-            ></ngm-coordinate-popup>
-            <ngm-wmts-date-picker
-              class="ngm-floating-window"
-            ></ngm-wmts-date-picker>
-            <div class="on-map-menu">
-              <cesium-view-cube
-                ?hidden=${this.mobileView || this.showAxisOnMap}
-                .scene="${this.viewer?.scene}"
-              ></cesium-view-cube>
 
+            <div class="on-map-menu">
               <ngm-map-chooser
                 .hidden=${this.mobileView}
                 class="ngm-bg-chooser-map"
                 .initiallyOpened=${false}
               ></ngm-map-chooser>
             </div>
+
+            <ngm-ogc-queue></ngm-ogc-queue>
           </div>
-          ${this.showCesiumToolbar
-            ? html` <cesium-toolbar></cesium-toolbar>`
-            : ''}
+          ${when(
+            this.showCesiumToolbar,
+            () => html`<cesium-toolbar></cesium-toolbar>`,
+          )}
         </div>
       </main>
     `;

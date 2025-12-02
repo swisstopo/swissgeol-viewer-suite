@@ -18,7 +18,6 @@ import $ from 'jquery';
 import { DEFAULT_PROJECT_COLOR } from 'src/constants';
 import './ngm-project-geoms-section';
 import './ngm-project-assets-section';
-import '../ngm-confirmation-modal';
 import './ngm-project-members-section';
 import { isProject } from './helpers';
 import { NgmConfirmationModal } from '../ngm-confirmation-modal';
@@ -199,9 +198,10 @@ export class NgmProjectTopicOverview extends LitElementI18n {
       ? `url('${this.topicOrProject.image}')`
       : 'none';
     const editorEmails = project?.editors?.map((m) => m.email) || [];
-    const isProjectModerator = [ownerEmail, ...editorEmails].includes(
-      this.userEmail,
-    );
+    const isProjectModerator = [
+      ownerEmail?.toLowerCase(),
+      ...editorEmails.map((mail) => mail.toLowerCase()),
+    ].includes(this.userEmail.toLowerCase());
 
     return html`
       <ngm-confirmation-modal

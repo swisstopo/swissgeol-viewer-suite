@@ -1,23 +1,7 @@
-services:
-  api:
-    image: swissgeol-viewer-suite/api:local
-    build:
-      context: ./api
-      dockerfile: DockerfileDev
-    init: true
-    ports:
-      - "8480:3000"
-    volumes:
-      - ./api:/app
-      - api.cargo:/usr/local/cargo
-      - api.target:/app/target
-    depends_on:
-      - db
-      - minio
-    env_file:
-      - ./api/.env
-      - .env
+include:
+  - api/docker-compose.yml
 
+services:
   ui:
     image: swissgeol-viewer-suite/ui:local
     build:
@@ -40,24 +24,6 @@ services:
     tmpfs:
       - /app/ui/dist
 
-  minio:
-    image: minio/minio:latest
-    command: server /data --console-address :9001
-    init: true
-    volumes:
-      - minio:/data
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_BROWSER: "on"
-      MINIO_SITE_REGION: ${S3_AWS_REGION}
-      MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
-      MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
-    env_file:
-      - ./api/.env
-      - .env
-
   abbreviator:
     image: ghcr.io/swisstopo/swissgeol-viewer-app-abbreviator:main
     platform: linux/amd64
@@ -68,40 +34,19 @@ services:
       DATABASE_URL: "sqlite:///storage/local.db"
       HOST_WHITELIST: "localhost"
 
-  db:
-    image: camptocamp/postgres:14-postgis-3
-    platform: linux/amd64
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${PGUSER}
-      POSTGRES_PASSWORD: ${PGPASSWORD}
-      POSTGRES_DB: ${PGDATABASE}
-    volumes:
-      - db:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${PGUSER} -d ${PGDATABASE}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   titiler:
     image: swissgeol-viewer-app/titiler:local
     build:
-      context: ./titiler
-      dockerfile: Dockerfile
+     context: ./titiler
+     dockerfile: Dockerfile
     ports:
-      - "8481:8000"
+     - "8481:8000"
     environment:
-      TITILER_API_DEBUG: "1"
+     TITILER_API_DEBUG: "1"
     volumes:
-      - ./titiler:/app:ro
-    mem_limit: 10g
-    cpus: 2
+     - ./titiler:/app:ro
+    mem_limit: 2g
+    cpus: 1
 
 volumes:
-  minio:
-  db:
-  api.cargo:
-  api.target:
   ui.node_modules:

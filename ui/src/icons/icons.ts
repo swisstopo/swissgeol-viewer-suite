@@ -29,6 +29,7 @@ import { plusIcon } from 'src/icons/i_plus';
 import { documentationIcon } from 'src/icons/i_documentation';
 import { the2dDIcon } from 'src/icons/i_2d';
 import { the3dDIcon } from 'src/icons/i_3d';
+import { compassIcon } from 'src/icons/i_compass';
 
 export const icons = {
   '2d': the2dDIcon,
@@ -36,6 +37,7 @@ export const icons = {
   cesium: cesiumIcon,
   checkmark: checkmarkIcon,
   close: closeIcon,
+  compass: compassIcon,
   config: configIcon,
   documentation: documentationIcon,
   download: downloadIcon,

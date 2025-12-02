@@ -1,5 +1,4 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
-import { run } from '../../../../src/utils/fn.utils';
 
 Given(/^the search input is focused$/, () => {
   cy.get('ngm-navigation-search')
@@ -16,7 +15,7 @@ When(/^the query "([^"]*)" is entered$/, (query: string) => {
   cy.get('@searchInput').type(query);
 });
 Then(/^the results contain the "([^"]*)" layer$/, (layer: string) => {
-  cy.get('@searchResults')
+  cy.get('@searchResults', { timeout: 30_000 })
     .should('be.visible')
     .find(`li > [data-cy="${layer}"]`)
     .should('exist');
@@ -50,7 +49,7 @@ Then(/^the results contain all three item types in the correct order$/, () => {
       };
 
       $items.each((_i, item) => {
-        const category = run(() => {
+        const category = (() => {
           if (item.querySelector('.is-location') != null) {
             return 'location';
           }
@@ -58,7 +57,7 @@ Then(/^the results contain all three item types in the correct order$/, () => {
             return 'geoadmin';
           }
           return 'catalog';
-        });
+        })();
         remainingCategories.delete(category);
 
         // Still the same category, which is always valid.
@@ -73,7 +72,6 @@ Then(/^the results contain all three item types in the correct order$/, () => {
           return;
         }
 
-        console.log({ currentCategory, nextCategory });
         if (nextCategory === null) {
           expect(category).to.equal(currentCategory);
         } else {

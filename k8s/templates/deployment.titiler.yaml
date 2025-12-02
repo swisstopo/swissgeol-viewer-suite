@@ -26,6 +26,10 @@ spec:
         env:
         - name: CORS_ORIGINS
           value: {{ .Values.host }}
+        resources:
+          limits:
+            cpu: '1'
+            memory: '2Gi'
 
       imagePullSecrets:
       - name: {{ .Release.Namespace }}-registry

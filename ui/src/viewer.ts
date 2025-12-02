@@ -1,30 +1,23 @@
-import { MANTEL_COLOR, SWITZERLAND_RECTANGLE } from './constants';
+import { SWITZERLAND_RECTANGLE } from './constants';
 
 import NavigableVolumeLimiter from './NavigableVolumeLimiter';
-import LimitCameraHeightToDepth from './LimitCameraHeightToDepth';
 import KeyboardNavigation from './KeyboardNavigation.js';
 
 import {
   Cartesian3,
-  Cartesian4,
   CesiumInspector,
   CesiumTerrainProvider,
   Color,
   DirectionalLight,
-  Ellipsoid,
   ImageryLayer,
   Ion,
   IonResource,
-  JulianDate,
-  PostProcessStage,
   Rectangle,
   RequestScheduler,
   ScreenSpaceEventType,
-  SunLight,
   Viewer,
   WebGLOptions,
 } from 'cesium';
-import MainStore from './store/main';
 import { getExaggeration } from './permalink';
 
 window['CESIUM_BASE_URL'] = './cesium';
@@ -43,39 +36,6 @@ Object.assign(RequestScheduler.requestsByServer, {
 
 let hasNoLimit = false;
 
-const FOG_FRAGMENT_SHADER_SOURCE = `
-  float getDistance(sampler2D depthTexture, vec2 texCoords) {
-      float depth = czm_unpackDepth(texture(depthTexture, texCoords));
-      if (depth == 0.0) {
-          return czm_infinity;
-      }
-      vec4 eyeCoordinate = czm_windowToEyeCoordinates(gl_FragCoord.xy, depth);
-      return -eyeCoordinate.z / eyeCoordinate.w;
-  }
-  float interpolateByDistance(vec4 nearFarScalar, float distance) {
-      float startDistance = nearFarScalar.x;
-      float startValue = nearFarScalar.y;
-      float endDistance = nearFarScalar.z;
-      float endValue = nearFarScalar.w;
-      float t = clamp((distance - startDistance) / (endDistance - startDistance), 0.0, 1.0);
-      return mix(startValue, endValue, t);
-  }
-  vec4 alphaBlend(vec4 sourceColor, vec4 destinationColor) {
-      return sourceColor * vec4(sourceColor.aaa, 1.0) + destinationColor * (1.0 - sourceColor.a);
-  }
-  uniform sampler2D colorTexture;
-  uniform sampler2D depthTexture;
-  uniform vec4 fogByDistance;
-  uniform vec4 fogColor;
-  in vec2 v_textureCoordinates;
-  void main(void) {
-      float distance = getDistance(depthTexture, v_textureCoordinates);
-      vec4 sceneColor = texture(colorTexture, v_textureCoordinates);
-      float blendAmount = interpolateByDistance(fogByDistance, distance);
-      vec4 finalFogColor = vec4(fogColor.rgb, fogColor.a * blendAmount);
-      out_FragColor = alphaBlend(finalFogColor, sceneColor);
-  }`;
-
 interface EmptyLayer {
   layer: { show: boolean };
 }
@@ -89,10 +49,7 @@ export interface BaseLayerConfig {
   hasAlphaChannel?: boolean;
 }
 
-export async function setupViewer(
-  container: Element,
-  rethrowRenderErrors: boolean,
-) {
+export async function setupViewer(container: Element) {
   const searchParams = new URLSearchParams(location.search);
 
   const zExaggeration = getExaggeration();
@@ -132,7 +89,7 @@ export async function setupViewer(
   };
   const viewer = new Viewer(container, {
     contextOptions: contextOptions,
-    showRenderLoopErrors: rethrowRenderErrors,
+    showRenderLoopErrors: false,
     animation: false,
     baseLayerPicker: false,
     fullscreenButton: false,
@@ -154,8 +111,23 @@ export async function setupViewer(
     // maximumRenderTimeChange: 10,
   });
 
+  // Print errors to console.
+  // Might be a good idea to create an alert for this at some point,
+  // as these errors can break the viewer.
+  viewer.scene.renderError.addEventListener((_scene, error) => {
+    console.error(String(error));
+    viewer.scene.requestRender();
+  });
+
+  viewer.scene.postProcessStages.ambientOcclusion.enabled = false;
+
   const scene = viewer.scene;
-  scene.rethrowRenderErrors = rethrowRenderErrors;
+
+  // Hide underground fog.
+  scene.fog.enabled = false;
+  scene.globe.showGroundAtmosphere = false;
+
+  scene.rethrowRenderErrors = false;
   // remove the default behaviour of calling 'zoomTo' on the double clicked entity
   viewer.screenSpaceEventHandler.removeInputAction(
     ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
@@ -173,44 +145,23 @@ export async function setupViewer(
     globe.cartographicLimitRectangle = rectangle;
   }
 
-  // Position the sun the that shadows look nice
-  let sunDate = new Date('2018-06-21T10:00:00.000Z');
-  if (searchParams.has('date')) {
-    const betterDate = new Date(searchParams.get('date') ?? '');
-    if (Number.isNaN(betterDate.getDate())) {
-      console.error(`Provided date is wrong: ${searchParams.get('date')}`);
-    } else {
-      sunDate = betterDate;
-    }
-  }
-  viewer.clock.currentTime = JulianDate.fromDate(sunDate);
+  // Disable underground fog.
+  viewer.scene.fog.enabled = false;
 
-  if (searchParams.has('light')) {
-    const p = searchParams.get('light')?.split('-').map(parseFloat) as number[];
-    scene.light = new DirectionalLight({
-      direction: new Cartesian3(p[0], p[1], p[2]),
-      color: Color.WHITE,
-      intensity: p[3],
-    });
-  } else {
-    // Use sun lighting above ground
-    const sunLight = new SunLight();
-    // Define a flashlight for viewing underground
-    const flashlight = new DirectionalLight({
-      direction: scene.camera.directionWC,
-    });
-    scene.preRender.addEventListener((scene) => {
-      if (scene.cameraUnderground) {
-        flashlight.direction = Cartesian3.clone(
-          scene.camera.directionWC,
-          flashlight.direction,
-        );
-        scene.light = flashlight;
-      } else {
-        scene.light = sunLight;
-      }
-    });
-  }
+  // Create a directional light aligned with the camera.
+  const light = new DirectionalLight({
+    direction: Cartesian3.clone(scene.camera.directionWC),
+    intensity: 2,
+  });
+  scene.light = light;
+
+  // Update the light position when the camera moves.
+  scene.preRender.addEventListener(() => {
+    light.direction = Cartesian3.clone(
+      scene.camera.directionWC,
+      light.direction,
+    );
+  });
 
   // Limit the volume inside which the user can navigate
   if (!hasNoLimit) {
@@ -234,20 +185,6 @@ export async function setupViewer(
   globe.undergroundColorAlphaByDistance.nearValue = 0.5;
   globe.undergroundColorAlphaByDistance.farValue = 0.0;
 
-  const fog = new PostProcessStage({
-    fragmentShader: FOG_FRAGMENT_SHADER_SOURCE,
-    uniforms: {
-      fogByDistance: new Cartesian4(10000, 0.0, 150000, 0.3),
-      fogColor: Color.BLACK,
-    },
-    name: 'fog',
-  });
-
-  viewer.scene.postProcessStages.add(fog);
-  scene.postRender.addEventListener((scene) => {
-    fog.enabled = scene.cameraUnderground;
-  });
-
   const shouldEnableWireframe = searchParams.has('inspector_wireframe');
   if (searchParams.has('inspector') || shouldEnableWireframe) {
     const div = document.createElement('div');
@@ -259,60 +196,6 @@ export async function setupViewer(
       inspector.viewModel.wireframe = true;
     }
   }
+
   return viewer;
-}
-
-export function addMantelEllipsoid(viewer: Viewer) {
-  // Add Mantel ellipsoid
-  const earthRadii = Ellipsoid.WGS84.radii.clone();
-  const mantelDepth = 30000; // See https://jira.camptocamp.com/browse/GSNGM-34
-  const mantelRadii = earthRadii.clone();
-  mantelRadii.x -= mantelDepth;
-  mantelRadii.y -= mantelDepth;
-  mantelRadii.z -= mantelDepth;
-
-  const entity = viewer.entities.add({
-    position: new Cartesian3(1, 1, 1), // small shift to avoid invertable error
-    ellipsoid: {
-      radii: mantelRadii,
-      material: MANTEL_COLOR,
-    },
-  });
-
-  if (!hasNoLimit) {
-    new LimitCameraHeightToDepth(viewer.scene, mantelDepth);
-  }
-
-  // hacky way to show mantel also above the terrain.
-  // for some reason object placed below 21km doesn't show when the camera above the terrain. distanceDisplayCondition doesn't resolve the issue.
-  const mantelDepthAboveTerrain = 21000;
-  const mantelRadiiAboveTerrain = earthRadii.clone();
-  mantelRadiiAboveTerrain.x -= mantelDepthAboveTerrain;
-  mantelRadiiAboveTerrain.y -= mantelDepthAboveTerrain;
-  mantelRadiiAboveTerrain.z -= mantelDepthAboveTerrain;
-
-  let hasUsedUndergroundValue = !viewer.scene.cameraUnderground;
-  viewer.scene.postRender.addEventListener((scene) => {
-    if (!entity.ellipsoid) return;
-    const isVoxelVisible = MainStore.visibleVoxelLayers.length > 0;
-    const exaggeration = getExaggeration();
-    if ((exaggeration > 1 || isVoxelVisible) && entity.isShowing) {
-      entity.show = false;
-      viewer.scene.requestRender();
-    } else if (exaggeration === 1 && !isVoxelVisible && !entity.isShowing) {
-      entity.show = true;
-      viewer.scene.requestRender();
-    }
-    if (scene.cameraUnderground && !hasUsedUndergroundValue) {
-      (<any>entity.ellipsoid.radii) = mantelRadii;
-      hasUsedUndergroundValue = true;
-      if (!Color.equals(scene.backgroundColor, Color.TRANSPARENT))
-        scene.backgroundColor = Color.TRANSPARENT;
-    } else if (!scene.cameraUnderground && hasUsedUndergroundValue) {
-      (<any>entity.ellipsoid.radii) = mantelRadiiAboveTerrain;
-      hasUsedUndergroundValue = false;
-      if (isVoxelVisible && !Color.equals(scene.backgroundColor, MANTEL_COLOR))
-        scene.backgroundColor = MANTEL_COLOR;
-    }
-  });
 }

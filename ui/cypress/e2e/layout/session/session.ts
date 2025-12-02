@@ -3,7 +3,7 @@ import { Role } from '@swissgeol/ui-core';
 import { filter, firstValueFrom } from 'rxjs';
 
 const getSessionService = (): Cypress.Chainable<any> =>
-  cy.get('ngm-side-bar').then((sideBar$) => {
+  cy.get('ngm-session').then((sideBar$) => {
     const { sessionService } = sideBar$[0] as unknown as {
       sessionService: any;
     };
@@ -71,7 +71,21 @@ When(/^the user clicks on the session button$/, () => {
 
 Then(/^the user is redirected to the external eIAM login page$/, () => {
   cy.origin('https://feds-r.eiam.admin.ch', () => {
-    cy.location('pathname').should('match', new RegExp('^/app/home/.+'));
+    // Click #continueButton if it exists.
+    // That button can appear if a maintenance message is in place.
+    // Note that we need to wait here for a short while so that the continue button has time to render.
+    cy.wait(1_000);
+    cy.get('body', { timeout: 10_000 })
+      .then(($body) => {
+        const $btn = $body.find('#continueButton');
+        console.log($btn);
+        if ($btn.length) {
+          cy.wrap($btn).click();
+        }
+      })
+      .then(() => {
+        cy.location('pathname').should('match', new RegExp('^/app/home/.+'));
+      });
   });
 });
 
@@ -132,6 +146,7 @@ Then(/^signed in user's profile is loaded$/, () => {
   getSessionService().then((sessionService) => {
     cy.wrap(
       firstValueFrom(sessionService.token$.pipe(filter((it) => it != null))),
+      { timeout: 60_000 },
     ).then((token) => {
       expect(token).to.exist;
     });
@@ -203,6 +218,7 @@ Then(/^the user is signed out$/, () => {
   getSessionService().then((sessionService) => {
     cy.wrap(
       firstValueFrom(sessionService.token$.pipe(filter((it) => it === null))),
+      { timeout: 60_000 },
     ).then((token) => {
       expect(token).to.be.null;
     });

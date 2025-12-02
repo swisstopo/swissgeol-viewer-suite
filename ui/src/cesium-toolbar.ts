@@ -1,8 +1,9 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import MainStore from './store/main';
 import type { Event, Viewer } from 'cesium';
 import { Cartesian4, Color, FrameRateMonitor, ShadowMode } from 'cesium';
+import { consume } from '@lit/context';
+import { CesiumService } from 'src/services/cesium.service';
 
 @customElement('cesium-toolbar')
 export class CesiumToolbar extends LitElement {
@@ -68,13 +69,15 @@ export class CesiumToolbar extends LitElement {
   @state()
   accessor terrainShadowMode: ShadowMode = ShadowMode.ENABLED;
 
-  constructor() {
-    super();
-    MainStore.viewer.subscribe((viewer) => {
-      this.viewer = viewer;
-      if (viewer)
-        this.frameRateMonitor = FrameRateMonitor.fromScene(viewer.scene);
-    });
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.frameRateMonitor = FrameRateMonitor.fromScene(
+      this.cesiumService.viewer.scene,
+    );
   }
 
   protected updated(changedProperties) {

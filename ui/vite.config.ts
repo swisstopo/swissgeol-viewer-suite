@@ -34,6 +34,7 @@ export default defineConfig({
     },
     watch: {
       usePolling: true,
+      ignored: ['dist/**', 'cypress/**', 'node_modules/**'],
     },
     host: '0.0.0.0',
     port: 8000,
@@ -50,7 +51,45 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '^/aaretal/': {
+        target:
+          'https://download.swissgeol.ch/testvoxel/test20250919-Aaretal/2025-10-07/output/',
+        rewrite: (path) => path.replace(/^\/aaretal/, ''),
+        changeOrigin: true,
+        secure: false,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      },
+      '^/birr/': {
+        target:
+          'https://download.swissgeol.ch/testvoxel/test20250919-Birr/2025-09-17/output/',
+        rewrite: (path) => path.replace(/^\/birr/, ''),
+        changeOrigin: true,
+        secure: false,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      },
     },
+  },
+  optimizeDeps: {
+    include: [
+      'lit',
+      'i18next',
+      'i18next-http-backend',
+      'loc-i18next',
+      '@aws-sdk/client-s3',
+      '@aws-sdk/credential-provider-cognito-identity',
+      'fomantic-ui-css/components/dropdown.js',
+      'fomantic-ui-css/components/accordion.js',
+      'fomantic-ui-css/components/toast.js',
+      'fomantic-ui-css/components/transition.js',
+      'fomantic-ui-css/components/dimmer.js',
+      'fomantic-ui-css/components/modal.js',
+      'fomantic-ui-css/components/popup.js',
+      'fomantic-ui-css/components/checkbox.js',
+    ],
   },
   plugins: [
     process.env.ANALYZE === 'true' ? analyzer({ analyzerPort: 8883 }) : null,

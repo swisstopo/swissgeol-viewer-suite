@@ -1,0 +1,8 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Release.Name }}-titiler-middleware-cors
+  namespace: {{ .Release.Namespace }}
+spec:
+  headers:
+    accessControlAllowOrigin: "{{ .Values.ui.host }}"

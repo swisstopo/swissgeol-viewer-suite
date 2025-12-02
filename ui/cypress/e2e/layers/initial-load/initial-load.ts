@@ -3,7 +3,7 @@ import { Then } from '@badeball/cypress-cucumber-preprocessor';
 Then(
   /^the data displayed panel shows the grey topographic background map$/,
   () => {
-    cy.get('ngm-layer-display-list-item:not([data-id])')
+    cy.get('ngm-catalog-display-list-item[data-cy="background"]')
       .first()
       .as('layer-item')
       .should('be.visible')
@@ -17,7 +17,7 @@ Then(
       .shadow()
       .find('ngm-background-layer-item[active]')
       .should('have.length', 1)
-      .should('have.attr', 'data-layer', 'ch.swisstopo.pixelkarte-grau');
+      .should('have.attr', 'data-cy', 'ch.swisstopo.pixelkarte-grau');
   },
 );
 

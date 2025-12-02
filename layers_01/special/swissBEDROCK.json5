@@ -1,0 +1,215 @@
+{
+  layers: [
+    {
+      // Layer Top Bedrock Geotiff
+      type: 'Tiff',
+      id: 'ch.swisstopo.swissbedrock-geotiff',
+      source:  {
+        type: 'Url',
+        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+      },
+      opacity: 0.5,
+      download_url: {
+        de: 'https://www.swisstopo.admin.ch/de/swissbedrock-de',
+        en: 'https://www.swisstopo.admin.ch/en/swissbedrock-en',
+        fr: 'https://www.swisstopo.admin.ch/fr/swissbedrock-fr',
+        it: 'https://www.swisstopo.admin.ch/it/swissbedrock-it',
+      },
+      geocat_id: 'f7836146-3f9a-4807-9011-618800409236',
+      cell_size: 10,
+      bands: [
+        {
+          index: 1,
+          name: 'BEM',
+          unit: 'MetersAboveSeaLevel',
+          display: 'BEM',
+        },
+        {
+          index: 2,
+          name: 'TMUD',
+          unit: 'Meters',
+          display: 'TMUD',
+        },
+        {
+          index: 3,
+          name: 'Uncertainty',
+          unit: 'Meters',
+          display: 'Uncertainty'
+        },
+        {
+          index: 4,
+          name: 'Version',
+          display: {
+            bounds: [221104, 250519],
+            color_map: 'swissBEDROCK_Version',
+            is_discrete: true,
+          },
+        },
+        {
+          index: 5,
+          name: 'Author',
+          display: 'Author',
+        },
+        {
+          index: 6,
+          name: 'Change',
+          unit: 'Meters',
+          display: {
+            bounds: [-30, 30],
+            color_map: 'swissBEDROCK_Change'
+          },
+        },
+        {
+          index: 7,
+          name: 'prev_BEM',
+          unit: 'MetersAboveSeaLevel',
+          display: 'BEM'
+        },
+        {
+          index: 8,
+          name: 'prev_TMUD',
+          unit: 'Meters',
+          display: 'TMUD',
+        },
+        {
+          index: 9,
+          name: 'prev_Uncertainty',
+          unit: 'Meters',
+          display: 'Uncertainty',
+        },
+        {
+          index: 10,
+          name: 'prev_Version',
+        },
+        {
+          index: 11,
+          name: 'prev_Author',
+          display: 'Author',
+        }
+      ],
+    },
+
+    {
+      // Layer Top Bedrock Geotiff with Terrain
+      type: 'Tiff',
+      id: 'ch.swisstopo.swissbedrock-geotiff-with-terrain',
+      source:  {
+        type: 'Url',
+        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+      },
+      terrain: {
+        type: 'CesiumIon',
+        asset_id: 3914142,
+      },
+      opacity: 0.5,
+      download_url: {
+        de: 'https://www.swisstopo.admin.ch/de/swissbedrock-de',
+        en: 'https://www.swisstopo.admin.ch/en/swissbedrock-en',
+        fr: 'https://www.swisstopo.admin.ch/fr/swissbedrock-fr',
+        it: 'https://www.swisstopo.admin.ch/it/swissbedrock-it',
+      },
+      geocat_id: 'f7836146-3f9a-4807-9011-618800409236',
+      cell_size: 10,
+      bands: [
+        {
+          index: 1,
+          name: 'BEM',
+          unit: 'MetersAboveSeaLevel',
+          display: 'BEM',
+        },
+        {
+          index: 2,
+          name: 'TMUD',
+          unit: 'Meters',
+          display: 'TMUD',
+        },
+        {
+          index: 3,
+          name: 'Uncertainty',
+          unit: 'Meters',
+          display: 'Uncertainty'
+        },
+        {
+          index: 4,
+          name: 'Version',
+          display: {
+            bounds: [221104, 250519],
+            color_map: 'swissBEDROCK_Version',
+            is_discrete: true,
+          },
+        },
+        {
+          index: 5,
+          name: 'Author',
+          display: 'Author',
+        },
+        {
+          index: 6,
+          name: 'Change',
+          unit: 'Meters',
+          display: {
+            bounds: [-30, 30],
+            color_map: 'swissBEDROCK_Change'
+          },
+        },
+        {
+          index: 7,
+          name: 'prev_BEM',
+          unit: 'MetersAboveSeaLevel',
+          display: 'BEM'
+        },
+        {
+          index: 8,
+          name: 'prev_TMUD',
+          unit: 'Meters',
+          display: 'TMUD',
+        },
+        {
+          index: 9,
+          name: 'prev_Uncertainty',
+          unit: 'Meters',
+          display: 'Uncertainty',
+        },
+        {
+          index: 10,
+          name: 'prev_Version',
+        },
+        {
+          index: 11,
+          name: 'prev_Author',
+          display: 'Author',
+        }
+      ],
+    }
+  ],
+  'tiff_displays': {
+    TMUD: {
+      bounds: [-1, 800],
+      no_data: 0,
+      color_map: 'swissBEDROCK_TMUD',
+      steps: [3, 10, 50, 100, 200, 800],
+    },
+    BEM: {
+      bounds: [4535, -433],
+      color_map: 'swissBEDROCK_BEM',
+      steps: [
+        { value: -400, label: '<-400' },
+        500,
+        1000,
+        2500,
+        3000,
+        { value: 4500, label: '>4500' }
+      ],
+    },
+    Author: {
+      bounds: [1, 6],
+      color_map: 'swissBEDROCK_Author',
+      steps: ['swisstopo', 'BE', 'GE', 'GLAMOS', 'VD', 'ZG'],
+      is_discrete: true,
+    },
+    Uncertainty: {
+      bounds: [0, 25],
+      color_map: 'swissBEDROCK_Uncertainty'
+    }
+  }
+}

@@ -8,7 +8,7 @@ Feature: Search
 
   Scenario: Search by full name
     When the query "Top Muschelkalk" is entered
-    Then the results contain the "top_muschelkalk" layer
+    Then the results contain the "top_mus" layer
 
   Scenario: Search by partial name
     When the query "Molasse" is entered

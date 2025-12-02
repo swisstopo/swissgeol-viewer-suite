@@ -1,9 +1,0 @@
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: {{ .Release.Name }}-titiler-middleware
-  namespace: {{ .Release.Namespace }}
-spec:
-  stripPrefix:
-    prefixes:
-      - /titiler

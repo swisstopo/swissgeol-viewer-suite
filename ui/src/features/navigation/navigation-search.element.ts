@@ -5,45 +5,35 @@ import { BBox, Feature, GeoJsonProperties } from 'geojson';
 
 import '@geoblocks/ga-search'; // <ga-search> component
 import {
-  getLayersConfig,
-  SwisstopoImageryLayersConfig,
-} from 'src/swisstopoImagery';
-import {
   Cartographic,
-  Entity as CesiumEntity,
+  JulianDate,
   Math as CesiumMath,
   Rectangle,
   Viewer as CesiumViewer,
+  Entity,
 } from 'cesium';
 import { lv95ToDegrees } from 'src/projection';
 import { escapeRegExp } from 'src/utils';
-import { extractEntitiesAttributes } from 'src/query/objectInformation';
-import {
-  flattenLayers,
-  getDefaultLayerTree,
-  LayerConfig,
-  LayerTreeNode,
-} from 'src/layertree';
 import NavToolsStore from 'src/store/navTools';
-import {
-  SearchLayer,
-  SearchLayerWithLayer,
-  SideBar,
-} from 'src/elements/ngm-side-bar';
 import { createRef, ref } from 'lit/directives/ref.js';
 import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { consume } from '@lit/context';
 import { CoreElement } from 'src/features/core';
 import { SessionService } from 'src/features/session';
+import {
+  getLayerLabel,
+  Layer,
+  LayerService,
+  WmtsLayer,
+} from 'src/features/layer';
+import { Id, makeId } from 'src/models/id.model';
+import { WmtsService } from 'src/services/wmts.service';
 
 @customElement('ngm-navigation-search')
 export class NavigationSearch extends CoreElement {
   @property()
   private accessor viewer: CesiumViewer | null = null;
-
-  @property()
-  private accessor sidebar: SideBar | null = null;
 
   @consume({ context: clientConfigContext })
   accessor clientConfig!: ClientConfig;
@@ -51,10 +41,14 @@ export class NavigationSearch extends CoreElement {
   @consume({ context: SessionService.context() })
   accessor sessionService!: SessionService;
 
+  @consume({ context: LayerService.context() })
+  accessor layerService!: LayerService;
+
+  @consume({ context: WmtsService.context() })
+  accessor wmtsService!: WmtsService;
+
   @state()
   private accessor isActive = false;
-
-  private readonly catalogLayers = new Map<string, LayerTreeNode>();
 
   private lastQuery: RegExp | null = null;
 
@@ -74,32 +68,6 @@ export class NavigationSearch extends CoreElement {
   private accessor searchRef = createRef<HTMLElement>();
   private accessor inputRef = createRef<HTMLInputElement>();
   private accessor resultsRef = createRef<HTMLUListElement>();
-
-  private layerConfigs: SwisstopoImageryLayersConfig | null = null;
-
-  connectedCallback(): void {
-    super.connectedCallback();
-
-    this.initialize();
-  }
-
-  willChangeLanguage() {
-    this.initialize();
-  }
-
-  private initialize(): void {
-    getLayersConfig().then((layersConfig) => {
-      this.layerConfigs = layersConfig;
-    });
-
-    this.catalogLayers.clear();
-    for (const layer of flattenLayers(getDefaultLayerTree(this.clientConfig))) {
-      if (layer.layer == null) {
-        continue;
-      }
-      this.catalogLayers.set(layer.layer, layer);
-    }
-  }
 
   protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
@@ -142,18 +110,19 @@ export class NavigationSearch extends CoreElement {
    */
   private matchFeature(feature: Feature): boolean {
     if (feature.properties?.origin === 'layer') {
-      const layerName: string = feature.properties.layer;
+      const wmtsLayerId: Id<WmtsLayer> | null | undefined =
+        feature.properties.layer;
 
       // If the layer is not in the swisstopo layerConfigs, we don't show it.
       const hasLayerConfig =
-        layerName != null && this.layerConfigs?.[layerName] != null;
+        wmtsLayerId != null && this.wmtsService.exists(wmtsLayerId);
       if (!hasLayerConfig) {
         return false;
       }
 
       // Filter out layers that are also in our catalog.
       // These should be included as additional items, not as WMTS layers.
-      if (this.catalogLayers.has(layerName)) {
+      if (this.layerService.hasLayer(wmtsLayerId)) {
         return false;
       }
     }
@@ -213,7 +182,7 @@ export class NavigationSearch extends CoreElement {
     for (let i = 0, ii = dataSources.length; i < ii; i++) {
       const dataSource = dataSources.get(i);
       dataSource.entities.values.forEach((entity) => {
-        const attributes = extractEntitiesAttributes(entity);
+        const attributes = extractEntitiesAttributes(entity) as any;
         if (attributes && query.test(attributes.EventLocationName)) {
           results.push({
             entity: entity,
@@ -227,15 +196,11 @@ export class NavigationSearch extends CoreElement {
   }
 
   private searchAdditionalItemsByCatalog(query: RegExp): AdditionalItem[] {
-    const user = this.sessionService.user;
     const results: AdditionalItem[] = [];
-    for (const layer of this.catalogLayers.values()) {
-      const label = i18next.t(layer.label);
-      const hasMatched =
-        (!layer.restricted?.length ||
-          layer.restricted.some((g) => user?.groups.includes(g))) &&
-        query.test(label);
-
+    for (const layerId of this.layerService.layerIds) {
+      const layer = this.layerService.layer(layerId);
+      const label = getLayerLabel(layer);
+      const hasMatched = query.test(label);
       if (hasMatched) {
         results.push({
           ...layer,
@@ -278,21 +243,16 @@ export class NavigationSearch extends CoreElement {
   }
 
   private selectLayerFromGeoadmin(feature: Feature): void {
-    if (this.sidebar == null) {
-      return;
-    }
-    this.sidebar.addLayerFromSearch(feature.properties as SearchLayer).then();
+    const layerId = makeId<WmtsLayer>(feature.properties!.layer);
+    this.layerService.activateCustomLayerFromWmts(layerId);
   }
 
-  private selectLayerFromCatalog(item: EntityItem | LayerTreeNode): void {
-    if (this.sidebar == null) {
-      return;
-    }
+  private selectLayerFromCatalog(item: EntityItem | Layer): void {
     NavToolsStore.hideTargetPoint();
-    const layer = isEntityItem(item) ? item : (item as SearchLayerWithLayer);
-    this.sidebar.addLayerFromSearch(layer).then();
-    if (this.viewer != null && isEntityItem(item)) {
-      this.viewer.zoomTo(item.entity).then();
+    if (isEntityItem(item)) {
+      this.viewer?.zoomTo(item.entity).then();
+    } else {
+      this.layerService.activate(item.id);
     }
   }
 
@@ -440,9 +400,10 @@ export class NavigationSearch extends CoreElement {
       item.properties != null &&
       'layer' in item.properties
     ) {
-      const layer = this.catalogLayers.get(item.properties.layer);
-      if (layer !== undefined) {
-        label = i18next.t(layer.label);
+      const layerId = item.properties.layer as Id<Layer>;
+      const layer = this.layerService.layerOrNull(layerId);
+      if (layer !== null) {
+        label = getLayerLabel(layer);
       }
     }
     const categorizedItem = categorizeSearchItem(item);
@@ -450,7 +411,7 @@ export class NavigationSearch extends CoreElement {
     const className = `is-${categorizedItem.category.toLocaleLowerCase()}`;
     const name =
       categorizedItem.category === SearchItemCategory.LayerFromCatalog
-        ? `<b class="${className}" data-cy="${(item as unknown as { result: LayerConfig }).result.layer}">${label}</b>`
+        ? `<b class="${className}" data-cy="${(item as unknown as { result: Layer }).result.id}">${label}</b>`
         : `<b class="${className}">${label}</b>`;
     return `<img src='/images/${icon}.svg' alt=""/>${name}`;
   }
@@ -687,7 +648,7 @@ interface FeatureWithLocation extends Feature {
  * `AdditionalItem` represents custom objects
  * that are added to the default search results.
  */
-type AdditionalItem = LayerTreeNode | CoordinateItem | EntityItem;
+type AdditionalItem = Layer | CoordinateItem | EntityItem;
 
 interface CoordinateItem {
   label: string;
@@ -697,7 +658,7 @@ interface CoordinateItem {
 
 interface EntityItem {
   label: string;
-  entity: CesiumEntity;
+  entity: Entity;
   dataSourceName: string;
 }
 
@@ -724,7 +685,7 @@ type CategorizedSearchItem =
     }
   | {
       category: SearchItemCategory.LayerFromCatalog;
-      item: EntityItem | LayerTreeNode;
+      item: EntityItem | Layer;
     };
 
 const isFeature = (item: SearchItem): item is Feature =>
@@ -737,9 +698,6 @@ const isFeatureWithLocation = (item: Feature): item is FeatureWithLocation =>
 
 const isCoordinateItem = (item: SearchItem): item is CoordinateItem =>
   'origin' in item && item.origin === 'coordinates';
-
-const isEntityItem = (item: SearchItem): item is EntityItem =>
-  'entity' in item && item.entity instanceof CesiumEntity;
 
 /**
  * The format used for individual coordinate values.
@@ -770,4 +728,17 @@ const getIconForCategory = (category: SearchItemCategory): string => {
     case SearchItemCategory.LayerFromCatalog:
       return 'i_extrusion';
   }
+};
+
+const isEntityItem = (item: SearchItem): item is EntityItem =>
+  'entity' in item && item.entity instanceof Entity;
+
+const extractEntitiesAttributes = (entity: Entity): object | null => {
+  if (!entity.properties) {
+    return null;
+  }
+  return {
+    id: entity.id,
+    ...entity.properties.getValue(JulianDate.fromDate(new Date())),
+  };
 };

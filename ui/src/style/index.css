@@ -29,17 +29,13 @@
 @import "fomantic-ui-css/components/header.css";
 @import "fomantic-ui-css/components/card.css";
 
-@import "search.css";
 @import "ngm-modal.css";
 @import "keyboard-navigation.css";
-@import "layers.css";
 @import "ngm-map-configuration.css";
 @import "ngm-point-edit.css";
 @import "ngm-position-edit.css";
 @import "ngm-map-chooser.css";
-@import "ngm-layer-legend.css";
 @import "icons.css";
-@import "ngm-side-bar.css";
 @import "ngm-nav-tools.css";
 @import "ngm-minimap.css";
 @import "header.css";
@@ -54,8 +50,6 @@
 @import "ngm-dashboard.css";
 @import "ngm-action-list-item.css";
 @import "topographic-profile.css";
-@import "ngm-voxel-filter.css";
-@import "ngm-voxel-simple-filter.css";
 @import "ngm-coordinate-popup.css";
 @import "ngm-ion-modal.css";
 @import "../styles/index.css";
@@ -166,11 +160,6 @@ ngm-app-boot {
 
 .map .footer .ui.list .item {
   vertical-align: middle;
-}
-
-cesium-view-cube {
-  --cesium-view-cube-stroke-color: transparent;
-  --cesium-view-cube-fill-color: transparent;
 }
 
 #cesium {
@@ -620,10 +609,6 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   opacity: 0.5;
 }
 
-ngm-wmts-date-picker {
-  width: 250px;
-}
-
 .ngm-date-picker {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -632,4 +617,8 @@ ngm-wmts-date-picker {
   max-height: 300px;
   overflow: auto;
   padding: 10px;
+}
+
+.ngm-core-window-container {
+  position: absolute;
 }

@@ -13,35 +13,48 @@ import type { BBox } from '../slicer/helper';
 import type { Cartesian3, CustomDataSource } from 'cesium';
 import type { NgmGeometry } from './interfaces';
 import { flyToGeom, hideVolume, updateEntityVolume } from './helpers';
-import MainStore from '../store/main';
 import { skip } from 'rxjs';
 import DrawStore from '../store/draw';
 import NavToolsStore from '../store/navTools';
 import { DrawInfo } from '../draw/CesiumDraw';
 import './ngm-line-info';
+import { CesiumService } from 'src/services/cesium.service';
+import { consume } from '@lit/context';
 
 @customElement('ngm-slicer')
 export class NgmSlicer extends LitElementI18n {
   @property({ type: Object })
   accessor geometriesDataSource: CustomDataSource | undefined;
+
   @property({ type: Object })
   accessor noEditGeometriesDataSource: CustomDataSource | undefined;
+
   @property({ type: Boolean })
   accessor hidden = true;
+
   @state()
   accessor slicer: Slicer | null = null;
+
   @state()
   accessor showBox = true;
+
   @state()
   accessor negateSlice = false;
+
   @state()
   accessor editingEnabled = false;
+
   @state()
   accessor lineInfo: DrawInfo | undefined;
+
   private sliceGeomId: string | undefined;
+
   private sliceInfo:
     | { slicePoints: Cartesian3[]; height?: number; lowerLimit?: number }
     | undefined;
+
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
 
   constructor() {
     super();
@@ -169,7 +182,8 @@ export class NgmSlicer extends LitElementI18n {
       }
       const entity = this.getEntity(geom.id!);
       if (!entity) return;
-      !isGeometryInViewport(MainStore.viewerValue!, geom.positions) &&
+      const { viewer } = this.cesiumService;
+      !isGeometryInViewport(viewer, geom.positions) &&
         this.flyToSlicingGeom(entity);
       entity!.show = false;
       this.sliceGeomId = geom.id;
@@ -202,7 +216,8 @@ export class NgmSlicer extends LitElementI18n {
     if (geom.type === 'rectangle') {
       entity.polygon!.hierarchy = <any>{ positions };
       entity.properties!.volumeHeightLimits = { lowerLimit, height };
-      updateEntityVolume(entity, MainStore.viewerValue!.scene.globe);
+      const { viewer } = this.cesiumService;
+      updateEntityVolume(entity, viewer.scene.globe);
       hideVolume(entity);
     }
     entity.show = true;
@@ -244,8 +259,8 @@ export class NgmSlicer extends LitElementI18n {
 
   flyToSlicingGeom(entity) {
     NavToolsStore.hideTargetPoint();
-    const scene = MainStore.viewerValue!.scene;
-    flyToGeom(scene, entity, -(Math.PI / 4), 2);
+    const { viewer } = this.cesiumService;
+    flyToGeom(viewer.scene, entity, -(Math.PI / 4), 2);
   }
 
   get sceneSlicingActive() {

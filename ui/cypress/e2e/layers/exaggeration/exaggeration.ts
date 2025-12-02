@@ -1,21 +1,21 @@
 import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
 
 When(/^the settings tab is selected$/, () => {
-  cy.get('ngm-layer-tabs').shadow().find('button[data-cy="options"]').click();
-  cy.get('ngm-layer-tabs')
+  cy.get('ngm-catalog-tabs').shadow().find('button[data-cy="Options"]').click();
+  cy.get('ngm-catalog-tabs')
     .shadow()
-    .find('div[data-cy="options"]')
+    .find('ngm-catalog-settings')
     .should('be.visible');
 });
 
 Then(/^the exaggeration slider is shown$/, () => {
-  cy.get('ngm-layer-options')
+  cy.get('ngm-catalog-tabs')
     .shadow()
     .find('ngm-core-slider[data-cy="exaggeration-slider"]')
     .should('be.visible');
 });
 Then(/^the exaggeration is at a factor of (.+)x$/, (factor: string) => {
-  cy.get('ngm-layer-options')
+  cy.get('ngm-catalog-tabs')
     .shadow()
     .find('ngm-core-chip[data-cy="exaggeration-factor"]')
     .should('have.text', `${factor}x`);

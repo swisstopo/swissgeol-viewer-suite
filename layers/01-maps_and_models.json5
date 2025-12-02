@@ -1,0 +1,148 @@
+{
+  include:[
+    'consolidated_rocks',
+    'special/swissBEDROCK',
+    'special/voxels',
+  ],
+  layers: [
+    // Layer - GeoCover - Vector Datasets - WMTS
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-geocover',
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
+      legend: true,
+      access: {
+        env: ['local']
+      }
+    },
+
+    // Layer - Geological Atlas GA25 - WMTS
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-geologischer_atlas',
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '258814a5-8fcf-47df-b0c6-160602b0078c',
+      legend: true
+    },
+
+    // Layer - Lithology 500 - WMTS
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '435522fb-599e-41c0-a7c0-49d922ea6acf',
+      legend: true
+    },
+
+    // Layer - Geological profiles GA25 - WMTS
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-geologischer_atlas_profile',
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '345d02a3-9628-46d7-9e57-e0ab1d9faf8a',
+      legend: true
+    },
+
+    // Layer - Cross sections GeoMol
+    {
+      type: 'Tiles3d',
+      id: 'cross_section_geomol',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 452436,
+      },
+      geocat_id: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
+      download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Cross-Sections.zip',
+    },
+
+    // Layer - Cross sections GeoMol
+    {
+      type: 'Tiles3d',
+      id: 'cross_section_geoquat',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 472446,
+      },
+      order_of_properties: [
+        'CS-AAT-Cross-section',
+        'CS-AAT-Lithostratigraphy',
+        'CS-AAT-Type',
+        'CS-AAT-Legend',
+        'CS-AAT-Report',
+      ],
+      geocat_id: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
+    },
+
+    //  Layer - swissALTI3D multidirectional hillshade - WMTS
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.swissalti3d-reliefschattierung',
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '1964cc81-5298-460f-9228-41120315bea8',
+      legend: true
+    }
+  ],
+
+  groups: [
+    // Topic - Maps, cross-sections & models
+    {
+      id: 'maps_and_models',
+      children: [
+
+        // Topic - Geological maps
+        {
+          id: 'grp_1787_label',
+          children: [
+            'ch.swisstopo.geologie-geocover',
+            'ch.swisstopo.geologie-geologischer_atlas',
+            'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
+            'ch.swisstopo.swissalti3d-reliefschattierung'
+          ]
+        },
+
+        // Topic - Cross-sections
+        {
+          id: 'grp_15143_label',
+          children: [
+            'ch.swisstopo.geologie-geologischer_atlas_profile',
+            'cross_section_geomol',
+            'cross_section_geoquat',
+          ]
+        },
+
+        // Topic - 3D models
+        {
+          id: 'grp_1855_label',
+          children: [
+            // Sub-Group II 'Unconsolidated rocks'
+            {
+              id: 'lyr_unconsolidated_rocks_label',
+              children: [
+                'voxel_aaretal_lithology',
+                'voxel_aaretal_conductivity',
+              ]
+            },
+
+            // Top bedrock
+            {
+              id: 'lyr_top_bedrock_surface_label',
+              children: [
+                'ch.swisstopo.swissbedrock-geotiff',
+                'ch.swisstopo.swissbedrock-geotiff-with-terrain',
+              ]
+            },
+
+            // Consolidated rocks
+            { id: 'lyr_consolidated_rocks_label' },
+          ]
+        }
+      ]
+    },
+  ]
+}

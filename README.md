@@ -41,10 +41,8 @@ cd api && cargo fetch
 ```
 
 #### 2. Install UI Dependencies
-Configure a `GITHUB_TOKEN` as described [here](https://github.com/swisstopo/swissgeol-ui-core/blob/develop/README.md#getting-started)
-so you can install the `@swissgeol/ui-core` library.
 
-Afterward, you can install the UI's dependencies:
+Install the UI's dependencies:
 ```bash
 cd ui && npm install
 ```
@@ -80,8 +78,6 @@ A few URL parameters will modify the behavior of the viewer:
 - `norequestrendermode` disable the resource optimizations (will use 100% CPU)
 - `inspector` display the Cesium Inspector widget
 - `inspector_wireframe` enable the wireframe mode
-- `date` a date to be used for illumination (default to "2018-06-21T10:00:00.000Z")
-- `light` a white light source from infinity (ex: 1-2-0-1000 will have direction (1, 2, 0) and intensity 1000)
 - `cesiumToolbar` display configuration panel for fog, ambient, background color and terrain underground color
 
 

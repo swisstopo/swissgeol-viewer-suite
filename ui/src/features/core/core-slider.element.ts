@@ -1,6 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { live } from 'lit/directives/live.js';
 
 @customElement('ngm-core-slider')
 export class CoreSlider extends LitElement {
@@ -47,7 +48,7 @@ export class CoreSlider extends LitElement {
       min=${this.min}
       max=${this.max}
       step=${this.step}
-      value=${isNaN(this.value) ? 1 : this.value}
+      .value=${live(isNaN(this.value) ? 1 : this.value)}
       @input=${this.handleInputChange}
       @pointerdown="${stopEvent}"
       @pointerup=${this.handlePointerUp}

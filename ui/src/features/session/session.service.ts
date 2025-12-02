@@ -1,4 +1,4 @@
-import { BaseService } from 'src/utils/base.service';
+import { BaseService } from 'src/services/base.service';
 import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { User } from 'src/features/session/user.model';
@@ -7,9 +7,11 @@ import { Role } from '@swissgeol/ui-core';
 import {
   BehaviorSubject,
   distinctUntilChanged,
+  filter,
   map,
   Observable,
   skip,
+  take,
 } from 'rxjs';
 import {
   CognitoIdentityCredentials,
@@ -30,10 +32,14 @@ export class SessionService extends BaseService {
 
   private sessionExpiryTimeout: number | null = null;
 
+  private readonly subjectForIsInitialized = new BehaviorSubject<boolean>(
+    false,
+  );
+
   constructor() {
     super();
 
-    this.inject(clientConfigContext).subscribe((clientConfig) => {
+    BaseService.inject$(clientConfigContext).subscribe((clientConfig) => {
       this.clientConfig = clientConfig;
     });
 
@@ -59,11 +65,15 @@ export class SessionService extends BaseService {
       }
     });
 
-    this.onReady(() => this.initialize());
+    BaseService.onReady(() => this.initialize());
   }
 
   get session(): Session | null {
     return this.sessionSubject.value;
+  }
+
+  get token(): string | null {
+    return this.sessionSubject.value?.token ?? null;
   }
 
   get token$(): Observable<string | null> {
@@ -84,8 +94,26 @@ export class SessionService extends BaseService {
     );
   }
 
+  get isInitialized$(): Observable<boolean> {
+    return this.subjectForIsInitialized.asObservable();
+  }
+
+  get initialized$(): Observable<void> {
+    return this.isInitialized$.pipe(
+      filter((it) => it),
+      map(() => {}),
+      take(1),
+    );
+  }
+
   get cognitoIdentityCredentials(): CognitoIdentityCredentials | null {
     return this.sessionSubject.value?.cognitoIdentityCredentials ?? null;
+  }
+
+  get cognitoIdentityCredentials$(): Observable<CognitoIdentityCredentials | null> {
+    return this.sessionSubject.pipe(
+      map((it) => it?.cognitoIdentityCredentials ?? null),
+    );
   }
 
   setSession(session: Session): void {
@@ -121,6 +149,8 @@ export class SessionService extends BaseService {
     if (this.user === null) {
       this.signOut();
     }
+
+    this.subjectForIsInitialized.next(true);
   }
 
   private async initializeFromUrl(): Promise<void> {
