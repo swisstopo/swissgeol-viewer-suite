@@ -345,9 +345,7 @@ export const mapLayerSourceToResource = async (
   switch (source.type) {
     case LayerSourceType.CesiumIon:
       return await IonResource.fromAssetId(source.assetId, {
-        accessToken:
-          source.accessToken ??
-          (source.assetId === 3914142 ? '{you-need-a-custom-key}' : undefined),
+        accessToken: source.accessToken,
       });
     case LayerSourceType.Url:
       return new Resource(source.url);

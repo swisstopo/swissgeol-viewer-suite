@@ -95,7 +95,10 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
     return [
       ...attributes,
       {
-        key: makeTranslationKey('layers:properties.cell_center'),
+        key: getTranslationKeyForLayerAttributeName(
+          this.controller.layer,
+          'cell_center',
+        ),
         value: formatCartesian3AsLv95(cellCenter).join(', '),
       },
     ];

@@ -17,7 +17,12 @@ import {
   Resource,
   Viewer,
 } from 'cesium';
-import { mapLayerSourceToResource, TiffLayer } from 'src/features/layer';
+import {
+  getLayerAttributeName,
+  getTranslationKeyForLayerAttributeName,
+  mapLayerSourceToResource,
+  TiffLayer,
+} from 'src/features/layer';
 import i18next from 'i18next';
 import {
   LayerInfo,
@@ -54,7 +59,7 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
     const { layer } = this.controller;
     const attributes = this.controller.layer.bands.map((band) => {
       return {
-        key: `layers:properties.${layer.id}.${band.name}`,
+        key: getTranslationKeyForLayerAttributeName(layer, band.name),
         get value(): string | number {
           return (
             data.bands[band.index - 1] ?? i18next.t('layers:values.no_data')
