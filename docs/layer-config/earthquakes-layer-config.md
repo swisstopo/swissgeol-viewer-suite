@@ -19,7 +19,7 @@ Earthquakes layers are layers that display earthquake epicenters.
 ```
 
 ## Simple Configuration Example
-A simple Wmts layer configuration:
+A simple Earthquakes layer configuration:
 ```json5
 {
   type: 'Wmts',
