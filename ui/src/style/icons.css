@@ -1,4 +1,5 @@
-.ngm-icon, .ngm-layer-icon {
+.ngm-icon,
+.ngm-layer-icon {
   background-color: var(--ngm-interaction);
 }
 

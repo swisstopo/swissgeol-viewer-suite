@@ -19,7 +19,6 @@ import {
   VoxelLayer,
   VoxelLayerMappingType,
 } from 'src/features/layer';
-import { makeTranslationKey } from 'src/models/translation-key.model';
 
 export class LayerInfoPickerForVoxels implements LayerInfoPicker {
   constructor(

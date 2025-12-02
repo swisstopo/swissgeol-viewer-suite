@@ -61,7 +61,7 @@ export function setupI18n() {
     .use(Backend)
     .use(LanguageDetector)
     .init({
-      ns: ['app', 'assets', 'layers', 'layout', 'catalog'],
+      ns: ['app', 'assets', 'layers', 'layout', 'catalog', 'toolbox'],
       defaultNS: 'app',
       supportedLngs: SUPPORTED_LANGUAGES,
       nonExplicitSupportedLngs: true,

@@ -18,7 +18,6 @@ import {
   Viewer,
 } from 'cesium';
 import {
-  getLayerAttributeName,
   getTranslationKeyForLayerAttributeName,
   mapLayerSourceToResource,
   TiffLayer,

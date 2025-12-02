@@ -143,7 +143,10 @@ export class CatalogDisplayListItem extends CoreElement {
 
   private readonly openTiffFilter = (): void =>
     this.openWindow('tiffFilter', {
-      title: () => getLayerLabel(this.layer),
+      title: () =>
+        i18next.t('catalog:tiffBandsWindow.title', {
+          layer: getLayerLabel(this.layer),
+        }),
       body: () => html`
         <catalog-display-layer-tiff-bands
           .layerId=${this.layer.id}
