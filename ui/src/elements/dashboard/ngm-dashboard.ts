@@ -1,4 +1,4 @@
-import { LitElementI18n, translated } from 'src/i18n';
+import { translated } from 'src/i18n';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
@@ -30,6 +30,8 @@ import { LayerService } from 'src/features/layer/layer.service';
 import { SessionService, User } from 'src/features/session';
 import { Id, makeId } from 'src/models/id.model';
 import { KmlLayer, LayerSourceType, LayerType } from 'src/features/layer';
+import { CesiumService } from 'src/services/cesium.service';
+import { CoreElement } from 'src/features/core';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -93,7 +95,7 @@ export interface Project extends CreateProject {
 export type TabTypes = 'topics' | 'overview' | 'projects' | 'shared';
 
 @customElement('ngm-dashboard')
-export class NgmDashboard extends LitElementI18n {
+export class NgmDashboard extends CoreElement {
   @property({ type: Boolean })
   accessor hidden = true;
 
@@ -146,6 +148,9 @@ export class NgmDashboard extends LitElementI18n {
 
   @consume({ context: SessionService.context() })
   accessor sessionService!: SessionService;
+
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
 
   constructor() {
     super();
@@ -225,9 +230,17 @@ export class NgmDashboard extends LitElementI18n {
   connectedCallback(): void {
     super.connectedCallback();
 
-    this.sessionService.user$.subscribe((user) => {
-      this.user = user;
-    });
+    this.register(
+      this.sessionService.user$.subscribe((user) => {
+        this.user = user;
+      }),
+    );
+
+    this.register(
+      this.cesiumService.viewer$.subscribe((viewer) => {
+        this.viewer = viewer;
+      }),
+    );
   }
 
   firstUpdated() {

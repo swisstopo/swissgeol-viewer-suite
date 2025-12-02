@@ -10,6 +10,7 @@ import { until } from 'lit/directives/until.js';
 import ToolboxStore from 'src/store/toolbox';
 import 'src/toolbox/ngm-toolbox';
 import 'src/elements/dashboard/ngm-dashboard';
+import 'src/elements/ngm-share-link';
 
 @customElement('ngm-layout-sidebar')
 export class LayoutSidebar extends CoreElement {
