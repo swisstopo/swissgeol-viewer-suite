@@ -5,7 +5,7 @@ import { css, html, render } from 'lit';
 import { applyEffect, applyTypography } from 'src/styles/theme';
 import { Subscription } from 'rxjs';
 
-interface CoreWindowProps {
+export interface CoreWindowProps {
   title: unknown | (() => unknown);
   body: unknown | (() => unknown);
   onClose?: () => void;
@@ -22,7 +22,6 @@ export class CoreWindow extends CoreElement {
     const map = document.getElementById('cesium') as HTMLElement;
     const container = document.createElement('div');
     container.classList.add('ngm-core-window-container');
-    container.style.position = 'absolute';
     container.style.top = '10px';
     container.style.right = '10px';
     container.hidden = true;
@@ -51,7 +50,7 @@ export class CoreWindow extends CoreElement {
       render(
         html`
           <ngm-core-window @close="${close}" @rerender="${renderWindow}">
-            <span slot="title">${getTitle()}</span>
+            <span slot="title" class="handle">${getTitle()}</span>
             ${getBody()}
           </ngm-core-window>
         `,
@@ -62,7 +61,7 @@ export class CoreWindow extends CoreElement {
 
     const coreWindow = container.querySelector('ngm-core-window') as CoreWindow;
     draggable(container, {
-      allowFrom: '.title',
+      allowFrom: '.handle, .handle *',
       context: coreWindow.shadowRoot,
     });
     setTimeout(() => {
@@ -84,7 +83,7 @@ export class CoreWindow extends CoreElement {
   }
 
   readonly render = () => html`
-    <div class="title">
+    <div class="title handle">
       <slot name="title"></slot>
       <ngm-core-button
         variant="tertiary"

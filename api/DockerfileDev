@@ -1,9 +1,12 @@
 # local dev and dev/int/prod images are separate because they
 # are built using a different and incompatible mode (default vs release)
 
-FROM rust:1.82
+FROM rust:1.90
 
 ARG SKIP_TOOLS
+
+ENV COLORMAP_DIR_PATH="/app/colormaps"
+ENV LAYERS_FILE=/configs/layers/layertree.json5
 
 WORKDIR /app
 
@@ -12,9 +15,14 @@ RUN if [ -z "$SKIP_TOOLS" ]; then \
       rustup component add rustfmt && \
       rustup component add clippy; \
     fi
-COPY . .
+
+COPY ./api .
+COPY ./titiler/colormaps /app/colormaps
 
 RUN chmod +x start.sh
+
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -f http://localhost:3000/api/health_check || exit 1
 
 # Make sure the start.sh script has LF line endings!
 CMD ["./start.sh"]

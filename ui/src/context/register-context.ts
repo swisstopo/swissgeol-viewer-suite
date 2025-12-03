@@ -10,14 +10,22 @@ import {
   AnyBaseServiceType,
   BaseService,
   ServiceContext,
-} from 'src/utils/base.service';
-import { BackgroundLayerService } from 'src/features/background/background-layer.service';
+} from 'src/services/base.service';
 import { GstService } from 'src/gst.service';
 import { ControlsService } from 'src/features/controls/controls.service';
 import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
-import { LayerService } from 'src/features/layer/layer.service';
 import { GestureControlsService } from 'src/features/controls/gestures/gesture-controls.service';
 import { SessionService } from 'src/features/session/session.service';
+import {
+  LayerApiService,
+  LayerService,
+  LayerUrlService,
+} from 'src/features/layer';
+import { OgcService } from 'src/features/ogc';
+import { WmtsService } from 'src/services/wmts.service';
+import { PickService } from 'src/services/pick.service';
+import { IonService } from 'src/services/ion.service';
+import { CesiumService } from 'src/services/cesium.service';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
@@ -43,13 +51,22 @@ export const registerAppContext = (
     }),
   );
 
-  contexts.push(makeProvider(ApiClient));
-  contexts.push(makeProvider(SessionService));
-  contexts.push(makeProvider(BackgroundLayerService));
-  contexts.push(makeProvider(ControlsService));
-  contexts.push(makeProvider(LayerService));
-  contexts.push(makeProvider(LayerInfoService));
-  contexts.push(makeProvider(GestureControlsService));
+  contexts.push(
+    makeProvider(CesiumService),
+    makeProvider(ApiClient),
+    makeProvider(WmtsService),
+    makeProvider(OgcService),
+    makeProvider(PickService),
+    makeProvider(IonService),
+    makeProvider(SessionService),
+    makeProvider(ControlsService),
+    makeProvider(GestureControlsService),
+
+    makeProvider(LayerApiService),
+    makeProvider(LayerService),
+    makeProvider(LayerUrlService),
+    makeProvider(LayerInfoService),
+  );
 
   return contexts;
 };

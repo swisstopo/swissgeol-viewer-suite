@@ -61,10 +61,13 @@ export async function getAssets(
     ? options.status.join(',')
     : options.status;
   url.searchParams.set('status', statusParam);
-  const typeParam = Array.isArray(options.type)
-    ? options.type.join(',')
-    : options.type;
-  url.searchParams.set('type', typeParam);
+  if (Array.isArray(options.type)) {
+    for (const type of options.type) {
+      url.searchParams.append('type', type);
+    }
+  } else {
+    url.searchParams.set('type', options.type);
+  }
   if (options.search) url.searchParams.set('search', options.search);
   if (options.sortOrder) url.searchParams.set('sortOrder', options.sortOrder);
   if (options.sortBy) url.searchParams.set('sortBy', options.sortBy);

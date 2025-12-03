@@ -13,20 +13,10 @@ Given(/^the topographic map is displayed in the 3D scene$/, () => {
   cy.get('.ngm-selected-map-container > ngm-background-layer-item').click();
   cy.get('ngm-background-layer-select')
     .shadow()
-    .find('ul > li[role="button"]:nth-child(2)')
+    .find('ul > li:nth-child(2)')
     .click();
   cy.get('ngm-background-layer-select + .ngm-close-icon').click();
   hasViewerBackground(TOPOGRAPHIC_LAYER);
-});
-
-Given(/^the layer panel is open$/, () => {
-  cy.get('.ngm-menu > .ngm-menu-top:first-child > ngm-menu-item:first-child')
-    .shadow()
-    .find('.box')
-    .click();
-  cy.wait(1000);
-  cy.get('ngm-layer-panel').then((it) => console.log(it, it.is(':visible')));
-  cy.get('ngm-layer-panel').should('not.have.attr', 'hidden');
 });
 
 When(/^the user clicks on the background chip$/, () => {

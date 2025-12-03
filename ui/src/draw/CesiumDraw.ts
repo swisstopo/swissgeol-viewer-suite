@@ -25,6 +25,7 @@ import {
 } from '../cesiumutils';
 import type { GeometryTypes } from '../toolbox/interfaces';
 import { cartesianToLv95 } from '../projection';
+import { PickService } from 'src/services/pick.service';
 
 type PointOptions = {
   color?: Color;
@@ -512,7 +513,7 @@ export class CesiumDraw extends EventTarget {
   onLeftClick(event) {
     this.renderSceneIfTranslucent();
     if (!event?.position) return;
-    const pickedPosition = this.viewer_.scene.pickPosition(event.position);
+    const pickedPosition = PickService.get().pick(event.position);
     if (pickedPosition == null) {
       return;
     }
@@ -657,7 +658,7 @@ export class CesiumDraw extends EventTarget {
   onMouseMove_(event) {
     this.renderSceneIfTranslucent();
     if (!event?.endPosition) return;
-    const pickedPosition = this.viewer_.scene.pickPosition(event.endPosition);
+    const pickedPosition = PickService.get().pick(event.endPosition);
     if (!pickedPosition) return;
     const position = Cartesian3.clone(pickedPosition);
     if (this.entityForEdit && !!this.leftPressedPixel_) {

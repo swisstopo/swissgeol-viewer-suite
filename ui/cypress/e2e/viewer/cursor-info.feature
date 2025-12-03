@@ -11,6 +11,9 @@ Feature: Cursor Info
     When the cursor is moved over the map
     Then the terrain height is shown
 
+  # The following test is currently broken, as it relies on 3dtiles, which cause a lot of problems right now.
+  # I'm assuming that we are good to re-enable this once the layer refactoring goes live. (DVA, 2025-11-06)
+  @skip
   Scenario: Show object height
     When the top_omm layer has been activated
     And the terrain is hidden

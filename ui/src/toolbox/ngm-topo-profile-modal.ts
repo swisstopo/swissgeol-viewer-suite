@@ -8,19 +8,20 @@ import ToolboxStore from '../store/toolbox';
 import { cartesianToLv95 } from '../projection';
 import { plotProfile } from '../graphs';
 import { pointer } from 'd3-selection';
-import MainStore from '../store/main';
 import type { Viewer } from 'cesium';
 import {
-  Color,
-  HeightReference,
   CallbackProperty,
   Cartesian3,
+  Color,
   Entity,
+  HeightReference,
 } from 'cesium';
 import { getPointOnPolylineByRatio } from '../cesiumutils';
 import type { NgmGeometry } from './interfaces';
 import { styleMap } from 'lit/directives/style-map.js';
 import { bisector } from 'd3-array';
+import { consume } from '@lit/context';
+import { CesiumService } from 'src/services/cesium.service';
 
 type ProfileServiceFormat = 'json' | 'csv';
 
@@ -77,23 +78,33 @@ export class NgmTopoProfileModal extends LitElementI18n {
     },
   });
 
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
   constructor() {
     super();
     super.hidden = this.hidden;
     ToolboxStore.geometryAction.subscribe((options) =>
       this.handleActions(options),
     );
-    MainStore.viewer.subscribe((viewer) => {
-      this.viewer = viewer;
-      if (viewer) viewer.entities.add(this.highlightPoint);
-    });
   }
 
   connectedCallback() {
+    super.connectedCallback();
+
     draggable(this, {
       allowFrom: '.drag-handle',
     });
-    super.connectedCallback();
+
+    const { viewer } = this.cesiumService;
+    viewer.entities.add(this.highlightPoint);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    const { viewer } = this.cesiumService;
+    viewer.entities.remove(this.highlightPoint);
   }
 
   update(changedProperties) {

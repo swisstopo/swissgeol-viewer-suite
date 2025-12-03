@@ -1,0 +1,30 @@
+{
+  layers: [
+    // Layer 'Private boreholes',
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_private',
+      source: {
+        type: 'S3',
+        bucket: 'ngm-protected-prod',
+        key: 'tiles/bh_private_20210201_00/tileset.json'
+      },
+      access: {
+        groups: [
+          'ngm-dev-privileged',
+          'ngm-int-privileged',
+          'ngm-prod-privileged',
+        ],
+      },
+    },
+  ],
+
+  groups: [
+    {
+      id: 'grp_1802_label',
+      children: [
+        'boreholes_private'
+      ]
+    }
+  ]
+}

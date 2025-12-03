@@ -1,3 +1,8 @@
+.ngm-icon,
+.ngm-layer-icon {
+  background-color: var(--ngm-interaction);
+}
+
 .ngm-icon.disabled {
   cursor: default;
   pointer-events: none;

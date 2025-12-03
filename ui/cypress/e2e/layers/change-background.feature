@@ -5,7 +5,7 @@ Feature: Change background map
   Background:
     Given the viewer is fully loaded
     And the topographic map is displayed in the 3D scene
-    And the layer panel is open
+    And the data panel is open
 
   Scenario: Change background map
     When the user clicks on the background chip

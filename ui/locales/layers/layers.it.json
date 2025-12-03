@@ -1,22 +1,39 @@
 {
-  "catalog": {
-    "filter": "Aprire il filtro"
+  "values": {
+    "no_data": "nessun valore",
+    "undefined": "indefinita"
   },
-  "infoWindow": {
-    "title": "Info",
-    "zoomToObject": "Zoom sull'oggetto"
+  "layers": {
+    "ch.swisstopo.geologie-geocover": "GeoCover - dati vettoriali",
+    "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen": "Litologia 500",
+    "ch.swisstopo.swissbedrock-geotiff": "swissBEDROCK",
+    "top_omm": "Tetto della Molassa marina superiore",
+    "top_usm": "Tetto della Molassa d'acqua dolce inferiore",
+    "top_umm": "Tetto della Molassa marina inferiore",
+    "top_muschelkalk": "Tetto del Muschelkalk"
   },
-  "geoTIFF": {
-    "bandsWindow": {
-      "title": "{{ layer }} - Bande",
-      "open": "Visualizzare le bande",
-      "legend": "Legenda"
+  "groups": {
+    "grp_1786_label": "Carte, profili & modelli",
+    "grp_1787_label": "Carte geologiche",
+    "grp_1793_label": "Carte tematiche",
+    "grp_15174_label": "Carte storiche",
+    "grp_1799_label": "Suddivisioni in fogli",
+    "grp_15143_label": "Profili",
+    "grp_1855_label": "Modelli 3D",
+    "grp_1802_label": "Dati di sondaggio",
+    "grp_1811_label": "Geofisica",
+    "grp_1812_label": "Campo gravitazionale terrestre",
+    "grp_1818_label": "Campo magnetico terrestre",
+    "grp_15070_label": "Geoenergia"
+  },
+  "properties": {
+    "Voxel": {
+      "cell_center": "",
+      "logk": "Conducibilità idraulica",
+      "Index": "Unità di modellazione",
+      "Klasse": "Permeabilità"
     },
-    "noData": "nessun valore"
-  },
-  "swissBEDROCK": {
-    "title": "swissBEDROCK",
-    "bands": {
+    "ch.swisstopo.swissbedrock-geotiff": {
       "BEM": "Modello di altitudine del tetto del substrato roccioso",
       "TMUD": "Modello di spessore dei depositi sciolti",
       "Uncertainty": "Incertezza",
@@ -30,6 +47,11 @@
       "prev_Author": "Versione precedente – ID numerico dell’autore"
     }
   },
+  "backgrounds": {
+    "ch.swisstopo.pixelkarte-grau": "Mappa in scala di grigi",
+    "ch.swisstopo.swissimage": "Foto aerea",
+    "lakes_rivers_map": "Laghi e fiumi"
+  },
   "units": {
     "Meters": {
       "name": "metri",
@@ -39,5 +61,10 @@
       "name": "metri sul livello del mare ",
       "symbol": "m s.l.m."
     }
+  },
+  "geocat_url": "https://www.geocat.ch/geonetwork/srv/ita/catalog.search#/metadata/{{id}}",
+  "info_window": {
+    "title": "Info",
+    "zoom_to_object": "Zoom sull'oggetto"
   }
 }

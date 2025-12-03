@@ -1,0 +1,59 @@
+{
+  "tabs": {
+    "Catalog": "Datenkatalog",
+    "Upload": "Upload",
+    "Options": "Einstellungen"
+  },
+  "display": {
+    "background": "Hintergrund",
+    "opacity": "Deckkraft",
+    "legend": "Legende",
+    "download": "Herunterladen / Legende",
+    "filter": "Filter öffnen",
+    "time_travel": "Zeitreise",
+    "remove": "Entfernen"
+  },
+  "exaggeration": {
+    "title": "Vertikale Überhöhung",
+    "show": "Vertikale Überhöhung anzeigen",
+    "hide": "Vertikale Überhöhung verbergen"
+  },
+  "upload": {
+    "select_file": "KML Daten hochladen",
+    "select_file_hint": "Klicken um eine Datei auszuwählen, oder ziehen Sie eine Datei per Drag & Drop hierher",
+    "file_not_selected": "Keine Datei vorhanden",
+    "file_not_kml": "Dateiformat wird nicht unterstützt. Nur KML erlaubt.",
+    "file_too_large": "Maximale Dateigröße beträgt {{limit}}",
+    "file_upload_error": "Fehler beim Hochladen von KML",
+    "modal": {
+      "title": "Upload",
+      "should_clamp_to_ground": "Auf Terrain legen",
+      "confirm": "Hinzufügen"
+    }
+  },
+  "add_content_from_cesium_ion": "Inhalte von Cesium ion hinzufügen",
+  "times_window": {
+    "all": "Alle"
+  },
+  "voxel_filter_window": {
+    "items": {
+      "select_all": "alles aktivieren",
+      "deselect_all": "alles deaktivieren"
+    },
+    "range": {
+      "min": "Min",
+      "max": "Max",
+      "should_include_undefined": "undefinierte Werte immer anzeigen?"
+    },
+    "operators": {
+      "And": "AND",
+      "Or": "OR",
+      "Xor": "XOR"
+    }
+  },
+  "tiffBandsWindow": {
+    "title": "{{ layer }} - Bänder",
+    "open": "Bänder anzeigen",
+    "legend": "Legende"
+  }
+}

@@ -41,7 +41,9 @@ function translate(event) {
   // show target window above other windows
   if (!target.style.zIndex || target.style.zIndex === DEFAULT_WINDOW_Z) {
     document
-      .querySelectorAll<HTMLElement>('.ngm-floating-window')
+      .querySelectorAll<HTMLElement>(
+        '.ngm-floating-window, .ngm-core-window-container',
+      )
       .forEach((elem) => (elem.style.zIndex = DEFAULT_WINDOW_Z));
     target.style.zIndex = TARGET_WINDOW_Z;
   }
@@ -50,7 +52,9 @@ function translate(event) {
 function updateZIndex(target) {
   target.style.zIndex = TARGET_WINDOW_Z;
   document
-    .querySelectorAll<HTMLElement>('.ngm-floating-window')
+    .querySelectorAll<HTMLElement>(
+      '.ngm-floating-window, .ngm-core-window-container',
+    )
     .forEach((elem) => {
       if (elem !== target) elem.style.zIndex = DEFAULT_WINDOW_Z;
     });
@@ -60,7 +64,9 @@ function checkForOverlap(target): DOMRect[] {
   const overlapList: DOMRect[] = [];
   const targetRect = target.getBoundingClientRect();
   document
-    .querySelectorAll<HTMLElement>('.ngm-floating-window')
+    .querySelectorAll<HTMLElement>(
+      '.ngm-floating-window, .ngm-core-window-container',
+    )
     .forEach((elem) => {
       if (!elem.hidden && elem !== target) {
         const checkRect = elem.getBoundingClientRect();
@@ -78,7 +84,9 @@ function checkForOverlap(target): DOMRect[] {
 
 function moveWindow(target, moveLeft) {
   const rectsForCheck = Array.from(
-    document.querySelectorAll<HTMLElement>('.ngm-floating-window'),
+    document.querySelectorAll<HTMLElement>(
+      '.ngm-floating-window, .ngm-core-window-container',
+    ),
   )
     .filter((el) => el !== target && !el.hidden)
     .map((el) => el.getBoundingClientRect())
@@ -123,6 +131,7 @@ function moveWindow(target, moveLeft) {
       const styleBackup = target.style;
       const topPosition =
         rectsForCheck[i + 1].top - (targetRect.height + MARGIN_BETWEEN_WINDOWS);
+
       const bottomPosition =
         rectsForCheck[i + 1].bottom - parentRect.y + MARGIN_BETWEEN_WINDOWS;
       // tries to place the window on the bottom of the next window or on top
@@ -141,13 +150,20 @@ function moveWindow(target, moveLeft) {
       target.style.bottom = 'auto';
       const overlapList = checkForOverlap(target);
       // stops moving if no overlap or restore top/bottom styles
-      if (!overlapList.length) break;
-      else target.style = styleBackup;
+      if (!overlapList.length) {
+        break;
+      } else {
+        target.style = styleBackup;
+      }
     }
+  }
+
+  if (target.style.top === '') {
+    target.style.top = `${MARGIN_BETWEEN_WINDOWS}px`;
   }
 }
 
-function repositionOnOpen(target) {
+function repositionOnOpen(target: HTMLElement) {
   const observer = new MutationObserver((mutationsList) => {
     if (mutationsList[0].attributeName === 'hidden' && !target.hidden) {
       // always show last opened window above others

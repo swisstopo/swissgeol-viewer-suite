@@ -10,8 +10,6 @@ import {
 } from 'cesium';
 import { ArrowListItem, BBoxSide } from './slicer/SlicerArrows';
 
-export { LayerType, DEFAULT_LAYER_OPACITY } from './layertree';
-
 export const SWITZERLAND_BOUNDS_WGS84 = [4.54249, 44.61921, 12.6725, 48.45365];
 export const SWITZERLAND_BOUNDS_LV95 = [2370000, 945000, 2987000, 1380000];
 
@@ -53,11 +51,6 @@ export const LAYERS_VISIBILITY_URL_PARAM = 'layers_visibility';
 export const LAYERS_TRANSPARENCY_URL_PARAM = 'layers_transparency';
 export const LAYERS_TIMESTAMP_URL_PARAM = 'layers_timestamp';
 export const ASSET_IDS_URL_PARAM = 'ionAssetIds';
-export const ION_TOKEN_URL_PARAM = 'ionToken';
-export const MAP_URL_PARAM = 'map';
-export const MAP_TRANSPARENCY_URL_PARAM = 'map_transparency';
-export const ATTRIBUTE_KEY_PARAM = 'attribute_key';
-export const ATTRIBUTE_VALUE_PARAM = 'attribute_value';
 export const ZOOM_TO_PARAM = 'zoom_to';
 export const SLICE_PARAM = 'slice';
 export const TARGET_PARAM = 'target';
@@ -65,8 +58,6 @@ export const TOPIC_PARAM = 'topicId';
 export const PROJECT_PARAM = 'projectId';
 export const VIEW_PARAM = 'viewId';
 export const EXAGGERATION_PARAM = 'zExaggeration';
-
-export const MANTEL_COLOR = Color.fromCssColorString('#383838');
 
 export const DEFAULT_AOI_COLOR = Color.BLUE;
 export const GEOMETRY_LINE_ALPHA = 0.8;

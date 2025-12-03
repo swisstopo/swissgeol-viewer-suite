@@ -1,10 +1,9 @@
-import { LitElementI18n, translated } from 'src/i18n';
+import { translated } from 'src/i18n';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { html, PropertyValues } from 'lit';
 import i18next from 'i18next';
 import { styleMap } from 'lit/directives/style-map.js';
 import { classMap } from 'lit-html/directives/class-map.js';
-import MainStore from '../../store/main';
 import ToolboxStore from '../../store/toolbox';
 import {
   getCameraView,
@@ -18,26 +17,21 @@ import NavToolsStore from '../../store/navTools';
 import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
 import type { Viewer } from 'cesium';
-import { CustomDataSource } from 'cesium';
 import { showSnackbarError } from 'src/notifications';
-import {
-  DEFAULT_LAYER_OPACITY,
-  DEFAULT_PROJECT_COLOR,
-  PROJECT_ASSET_URL,
-} from '../../constants';
+import { DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL } from 'src/constants';
 import type { NgmGeometry } from 'src/toolbox/interfaces';
 import { ApiClient } from 'src/api/api-client';
 import '../hide-overflow';
 import './ngm-project-edit';
 import './ngm-project-topic-overview';
 import { isProject, isProjectOwnerOrEditor } from './helpers';
-import { LayerConfig, LayerTreeNode } from 'src/layertree';
-import EarthquakeVisualizer from '../../earthquakeVisualization/earthquakeVisualizer';
-import { parseKml, renderWithDelay } from 'src/cesiumutils';
 import { consume } from '@lit/context';
-import { LayerTiffController } from 'src/features/layer';
 import { LayerService } from 'src/features/layer/layer.service';
 import { SessionService, User } from 'src/features/session';
+import { Id, makeId } from 'src/models/id.model';
+import { KmlLayer, LayerSourceType, LayerType } from 'src/features/layer';
+import { CesiumService } from 'src/services/cesium.service';
+import { CoreElement } from 'src/features/core';
 
 type TextualAttribute = string | TranslatedText;
 
@@ -101,7 +95,7 @@ export interface Project extends CreateProject {
 export type TabTypes = 'topics' | 'overview' | 'projects' | 'shared';
 
 @customElement('ngm-dashboard')
-export class NgmDashboard extends LitElementI18n {
+export class NgmDashboard extends CoreElement {
   @property({ type: Boolean })
   accessor hidden = true;
 
@@ -145,13 +139,9 @@ export class NgmDashboard extends LitElementI18n {
   private accessor user: User | null = null;
 
   private viewer: Viewer | null = null;
-  private assetConfigs: any = {};
-  private assets: LayerConfig[] | undefined;
+  private layerIds: Array<Id<KmlLayer>> = [];
   private geometries: NgmGeometry[] = [];
   private recentlyViewedIds: Array<string> = [];
-  private readonly tempKmlDataSource = new CustomDataSource(
-    'tempKmlDataSource',
-  );
 
   @consume({ context: ApiClient.context() })
   accessor apiClient!: ApiClient;
@@ -159,12 +149,12 @@ export class NgmDashboard extends LitElementI18n {
   @consume({ context: SessionService.context() })
   accessor sessionService!: SessionService;
 
+  @consume({ context: CesiumService.context() })
+  accessor cesiumService!: CesiumService;
+
   constructor() {
     super();
-    MainStore.viewer.subscribe((viewer) => {
-      this.viewer = viewer;
-      this.viewer?.dataSources.add(this.tempKmlDataSource);
-    });
+
     // topics hidden for now, see https://camptocamp.atlassian.net/browse/GSNGM-1171
     // fetch('./src/sampleData/topics.json').then(topicsResponse =>
     //   topicsResponse.json().then(topics => {
@@ -205,7 +195,10 @@ export class NgmDashboard extends LitElementI18n {
     DashboardStore.selectedTopicOrProject.subscribe((topicOrProject) => {
       this.selectedTopicOrProject = topicOrProject;
       if (isProject(topicOrProject)) {
-        if (topicOrProject.owner.email === this.user?.email) {
+        if (
+          topicOrProject.owner.email.toLowerCase() ===
+          this.user?.email.toLowerCase()
+        ) {
           this.activeTab = 'projects';
         } else {
           this.activeTab = 'shared';
@@ -215,27 +208,7 @@ export class NgmDashboard extends LitElementI18n {
     DashboardStore.viewIndex.subscribe(async (viewIndex) => {
       await this.selectView(viewIndex);
     });
-    MainStore.layersRemoved.subscribe(async () => {
-      if (this.selectedViewIndx !== undefined && this.assets) {
-        await Promise.all(
-          this.assets.map(async (asset) => {
-            const layer = await asset.promise;
-            if (layer === undefined) {
-              return;
-            }
-            if (
-              !(layer instanceof EarthquakeVisualizer) &&
-              !(layer instanceof LayerTiffController)
-            ) {
-              layer.show = true;
-            }
-            if ('type' in layer && 'displayed' in layer) {
-              this.layerService.toggle(layer as unknown as LayerTreeNode);
-            }
-          }),
-        );
-      }
-    });
+
     DashboardStore.geometriesUpdate.subscribe((geometries) => {
       if (this.selectedTopicOrProject) {
         this.selectTopicOrProject({
@@ -257,9 +230,17 @@ export class NgmDashboard extends LitElementI18n {
   connectedCallback(): void {
     super.connectedCallback();
 
-    this.sessionService.user$.subscribe((user) => {
-      this.user = user;
-    });
+    this.register(
+      this.sessionService.user$.subscribe((user) => {
+        this.user = user;
+      }),
+    );
+
+    this.register(
+      this.cesiumService.viewer$.subscribe((viewer) => {
+        this.viewer = viewer;
+      }),
+    );
   }
 
   firstUpdated() {
@@ -289,59 +270,49 @@ export class NgmDashboard extends LitElementI18n {
   //   });
   // }
 
-  async fetchAssets(assets: Asset[]): Promise<LayerConfig[]> {
-    const assetsData: LayerConfig[] = [];
-    if (!this.viewer) return assetsData;
-    for (const asset of assets) {
-      try {
-        const href = `${PROJECT_ASSET_URL}${asset.key}`;
-        const dataSources = this.viewer.dataSources.getByName(href);
-        let uploadedLayer: CustomDataSource;
-        if (dataSources.length) {
-          uploadedLayer = dataSources[0];
-          uploadedLayer.show = true;
-        } else {
-          uploadedLayer = new CustomDataSource(href);
-          const name = await parseKml(
-            this.viewer,
-            href,
-            uploadedLayer,
-            !!asset.clampToGround,
-          );
-          this.assetConfigs[href] = {
-            label: name,
-            opacity: DEFAULT_LAYER_OPACITY,
-            notSaveToPermalink: true,
-            topicKml: true,
-          };
-          MainStore.addUploadedKmlName(name);
-          await this.viewer.dataSources.add(uploadedLayer);
-          await renderWithDelay(this.viewer);
-        }
-        const promise = Promise.resolve(uploadedLayer);
-        assetsData.push({
-          ...this.assetConfigs[href],
-          displayed: false,
-          load() {
-            return promise;
-          },
-          promise,
-        });
-      } catch (e) {
-        console.error(e);
-        showSnackbarError(i18next.t('dtd_cant_upload_kml_error'));
-      }
+  async fetchAssets(assets: Asset[]): Promise<Array<Id<KmlLayer>>> {
+    if (this.viewer == null) {
+      return [];
     }
-    return assetsData;
+    const layerIds: Array<Id<KmlLayer>> = [];
+    for (const asset of assets) {
+      const href = `${PROJECT_ASSET_URL}${asset.key}`;
+      const id = makeId<KmlLayer>(crypto.randomUUID());
+      this.layerService.activateCustomLayer({
+        id,
+        type: LayerType.Kml,
+        source: {
+          type: LayerSourceType.Url,
+          url: href,
+        },
+        shouldClampToGround: !!asset.clampToGround,
+        label: null,
+        opacity: 1,
+        canUpdateOpacity: false,
+        isVisible: true,
+        geocatId: null,
+        downloadUrl: null,
+        legend: null,
+        customProperties: {},
+        isLocal: true,
+      } satisfies KmlLayer);
+      layerIds.push(id);
+    }
+    return layerIds;
   }
 
   async selectView(viewIndex: number | undefined) {
+    for (const layerId of this.layerIds) {
+      this.layerService.deactivate(layerId);
+    }
+    this.layerIds = [];
+
     this.selectedViewIndx = viewIndex;
     syncTargetParam(undefined);
     NavToolsStore.nextTargetPointSync();
     if (this.viewer && this.selectedTopicOrProject && viewIndex !== undefined) {
       if (this.selectedTopicOrProject?.assets)
-        this.assets = await this.fetchAssets(
+        this.layerIds = await this.fetchAssets(
           this.selectedTopicOrProject.assets,
         );
       this.geometries.forEach((geometry) =>
@@ -380,14 +351,15 @@ export class NgmDashboard extends LitElementI18n {
   deselectTopicOrProject() {
     this.runIfNotEditCreate(() => {
       this.selectTopicOrProject(undefined);
-      this.assets = [];
+      for (const layerId of this.layerIds) {
+        this.layerService.deactivate(layerId);
+      }
+      this.layerIds = [];
       this.removeGeometries();
     });
   }
 
   async setDataFromPermalink() {
-    MainStore.setUrlLayersSubject.next();
-    MainStore.nextMapSync();
     const { destination, orientation } = getCameraView();
     if (destination && orientation)
       this.viewer!.camera.flyTo({
@@ -465,12 +437,11 @@ export class NgmDashboard extends LitElementI18n {
       }
       this.projectToCreate = undefined;
     }
-    this.tempKmlDataSource.entities.removeAll();
     this.saveOrCancelWarning = false;
     if (this.selectedViewIndx !== undefined) {
       DashboardStore.setViewIndex(this.selectedViewIndx);
       if (this.selectedTopicOrProject?.assets) {
-        this.assets = await this.fetchAssets(
+        this.layerIds = await this.fetchAssets(
           this.selectedTopicOrProject.assets,
         );
       }
@@ -483,7 +454,6 @@ export class NgmDashboard extends LitElementI18n {
     this.projectTabState = 'view';
     this.saveOrCancelWarning = false;
     this.projectToCreate = undefined;
-    this.tempKmlDataSource.entities.removeAll();
   }
 
   runIfNotEditCreate(callback: () => void) {
@@ -656,8 +626,10 @@ export class NgmDashboard extends LitElementI18n {
             }}
           >
             ${i18next.t('dashboard_my_projects')}
-            (${this.projects.filter((p) => p.owner.email === this.user?.email)
-              .length})
+            (${this.projects.filter(
+              (p) =>
+                p.owner.email.toLowerCase() === this.user?.email.toLowerCase(),
+            ).length})
           </div>
           <div
             class=${classMap({ active: this.activeTab === 'shared' })}
@@ -670,18 +642,12 @@ export class NgmDashboard extends LitElementI18n {
             }}
           >
             ${i18next.t('dashboard_shared_projects')}
-            (${this.projects.filter((p) => p.owner.email !== this.user?.email)
-              .length})
+            (${this.projects.filter(
+              (p) =>
+                p.owner.email.toLowerCase() !== this.user?.email.toLowerCase(),
+            ).length})
           </div>
         </div>
-        <div
-          class="ngm-close-icon"
-          @click=${() => {
-            this.runIfNotEditCreate(() =>
-              this.dispatchEvent(new CustomEvent('close')),
-            );
-          }}
-        ></div>
       </div>
       <div class="ngm-panel-content">
         <div class="ngm-toast-placeholder"></div>
@@ -708,7 +674,11 @@ export class NgmDashboard extends LitElementI18n {
           </div>
           <div class="ngm-projects-list">
             ${this.projects
-              .filter((p) => p.owner.email === this.user?.email)
+              .filter(
+                (p) =>
+                  p.owner.email.toLowerCase() ===
+                  this.user?.email.toLowerCase(),
+              )
               .map((data) => this.previewTemplate(data))}
             <div
               class="ngm-proj-preview ngm-proj-create"
@@ -725,7 +695,11 @@ export class NgmDashboard extends LitElementI18n {
           </div>
           <div class="ngm-projects-list">
             ${this.projects
-              .filter((p) => p.owner.email !== this.user?.email)
+              .filter(
+                (p) =>
+                  p.owner.email.toLowerCase() !==
+                  this.user?.email.toLowerCase(),
+              )
               .map((data) => this.previewTemplate(data))}
           </div>
         </div>
@@ -738,7 +712,6 @@ export class NgmDashboard extends LitElementI18n {
                 .saveOrCancelWarning="${this.saveOrCancelWarning}"
                 .createMode="${this.projectTabState === 'create'}"
                 .userEmail="${this.user?.email}"
-                .tempKmlDataSource="${this.tempKmlDataSource}"
                 @onBack=${this.deselectTopicOrProject}
                 @onSave="${async (evt: { detail: { project: Project } }) =>
                   this.onProjectSave(evt.detail.project)}"

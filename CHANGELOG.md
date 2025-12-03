@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.9.0]
+### Added
+- Added support for 3dtiles v1.1.
+- Added two new seismics layers.
+- Added support for displaying layers via OGC API.
+- Geometries on WMTS layers and some specific 3dtiles can now be exported via the tools panel.
+- The map toolbar now includes a compass that rotates with the camera.
+- Restructured the layer catalog.
+
+### Changed
+- Refactored the layer behavior for more stability and easier maintenance.
+- Upgraded to the non-experimental backend for Voxel layers.
+  Layers remaining on the old format cannot be displayed anymore and have been temporarily removed.
+- The 3d view cube at the bottom right of the screen has been removed.
+- Underground 3dtiles are now closer to their real color, without being shadowed.
+- Looking at 3dtiles from below now correctly colors the objects' undersides (does not work on 3dtiles v1.0).
+
+### Fixed
+- WMTS picking results containing links now correctly link to the respective url instead of just displaying the link text.
+- Overlay windows no longer overlap if there is free space on the map.
+
 ## [1.8.0]
 ### Added
 - Added a new "gravel and sand" layer.

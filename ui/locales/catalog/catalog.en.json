@@ -1,0 +1,59 @@
+{
+  "tabs": {
+    "Catalog": "Data Catalog",
+    "Upload": "Upload",
+    "Options": "Options"
+  },
+  "display": {
+    "background": "Background",
+    "opacity": "Opacity",
+    "legend": "Legend",
+    "download": "Download / Legend",
+    "filter": "Open Filter",
+    "time_travel": "Journey through time",
+    "remove": "Remove"
+  },
+  "exaggeration": {
+    "title": "Vertical exaggeration",
+    "show": "Show exaggeration",
+    "hide": "Hide exaggeration"
+  },
+  "upload": {
+    "select_file": "Upload KML data",
+    "select_file_hint": "Click to browse, or drag & drop a file here",
+    "file_not_selected": "No file to upload",
+    "file_not_kml": "File format not supported. Only KML can be uploaded.",
+    "file_too_large": "Maximum file size is {{limit}}",
+    "file_upload_error": "Error while uploading KML",
+    "modal": {
+      "title": "Upload",
+      "should_clamp_to_ground": "Clamp to terrain",
+      "confirm": "Add"
+    }
+  },
+  "add_content_from_cesium_ion": "Add content from Cesium ion",
+  "times_window": {
+    "all": "All"
+  },
+  "voxel_filter_window": {
+    "items": {
+      "select_all": "Select all",
+      "deselect_all": "Unselect all"
+    },
+    "range": {
+      "min": "Min",
+      "max": "Max",
+      "should_include_undefined": "Always display undefined values?"
+    },
+    "operators": {
+      "And": "AND",
+      "Or": "OR",
+      "Xor": "XOR"
+    }
+  },
+  "tiffBandsWindow": {
+    "title": "{{ layer }} - Bands",
+    "open": "Show bands",
+    "legend": "Legend"
+  }
+}
