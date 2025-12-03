@@ -1,9 +1,5 @@
 import { BaseLayerController } from 'src/features/layer/controllers/layer.controller';
-import {
-  BackgroundLayer,
-  TRANSPARENT_BACKGROUND,
-  WmtsLayer,
-} from 'src/features/layer';
+import { BackgroundLayer, WmtsLayer } from 'src/features/layer';
 import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
 import { WmtsService } from 'src/services/wmts.service';
 import { Id } from 'src/models/id.model';
