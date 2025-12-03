@@ -1,5 +1,9 @@
 import { BaseLayerController } from 'src/features/layer/controllers/layer.controller';
-import { BackgroundLayer, WmtsLayer } from 'src/features/layer';
+import {
+  BackgroundLayer,
+  TRANSPARENT_BACKGROUND,
+  WmtsLayer,
+} from 'src/features/layer';
 import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
 import { WmtsService } from 'src/services/wmts.service';
 import { Id } from 'src/models/id.model';
@@ -38,6 +42,13 @@ export class BackgroundLayerController extends BaseLayerController<BackgroundLay
       const { globe } = this.viewer.scene;
       globe.depthTestAgainstTerrain = isVisible;
       globe.show = isVisible;
+    });
+
+    this.watch(this.layer.activeVariantId, (variantId) => {
+      const variant = this.layer.variants.get(variantId)!;
+
+      const { translucency } = this.viewer.scene.globe;
+      translucency.enabled = this.layer.opacity !== 1 || variant.isTransparent;
     });
   }
 

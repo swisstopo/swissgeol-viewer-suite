@@ -33,16 +33,23 @@ export interface BackgroundLayerVariant {
    * The WMTS layers that will be rendered.
    */
   children: ReadonlyArray<Id<WmtsLayer>>;
+
+  /**
+   * Whether the layer is see-through even when fully visible.
+   */
+  isTransparent: boolean;
 }
 
 const GREY_BACKGROUND: BackgroundLayerVariant = {
   id: makeId('ch.swisstopo.pixelkarte-grau'),
   children: [makeId('ch.swisstopo.pixelkarte-grau')],
+  isTransparent: false,
 };
 
 const SATELLITE_BACKGROUND: BackgroundLayerVariant = {
   id: makeId('ch.swisstopo.swissimage'),
   children: [makeId('ch.swisstopo.swissimage')],
+  isTransparent: false,
 };
 
 const WATERS_BACKGROUND: BackgroundLayerVariant = {
@@ -51,11 +58,13 @@ const WATERS_BACKGROUND: BackgroundLayerVariant = {
     makeId('ch.bafu.vec25-gewaessernetz_2000'),
     makeId('ch.bafu.vec25-seen'),
   ],
+  isTransparent: true,
 };
 
 const TRANSPARENT_BACKGROUND: BackgroundLayerVariant = {
   id: makeId('transparent'),
   children: [],
+  isTransparent: true,
 };
 
 const LAYERS = [
