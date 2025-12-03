@@ -13,7 +13,7 @@ export class LayoutHeaderActions extends CoreElement {
 
   // Enable or fully remove this to show the cursor info.
   // It has been disabled for now as excessive picking has been identified as a source of many render errors.
-  private readonly isCursorInfoEnabled = false;
+  private readonly isCursorInfoEnabled = true;
 
   readonly render = () => html`
     ${when(this.isCursorInfoEnabled, () =>
