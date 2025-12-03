@@ -116,9 +116,6 @@
                 type: 'Ogc',
                 id: 13327,
                 style_id: 5,
-            },
-            access: {
-                env: ['local', 'dev']
             }
         },
         // 2D-Seismik EGEO 002
