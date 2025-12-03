@@ -275,7 +275,8 @@
   "backgrounds": {
     "ch.swisstopo.pixelkarte-grau": "Karte Grau",
     "ch.swisstopo.swissimage": "Luftbild",
-    "lakes_rivers_map": "Seen & Flüsse"
+    "lakes_rivers_map": "Seen & Flüsse",
+    "transparent": "Transparent"
   },
   "units": {
     "Meters": {
