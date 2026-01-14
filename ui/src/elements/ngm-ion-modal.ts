@@ -64,7 +64,6 @@ export class NgmIonModal extends CoreElement {
     draggable(this, {
       allowFrom: '.drag-handle',
     });
-    this.tokenInput = this.clientConfig.ionDefaultAccessToken;
   }
 
   get unselectedAssets(): IonAsset[] {
