@@ -5,4 +5,5 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   headers:
-    accessControlAllowOrigin: "{{ .Values.ui.host }}"
+    accessControlAllowOriginList: 
+      - "{{ .Values.ui.host }}"
