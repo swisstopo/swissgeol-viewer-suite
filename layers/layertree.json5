@@ -11,6 +11,9 @@
     {
       id: 'maps_and_models',
       children: [
+        // TEST - SECTION
+        'test_voxel_birr_modelling_units',
+        'test-voxel_genf_modelling_units',
         // 02 - Geol_maps
         {
           id: 'geol_maps',

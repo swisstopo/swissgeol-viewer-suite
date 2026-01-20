@@ -1,5 +1,42 @@
 {
   layers: [
+    // TESTs
+    // test Birr - Modelling Units
+    {
+      type: "Voxel",
+      id: "test_voxel_birr_modelling_units",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4365028, //4364993,
+      },
+      data_key: "Index",
+      mappings: ['conductivity', 'birr_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "f56c9c6c-ff59-463d-ba66-477fd2d92f39",
+    },
+    // test Genf - Modelling Units
+    {
+      type: "Voxel",
+      id: "test-voxel_genf_modelling_units",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4365430, //4070290,
+      },
+      data_key: "Index",
+      mappings: ['conductivity', 'genf_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "4a4a530f-6a2a-423d-834e-2831d70fde20",
+    },
+    
+    
+    
+    
     // GeoMol Temperature Model
     {
       type: "Voxel",
