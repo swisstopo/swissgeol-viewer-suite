@@ -1,3 +1,4 @@
+use crate::layers::access::LayerAccess;
 use crate::layers::config::{Parse, ParseContext};
 use anyhow::anyhow;
 use serde::de::Error;
@@ -19,6 +20,11 @@ pub struct LayerGroup {
     /// or not a top level group, this field will never be used.
     #[serde(skip, default)]
     pub use_count: u32,
+
+    /// A JSON object defining who has access to this layer.
+    /// If left out, the layer is publicly available.
+    #[serde(default, skip_serializing)]
+    pub access: Option<LayerAccess>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

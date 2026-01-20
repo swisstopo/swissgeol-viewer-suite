@@ -48,32 +48,25 @@ impl Filter for LayerConfig {
             .into_iter()
             .filter_map(|group| group.filter(&context))
             .collect();
+
+        let referenced_ids = collect_referenced_layer_ids(&self.groups);
+        self.layers
+            .retain(|layer| referenced_ids.contains(&layer.id));
         Some(self)
     }
 }
 
 impl Filter for Layer {
     fn filter(self, context: &FilterContext) -> Option<Self> {
-        let Some(access) = &self.access else {
-            return Some(self);
-        };
-        if !access.groups.is_empty()
-            && !access
-                .groups
-                .iter()
-                .any(|group| context.groups.contains(group))
-        {
-            return None;
-        }
-        if !access.env.is_empty() && !access.env.contains(&context.env) {
-            return None;
-        }
-        Some(self)
+        is_access_allowed(self.access.as_ref(), context).then_some(self)
     }
 }
 
 impl Filter for LayerGroup {
     fn filter(mut self, context: &FilterContext) -> Option<Self> {
+        if !is_access_allowed(self.access.as_ref(), context) {
+            return None;
+        }
         self.children = self
             .children
             .into_iter()
@@ -99,6 +92,58 @@ impl Filter for LayerGroupOrReference {
                 group.filter(context).map(LayerGroupOrReference::Definition)
             }
             group @ LayerGroupOrReference::Reference(_) => Some(group),
+        }
+    }
+}
+
+fn is_access_allowed(access: Option<&LayerAccess>, context: &FilterContext) -> bool {
+    let Some(access) = access else {
+        return true;
+    };
+    if !access.groups.is_empty()
+        && !access
+            .groups
+            .iter()
+            .any(|group| context.groups.contains(group))
+    {
+        return false;
+    }
+    if !access.env.is_empty() && !access.env.contains(&context.env) {
+        return false;
+    }
+
+    true
+}
+
+fn collect_referenced_layer_ids(
+    groups: &[LayerGroupOrReference],
+) -> std::collections::HashSet<String> {
+    let mut ids = std::collections::HashSet::new();
+    for group in groups {
+        collect_from_group_or_ref(group, &mut ids);
+    }
+    ids
+}
+
+fn collect_from_group_or_ref(
+    g: &LayerGroupOrReference,
+    ids: &mut std::collections::HashSet<String>,
+) {
+    match g {
+        LayerGroupOrReference::Definition(group) => collect_from_group(group, ids),
+        LayerGroupOrReference::Reference(_) => {
+            unreachable!("LayerGroupOrReference::Reference should be resolved during Parse")
+        }
+    }
+}
+
+fn collect_from_group(group: &LayerGroup, ids: &mut std::collections::HashSet<String>) {
+    for child in &group.children {
+        match child {
+            LayerGroupChild::Layer(id) => {
+                ids.insert(id.clone());
+            }
+            LayerGroupChild::Group(sub) => collect_from_group_or_ref(sub, ids),
         }
     }
 }
