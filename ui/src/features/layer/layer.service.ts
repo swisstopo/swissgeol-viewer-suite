@@ -48,6 +48,7 @@ import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.c
 import { KmlLayerController } from 'src/features/layer/controllers/layer-kml.controller';
 import { EarthquakesLayerController } from 'src/features/layer/controllers/layer-earthquakes.controller';
 import { CesiumService } from 'src/services/cesium.service';
+import { GeoJsonLayerController } from 'src/features/layer/controllers/layer.geojson.controller';
 
 export class LayerService extends BaseService {
   private viewer!: Viewer;
@@ -939,6 +940,8 @@ export class LayerService extends BaseService {
         return new VoxelLayerController(layer);
       case LayerType.Tiff:
         return new TiffLayerController(layer);
+      case LayerType.GeoJson:
+        return new GeoJsonLayerController(layer);
       case LayerType.Kml:
         return new KmlLayerController(layer);
       case LayerType.Earthquakes:

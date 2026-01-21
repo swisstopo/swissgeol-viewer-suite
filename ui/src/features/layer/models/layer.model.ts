@@ -15,6 +15,7 @@ import {
   TranslationKey,
 } from 'src/models/translation-key.model';
 import { KmlLayer } from 'src/features/layer/models/layer-kml.model';
+import { GeoJsonLayer } from 'src/features/layer/models/layer-geojson.model';
 
 export type Layer =
   | WmtsLayer
@@ -22,6 +23,7 @@ export type Layer =
   | VoxelLayer
   | TiffLayer
   | KmlLayer
+  | GeoJsonLayer
   | EarthquakesLayer;
 
 export type AnyLayer = Layer | BackgroundLayer;
@@ -109,6 +111,7 @@ export enum LayerType {
   Tiff = 'Tiff',
   Kml = 'Kml',
   Earthquakes = 'Earthquakes',
+  GeoJson = 'GeoJson',
 }
 
 export const getLayerLabel = (layer: AnyLayer): string =>
