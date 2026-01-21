@@ -33,9 +33,40 @@
       },
       geocat_id: "4a4a530f-6a2a-423d-834e-2831d70fde20",
     },
+     // test Visp - Modelling Units
+    {
+      type: "Voxel",
+      id: "test-voxel_visp_modelling_units",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4368915,//4368893,//4069970,
+      },
+      data_key: "Index",
+      mappings: ['conductivity', 'visp_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "f7847c2c-bd3a-4dda-99c7-d50453b24c3d",
+    },
+    // SG Rheintal - Conductivity
+    {
+      type: "Voxel",
+      id: "test-voxel_sgrheintal_conductivity",
+      source: {
+        type: "CesiumIon",
+        asset_id: 4369008,//4368967,//4071931,
+      },
+      data_key: "Klasse",
+      mappings: ['sg_rheintal_conductivity'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: "",
+    },
     
-    
-    
+    // ====================================
     
     // GeoMol Temperature Model
     {

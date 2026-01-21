@@ -14,6 +14,8 @@
         // TEST - SECTION
         'test_voxel_birr_modelling_units',
         'test-voxel_genf_modelling_units',
+        'test-voxel_visp_modelling_units',
+        'test-voxel_sgrheintal_conductivity',
         // 02 - Geol_maps
         {
           id: 'geol_maps',
