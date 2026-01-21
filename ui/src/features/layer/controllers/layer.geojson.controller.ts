@@ -11,7 +11,9 @@ import {
   ColorMaterialProperty,
   ConstantProperty,
   Color,
+  Entity,
 } from 'cesium';
+import { DEFAULT_UPLOADED_KML_COLOR } from 'src/constants';
 
 export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   private dataSource!: GeoJsonDataSource;
@@ -52,6 +54,35 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     } else {
       this.dataSource.entities.removeAll();
     }
+
+    geoJsonDataSource.entities.suspendEvents();
+
+    for (const ent of this.dataSource.entities.values) {
+      if (ent.polygon) {
+        const polygon = ent.polygon;
+        polygon.outline = new ConstantProperty(false);
+        const hierarchy = polygon.hierarchy?.getValue(JulianDate.now());
+        if (!hierarchy?.positions?.length) {
+          continue;
+        }
+
+        // When clamping a GeoJson to the ground, the borders disappear.
+        // This is why we add the borders manually for all Polygon Entities
+        const border = new Entity({
+          name: `${ent.id}-border`,
+          polyline: {
+            positions: hierarchy.positions,
+            clampToGround: true,
+            width: polygon.outlineWidth?.getValue(JulianDate.now()) ?? 2,
+            material:
+              polygon.outlineColor?.getValue(JulianDate.now()) ??
+              DEFAULT_UPLOADED_KML_COLOR,
+          },
+        });
+        geoJsonDataSource.entities.add(border);
+      }
+    }
+    geoJsonDataSource.entities.resumeEvents();
 
     if (this.layer.label == null) {
       LayerService.get().update(this.layer.id, { label: this.dataSource.name });

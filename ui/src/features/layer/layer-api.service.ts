@@ -151,6 +151,8 @@ export class LayerApiService extends BaseService {
           id: base.id as Id<EarthquakesLayer>,
           type,
         } satisfies EarthquakesLayer;
+      default:
+        return null;
     }
   }
 

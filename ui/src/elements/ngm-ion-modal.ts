@@ -15,7 +15,6 @@ import { ClientConfig } from 'src/api/client-config';
 import { live } from 'lit/directives/live.js';
 import { CoreElement } from 'src/features/core';
 import {
-  FilterOperator,
   KmlLayer,
   Layer,
   LayerService,
