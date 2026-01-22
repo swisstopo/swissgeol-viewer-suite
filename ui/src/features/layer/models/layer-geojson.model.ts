@@ -11,4 +11,10 @@ export interface GeoJsonLayer extends BaseLayer {
   shouldClampToGround: boolean;
 
   canUpdateOpacity: true;
+
+  /**
+   * The order in which the layer's properties are sorted when displayed.
+   * Keys that are left out will be sorted below any sorted ones, in default order.
+   */
+  orderOfProperties: string[];
 }

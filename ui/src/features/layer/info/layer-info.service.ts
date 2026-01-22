@@ -31,6 +31,7 @@ import { run, tick } from 'src/utils/fn.utils';
 import { PickService } from 'src/services/pick.service';
 import { LayerInfoPickerForEarthquakes } from 'src/features/layer/info/pickers/layer-info-picker-for-earthquakes';
 import { CesiumService } from 'src/services/cesium.service';
+import { LayerInfoPickerForGeoJson } from 'src/features/layer/info/pickers/layer-info-picker-for-geo-json';
 
 export class LayerInfoService extends BaseService {
   private layerService!: NewLayerService;
@@ -124,6 +125,8 @@ export class LayerInfoService extends BaseService {
           return new LayerInfoPickerForTiff(controller, this.viewer);
         case LayerType.Earthquakes:
           return new LayerInfoPickerForEarthquakes(controller, this.viewer);
+        case LayerType.GeoJson:
+          return new LayerInfoPickerForGeoJson(controller, this.viewer);
         default:
           return null;
       }
