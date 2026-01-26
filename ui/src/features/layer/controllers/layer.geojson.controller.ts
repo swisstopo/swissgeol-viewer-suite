@@ -12,11 +12,13 @@ import {
   ConstantProperty,
   Color,
   Entity,
+  ClassificationType,
+  CustomDataSource,
 } from 'cesium';
 import { DEFAULT_UPLOADED_KML_COLOR } from 'src/constants';
 
 export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
-  private dataSource!: GeoJsonDataSource;
+  private dataSource!: CustomDataSource;
 
   get type(): LayerType.GeoJson {
     return LayerType.GeoJson;
@@ -49,15 +51,22 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     });
 
     if (this.dataSource === undefined) {
-      this.dataSource = geoJsonDataSource;
+      this.dataSource = new CustomDataSource();
       await this.viewer.dataSources.add(this.dataSource);
     } else {
       this.dataSource.entities.removeAll();
     }
 
-    geoJsonDataSource.entities.suspendEvents();
+    const { dataSource } = this;
+    dataSource.name = geoJsonDataSource.name;
 
-    for (const ent of this.dataSource.entities.values) {
+    geoJsonDataSource.entities.suspendEvents();
+    this.dataSource.entities.suspendEvents();
+
+    for (const ent of geoJsonDataSource.entities.values) {
+      if (dataSource.name.length === 0) {
+        dataSource.name = ent.name ?? '';
+      }
       if (ent.polygon) {
         const polygon = ent.polygon;
         polygon.outline = new ConstantProperty(false);
@@ -79,9 +88,11 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
               DEFAULT_UPLOADED_KML_COLOR,
           },
         });
-        geoJsonDataSource.entities.add(border);
+        dataSource.entities.add(border);
       }
+      dataSource.entities.add(ent);
     }
+    dataSource.entities.resumeEvents();
     geoJsonDataSource.entities.resumeEvents();
 
     if (this.layer.label == null) {
