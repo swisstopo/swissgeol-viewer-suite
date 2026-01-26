@@ -12,10 +12,9 @@ import {
   ConstantProperty,
   Color,
   Entity,
-  ClassificationType,
   CustomDataSource,
 } from 'cesium';
-import { DEFAULT_UPLOADED_KML_COLOR } from 'src/constants';
+import { DEFAULT_UPLOADED_GEOJSON_COLOR } from 'src/constants';
 
 export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   private dataSource!: CustomDataSource;
@@ -80,14 +79,18 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
         const border = new Entity({
           name: `${ent.id}-border`,
           polyline: {
+            // classificationType: ClassificationType.CESIUM_3D_TILE,
             positions: hierarchy.positions,
             clampToGround: true,
             width: polygon.outlineWidth?.getValue(JulianDate.now()) ?? 2,
             material:
               polygon.outlineColor?.getValue(JulianDate.now()) ??
-              DEFAULT_UPLOADED_KML_COLOR,
+              DEFAULT_UPLOADED_GEOJSON_COLOR,
           },
         });
+        // polygon.classificationType = new ConstantProperty(
+        //   ClassificationType.TERRAIN,
+        // );
         dataSource.entities.add(border);
       }
       dataSource.entities.add(ent);

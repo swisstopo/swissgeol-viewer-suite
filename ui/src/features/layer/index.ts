@@ -6,6 +6,7 @@ export * from './controllers/layer-tiff.controller';
 export * from './controllers/layer-tiles3d.controller';
 export * from './controllers/layer-voxel.controller';
 export * from './controllers/layer-wmts.controller';
+export * from './controllers/layer.geojson.controller';
 
 export * from './layer.service';
 export * from './layer-api.service';

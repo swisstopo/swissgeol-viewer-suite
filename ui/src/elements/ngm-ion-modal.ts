@@ -21,9 +21,9 @@ import {
   LayerSourceType,
   LayerType,
   Tiles3dLayer,
+  GeoJsonLayer,
 } from 'src/features/layer';
 import { makeId } from 'src/models/id.model';
-import { GeoJsonLayer } from 'src/features/layer/models/layer-geojson.model';
 
 const CESIUM_ION_DOCUMENTATION_URL =
   'https://cesium.com/learn/ion/cesium-ion-access-tokens/';
