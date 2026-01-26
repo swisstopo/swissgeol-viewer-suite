@@ -1,5 +1,7 @@
 import { BaseService } from 'src/services/base.service';
 import {
+  GeoJsonLayer,
+  KmlLayer,
   Layer,
   LayerSourceType,
   LayerType,
@@ -26,6 +28,47 @@ export class IonService extends BaseService {
     accessToken?: string,
   ): Layer => {
     switch (asset.type) {
+      case 'GEOJSON':
+        return {
+          type: LayerType.GeoJson,
+          id: makeId(asset.id),
+          opacity: 1,
+          source: {
+            type: LayerSourceType.CesiumIon,
+            assetId: asset.id,
+            accessToken: accessToken ?? undefined,
+          },
+          canUpdateOpacity: true,
+          shouldClampToGround: true,
+          isVisible: true,
+          label: asset.name,
+          geocatId: null,
+          downloadUrl: null,
+          legend: null,
+          customProperties: {},
+          orderOfProperties: [],
+        } satisfies GeoJsonLayer;
+        break;
+      case 'KML':
+        return {
+          type: LayerType.Kml,
+          id: makeId(asset.id),
+          opacity: 1,
+          source: {
+            type: LayerSourceType.CesiumIon,
+            assetId: asset.id,
+            accessToken: accessToken ?? undefined,
+          },
+          canUpdateOpacity: false,
+          shouldClampToGround: true,
+          isVisible: true,
+          label: asset.name,
+          geocatId: null,
+          downloadUrl: null,
+          legend: null,
+          customProperties: {},
+        } satisfies KmlLayer;
+        break;
       case '3DTILES':
         return {
           type: LayerType.Tiles3d,
@@ -57,7 +100,9 @@ export class IonService extends BaseService {
     const url = new URL('https://api.cesium.com/v1/assets');
 
     url.searchParams.set('status', 'COMPLETE' satisfies AssetStatus);
-    url.searchParams.set('type', '3DTILES' satisfies AssetType);
+    url.searchParams.append('type', '3DTILES' satisfies AssetType);
+    url.searchParams.append('type', 'GEOJSON' satisfies AssetType);
+    url.searchParams.append('type', 'KML' satisfies AssetType);
 
     accessToken ??= BaseService.get(clientConfigContext).ionDefaultAccessToken;
     const response = await fetch(url, {
