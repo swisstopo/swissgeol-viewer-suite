@@ -6,7 +6,7 @@
   "layers": {
     "ch.swisstopo.geologie-geocover": "GeoCover - dati vettoriali",
     "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen": "Litologia 500",
-    "ch.swisstopo.swissbedrock-geotiff": "swissBEDROCK",
+    "ch.swisstopo.swissbedrock-geotiff": "swissBEDROCK 2D",
     "top_omm": "Tetto della Molassa marina superiore",
     "top_usm": "Tetto della Molassa d'acqua dolce inferiore",
     "top_umm": "Tetto della Molassa marina inferiore",
