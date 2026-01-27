@@ -122,11 +122,12 @@
                     'geomol_faults'
                   ]
                 },
-                // 0xx - SwissAlps 3D
+                // 04 - SwissAlps 3D
                 {
                   id: 'sa3d_models',
                   children: [
                     {
+                      // 05 - Aar Massif
                       id: 'j3d_aare-massif',
                       children: [
                         'sa3d_aaremassive_horizons',
