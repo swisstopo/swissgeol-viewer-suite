@@ -3,6 +3,8 @@ import {
   LayerService,
   LayerType,
   mapLayerSourceToResource,
+  Tiles3dLayer,
+  Tiles3dLayerController,
 } from 'src/features/layer';
 import { GeoJsonLayer } from 'src/features/layer/models/layer-geojson.model';
 import {
@@ -12,15 +14,27 @@ import {
   ConstantProperty,
   Color,
   Entity,
+  ClassificationType,
+  Cesium3DTileset,
   CustomDataSource,
 } from 'cesium';
 import { DEFAULT_UPLOADED_GEOJSON_COLOR } from 'src/constants';
+import { makeId } from 'src/models/id.model';
 
 export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   private dataSource!: CustomDataSource;
+  private terrainController!: Tiles3dLayerController | null;
 
   get type(): LayerType.GeoJson {
     return LayerType.GeoJson;
+  }
+
+  /**
+   * The tileset representing the geojsons's terrain,
+   * or `null`, if the layer does not have a custom terrain.
+   */
+  get terrain(): Cesium3DTileset | null {
+    return this.terrainController?.tileset ?? null;
   }
 
   zoomIntoView() {
@@ -44,10 +58,15 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   }
 
   protected async addToViewer(): Promise<void> {
+    if (this.layer.terrain) {
+      this.terrainController = this.makeTerrainController();
+    }
+    await this.terrainController?.add();
+
     const resource = await mapLayerSourceToResource(this.layer.source);
-    const geoJsonDataSource = await GeoJsonDataSource.load(resource, {
-      clampToGround: this.layer.shouldClampToGround,
-    });
+
+    const shouldClassifyOnTiles = this.terrainController !== null;
+    const geoJsonDataSource = await GeoJsonDataSource.load(resource);
 
     if (this.dataSource === undefined) {
       this.dataSource = new CustomDataSource();
@@ -79,6 +98,9 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
         const border = new Entity({
           name: `${ent.id}-border`,
           polyline: {
+            classificationType: this.terrainController
+              ? ClassificationType.CESIUM_3D_TILE
+              : ClassificationType.TERRAIN,
             positions: hierarchy.positions,
             clampToGround: true,
             width: polygon.outlineWidth?.getValue(JulianDate.now()) ?? 2,
@@ -87,6 +109,11 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
               DEFAULT_UPLOADED_GEOJSON_COLOR,
           },
         });
+        polygon.classificationType = new ConstantProperty(
+          this.terrainController
+            ? ClassificationType.CESIUM_3D_TILE
+            : ClassificationType.TERRAIN,
+        );
         dataSource.entities.add(border);
       }
       dataSource.entities.add(ent);
@@ -100,7 +127,32 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   }
 
   protected removeFromViewer(): void {
+    this.terrainController?.remove();
     this.viewer.dataSources.remove(this.dataSource, true);
+  }
+
+  private makeTerrainController(): Tiles3dLayerController {
+    return new Tiles3dLayerController(this.makeTiles3dLayer());
+  }
+
+  private makeTiles3dLayer(): Tiles3dLayer {
+    return {
+      type: LayerType.Tiles3d,
+      id: makeId(this.layer.id),
+      source: this.layer.terrain!,
+      isVisible: this.layer.isVisible,
+      opacity: this.layer.opacity,
+      canUpdateOpacity: true,
+      downloadUrl: null,
+      geocatId: null,
+      label: null,
+      legend: null,
+      orderOfProperties: [],
+      customProperties: {},
+
+      // Make the layer partially transparent to hide parts that are not covered by the imagery.
+      isPartiallyTransparent: true,
+    };
   }
 
   private setLayerOpacity(opacity: number): void {

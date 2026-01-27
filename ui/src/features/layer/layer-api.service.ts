@@ -293,6 +293,9 @@ export class LayerApiService extends BaseService {
     config: DynamicObject,
   ): Specific<GeoJsonLayer> => ({
     source: config.takeObject('source').apply(this.mapConfigToSource),
+    terrain:
+      config.takeNullableObject('terrain')?.apply(this.mapConfigToSource) ??
+      null,
     shouldClampToGround: config.takeNullable('shouldClampToGround') ?? true,
     orderOfProperties: config.takeNullable('orderOfProperties') ?? [],
   });
