@@ -79,7 +79,6 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
         const border = new Entity({
           name: `${ent.id}-border`,
           polyline: {
-            // classificationType: ClassificationType.CESIUM_3D_TILE,
             positions: hierarchy.positions,
             clampToGround: true,
             width: polygon.outlineWidth?.getValue(JulianDate.now()) ?? 2,
@@ -88,9 +87,6 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
               DEFAULT_UPLOADED_GEOJSON_COLOR,
           },
         });
-        // polygon.classificationType = new ConstantProperty(
-        //   ClassificationType.TERRAIN,
-        // );
         dataSource.entities.add(border);
       }
       dataSource.entities.add(ent);

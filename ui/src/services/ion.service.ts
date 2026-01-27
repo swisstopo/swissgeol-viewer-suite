@@ -48,7 +48,6 @@ export class IonService extends BaseService {
           customProperties: {},
           orderOfProperties: [],
         } satisfies GeoJsonLayer;
-        break;
       case 'KML':
         return {
           type: LayerType.Kml,
@@ -68,7 +67,6 @@ export class IonService extends BaseService {
           legend: null,
           customProperties: {},
         } satisfies KmlLayer;
-        break;
       case '3DTILES':
         return {
           type: LayerType.Tiles3d,
