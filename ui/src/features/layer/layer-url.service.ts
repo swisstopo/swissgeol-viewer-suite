@@ -71,6 +71,8 @@ export class LayerUrlService extends BaseService {
         this.writeParams((url) => this.writeLayerParams(params, url));
       });
 
+    this.ionService.accessToken = params.layers.ionAccessToken;
+
     this.layerService
       .layer$(BACKGROUND_LAYER.id)
       .pipe(debounceTime(250), map(this.makeBackgroundParams))

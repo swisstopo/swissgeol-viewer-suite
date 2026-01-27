@@ -2,7 +2,6 @@ import { customElement, state } from 'lit/decorators.js';
 import { css, html } from 'lit';
 import i18next from 'i18next';
 import draggable from './draggable';
-import { getAssets, IonAsset } from '../api-ion';
 import { showSnackbarConfirmation } from '../notifications';
 import { getAssetIds } from '../permalink';
 import { applyTypography } from 'src/styles/theme';
@@ -24,6 +23,7 @@ import {
   GeoJsonLayer,
 } from 'src/features/layer';
 import { makeId } from 'src/models/id.model';
+import { IonAsset, IonService } from 'src/services/ion.service';
 
 const CESIUM_ION_DOCUMENTATION_URL =
   'https://cesium.com/learn/ion/cesium-ion-access-tokens/';
@@ -35,6 +35,9 @@ export class NgmIonModal extends CoreElement {
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
+
+  @consume({ context: IonService.context() })
+  accessor ionService!: IonService;
 
   @state()
   accessor assets: IonAsset[] = [];
@@ -66,6 +69,7 @@ export class NgmIonModal extends CoreElement {
     draggable(this, {
       allowFrom: '.drag-handle',
     });
+    this.tokenInput = this.ionService.accessToken;
   }
 
   get unselectedAssets(): IonAsset[] {
@@ -83,7 +87,8 @@ export class NgmIonModal extends CoreElement {
     this.assets = [];
     this.assetsToDisplay = [];
     this.preloader = true;
-    const res = await getAssets(this.token, {
+    const res = await this.ionService.fetchIonAssets({
+      accessToken: this.token,
       status: 'COMPLETE',
       type: ['3DTILES', 'GEOJSON', 'KML'],
     });
@@ -119,6 +124,7 @@ export class NgmIonModal extends CoreElement {
       this.token = token;
       this.onLoadAssets().then();
     }
+    this.ionService.accessToken = token;
   }
 
   toggleSingleAsset(ionAsset: IonAsset) {
