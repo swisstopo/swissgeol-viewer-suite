@@ -176,6 +176,8 @@
     "j3d_ma_01": "Modellgebiet MA 1",
     "geomol_models": "Geologie des Mittellands",
     "geomol_horizons": "Horizonte",
+        "sa3d_models":"Geologie der Alpen",
+    "j3d_aare-massif": "Aare Massiv",
     "region_3d_models": "3D Modelle - regional",
     "local_3d_models": "3D Modelle - lokal",
     "boreholes": "Bohrdaten",
