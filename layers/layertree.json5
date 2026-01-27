@@ -122,9 +122,25 @@
                     'geomol_faults'
                   ]
                 },
-                'sa3d_aaremassive_horizons',
-                'sa3d_aaremassive_structures',
-                'sa3d_aaremassive_cs'
+                // 04 - SwissAlps 3D
+                {
+                  id: 'sa3d_models',
+                  children: [
+                    {
+                      // 05 - Aar Massif
+                      id: 'j3d_aare-massif',
+                      children: [
+                        'sa3d_aaremassive_horizons',
+                        'sa3d_aaremassive_structures',
+                        'sa3d_aaremassive_cs'
+                      ]
+                    }
+                  ],
+                  access: {
+                    env: ['local', 'dev'],
+                    // groups: ['ngm-dev-privileged']
+                  },
+                },
               ]
             },
             // 03 - Regional models
