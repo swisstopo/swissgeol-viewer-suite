@@ -176,6 +176,8 @@
     "j3d_ma_01": "Model area MA 1",
     "geomol_models": "Geology of the Midlands",
     "geomol_horizons": "Horizons",
+    "sa3d_models":"Geology of the Alps",
+    "j3d_aare-massif": "Aar Massif",
     "region_3d_models": "3D models - regional",
     "local_3d_models": "3D models - local",
     "boreholes": "Borehole data",
