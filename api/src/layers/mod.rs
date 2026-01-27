@@ -9,6 +9,12 @@ pub use config::LayerConfig;
 mod earthquakes;
 pub use earthquakes::EarthquakesLayer;
 
+mod geojson;
+pub use geojson::GeoJsonLayer;
+
+mod kml;
+pub use kml::KMLLayer;
+
 mod group;
 pub use group::*;
 
@@ -92,6 +98,8 @@ pub enum LayerDetail {
     Voxel(VoxelLayer),
     Tiff(TiffLayer),
     Earthquakes(EarthquakesLayer),
+    GeoJson(GeoJsonLayer),
+    Kml(KMLLayer),
 }
 
 impl Parse for Layer {
