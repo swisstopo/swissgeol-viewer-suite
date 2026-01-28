@@ -123,11 +123,21 @@ export class IonService extends BaseService {
     } else {
       url.searchParams.set('type', assetType);
     }
-    if (options.search) url.searchParams.set('search', options.search);
-    if (options.sortOrder) url.searchParams.set('sortOrder', options.sortOrder);
-    if (options.sortBy) url.searchParams.set('sortBy', options.sortBy);
-    if (options.page) url.searchParams.set('page', options.page.toString());
-    if (options.limit) url.searchParams.set('limit', options.limit.toString());
+    if (options.search) {
+      url.searchParams.set('search', options.search);
+    }
+    if (options.sortOrder) {
+      url.searchParams.set('sortOrder', options.sortOrder);
+    }
+    if (options.sortBy) {
+      url.searchParams.set('sortBy', options.sortBy);
+    }
+    if (options.page) {
+      url.searchParams.set('page', options.page.toString());
+    }
+    if (options.limit) {
+      url.searchParams.set('limit', options.limit.toString());
+    }
 
     options.accessToken ??=
       BaseService.get(clientConfigContext).ionDefaultAccessToken;
