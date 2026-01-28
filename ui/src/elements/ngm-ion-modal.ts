@@ -15,11 +15,13 @@ import { ClientConfig } from 'src/api/client-config';
 import { live } from 'lit/directives/live.js';
 import { CoreElement } from 'src/features/core';
 import {
+  KmlLayer,
   Layer,
   LayerService,
   LayerSourceType,
   LayerType,
   Tiles3dLayer,
+  GeoJsonLayer,
 } from 'src/features/layer';
 import { makeId } from 'src/models/id.model';
 
@@ -83,7 +85,7 @@ export class NgmIonModal extends CoreElement {
     this.preloader = true;
     const res = await getAssets(this.token, {
       status: 'COMPLETE',
-      type: ['3DTILES'],
+      type: ['3DTILES', 'GEOJSON', 'KML'],
     });
     if (res.items) {
       this.assets = res.items.filter((it) => {
@@ -141,6 +143,47 @@ export class NgmIonModal extends CoreElement {
     if (!ionAsset?.id || this.preloader) return;
     let customLayer: Layer;
     switch (ionAsset.type) {
+      case 'GEOJSON':
+        customLayer = {
+          type: LayerType.GeoJson,
+          id: makeId(ionAsset.id),
+          opacity: 1,
+          source: {
+            type: LayerSourceType.CesiumIon,
+            assetId: ionAsset.id,
+            accessToken: this.token ?? undefined,
+          },
+          canUpdateOpacity: true,
+          shouldClampToGround: true,
+          isVisible: true,
+          label: ionAsset.name,
+          geocatId: null,
+          downloadUrl: null,
+          legend: null,
+          customProperties: {},
+          orderOfProperties: [],
+        } satisfies GeoJsonLayer;
+        break;
+      case 'KML':
+        customLayer = {
+          type: LayerType.Kml,
+          id: makeId(ionAsset.id),
+          opacity: 1,
+          source: {
+            type: LayerSourceType.CesiumIon,
+            assetId: ionAsset.id,
+            accessToken: this.token ?? undefined,
+          },
+          canUpdateOpacity: false,
+          shouldClampToGround: true,
+          isVisible: true,
+          label: ionAsset.name,
+          geocatId: null,
+          downloadUrl: null,
+          legend: null,
+          customProperties: {},
+        } satisfies KmlLayer;
+        break;
       case '3DTILES':
         customLayer = {
           type: LayerType.Tiles3d,

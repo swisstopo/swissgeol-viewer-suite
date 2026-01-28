@@ -13,6 +13,7 @@ import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.c
 import { KmlLayerController } from 'src/features/layer/controllers/layer-kml.controller';
 import { EarthquakesLayerController } from 'src/features/layer/controllers/layer-earthquakes.controller';
 import { CesiumService } from 'src/services/cesium.service';
+import { GeoJsonLayerController } from 'src/features/layer/controllers/layer.geojson.controller';
 
 export type LayerController =
   | WmtsLayerController
@@ -20,6 +21,7 @@ export type LayerController =
   | VoxelLayerController
   | TiffLayerController
   | KmlLayerController
+  | GeoJsonLayerController
   | EarthquakesLayerController;
 
 /**
