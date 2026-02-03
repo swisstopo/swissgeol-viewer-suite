@@ -60,12 +60,10 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   protected async addToViewer(): Promise<void> {
     if (this.layer.terrain) {
       this.terrainController = this.makeTerrainController();
+      await this.terrainController.add();
     }
-    await this.terrainController?.add();
 
     const resource = await mapLayerSourceToResource(this.layer.source);
-
-    const shouldClassifyOnTiles = this.terrainController !== null;
     const geoJsonDataSource = await GeoJsonDataSource.load(resource);
 
     if (this.dataSource === undefined) {
@@ -81,42 +79,63 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     geoJsonDataSource.entities.suspendEvents();
     this.dataSource.entities.suspendEvents();
 
+    const classificationType = this.terrainController
+      ? ClassificationType.CESIUM_3D_TILE
+      : ClassificationType.BOTH;
     for (const ent of geoJsonDataSource.entities.values) {
       if (dataSource.name.length === 0) {
         dataSource.name = ent.name ?? '';
       }
+      if (ent.polyline) {
+        const positions = ent.polyline.positions?.getValue(JulianDate.now());
+        if (!positions?.length) {
+          continue;
+        }
+
+        const polyline = new Entity({
+          name: `${ent.id}-polyline`,
+          polyline: {
+            positions,
+            classificationType,
+            clampToGround: true,
+            width: ent.polyline.width?.getValue(JulianDate.now()) ?? 2,
+            material: ent.polyline.material,
+          },
+        });
+        dataSource.entities.add(polyline);
+      }
       if (ent.polygon) {
-        const polygon = ent.polygon;
-        polygon.outline = new ConstantProperty(false);
-        const hierarchy = polygon.hierarchy?.getValue(JulianDate.now());
+        const hierarchy = ent.polygon.hierarchy?.getValue(JulianDate.now());
         if (!hierarchy?.positions?.length) {
           continue;
         }
 
+        const polygon = new Entity({
+          name: `${ent.id}-polygon`,
+          polygon: {
+            hierarchy,
+            classificationType,
+            outline: false,
+            material: ent.polygon.material,
+          },
+        });
         // When clamping a GeoJson to the ground, the borders disappear.
         // This is why we add the borders manually for all Polygon Entities
         const border = new Entity({
           name: `${ent.id}-border`,
           polyline: {
-            classificationType: this.terrainController
-              ? ClassificationType.CESIUM_3D_TILE
-              : ClassificationType.TERRAIN,
+            classificationType,
             positions: hierarchy.positions,
             clampToGround: true,
-            width: polygon.outlineWidth?.getValue(JulianDate.now()) ?? 2,
+            width: ent.polygon.outlineWidth?.getValue(JulianDate.now()) ?? 2,
             material:
-              polygon.outlineColor?.getValue(JulianDate.now()) ??
+              ent.polygon.outlineColor?.getValue(JulianDate.now()) ??
               DEFAULT_UPLOADED_GEOJSON_COLOR,
           },
         });
-        polygon.classificationType = new ConstantProperty(
-          this.terrainController
-            ? ClassificationType.CESIUM_3D_TILE
-            : ClassificationType.TERRAIN,
-        );
+        dataSource.entities.add(polygon);
         dataSource.entities.add(border);
       }
-      dataSource.entities.add(ent);
     }
     dataSource.entities.resumeEvents();
     geoJsonDataSource.entities.resumeEvents();
@@ -141,17 +160,19 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       id: makeId(this.layer.id),
       source: this.layer.terrain!,
       isVisible: this.layer.isVisible,
-      opacity: this.layer.opacity,
-      canUpdateOpacity: true,
+      // We cannot use the same approach as we do with the TIFF layers, where we set isPartiallyTransparent to true and add the Source to the imagery layers,
+      // because GeoJson layers cannot be added to the tileset's imagery layers.
+      // That would discard all fragments of the tilesets, including parts that are covered by the GeoJson.
+      // Instead, we set the opacity to 0, making the tileset fully invisible, but still allowing the GeoJson to be clamped to it.
+      opacity: 0,
+      canUpdateOpacity: false,
       downloadUrl: null,
       geocatId: null,
       label: null,
       legend: null,
       orderOfProperties: [],
       customProperties: {},
-
-      // Make the layer partially transparent to hide parts that are not covered by the imagery.
-      isPartiallyTransparent: true,
+      isPartiallyTransparent: false,
     };
   }
 
