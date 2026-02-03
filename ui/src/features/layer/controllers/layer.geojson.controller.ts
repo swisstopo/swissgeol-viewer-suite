@@ -101,6 +101,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
             width: ent.polyline.width?.getValue(JulianDate.now()) ?? 2,
             material: ent.polyline.material,
           },
+          properties: ent.properties,
         });
         dataSource.entities.add(polyline);
       }
@@ -118,6 +119,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
             outline: false,
             material: ent.polygon.material,
           },
+          properties: ent.properties,
         });
         // When clamping a GeoJson to the ground, the borders disappear.
         // This is why we add the borders manually for all Polygon Entities
@@ -132,6 +134,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
               ent.polygon.outlineColor?.getValue(JulianDate.now()) ??
               DEFAULT_UPLOADED_GEOJSON_COLOR,
           },
+          properties: ent.properties,
         });
         dataSource.entities.add(polygon);
         dataSource.entities.add(border);
