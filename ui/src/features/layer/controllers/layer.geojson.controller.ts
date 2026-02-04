@@ -42,6 +42,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   }
 
   moveToTop(): void {
+    this.terrainController?.moveToTop();
     this.viewer.dataSources.raiseToTop(this.dataSource);
   }
 
