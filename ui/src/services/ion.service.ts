@@ -62,6 +62,7 @@ export class IonService extends BaseService {
           legend: null,
           customProperties: {},
           orderOfProperties: [],
+          terrain: null,
         } satisfies GeoJsonLayer;
       case 'KML':
         return {

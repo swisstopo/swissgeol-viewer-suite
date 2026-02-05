@@ -6,6 +6,12 @@ export interface GeoJsonLayer extends BaseLayer {
   source: LayerSource;
 
   /**
+   * The source for the layer's terrain.
+   * If this is `null`, the GeoJson is draped directly onto the default terrain.
+   */
+  terrain: LayerSource | null;
+
+  /**
    * Whether the GeoJson's data should be clamped to the ground during loading.
    */
   shouldClampToGround: boolean;
