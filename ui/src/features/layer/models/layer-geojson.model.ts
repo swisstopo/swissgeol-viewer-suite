@@ -23,4 +23,24 @@ export interface GeoJsonLayer extends BaseLayer {
    * Keys that are left out will be sorted below any sorted ones, in default order.
    */
   orderOfProperties: string[];
+
+  layerStyle: LayerStyle | null;
+}
+
+export interface VectorOptions {
+  type: 'circle' | 'triangle' | 'square';
+  radius: number;
+  rotation?: number;
+  fill?: { color?: string };
+  stroke?: { color?: string; width?: number };
+}
+
+export interface LayerStyle {
+  type: 'unique';
+  property: string;
+  values: Array<{
+    geomType: 'point';
+    value: string | number;
+    vectorOptions: VectorOptions;
+  }>;
 }

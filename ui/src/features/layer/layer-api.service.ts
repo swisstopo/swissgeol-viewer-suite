@@ -298,6 +298,7 @@ export class LayerApiService extends BaseService {
       null,
     shouldClampToGround: config.takeNullable('shouldClampToGround') ?? true,
     orderOfProperties: config.takeNullable('orderOfProperties') ?? [],
+    layerStyle: config.takeNullable('styles') ?? null,
   });
 
   private readonly mapConfigToKmlLayer = (
