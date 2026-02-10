@@ -129,7 +129,9 @@ export abstract class LayerInfoDrillPicker<T extends Layer>
         position: pick.globePosition.cartesian,
         attributes,
         layerId: this.controller.layer.id,
-        title: `layers:layers.${this.controller.layer.id}`,
+        title:
+          this.controller.layer.label ??
+          `layers:layers.${this.controller.layer.id}`,
       }),
     ];
   }
@@ -152,7 +154,9 @@ export abstract class LayerInfoDrillPicker<T extends Layer>
         entity,
         attributes,
         layerId: this.layerId,
-        title: `layers:layers.${this.controller.layer.id}`,
+        title:
+          this.controller.layer.label ??
+          `layers:layers.${this.controller.layer.id}`,
       }),
     ];
   }

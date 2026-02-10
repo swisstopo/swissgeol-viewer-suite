@@ -6,6 +6,8 @@ import {
   EarthquakesLayer,
   FilterOperator,
   getTranslationKeyForLayerAttributeName,
+  GeoJsonLayer,
+  KmlLayer,
   Layer,
   LayerGroup,
   LayerSource,
@@ -142,8 +144,22 @@ export class LayerApiService extends BaseService {
           id: base.id as Id<TiffLayer>,
           type,
         } satisfies TiffLayer;
+      case LayerType.GeoJson:
+        return {
+          ...config.apply(this.mapConfigToGeoJsonLayer),
+          ...base,
+          canUpdateOpacity: true,
+          id: base.id as Id<GeoJsonLayer>,
+          type,
+        } satisfies GeoJsonLayer;
       case LayerType.Kml:
-        throw new Error('The API does not expose any KML layers.');
+        return {
+          ...config.apply(this.mapConfigToKmlLayer),
+          ...base,
+          canUpdateOpacity: false,
+          id: base.id as Id<KmlLayer>,
+          type,
+        } satisfies KmlLayer;
       case LayerType.Earthquakes:
         return {
           ...config.apply(this.mapConfigToEarthquakesLayer),
@@ -151,6 +167,8 @@ export class LayerApiService extends BaseService {
           id: base.id as Id<EarthquakesLayer>,
           type,
         } satisfies EarthquakesLayer;
+      default:
+        return null;
     }
   }
 
@@ -269,6 +287,24 @@ export class LayerApiService extends BaseService {
     config: DynamicObject,
   ): Specific<EarthquakesLayer> => ({
     source: config.takeObject('source').apply(this.mapConfigToSource),
+  });
+
+  private readonly mapConfigToGeoJsonLayer = (
+    config: DynamicObject,
+  ): Specific<GeoJsonLayer> => ({
+    source: config.takeObject('source').apply(this.mapConfigToSource),
+    terrain:
+      config.takeNullableObject('terrain')?.apply(this.mapConfigToSource) ??
+      null,
+    shouldClampToGround: config.takeNullable('shouldClampToGround') ?? true,
+    orderOfProperties: config.takeNullable('orderOfProperties') ?? [],
+  });
+
+  private readonly mapConfigToKmlLayer = (
+    config: DynamicObject,
+  ): Specific<KmlLayer> => ({
+    source: config.takeObject('source').apply(this.mapConfigToSource),
+    shouldClampToGround: config.takeNullable('shouldClampToGround') ?? true,
   });
 
   private readonly mapConfigToSource = (config: DynamicObject): LayerSource => {

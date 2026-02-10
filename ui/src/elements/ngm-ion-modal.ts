@@ -2,7 +2,6 @@ import { customElement, state } from 'lit/decorators.js';
 import { css, html } from 'lit';
 import i18next from 'i18next';
 import draggable from './draggable';
-import { getAssets, IonAsset } from '../api-ion';
 import { showSnackbarConfirmation } from '../notifications';
 import { getAssetIds } from '../permalink';
 import { applyTypography } from 'src/styles/theme';
@@ -15,13 +14,16 @@ import { ClientConfig } from 'src/api/client-config';
 import { live } from 'lit/directives/live.js';
 import { CoreElement } from 'src/features/core';
 import {
+  KmlLayer,
   Layer,
   LayerService,
   LayerSourceType,
   LayerType,
   Tiles3dLayer,
+  GeoJsonLayer,
 } from 'src/features/layer';
 import { makeId } from 'src/models/id.model';
+import { IonAsset, IonService } from 'src/services/ion.service';
 
 const CESIUM_ION_DOCUMENTATION_URL =
   'https://cesium.com/learn/ion/cesium-ion-access-tokens/';
@@ -33,6 +35,9 @@ export class NgmIonModal extends CoreElement {
 
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
+
+  @consume({ context: IonService.context() })
+  accessor ionService!: IonService;
 
   @state()
   accessor assets: IonAsset[] = [];
@@ -64,7 +69,7 @@ export class NgmIonModal extends CoreElement {
     draggable(this, {
       allowFrom: '.drag-handle',
     });
-    this.tokenInput = this.clientConfig.ionDefaultAccessToken;
+    this.tokenInput = this.ionService.accessToken;
   }
 
   get unselectedAssets(): IonAsset[] {
@@ -82,9 +87,10 @@ export class NgmIonModal extends CoreElement {
     this.assets = [];
     this.assetsToDisplay = [];
     this.preloader = true;
-    const res = await getAssets(this.token, {
+    const res = await this.ionService.fetchIonAssets({
+      accessToken: this.token,
       status: 'COMPLETE',
-      type: ['3DTILES'],
+      type: ['3DTILES', 'GEOJSON', 'KML'],
     });
     if (res.items) {
       this.assets = res.items.filter((it) => {
@@ -118,6 +124,7 @@ export class NgmIonModal extends CoreElement {
       this.token = token;
       this.onLoadAssets().then();
     }
+    this.ionService.accessToken = token;
   }
 
   toggleSingleAsset(ionAsset: IonAsset) {
@@ -142,6 +149,48 @@ export class NgmIonModal extends CoreElement {
     if (!ionAsset?.id || this.preloader) return;
     let customLayer: Layer;
     switch (ionAsset.type) {
+      case 'GEOJSON':
+        customLayer = {
+          type: LayerType.GeoJson,
+          id: makeId(ionAsset.id),
+          opacity: 1,
+          source: {
+            type: LayerSourceType.CesiumIon,
+            assetId: ionAsset.id,
+            accessToken: this.token ?? undefined,
+          },
+          canUpdateOpacity: true,
+          shouldClampToGround: true,
+          isVisible: true,
+          label: ionAsset.name,
+          geocatId: null,
+          downloadUrl: null,
+          legend: null,
+          customProperties: {},
+          orderOfProperties: [],
+          terrain: null,
+        } satisfies GeoJsonLayer;
+        break;
+      case 'KML':
+        customLayer = {
+          type: LayerType.Kml,
+          id: makeId(ionAsset.id),
+          opacity: 1,
+          source: {
+            type: LayerSourceType.CesiumIon,
+            assetId: ionAsset.id,
+            accessToken: this.token ?? undefined,
+          },
+          canUpdateOpacity: false,
+          shouldClampToGround: true,
+          isVisible: true,
+          label: ionAsset.name,
+          geocatId: null,
+          downloadUrl: null,
+          legend: null,
+          customProperties: {},
+        } satisfies KmlLayer;
+        break;
       case '3DTILES':
         customLayer = {
           type: LayerType.Tiles3d,

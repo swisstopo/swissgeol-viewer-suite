@@ -3,6 +3,7 @@ export * from './layer-background.model';
 export * from './layer-earthquakes.model';
 export * from './layer-group.model';
 export * from './layer-kml.model';
+export * from './layer-geojson.model';
 export * from './layer-wmts.model';
 export * from './layer-tiff.model';
 export * from './layer-tiles3d.model';

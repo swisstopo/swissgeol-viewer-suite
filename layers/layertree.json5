@@ -6,7 +6,6 @@
     'special/swissBEDROCK',
     'layers_earthquakes'
   ],
-
   groups: [
     // 01 Topic - Maps, cross-sections & models
     {
@@ -34,14 +33,14 @@
             'ch.swisstopo.geologie-gletschermaechtigkeit',
             'ch.swisstopo.geologie-gletscherausdehnung',
             'ch.swisstopo.geologie-geomorphologie'
-        ]
+          ]
         },
         // 02 - Historic_maps
         {
           id: 'historic_maps',
           children: [
             'ch.swisstopo.geologie-generalkarte-ggk200'
-        ]
+          ]
         },
         // 02 - Sheet divisions
         {
@@ -52,7 +51,7 @@
             'ch.swisstopo.geologie-spezialkarten_schweiz_vector.metadata',
             'ch.swisstopo.geologie-geologischer_atlas.metadata',
             'ch.swisstopo.geologie-geocover.metadata'
-        ]
+          ]
         },
         // 02 - Cross-sections
         {
@@ -61,7 +60,7 @@
             'ch.swisstopo.geologie-geologischer_atlas_profile',
             'geomol_cs',
             'geoquat_aaretal_cs'
-        ]
+          ]
         },
         // 02 - 3D models
         {
@@ -280,22 +279,22 @@
         'ch.bafu.hydrogeologische-karte_100',
         'ch.bafu.grundwasserkoerper',
         // 02 Topic - Groundwater quantity
-      {
-        id: 'groundwater_quantity',
-        children: [
-          'ch.bafu.hydroweb-messstationen_grundwasser',
-          'ch.bafu.hydroweb-messstationen_grundwasserzustand'
-        ]
-      },
-      'ch.bafu.hydrogeologie-markierversuche',
-      // 02 Topic - Groundwater quality
-      {
-        id: 'groundwater_quality',
-        children: [
-          'ch.bafu.naqua-grundwasser_nitrat',
-          'ch.bafu.naqua-grundwasser_voc'
-        ]
-      }
+        {
+          id: 'groundwater_quantity',
+          children: [
+            'ch.bafu.hydroweb-messstationen_grundwasser',
+            'ch.bafu.hydroweb-messstationen_grundwasserzustand'
+          ]
+        },
+        'ch.bafu.hydrogeologie-markierversuche',
+        // 02 Topic - Groundwater quality
+        {
+          id: 'groundwater_quality',
+          children: [
+            'ch.bafu.naqua-grundwasser_nitrat',
+            'ch.bafu.naqua-grundwasser_voc'
+          ]
+        }
       ]
     },
     // 01 Topic - Natural hazards
@@ -368,7 +367,6 @@
             'ch.swisstopo.geologie-geotope_kantone_stand'
           ]
         },
-
       ]
     },
     // 01 Topic - Underground space

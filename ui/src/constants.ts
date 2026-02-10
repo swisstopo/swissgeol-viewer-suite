@@ -205,6 +205,8 @@ export const TITILER_BY_PAGE_HOST = {
 };
 
 export const DEFAULT_UPLOADED_KML_COLOR = Color.fromCssColorString('#0056A4');
+export const DEFAULT_UPLOADED_GEOJSON_COLOR =
+  Color.fromCssColorString('#0056A4');
 
 const _COGNITO_VARIABLES = {
   dev: {

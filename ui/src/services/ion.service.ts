@@ -1,5 +1,7 @@
 import { BaseService } from 'src/services/base.service';
 import {
+  GeoJsonLayer,
+  KmlLayer,
   Layer,
   LayerSourceType,
   LayerType,
@@ -8,9 +10,24 @@ import {
 import { clientConfigContext } from 'src/context';
 import { makeId } from 'src/models/id.model';
 
+const DEFAULT_ASSET_TYPES: AssetType[] = ['3DTILES', 'GEOJSON', 'KML'];
+const DEFAULT_ASSET_STATUS: AssetStatus = 'COMPLETE';
+
 export class IonService extends BaseService {
-  async fetchLayers(options: { accessToken?: string } = {}): Promise<Layer[]> {
-    const assets = await this.fetchIonAssets(options.accessToken);
+  private _accessToken: string | null = null;
+
+  public get accessToken(): string | null {
+    return this._accessToken;
+  }
+
+  public set accessToken(token: string | null) {
+    this._accessToken = token;
+  }
+
+  async fetchLayers(options: {
+    accessToken: string | undefined;
+  }): Promise<Layer[]> {
+    const assets = await this.fetchIonAssets(options);
     if (assets.items === undefined) {
       throw new Error(
         `Failed to load assets from Cesium Ion: ${assets.message}`,
@@ -26,6 +43,46 @@ export class IonService extends BaseService {
     accessToken?: string,
   ): Layer => {
     switch (asset.type) {
+      case 'GEOJSON':
+        return {
+          type: LayerType.GeoJson,
+          id: makeId(asset.id),
+          opacity: 1,
+          source: {
+            type: LayerSourceType.CesiumIon,
+            assetId: asset.id,
+            accessToken: accessToken ?? undefined,
+          },
+          canUpdateOpacity: true,
+          shouldClampToGround: true,
+          isVisible: true,
+          label: asset.name,
+          geocatId: null,
+          downloadUrl: null,
+          legend: null,
+          customProperties: {},
+          orderOfProperties: [],
+          terrain: null,
+        } satisfies GeoJsonLayer;
+      case 'KML':
+        return {
+          type: LayerType.Kml,
+          id: makeId(asset.id),
+          opacity: 1,
+          source: {
+            type: LayerSourceType.CesiumIon,
+            assetId: asset.id,
+            accessToken: accessToken ?? undefined,
+          },
+          canUpdateOpacity: false,
+          shouldClampToGround: true,
+          isVisible: true,
+          label: asset.name,
+          geocatId: null,
+          downloadUrl: null,
+          legend: null,
+          customProperties: {},
+        } satisfies KmlLayer;
       case '3DTILES':
         return {
           type: LayerType.Tiles3d,
@@ -51,19 +108,44 @@ export class IonService extends BaseService {
     }
   };
 
-  private async fetchIonAssets(
-    accessToken?: string,
+  public async fetchIonAssets(
+    options: AssetOptions,
   ): Promise<{ items?: IonAsset[]; message?: string }> {
     const url = new URL('https://api.cesium.com/v1/assets');
 
-    url.searchParams.set('status', 'COMPLETE' satisfies AssetStatus);
-    url.searchParams.set('type', '3DTILES' satisfies AssetType);
+    const status = options.status ?? DEFAULT_ASSET_STATUS;
+    const statusParam = Array.isArray(status) ? status.join(',') : status;
+    url.searchParams.set('status', statusParam);
+    const assetType = options.type ?? DEFAULT_ASSET_TYPES;
+    if (Array.isArray(assetType)) {
+      for (const type of assetType) {
+        url.searchParams.append('type', type);
+      }
+    } else {
+      url.searchParams.set('type', assetType);
+    }
+    if (options.search) {
+      url.searchParams.set('search', options.search);
+    }
+    if (options.sortOrder) {
+      url.searchParams.set('sortOrder', options.sortOrder);
+    }
+    if (options.sortBy) {
+      url.searchParams.set('sortBy', options.sortBy);
+    }
+    if (options.page) {
+      url.searchParams.set('page', options.page.toString());
+    }
+    if (options.limit) {
+      url.searchParams.set('limit', options.limit.toString());
+    }
 
-    accessToken ??= BaseService.get(clientConfigContext).ionDefaultAccessToken;
+    options.accessToken ??=
+      BaseService.get(clientConfigContext).ionDefaultAccessToken;
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${options.accessToken}`,
       },
     });
 
@@ -71,7 +153,7 @@ export class IonService extends BaseService {
   }
 }
 
-interface IonAsset {
+export interface IonAsset {
   archivable: boolean;
   attribution: string;
   bytes: number;
@@ -85,7 +167,25 @@ interface IonAsset {
   type: AssetType;
 }
 
-type AssetStatus =
+type AssetOptions = {
+  accessToken: string | undefined;
+  status?: AssetStatus | AssetStatus[];
+  type?: AssetType | AssetType[];
+  sortOrder?: 'ASC' | 'DESC';
+  sortBy?:
+    | 'ID'
+    | 'NAME'
+    | 'DESCRIPTION'
+    | 'BYTES'
+    | 'TYPE'
+    | 'STATUS'
+    | 'DATE_ADDED';
+  search?: string;
+  page?: number;
+  limit?: number;
+};
+
+export type AssetStatus =
   | 'AWAITING_FILES'
   | 'NOT_STARTED'
   | 'IN_PROGRESS'
@@ -93,7 +193,7 @@ type AssetStatus =
   | 'ERROR'
   | 'DATA_ERROR';
 
-type AssetType =
+export type AssetType =
   | '3DTILES'
   | 'GLTF'
   | 'IMAGERY'
