@@ -1,0 +1,147 @@
+import {
+  LayerStyle,
+  PointLayerStyleValues,
+  LineLayerStyleValues,
+  PolygonLayerStyleValues,
+  LayerStyleGeomType,
+  PointVectorOptions,
+  LayerStyleValues,
+} from 'src/features/layer';
+import {
+  Entity,
+  PropertyBag,
+  ConstantProperty,
+  JulianDate,
+  Cartesian3,
+  HeightReference,
+} from 'cesium';
+import { DEFAULT_UPLOADED_GEOJSON_COLOR } from 'src/constants';
+
+function normalizeValue(value: unknown): unknown {
+  if (typeof value === 'string') {
+    const num = Number(value);
+
+    // Only convert if it is a valid number string
+    if (!Number.isNaN(num)) {
+      return num;
+    }
+  }
+
+  return value;
+}
+
+export function getStyleForProperty(
+  properties: PropertyBag,
+  layerStyle: LayerStyle,
+  geometryType: 'point',
+): PointLayerStyleValues | void;
+export function getStyleForProperty(
+  properties: PropertyBag,
+  layerStyle: LayerStyle,
+  geometryType: 'line',
+): LineLayerStyleValues | void;
+export function getStyleForProperty(
+  properties: PropertyBag,
+  layerStyle: LayerStyle,
+  geometryType: 'polygon',
+): PolygonLayerStyleValues | void;
+export function getStyleForProperty(
+  properties: PropertyBag,
+  layerStyle: LayerStyle,
+  geometryType: LayerStyleGeomType,
+): LayerStyleValues | void {
+  const prop = properties[layerStyle.property];
+  let value: string | number;
+  if (prop instanceof ConstantProperty) {
+    value = prop.getValue(JulianDate.now());
+  } else {
+    value = prop;
+  }
+  value = normalizeValue(value) as string | number;
+
+  return layerStyle.values.find(
+    (v) => v.value === value && v.geomType === geometryType,
+  );
+}
+
+export function applyLayerStyleToBillBoardEntity(
+  properties: PropertyBag,
+  layerStyle: LayerStyle,
+  position: Cartesian3,
+): Entity | void {
+  const style = getStyleForProperty(properties, layerStyle, 'point');
+  if (!style) {
+    return;
+  }
+
+  const vectorOptions = style.vectorOptions;
+  const canvas = getBillBoardImage(style.vectorOptions) ?? null;
+  if (!canvas) {
+    return;
+  }
+
+  return new Entity({
+    position,
+    billboard: {
+      image: canvas,
+      rotation: vectorOptions.rotation ?? 0,
+      heightReference: HeightReference.CLAMP_TO_TERRAIN,
+    },
+    properties,
+  });
+}
+
+function getBillBoardImage(
+  vectorOptions: PointVectorOptions,
+): HTMLCanvasElement | void {
+  const shape = vectorOptions.type;
+  const radius = vectorOptions.radius || 10;
+  const fillColor =
+    vectorOptions.fill?.color ??
+    DEFAULT_UPLOADED_GEOJSON_COLOR.toCssColorString();
+  const strokeColor =
+    vectorOptions.stroke?.color ??
+    DEFAULT_UPLOADED_GEOJSON_COLOR.toCssColorString();
+  const strokeWidth = vectorOptions.stroke?.width ?? 1;
+
+  const canvas = document.createElement('canvas');
+  const size = (radius + strokeWidth) * 2;
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext('2d');
+  if (!context) {
+    return;
+  }
+
+  context.fillStyle = fillColor;
+  context.strokeStyle = strokeColor;
+  context.lineWidth = strokeWidth;
+
+  context.beginPath();
+  switch (shape) {
+    case 'circle':
+      context.arc(size / 2, size / 2, radius, 0, Math.PI * 2);
+      break;
+    case 'square':
+      context.rect(
+        strokeWidth,
+        strokeWidth,
+        size - strokeWidth * 2,
+        size - strokeWidth * 2,
+      );
+      break;
+    case 'triangle':
+      context.moveTo(size / 2, strokeWidth);
+      context.lineTo(size - strokeWidth, size - strokeWidth);
+      context.lineTo(strokeWidth, size - strokeWidth);
+      context.closePath();
+      break;
+    default:
+      context.arc(size / 2, size / 2, radius, 0, Math.PI * 2);
+      break;
+  }
+  context.fill();
+  context.stroke();
+
+  return canvas;
+}

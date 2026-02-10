@@ -27,20 +27,49 @@ export interface GeoJsonLayer extends BaseLayer {
   layerStyle: LayerStyle | null;
 }
 
-export interface VectorOptions {
-  type: 'circle' | 'triangle' | 'square';
+export interface PointLayerStyleValues {
+  geomType: 'point';
+  value: string | number;
+  vectorOptions: PointVectorOptions;
+}
+
+export interface LineLayerStyleValues {
+  geomType: 'line';
+  value: string | number;
+  vectorOptions: LineVectorOptions;
+}
+
+export interface PolygonLayerStyleValues {
+  geomType: 'polygon';
+  value: string | number;
+  vectorOptions: PolygonVectorOptions;
+}
+
+export type LayerStyleValues =
+  | PointLayerStyleValues
+  | LineLayerStyleValues
+  | PolygonLayerStyleValues;
+export type LayerStyleGeomType = 'point' | 'line' | 'polygon';
+
+type PointVectorOptionsType = 'circle' | 'triangle' | 'square';
+export interface PointVectorOptions {
+  type?: PointVectorOptionsType;
   radius: number;
   rotation?: number;
   fill?: { color?: string };
   stroke?: { color?: string; width?: number };
 }
 
+interface LineVectorOptions {
+  stroke?: { color?: string; width?: number };
+}
+
+interface PolygonVectorOptions {
+  fill?: { color?: string };
+  stroke?: { color?: string; width?: number };
+}
+
 export interface LayerStyle {
-  type: 'unique';
   property: string;
-  values: Array<{
-    geomType: 'point';
-    value: string | number;
-    vectorOptions: VectorOptions;
-  }>;
+  values: Array<LayerStyleValues>;
 }

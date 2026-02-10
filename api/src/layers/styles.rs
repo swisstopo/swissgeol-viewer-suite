@@ -46,7 +46,7 @@ pub enum StyleValue {
 #[serde(rename_all = "camelCase")]
 pub struct VectorOptions {
     #[serde(rename = "type")]
-    pub kind: MarkerType,
+    pub kind: Option<MarkerType>,
 
     pub radius: f64,
 
