@@ -1,14 +1,15 @@
 import {
   BaseLayerController,
   LayerService,
+  LayerStyle,
   LayerType,
   mapLayerSourceToResource,
   Tiles3dLayer,
   Tiles3dLayerController,
 } from 'src/features/layer';
 import {
-  applyLayerStyleToBillBoardEntity,
   getStyleForProperty,
+  createCanvasForBillboard,
 } from 'src/features/layer/utils/layer-style.utils';
 import { GeoJsonLayer } from 'src/features/layer/models/layer-geojson.model';
 import {
@@ -22,6 +23,8 @@ import {
   Cesium3DTileset,
   CustomDataSource,
   HeightReference,
+  PropertyBag,
+  Cartesian3,
 } from 'cesium';
 import { DEFAULT_UPLOADED_GEOJSON_COLOR } from 'src/constants';
 import { makeId } from 'src/models/id.model';
@@ -160,7 +163,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
 
     // LayerStyles defined on the layer should override any styling defined in the GeoJson properties.
     if (this.layer.layerStyle && ent.properties) {
-      return applyLayerStyleToBillBoardEntity(
+      return this.applyLayerStyleToBillBoardEntity(
         ent.properties,
         this.layer.layerStyle,
         position,
@@ -356,5 +359,32 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
         );
       }
     }
+  }
+
+  private applyLayerStyleToBillBoardEntity(
+    properties: PropertyBag,
+    layerStyle: LayerStyle,
+    position: Cartesian3,
+  ): Entity | void {
+    const style = getStyleForProperty(properties, layerStyle, 'point');
+    if (!style) {
+      return;
+    }
+
+    const vectorOptions = style.vectorOptions;
+    const canvas = createCanvasForBillboard(style.vectorOptions) ?? null;
+    if (!canvas) {
+      return;
+    }
+
+    return new Entity({
+      position,
+      billboard: {
+        image: canvas,
+        rotation: vectorOptions.rotation ?? 0,
+        heightReference: HeightReference.CLAMP_TO_TERRAIN,
+      },
+      properties,
+    });
   }
 }

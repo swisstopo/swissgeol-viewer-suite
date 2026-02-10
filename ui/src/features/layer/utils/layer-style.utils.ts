@@ -7,14 +7,7 @@ import {
   PointVectorOptions,
   LayerStyleValues,
 } from 'src/features/layer';
-import {
-  Entity,
-  PropertyBag,
-  ConstantProperty,
-  JulianDate,
-  Cartesian3,
-  HeightReference,
-} from 'cesium';
+import { PropertyBag, ConstantProperty, JulianDate } from 'cesium';
 import { DEFAULT_UPLOADED_GEOJSON_COLOR } from 'src/constants';
 
 function normalizeValue(value: string | number): string | number {
@@ -63,34 +56,7 @@ export function getStyleForProperty(
   );
 }
 
-export function applyLayerStyleToBillBoardEntity(
-  properties: PropertyBag,
-  layerStyle: LayerStyle,
-  position: Cartesian3,
-): Entity | void {
-  const style = getStyleForProperty(properties, layerStyle, 'point');
-  if (!style) {
-    return;
-  }
-
-  const vectorOptions = style.vectorOptions;
-  const canvas = getBillBoardImage(style.vectorOptions) ?? null;
-  if (!canvas) {
-    return;
-  }
-
-  return new Entity({
-    position,
-    billboard: {
-      image: canvas,
-      rotation: vectorOptions.rotation ?? 0,
-      heightReference: HeightReference.CLAMP_TO_TERRAIN,
-    },
-    properties,
-  });
-}
-
-function getBillBoardImage(
+export function createCanvasForBillboard(
   vectorOptions: PointVectorOptions,
 ): HTMLCanvasElement | void {
   const shape = vectorOptions.type;
