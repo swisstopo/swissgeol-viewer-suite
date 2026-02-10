@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.10.0]
+
+### Added
+
+- GeoJSON and KML layers can now be configured and served via the backend API.
+- Layergroups in the layertree can now be hidden depending on user access groups or the environment.
+
+### Changed
+
+- The Cesium Ion access token is now reloaded when opening the upload modal.
+- The transparent background layer will always stay transparent, no matter the opacity.
+- The Cesium Ion token is no longer added to the modal per default.
+- The Cesium Ion upload tool now supports GeoJSON and KML assets.
+
+### Fixed
+
+- Missing legends for WMS layers are now correctly displayed.
+
 ## [1.9.0]
 ### Added
 - Added support for 3dtiles v1.1.
