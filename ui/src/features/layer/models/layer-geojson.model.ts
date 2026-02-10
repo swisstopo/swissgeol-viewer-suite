@@ -49,27 +49,38 @@ export type LayerStyleValues =
   | PointLayerStyleValues
   | LineLayerStyleValues
   | PolygonLayerStyleValues;
-export type LayerStyleGeomType = 'point' | 'line' | 'polygon';
 
-type PointVectorOptionsType = 'circle' | 'triangle' | 'square';
+export type LayerStyleGeomType = LayerStyleValues['geomType'];
+
+export interface FillStyle {
+  color?: string;
+}
+
+export interface StrokeStyle {
+  color?: string;
+  width?: number;
+}
+
+export type PointMarkerType = 'circle' | 'triangle' | 'square';
+
 export interface PointVectorOptions {
-  type?: PointVectorOptionsType;
+  type?: PointMarkerType;
   radius: number;
   rotation?: number;
-  fill?: { color?: string };
-  stroke?: { color?: string; width?: number };
+  fill?: FillStyle;
+  stroke?: StrokeStyle;
 }
 
-interface LineVectorOptions {
-  stroke?: { color?: string; width?: number };
+export interface LineVectorOptions {
+  stroke?: StrokeStyle;
 }
 
-interface PolygonVectorOptions {
-  fill?: { color?: string };
-  stroke?: { color?: string; width?: number };
+export interface PolygonVectorOptions {
+  fill?: FillStyle;
+  stroke?: StrokeStyle;
 }
 
 export interface LayerStyle {
   property: string;
-  values: Array<LayerStyleValues>;
+  values: LayerStyleValues[];
 }

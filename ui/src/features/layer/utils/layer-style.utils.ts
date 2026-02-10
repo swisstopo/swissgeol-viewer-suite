@@ -17,7 +17,7 @@ import {
 } from 'cesium';
 import { DEFAULT_UPLOADED_GEOJSON_COLOR } from 'src/constants';
 
-function normalizeValue(value: unknown): unknown {
+function normalizeValue(value: string | number): string | number {
   if (typeof value === 'string') {
     const num = Number(value);
 
@@ -51,13 +51,12 @@ export function getStyleForProperty(
   geometryType: LayerStyleGeomType,
 ): LayerStyleValues | void {
   const prop = properties[layerStyle.property];
-  let value: string | number;
-  if (prop instanceof ConstantProperty) {
-    value = prop.getValue(JulianDate.now());
-  } else {
-    value = prop;
+  if (!prop) {
+    return;
   }
-  value = normalizeValue(value) as string | number;
+  const propertyValue =
+    prop instanceof ConstantProperty ? prop.getValue(JulianDate.now()) : prop;
+  const value = normalizeValue(propertyValue);
 
   return layerStyle.values.find(
     (v) => v.value === value && v.geomType === geometryType,
