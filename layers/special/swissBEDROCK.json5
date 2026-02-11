@@ -99,9 +99,9 @@
       },
       terrain: {
         type: 'CesiumIon',
-        asset_id: 4182502, // <-- Anpassen!!!
+        asset_id: 4182502,
       },
-      opacity: 0.5,
+      opacity: 1,
       download_url: {
         de: 'https://www.swisstopo.admin.ch/de/swissbedrock-de',
         en: 'https://www.swisstopo.admin.ch/en/swissbedrock-en',
