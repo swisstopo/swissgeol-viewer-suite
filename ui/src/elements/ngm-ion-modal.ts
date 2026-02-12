@@ -49,9 +49,6 @@ export class NgmIonModal extends CoreElement {
   accessor assetsToAdd: Set<IonAsset> = new Set<IonAsset>();
 
   @state()
-  accessor selectedIonAssetIds: Set<number> = new Set<number>();
-
-  @state()
   accessor errorMessage: string | undefined;
 
   @state()
@@ -73,9 +70,7 @@ export class NgmIonModal extends CoreElement {
   }
 
   get unselectedAssets(): IonAsset[] {
-    return this.assets.filter(
-      (asset) => !this.selectedIonAssetIds.has(asset.id),
-    );
+    return this.assets.filter((asset) => !this.isLayerIdActivated(asset.id));
   }
 
   async onLoadAssets() {
@@ -93,10 +88,7 @@ export class NgmIonModal extends CoreElement {
       type: ['3DTILES', 'GEOJSON', 'KML'],
     });
     if (res.items) {
-      this.assets = res.items.filter((it) => {
-        // Filter out custom layers that have already been activated.
-        return !this.layerService.hasLayer(makeId<Layer>(it.id));
-      });
+      this.assets = res.items;
       this.assetsToDisplay = this.assets;
     } else {
       this.errorMessage = res.message;
@@ -218,13 +210,6 @@ export class NgmIonModal extends CoreElement {
 
     this.layerService.activateCustomLayer(customLayer);
 
-    // Hide the layer from the list of assets.
-    const indexInAssets = this.assets.indexOf(ionAsset);
-    this.assets.splice(indexInAssets, 1);
-
-    const indexInDisplayedAssets = this.assetsToDisplay.indexOf(ionAsset);
-    this.assetsToDisplay.splice(indexInDisplayedAssets, 1);
-
     this.requestUpdate();
   }
 
@@ -241,6 +226,10 @@ export class NgmIonModal extends CoreElement {
       this.confirmationToast = undefined;
     }
     this.dispatchEvent(new CustomEvent('close'));
+  }
+
+  isLayerIdActivated(id: number): boolean {
+    return this.layerService.hasLayer(makeId<Layer>(id));
   }
 
   updateTokenInput(event: InputChangeEvent) {
@@ -331,19 +320,20 @@ export class NgmIonModal extends CoreElement {
                     <tr
                       class="${classMap({
                         'is-active': this.assetsToAdd.has(row),
+                        'is-disabled': this.isLayerIdActivated(row.id),
                       })}"
                     >
                       <td class="table-column-checkbox">
                         <sgc-checkbox
                           value="${this.assetsToAdd.has(row)}"
-                          ?disabled="${this.selectedIonAssetIds.has(row.id)}"
+                          ?disabled="${this.isLayerIdActivated(row.id)}"
                           @checkboxChange="${() => this.toggleSingleAsset(row)}"
                         ></sgc-checkbox>
                       </td>
                       <td class="table-column-id">${row.id}</td>
                       <td class="table-column-value">${row.name}</td>
                       <td class="table-column-action">
-                        ${this.selectedIonAssetIds.has(row.id)
+                        ${this.isLayerIdActivated(row.id)
                           ? html`<sgc-icon name="checkmark"></sgc-icon>`
                           : // Replace button with sgc-button when new size has been added
                             html` <ngm-core-button
@@ -481,6 +471,9 @@ export class NgmIonModal extends CoreElement {
     table thead,
     tr.is-active {
       background-color: var(--sgc-color-border--default);
+    }
+    tr.is-disabled {
+      background-color: var(--color-bg--grey);
     }
 
     tbody tr {
