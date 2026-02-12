@@ -17,57 +17,6 @@
       geocat_id: "63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2"
     },
 
-    // TEST 01 GeoMol Temperature Model
-    {
-      type: "Voxel",
-      id: "voxel_geomol_temp_c_TEST_01",
-      source: {
-        type: "CesiumIon",
-        asset_id: 4184405
-      },
-      data_key: "Temp_C",
-      mappings:['geomol_temp_c'],
-      values: {
-        no_data: -99999,
-        undefined: -9999,
-      },
-      geocat_id: "63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2"
-    },
-
-    // TEST 02 GeoMol Temperature Model
-    {
-      type: "Voxel",
-      id: "voxel_geomol_temp_c_TEST_02",
-      source: {
-        type: "CesiumIon",
-        asset_id: 4213728
-      },
-      data_key: "Temp_C",
-      mappings:['geomol_temp_c'],
-      values: {
-        no_data: -99999,
-        undefined: -9999,
-      },
-      geocat_id: "63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2"
-    },
-
-    // TEST 03 GeoMol Temperature Model
-    {
-      type: "Voxel",
-      id: "voxel_geomol_temp_c_TEST_03",
-      source: {
-        type: "CesiumIon",
-        asset_id: 4442914 //4442609 //4346439
-      },
-      data_key: "Temp_C",
-      mappings:['geomol_temp_c'],
-      values: {
-        no_data: -99999,
-        undefined: -9999,
-      },
-      geocat_id: "63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2"
-    },
-
     // Aaretal - Modelling Units
     {
       type: "Voxel",

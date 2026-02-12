@@ -228,10 +228,7 @@
           id: 'temp_models',
           children: [
             'ch.swisstopo.geologie-geophysik-geothermie',
-            'voxel_geomol_temp_c', // Temporaly de-published
-            'voxel_geomol_temp_c_TEST_01',
-            'voxel_geomol_temp_c_TEST_02',
-            'voxel_geomol_temp_c_TEST_03',
+            //'voxel_geomol_temp_c', // Temporaly de-published
             'temp_iso_60',
             'temp_iso_100',
             'temp_iso_150',
