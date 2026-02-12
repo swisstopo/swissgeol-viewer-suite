@@ -192,6 +192,9 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       return;
     }
 
+    let width = ent.polyline.width?.getValue(JulianDate.now()) ?? 2;
+    let material = ent.polyline.material;
+
     if (this.layer.layerStyle && ent.properties) {
       const style = getStyleForProperty(
         ent.properties,
@@ -199,19 +202,13 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
         'line',
       );
       if (style) {
+        width = style.vectorOptions.stroke?.width ?? 2;
         const color = style.vectorOptions.stroke?.color;
-        return new Entity({
-          polyline: {
-            positions,
-            classificationType,
-            clampToGround: true,
-            width: style.vectorOptions.stroke?.width ?? 2,
-            material: color
-              ? new ColorMaterialProperty(Color.fromCssColorString(color))
-              : DEFAULT_UPLOADED_GEOJSON_COLOR,
-          },
-          properties: ent.properties,
-        });
+        material = new ColorMaterialProperty(
+          color
+            ? Color.fromCssColorString(color)
+            : DEFAULT_UPLOADED_GEOJSON_COLOR,
+        );
       }
     }
 
@@ -220,8 +217,8 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
         positions,
         classificationType,
         clampToGround: true,
-        width: ent.polyline.width?.getValue(JulianDate.now()) ?? 2,
-        material: ent.polyline.material,
+        width,
+        material,
       },
       properties: ent.properties,
     });
@@ -372,7 +369,6 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     }
 
     const vectorOptions = style.vectorOptions;
-
     if (vectorOptions.type === 'icon') {
       return new Entity({
         position,
@@ -383,7 +379,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
         properties,
       });
     }
-    const canvas = createCanvasForBillboard(style.vectorOptions) ?? null;
+    const canvas = createCanvasForBillboard(vectorOptions) ?? null;
     if (!canvas) {
       return;
     }

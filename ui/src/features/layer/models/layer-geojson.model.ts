@@ -61,8 +61,9 @@ export interface StrokeStyle {
   width?: number;
 }
 
+export type ShapePointType = 'circle' | 'triangle' | 'square';
 export interface ShapePointVectorOptions {
-  type?: 'circle' | 'triangle' | 'square';
+  type?: ShapePointType;
   radius?: number;
   rotation?: number;
   fill?: FillStyle;
