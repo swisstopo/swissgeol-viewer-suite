@@ -372,6 +372,17 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     }
 
     const vectorOptions = style.vectorOptions;
+
+    if (vectorOptions.type === 'icon') {
+      return new Entity({
+        position,
+        billboard: {
+          image: vectorOptions.src,
+          heightReference: HeightReference.CLAMP_TO_TERRAIN,
+        },
+        properties,
+      });
+    }
     const canvas = createCanvasForBillboard(style.vectorOptions) ?? null;
     if (!canvas) {
       return;

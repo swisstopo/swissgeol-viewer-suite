@@ -1,0 +1,114 @@
+{
+  layers: [
+    // Groundwter quantity
+    {
+      type: 'GeoJson',
+      id: 'ch.bafu.hydroweb-messstationen_grundwasser',
+      source: {
+        type: 'Url',
+        url: 'https://api3.geo.admin.ch/featureattachments/ch.bafu.hydroweb-messstationen_grundwasser/ch.bafu.hydroweb-messstationen_grundwasser_de.json',
+      },
+      styles: {
+        "property": "grundwasser-class",
+        "values": [
+          {
+            "geomType": "point",
+            "value": 2,
+            "vectorOptions": {
+              "type": "circle",
+              "radius": 8,
+              "fill": {
+                "color": "#808080"
+              },
+              "stroke": {
+                "color": "#FFFFFF",
+                "width": 1
+              }
+            }
+          },
+          {
+            "geomType": "point",
+            "value": 1,
+            "vectorOptions": {
+              "type": "triangle",
+              "radius": 12,
+              "rotation": 1.0471975511965976,
+              "fill": {
+                "color": "#808080"
+              },
+              "stroke": {
+                "color": "#FFFFFF",
+                "width": 1
+              }
+            }
+          },
+          {
+            "geomType": "point",
+            "value": 3,
+            "vectorOptions": {
+              "type": "square",
+              "radius": 10,
+              "rotation": 0.7853981633974483,
+              "fill": {
+                "color": "#808080"
+              },
+              "stroke": {
+                "color": "#FFFFFF",
+                "width": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      type: 'GeoJson',
+      id: 'ch.bafu.hydroweb-messstationen_grundwasserzustand',
+      source: {
+        type: 'Url',
+        url: 'https://api3.geo.admin.ch/featureattachments/ch.bafu.hydroweb-messstationen_grundwasserzustand/ch.bafu.hydroweb-messstationen_grundwasserzustand_de.json',
+      },
+      styles: {
+        "type": "unique",
+        "property": "quant-class",
+        "values": [
+          {
+            "geomType": "point",
+            "value": 0,
+            "vectorOptions": {
+              "type": "icon",
+              "src": "https://data.geo.admin.ch/ch.meteoschweiz/images/nodata14.png"
+            }
+          },
+          {
+            "geomType": "point",
+            "rotation": "quant-class-radiant",
+            "value": 1,
+            "vectorOptions": {
+              "type": "icon",
+              "src": "https://data.geo.admin.ch/ch.bafu.hydroweb-messstationen_grundwasserzustand/images/arrow16_239_163_127.png"
+            }
+          },
+          {
+            "geomType": "point",
+            "rotation": "quant-class-radiant",
+            "value": 2,
+            "vectorOptions": {
+              "type": "icon",
+              "src": "https://data.geo.admin.ch/ch.bafu.hydroweb-messstationen_grundwasserzustand/images/arrow16_203_247_146.png"
+            }
+          },
+          {
+            "geomType": "point",
+            "rotation": "quant-class-radiant",
+            "value": 3,
+            "vectorOptions": {
+              "type": "icon",
+              "src": "https://data.geo.admin.ch/ch.bafu.hydroweb-messstationen_grundwasserzustand/images/arrow16_128_194_208.png"
+            }
+          },
+        ]
+      }
+    }
+  ]
+}

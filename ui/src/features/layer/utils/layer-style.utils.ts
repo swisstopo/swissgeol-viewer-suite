@@ -4,7 +4,7 @@ import {
   LineLayerStyleValues,
   PolygonLayerStyleValues,
   LayerStyleGeomType,
-  PointVectorOptions,
+  ShapePointVectorOptions,
   LayerStyleValues,
 } from 'src/features/layer';
 import { PropertyBag, ConstantProperty, JulianDate } from 'cesium';
@@ -57,10 +57,10 @@ export function getStyleForProperty(
 }
 
 export function createCanvasForBillboard(
-  vectorOptions: PointVectorOptions,
+  vectorOptions: ShapePointVectorOptions,
 ): HTMLCanvasElement | void {
   const shape = vectorOptions.type;
-  const radius = vectorOptions.radius || 10;
+  const radius = vectorOptions.radius ?? 10;
   const fillColor =
     vectorOptions.fill?.color ??
     DEFAULT_UPLOADED_GEOJSON_COLOR.toCssColorString();

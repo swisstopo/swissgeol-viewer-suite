@@ -61,15 +61,22 @@ export interface StrokeStyle {
   width?: number;
 }
 
-export type PointMarkerType = 'circle' | 'triangle' | 'square';
-
-export interface PointVectorOptions {
-  type?: PointMarkerType;
-  radius: number;
+export interface ShapePointVectorOptions {
+  type?: 'circle' | 'triangle' | 'square';
+  radius?: number;
   rotation?: number;
   fill?: FillStyle;
   stroke?: StrokeStyle;
 }
+
+interface IconPointVectorOptions {
+  type: 'icon';
+  src: string;
+}
+
+export type PointVectorOptions =
+  | ShapePointVectorOptions
+  | IconPointVectorOptions;
 
 export interface LineVectorOptions {
   stroke?: StrokeStyle;

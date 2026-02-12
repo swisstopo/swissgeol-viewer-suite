@@ -48,11 +48,9 @@ pub enum StyleValue {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct PointVectorOptions {
-    #[serde(rename = "type", default, skip_serializing_if = "Option::is_none")]
-    pub kind: Option<PointMarkerType>,
-
-    pub radius: f64,
+pub struct BasePointVectorOptions {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub radius: Option<f64>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rotation: Option<f64>,
@@ -62,6 +60,49 @@ pub struct PointVectorOptions {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub stroke: Option<StrokeStyle>,
+}
+
+/// Point vector options for shape types (circle, triangle, square)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ShapePointVectorOptions {
+    #[serde(rename = "type", default, skip_serializing_if = "Option::is_none")]
+    pub kind: Option<ShapeMarkerType>,
+
+    #[serde(flatten)]
+    pub base: BasePointVectorOptions,
+}
+
+/// Point vector options for icon type (requires src)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IconPointVectorOptions {
+    #[serde(rename = "type")]
+    pub kind: IconMarkerType,
+
+    pub src: String,
+}
+
+/// Union of shape and icon point vector options
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum PointVectorOptions {
+    Icon(IconPointVectorOptions),
+    Shape(ShapePointVectorOptions),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ShapeMarkerType {
+    Circle,
+    Triangle,
+    Square,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum IconMarkerType {
+    Icon,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -81,13 +122,6 @@ pub struct PolygonVectorOptions {
     pub stroke: Option<StrokeStyle>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum PointMarkerType {
-    Circle,
-    Triangle,
-    Square,
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

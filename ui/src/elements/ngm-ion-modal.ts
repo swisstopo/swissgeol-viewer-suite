@@ -169,6 +169,7 @@ export class NgmIonModal extends CoreElement {
           customProperties: {},
           orderOfProperties: [],
           terrain: null,
+          layerStyle: null,
         } satisfies GeoJsonLayer;
         break;
       case 'KML':

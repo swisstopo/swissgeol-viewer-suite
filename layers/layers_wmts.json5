@@ -505,23 +505,6 @@
       geocat_id: '2bd1ab86-83ec-4c3e-b937-ab81b4968bc6',
       legend: true,
     },
-    // Groundwter quantity
-    {
-      type: 'Wmts',
-      id: 'ch.bafu.hydroweb-messstationen_grundwasser',
-      max_level: 18,
-      opacity: 0.7,
-      geocat_id: '6146dc21-18b6-4d94-8865-8c2b99256e1b',
-      legend: true,
-    },
-    {
-      type: 'Wmts',
-      id: 'ch.bafu.hydroweb-messstationen_grundwasserzustand',
-      max_level: 18,
-      opacity: 0.7,
-      geocat_id: 'f87d692e-8d65-4188-94ba-61b4c61d621c',
-      legend: true,
-    },
     // Tracer tests
     {
       type: 'Wmts',
