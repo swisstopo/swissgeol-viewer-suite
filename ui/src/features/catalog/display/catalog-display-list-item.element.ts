@@ -14,6 +14,7 @@ import {
   isBackgroundLayer,
   Layer,
   LayerType,
+  Tiles3dLayerController,
 } from 'src/features/layer';
 import { css, html } from 'lit';
 import { Id } from 'src/models/id.model';
@@ -41,6 +42,9 @@ export class CatalogDisplayListItem extends CoreElement {
   @state()
   accessor isBackgroundActive = false;
 
+  @state()
+  accessor canZoom = true;
+
   private windows!: WindowMapping;
 
   connectedCallback() {
@@ -52,8 +56,32 @@ export class CatalogDisplayListItem extends CoreElement {
       this.layerService.layer$(this.layerId).subscribe((layer) => {
         this.setAttribute('visible', `${layer.isVisible}`);
         this.layer = layer;
+        this.updateCanZoom();
       }),
     );
+  }
+
+  private updateCanZoom(): void {
+    const controller = this.layerService.controller(this.layerId);
+    if (!controller) {
+      this.canZoom = false;
+      return;
+    }
+
+    if (controller instanceof Tiles3dLayerController) {
+      this.canZoom = !!controller.tileset?.boundingSphere;
+      if (!this.canZoom) {
+        const checkInterval = setInterval(() => {
+          if (controller.tileset?.boundingSphere) {
+            this.canZoom = true;
+            this.requestUpdate();
+            clearInterval(checkInterval);
+          }
+        }, 100);
+      }
+    } else {
+      this.canZoom = true;
+    }
   }
 
   updated() {
@@ -230,7 +258,11 @@ export class CatalogDisplayListItem extends CoreElement {
       <ngm-core-icon icon="menu"></ngm-core-icon>
     </ngm-core-button>
     ${dropdown(html`
-      <ngm-core-dropdown-item role="button" @click="${this.zoomToLayer}">
+      <ngm-core-dropdown-item
+        role="button"
+        ?disabled="${!this.canZoom}"
+        @click="${this.zoomToLayer}"
+      >
         <ngm-core-icon icon="zoomPlus"></ngm-core-icon>
         ${i18next.t('dtd_zoom_to')}
       </ngm-core-dropdown-item>
