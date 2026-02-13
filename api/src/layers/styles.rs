@@ -122,7 +122,6 @@ pub struct PolygonVectorOptions {
     pub stroke: Option<StrokeStyle>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FillStyle {

@@ -13,7 +13,6 @@ pub struct GeoJsonLayer {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub terrain: Option<LayerSource>,
 
-
     /// The styles for the GeoJson layer.
     /// If absent, the styles will be automatically generated based on the GeoJson properties.
     #[serde(default, skip_serializing_if = "Option::is_none")]

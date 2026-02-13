@@ -12,7 +12,7 @@ export function isAllowedCrs(crs: string): crs is AllowedCrs {
   return Object.values(AllowedCrs).includes(crs as AllowedCrs);
 }
 
-type Coordinate = [number, number];
+export type Coordinate = number[];
 type CoordinateWithHeight = [number, number, number];
 type CoordinateOrNested =
   | Coordinate
