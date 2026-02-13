@@ -1,6 +1,7 @@
 {
   include: [
     'layers_wmts',
+    'layers_geojson',
     'layers_3dtiles',
     'special/voxels',
     'special/swissBEDROCK',

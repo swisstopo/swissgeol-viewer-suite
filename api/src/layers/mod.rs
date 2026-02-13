@@ -33,6 +33,9 @@ pub use voxel::*;
 mod source;
 pub use source::*;
 
+mod styles;
+pub use styles::*;
+
 mod access;
 pub use access::*;
 

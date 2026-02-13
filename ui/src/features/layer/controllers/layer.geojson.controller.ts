@@ -1,11 +1,16 @@
 import {
   BaseLayerController,
   LayerService,
+  LayerStyle,
   LayerType,
   mapLayerSourceToResource,
   Tiles3dLayer,
   Tiles3dLayerController,
 } from 'src/features/layer';
+import {
+  getStyleForProperty,
+  createCanvasForBillboard,
+} from 'src/features/layer/utils/layer-style.utils';
 import { GeoJsonLayer } from 'src/features/layer/models/layer-geojson.model';
 import {
   GeoJsonDataSource,
@@ -17,9 +22,17 @@ import {
   ClassificationType,
   Cesium3DTileset,
   CustomDataSource,
+  HeightReference,
+  PropertyBag,
+  Cartesian3,
 } from 'cesium';
 import { DEFAULT_UPLOADED_GEOJSON_COLOR } from 'src/constants';
 import { makeId } from 'src/models/id.model';
+import {
+  GeoJsonFeatureCollection,
+  isAllowedCrs,
+  reprojectGeoJsonToWgs84,
+} from 'src/projection';
 
 export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   private dataSource!: CustomDataSource;
@@ -65,7 +78,18 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     }
 
     const resource = await mapLayerSourceToResource(this.layer.source);
-    const geoJsonDataSource = await GeoJsonDataSource.load(resource);
+    const raw = (await resource.fetchJson()) as GeoJsonFeatureCollection;
+    let geoJsonDataSource: GeoJsonDataSource;
+    const crsName = raw?.crs?.properties?.name;
+    if (crsName) {
+      if (!isAllowedCrs(crsName)) {
+        throw new Error(`Unsupported CRS: ${crsName}`);
+      }
+      const converted = reprojectGeoJsonToWgs84(crsName, raw);
+      geoJsonDataSource = await GeoJsonDataSource.load(converted);
+    } else {
+      geoJsonDataSource = await GeoJsonDataSource.load(resource);
+    }
 
     if (this.dataSource === undefined) {
       this.dataSource = new CustomDataSource();
@@ -81,7 +105,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     this.dataSource.entities.suspendEvents();
 
     for (const ent of geoJsonDataSource.entities.values) {
-      if (dataSource.name.length === 0) {
+      if (dataSource.name?.length === 0) {
         dataSource.name = ent.name ?? '';
       }
       this.addEntityToDataSource(ent, dataSource);
@@ -106,6 +130,12 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     const classificationType = this.terrainController
       ? ClassificationType.CESIUM_3D_TILE
       : ClassificationType.BOTH;
+    if (ent.billboard) {
+      const billboard = this.createBillboardEntity(ent);
+      if (billboard) {
+        dataSource.entities.add(billboard);
+      }
+    }
     if (ent.polyline) {
       const polyline = this.createPolylineEntity(ent, classificationType);
       if (polyline) {
@@ -122,6 +152,34 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     }
   }
 
+  private createBillboardEntity(ent: Entity): Entity | void {
+    if (!ent.billboard) {
+      return;
+    }
+    const position = ent.position?.getValue(JulianDate.now());
+    if (!position) {
+      return;
+    }
+
+    // LayerStyles defined on the layer should override any styling defined in the GeoJson properties.
+    if (this.layer.layerStyle && ent.properties) {
+      return this.applyLayerStyleToBillBoardEntity(
+        ent.properties,
+        this.layer.layerStyle,
+        position,
+      );
+    }
+
+    return new Entity({
+      position,
+      billboard: {
+        image: ent.billboard.image,
+        heightReference: HeightReference.CLAMP_TO_TERRAIN,
+      },
+      properties: ent.properties,
+    });
+  }
+
   private createPolylineEntity(
     ent: Entity,
     classificationType: ClassificationType,
@@ -134,14 +192,33 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       return;
     }
 
+    let width = ent.polyline.width?.getValue(JulianDate.now()) ?? 2;
+    let material = ent.polyline.material;
+
+    if (this.layer.layerStyle && ent.properties) {
+      const style = getStyleForProperty(
+        ent.properties,
+        this.layer.layerStyle,
+        'line',
+      );
+      if (style) {
+        width = style.vectorOptions.stroke?.width ?? 2;
+        const color = style.vectorOptions.stroke?.color;
+        material = new ColorMaterialProperty(
+          color
+            ? Color.fromCssColorString(color)
+            : DEFAULT_UPLOADED_GEOJSON_COLOR,
+        );
+      }
+    }
+
     return new Entity({
-      name: `${ent.id}-polyline`,
       polyline: {
         positions,
         classificationType,
         clampToGround: true,
-        width: ent.polyline.width?.getValue(JulianDate.now()) ?? 2,
-        material: ent.polyline.material,
+        width,
+        material,
       },
       properties: ent.properties,
     });
@@ -160,8 +237,45 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       return;
     }
 
+    if (this.layer.layerStyle && ent.properties) {
+      const style = getStyleForProperty(
+        ent.properties,
+        this.layer.layerStyle,
+        'polygon',
+      );
+      if (style) {
+        const fillColor = style.vectorOptions.fill?.color;
+        const polygon = new Entity({
+          polygon: {
+            hierarchy,
+            classificationType,
+            outline: false,
+            material: fillColor
+              ? new ColorMaterialProperty(Color.fromCssColorString(fillColor))
+              : DEFAULT_UPLOADED_GEOJSON_COLOR,
+          },
+          properties: ent.properties,
+        });
+        // When clamping a GeoJson to the ground, the borders disappear.
+        // This is why we add the borders manually for all Polygon Entities
+        const strokeColor = style.vectorOptions.stroke?.color;
+        const border = new Entity({
+          polyline: {
+            classificationType,
+            positions: hierarchy.positions,
+            clampToGround: true,
+            width: style.vectorOptions.stroke?.width ?? 2,
+            material: strokeColor
+              ? new ColorMaterialProperty(Color.fromCssColorString(strokeColor))
+              : DEFAULT_UPLOADED_GEOJSON_COLOR,
+          },
+          properties: ent.properties,
+        });
+        return [border, polygon];
+      }
+    }
+
     const polygon = new Entity({
-      name: `${ent.id}-polygon`,
       polygon: {
         hierarchy,
         classificationType,
@@ -173,7 +287,6 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     // When clamping a GeoJson to the ground, the borders disappear.
     // This is why we add the borders manually for all Polygon Entities
     const border = new Entity({
-      name: `${ent.id}-border`,
       polyline: {
         classificationType,
         positions: hierarchy.positions,
@@ -243,5 +356,42 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
         );
       }
     }
+  }
+
+  private applyLayerStyleToBillBoardEntity(
+    properties: PropertyBag,
+    layerStyle: LayerStyle,
+    position: Cartesian3,
+  ): Entity | void {
+    const style = getStyleForProperty(properties, layerStyle, 'point');
+    if (!style) {
+      return;
+    }
+
+    const vectorOptions = style.vectorOptions;
+    if (vectorOptions.type === 'icon') {
+      return new Entity({
+        position,
+        billboard: {
+          image: vectorOptions.src,
+          heightReference: HeightReference.CLAMP_TO_TERRAIN,
+        },
+        properties,
+      });
+    }
+    const canvas = createCanvasForBillboard(vectorOptions) ?? null;
+    if (!canvas) {
+      return;
+    }
+
+    return new Entity({
+      position,
+      billboard: {
+        image: canvas,
+        rotation: vectorOptions.rotation ?? 0,
+        heightReference: HeightReference.CLAMP_TO_TERRAIN,
+      },
+      properties,
+    });
   }
 }

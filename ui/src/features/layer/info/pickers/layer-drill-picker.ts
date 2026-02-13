@@ -137,7 +137,7 @@ export abstract class LayerInfoDrillPicker<T extends Layer>
   }
 
   private pickEntity(entity: Entity, primitive: object): LayerInfo[] {
-    if (!primitive['allowPicking']) {
+    if (primitive?.['allowPicking'] === false) {
       return [];
     }
 

@@ -23,4 +23,72 @@ export interface GeoJsonLayer extends BaseLayer {
    * Keys that are left out will be sorted below any sorted ones, in default order.
    */
   orderOfProperties: string[];
+
+  layerStyle: LayerStyle | null;
+}
+
+export interface PointLayerStyleValues {
+  geomType: 'point';
+  value: string | number;
+  vectorOptions: PointVectorOptions;
+}
+
+export interface LineLayerStyleValues {
+  geomType: 'line';
+  value: string | number;
+  vectorOptions: LineVectorOptions;
+}
+
+export interface PolygonLayerStyleValues {
+  geomType: 'polygon';
+  value: string | number;
+  vectorOptions: PolygonVectorOptions;
+}
+
+export type LayerStyleValues =
+  | PointLayerStyleValues
+  | LineLayerStyleValues
+  | PolygonLayerStyleValues;
+
+export type LayerStyleGeomType = LayerStyleValues['geomType'];
+
+export interface FillStyle {
+  color?: string;
+}
+
+export interface StrokeStyle {
+  color?: string;
+  width?: number;
+}
+
+export type ShapePointType = 'circle' | 'triangle' | 'square';
+export interface ShapePointVectorOptions {
+  type?: ShapePointType;
+  radius?: number;
+  rotation?: number;
+  fill?: FillStyle;
+  stroke?: StrokeStyle;
+}
+
+interface IconPointVectorOptions {
+  type: 'icon';
+  src: string;
+}
+
+export type PointVectorOptions =
+  | ShapePointVectorOptions
+  | IconPointVectorOptions;
+
+export interface LineVectorOptions {
+  stroke?: StrokeStyle;
+}
+
+export interface PolygonVectorOptions {
+  fill?: FillStyle;
+  stroke?: StrokeStyle;
+}
+
+export interface LayerStyle {
+  property: string;
+  values: LayerStyleValues[];
 }
