@@ -16,14 +16,14 @@
       },
       geocat_id: "63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2"
     },
-    
+
     // Aaretal - Modelling Units
     {
       type: "Voxel",
       id: "voxel_aaretal_modelling_units",
       source: {
         type: "CesiumIon",
-        asset_id: 4079378,
+        asset_id: 4352636
       },
       data_key: "Index",
       mappings: ['conductivity','aaretal_lithology'],
@@ -39,7 +39,7 @@
       id: "voxel_aaretal_conductivity",
       source: {
         type: "CesiumIon",
-        asset_id: 4079378,
+        asset_id: 4352636
       },
       data_key: "logk",
       mappings: ['conductivity', 'aaretal_lithology'],
@@ -55,7 +55,7 @@
       id: "voxel_birr_modelling_units",
       source: {
         type: "CesiumIon",
-        asset_id: 4070346,
+        asset_id: 4365028
       },
       data_key: "Index",
       mappings: ['conductivity', 'birr_lithology'],
@@ -71,7 +71,7 @@
       id: "voxel_birr_conductivity",
       source: {
         type: "CesiumIon",
-        asset_id: 4070346,
+        asset_id: 4365028
       },
       data_key: "logk",
       mappings: ['conductivity', 'birr_lithology'],
@@ -87,7 +87,7 @@
       id: "voxel_genf_modelling_units",
       source: {
         type: "CesiumIon",
-        asset_id: 4070290,
+        asset_id: 4365430
       },
       data_key: "Index",
       mappings: ['conductivity', 'genf_lithology'],
@@ -103,7 +103,7 @@
       id: "voxel_genf_conductivity",
       source: {
         type: "CesiumIon",
-        asset_id: 4070290,
+        asset_id: 4365430
       },
       data_key: "logk",
       mappings: ['conductivity', 'genf_lithology'],
@@ -119,7 +119,7 @@
       id: "voxel_visp_modelling_units",
       source: {
         type: "CesiumIon",
-        asset_id: 4069970,
+        asset_id: 4368915
       },
       data_key: "Index",
       mappings: ['conductivity', 'visp_lithology'],
@@ -135,7 +135,7 @@
       id: "voxel_visp_conductivity",
       source: {
         type: "CesiumIon",
-        asset_id: 4069970,
+        asset_id: 4368915
       },
       data_key: "logk",
       mappings: ['conductivity', 'visp_lithology'],
@@ -151,7 +151,7 @@
       id: "voxel_sgrheintal_conductivity",
       source: {
         type: "CesiumIon",
-        asset_id: 4071931,
+        asset_id: 4369008
       },
       data_key: "Klasse",
       mappings: ['sg_rheintal_conductivity'],
