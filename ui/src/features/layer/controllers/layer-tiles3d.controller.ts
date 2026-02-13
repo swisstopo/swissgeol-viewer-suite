@@ -10,6 +10,7 @@ import {
   CustomShaderTranslucencyMode,
   ImageBasedLighting,
   UniformType,
+  Resource,
 } from 'cesium';
 import { OBJECT_HIGHLIGHT_NORMALIZED_RGB } from 'src/constants';
 import { PickService, ScenePickingLock } from 'src/services/pick.service';
@@ -56,7 +57,33 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
 
   protected async addToViewer(): Promise<void> {
     const resource = await mapLayerSourceToResource(this.layer.source);
-    const tileset = await Cesium3DTileset.fromUrl(resource, {
+    let tilesetUrl: string;
+
+    if (this.layer.source.type === 'Ogc') {
+      const token = import.meta.env['VITE_OGC_GST_BASIC_AUTH'];
+      const originalFetch = Resource.prototype.fetch;
+      Resource.prototype.fetch = function (options) {
+        this.headers = {
+          ...(this.headers || {}),
+          Authorization: `Basic ${token}`,
+        };
+        return originalFetch.call(this, options);
+      };
+      // For OGC sources, fetch the tileset JSON, prune it, and create a blob URL
+      const tilesetJson = await resource.fetchJson();
+      const keepSlices = new Set([227, 245, 348]);
+      const prunedTileset = makePrunedTileset(
+        tilesetJson,
+        keepSlices,
+        resource.url,
+      );
+      tilesetUrl = toBlobUrl(prunedTileset);
+    } else {
+      // For other sources, use the resource URL directly
+      tilesetUrl = resource.url;
+    }
+
+    const tileset = await Cesium3DTileset.fromUrl(tilesetUrl, {
       show: true,
       backFaceCulling: false,
       enableCollision: true,
@@ -168,4 +195,59 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       },
     });
   }
+}
+
+function parseSlice(uri: string): number | null {
+  const m = uri.match(/-slice-(\d+)\.glb$/);
+  return m ? Number(m[1]) : null;
+}
+
+function makePrunedTileset(
+  original: any,
+  keepSlices: Set<number>,
+  baseUrl: string,
+): any {
+  const clone = structuredClone(original);
+
+  const prune = (tile: any): any | null => {
+    let keep = false;
+
+    const uri = tile?.content?.uri;
+    if (uri) {
+      const slice = parseSlice(uri);
+      if (slice !== null && keepSlices.has(slice)) {
+        keep = true;
+        // Convert relative URI to absolute URI
+        tile.content.uri = new URL(uri, baseUrl).href;
+      }
+    }
+
+    if (tile?.children?.length) {
+      const keptChildren = tile.children
+        .map(prune)
+        .filter((x: any) => x !== null);
+
+      tile.children = keptChildren;
+      if (keptChildren.length > 0) keep = true;
+    }
+
+    return keep ? tile : null;
+  };
+
+  const newRoot = prune(clone.root);
+  if (!newRoot) {
+    throw new Error('None of the selected slices were found in the tileset.');
+  }
+
+  clone.root = newRoot;
+
+  // IMPORTANT: keep original geometricError values
+  // This is crucial for Cesium to traverse the tree
+
+  return clone;
+}
+
+function toBlobUrl(json: any): string {
+  const blob = new Blob([JSON.stringify(json)], { type: 'application/json' });
+  return URL.createObjectURL(blob);
 }
