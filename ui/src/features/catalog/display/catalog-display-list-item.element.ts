@@ -14,6 +14,7 @@ import {
   isBackgroundLayer,
   Layer,
   LayerType,
+  Tiles3dLayerController,
 } from 'src/features/layer';
 import { css, html } from 'lit';
 import { Id } from 'src/models/id.model';
@@ -183,6 +184,16 @@ export class CatalogDisplayListItem extends CoreElement {
         </ngm-core-button>
 
         <span class="title">${title}</span>
+        <button
+          @click="${async () => {
+            const a = this.layerService.controller(
+              this.layer.id,
+            ) as Tiles3dLayerController;
+            await a.updateSlices([30, 500, 900]);
+          }}"
+        >
+          Change Slices
+        </button>
 
         <div class="suffix">
           ${when(
