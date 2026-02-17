@@ -6,7 +6,7 @@
       id: "voxel_geomol_temp_c",
       source: {
         type: "CesiumIon",
-        asset_id: 4135841
+        asset_id: 4454599
       },
       data_key: "Temp_C",
       mappings:['geomol_temp_c'],
