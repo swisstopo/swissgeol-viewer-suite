@@ -326,7 +326,8 @@ export class NgmIonModal extends CoreElement {
                     >
                       <td class="table-column-checkbox">
                         <sgc-checkbox
-                          value="${this.assetsToAdd.has(row)}"
+                          value="${this.assetsToAdd.has(row) ||
+                          this.isLayerIdActivated(row.id)}"
                           ?disabled="${this.isLayerIdActivated(row.id)}"
                           @checkboxChange="${() => this.toggleSingleAsset(row)}"
                         ></sgc-checkbox>
