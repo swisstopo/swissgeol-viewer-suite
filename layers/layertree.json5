@@ -5,7 +5,8 @@
     'layers_3dtiles',
     'special/voxels',
     'special/swissBEDROCK',
-    'layers_earthquakes'
+    'layers_earthquakes',
+    'special/geojson_terrain' // <--
   ],
   groups: [
     // 01 Topic - Maps, cross-sections & models
@@ -133,7 +134,8 @@
                       children: [
                         'sa3d_aaremassive_horizons',
                         'sa3d_aaremassive_structures',
-                        'sa3d_aaremassive_cs'
+                        'sa3d_aaremassive_cs',
+                        'ch.swisstopo.geojson_on_swissbedrock'
                       ]
                     }
                   ],
