@@ -80,16 +80,16 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     const resource = await mapLayerSourceToResource(this.layer.source);
     const raw = (await resource.fetchJson()) as GeoJsonFeatureCollection;
     let geoJsonDataSource: GeoJsonDataSource;
-    const crsName = raw?.crs?.properties?.name;
-    if (crsName) {
-      if (!isAllowedCrs(crsName)) {
-        throw new Error(`Unsupported CRS: ${crsName}`);
-      }
-      const converted = reprojectGeoJsonToWgs84(crsName, raw);
-      geoJsonDataSource = await GeoJsonDataSource.load(converted);
-    } else {
-      geoJsonDataSource = await GeoJsonDataSource.load(resource);
-    }
+    //const crsName = raw?.crs?.properties?.name;
+    // if (crsName) {
+    //   if (!isAllowedCrs(crsName)) {
+    //     throw new Error(`Unsupported CRS: ${crsName}`);
+    //   }
+    //   const converted = reprojectGeoJsonToWgs84(crsName, raw);
+    //   geoJsonDataSource = await GeoJsonDataSource.load(converted);
+    // } else {
+    geoJsonDataSource = await GeoJsonDataSource.load(resource);
+    //}
 
     if (this.dataSource === undefined) {
       this.dataSource = new CustomDataSource();
