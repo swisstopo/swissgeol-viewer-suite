@@ -64,6 +64,10 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
 
     this.watch(this.layer.isVisible, (isVisible) => {
       this.dataSource.show = isVisible;
+      if (this.terrainController) {
+        this.terrainController.layer.isVisible = isVisible;
+        this.terrainController.update(this.terrainController.layer).then();
+      }
     });
 
     this.watch(this.layer.opacity, (opacity) => {
@@ -80,16 +84,16 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     const resource = await mapLayerSourceToResource(this.layer.source);
     const raw = (await resource.fetchJson()) as GeoJsonFeatureCollection;
     let geoJsonDataSource: GeoJsonDataSource;
-    const crsName = raw?.crs?.properties?.name;
-    if (crsName) {
-      if (!isAllowedCrs(crsName)) {
-        throw new Error(`Unsupported CRS: ${crsName}`);
-      }
-      const converted = reprojectGeoJsonToWgs84(crsName, raw);
-      geoJsonDataSource = await GeoJsonDataSource.load(converted);
-    } else {
-      geoJsonDataSource = await GeoJsonDataSource.load(resource);
-    }
+    //const crsName = raw?.crs?.properties?.name;
+    // if (crsName) {
+    //   if (!isAllowedCrs(crsName)) {
+    //     throw new Error(`Unsupported CRS: ${crsName}`);
+    //   }
+    //   const converted = reprojectGeoJsonToWgs84(crsName, raw);
+    //   geoJsonDataSource = await GeoJsonDataSource.load(converted);
+    // } else {
+    geoJsonDataSource = await GeoJsonDataSource.load(resource);
+    //}
 
     if (this.dataSource === undefined) {
       this.dataSource = new CustomDataSource();
@@ -116,6 +120,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     if (this.layer.label == null) {
       LayerService.get().update(this.layer.id, { label: this.dataSource.name });
     }
+    this.setLayerOpacity(this.layer.opacity);
   }
 
   protected removeFromViewer(): void {
@@ -317,7 +322,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       That would discard all fragments of the tilesets, including parts that are covered by the GeoJson.
       Instead, we set the opacity to 0, making the tileset fully invisible, but still allowing the GeoJson to be clamped to it.
       */
-      opacity: 0,
+      opacity: 1,
       canUpdateOpacity: false,
       downloadUrl: null,
       geocatId: null,

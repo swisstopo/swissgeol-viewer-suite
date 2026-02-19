@@ -611,61 +611,164 @@
       download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
       geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
     },
-    // SA3D
-    // SA3D - Aaremassive - Horizons
+    // Aar3D - Aaremassive - Horizons
+    // Plutonic rocks
     {
       type: 'Tiles3d',
-      id: 'sa3d_aaremassive_horizons',
+      id: 'aar3d_horizon_plutonic_rocks',
       source: {
         type: 'CesiumIon',
-        asset_id: 4130307
+        asset_id: 4517630,
       },
-      access: {
-        env: [
-          'local',
-          'dev'
-        ],
-        // groups: ['ngm-dev-privileged']
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // Permo-Carbon
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_permo-carbon',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517639,
       },
-      //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
-      //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // Ausserberg-Avat Zone
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_Ausserberg_zone',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517644,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+
+    // Clavaniev Zone
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_Clavaniev_zone',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517648,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // Cryst. basement sliver
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_Cryst_basement_slivers',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517651,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: 'f',
+    },
+    // Erstfeld-Gneis Komplex
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_Erstfeld_gneis_complex',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517664,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // Ferden-Guttannen_Gneiss_Complex
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_Ferden-Guttannen_Gneis_Complex',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517664,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // Innertkirchen-Lauterbrunnen Gneiskomplex
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_Innertkirchen-Lauterbrunnen_Gneis_Complex',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517685,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // Oberaar-Furka Gneiskomplex
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_Oberaar-Furka_Gneis_Complex',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517692,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // Sustenhorn Gneiskomplex
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_Sustenhorn_Gneis_Complex',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517693,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // Base Mesozoic Molasse
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_horizon_Base_Mesozoic_molasse',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4517701,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
     },
     // SA3D - Aaremassive - Structures
     {
       type: 'Tiles3d',
-      id: 'sa3d_aaremassive_structures',
+      id: 'aar3d_aaremassive_structures',
+      opacity: 0.18,
       source: {
         type: 'CesiumIon',
-        asset_id: 4130256
+        asset_id: 4518250,
       },
-      access: {
-        env: [
-          'local',
-          'dev'
-        ],
-        // groups: ['ngm-dev-privileged']
-      },
-      //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
-      //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
     },
     // SA3D - Aaremassive - Cross sections
     {
       type: 'Tiles3d',
-      id: 'sa3d_aaremassive_cs',
+      id: 'aar3d_aaremassive_cs',
       source: {
         type: 'CesiumIon',
-        asset_id: 4130065
+        asset_id: 4518261,
       },
-      access: {
-        env: [
-          'local',
-          'dev'
-        ],
-        // groups: ['ngm-dev-privileged']
-      },
-      //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
-      //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
     },
+    // SA3D - Aaremassive - BBOX and Scale
+    {
+      type: 'Tiles3d',
+      id: 'aar3d_aaremassive_bbox',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4503290,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+
     // City of Berne
     {
       type: 'Tiles3d',
