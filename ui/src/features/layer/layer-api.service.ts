@@ -13,6 +13,8 @@ import {
   LayerSource,
   LayerSourceType,
   LayerType,
+  OgcSource,
+  OgcSourceType,
   TiffLayer,
   TiffLayerBand,
   TiffLayerConfigDisplay,
@@ -186,6 +188,10 @@ export class LayerApiService extends BaseService {
     return {
       ...def,
       maxLevel: config.takeNullable('maxLevel'),
+      ogcSource:
+        config
+          .takeNullableObject('ogcSource')
+          ?.apply(this.mapConfigToOgcSource) ?? null,
     };
   };
 
@@ -329,12 +335,40 @@ export class LayerApiService extends BaseService {
       case LayerSourceType.Ogc:
         return {
           type: LayerSourceType.Ogc,
-          id: config.take('id'),
-          styleId: config.takeNullable('styleId') ?? undefined,
+          ogcSource: config
+            .takeObject('ogcSource')
+            .apply(this.mapConfigToOgcSource),
           displaySource:
             config
               .takeNullableObject('displaySource')
               ?.apply(this.mapConfigToSource) ?? undefined,
+        };
+    }
+  };
+
+  private readonly mapConfigToOgcSource = (
+    config: DynamicObject,
+  ): OgcSource => {
+    const ogcType = config.take<OgcSourceType>('type');
+    switch (ogcType) {
+      case OgcSourceType.Gst:
+        return {
+          type: OgcSourceType.Gst,
+          id: config.take('id'),
+          styleId: config.takeNullable('styleId') ?? undefined,
+        };
+      case OgcSourceType.Stac:
+        return {
+          type: OgcSourceType.Stac,
+          collection: config.take('collection'),
+        };
+      case OgcSourceType.Fdsn:
+        return {
+          type: OgcSourceType.Fdsn,
+        };
+      case OgcSourceType.Wms:
+        return {
+          type: OgcSourceType.Wms,
         };
     }
   };

@@ -7,7 +7,11 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
-      legend: true
+      legend: true,
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geocover',
+      }
     },
     {
       type: 'Wmts',

@@ -33,9 +33,15 @@ export interface LayerSourceForS3 {
   key: string;
 }
 
-export interface LayerSourceForOgc {
-  type: LayerSourceType.Ogc;
+export enum OgcSourceType {
+  Gst = 'gst',
+  Stac = 'stac',
+  Fdsn = 'fdsn',
+  Wms = 'wms',
+}
 
+interface OgcTypeForGst {
+  type: OgcSourceType.Gst;
   /**
    * The id of the collection representing the layer.
    */
@@ -46,7 +52,31 @@ export interface LayerSourceForOgc {
    * If left out, the collection's default download is used.
    */
   styleId?: number;
+}
 
+interface OgcTypeForStac {
+  type: OgcSourceType.Stac;
+  collection: string;
+}
+
+interface OgcTypeForWms {
+  type: OgcSourceType.Wms;
+}
+
+interface OgcTypeForFdsn {
+  type: OgcSourceType.Fdsn;
+}
+
+export type OgcSource =
+  | OgcTypeForGst
+  | OgcTypeForStac
+  | OgcTypeForFdsn
+  | OgcTypeForWms;
+
+export interface LayerSourceForOgc {
+  type: LayerSourceType.Ogc;
+
+  ogcSource: OgcSource;
   /**
    * An optional source that will be used when displaying the layer.
    * When this is set, the OGC API will only be used for layer exports.
