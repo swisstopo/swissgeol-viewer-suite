@@ -258,7 +258,7 @@ export class OgcService extends BaseService {
           identifier: 'fdsn@ethz',
           requestArea,
           minMagnitude: layer.ogcSource.minMagnitude,
-          // startTime,
+          startTime,
         },
       ];
     }
