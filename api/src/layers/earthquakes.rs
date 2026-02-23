@@ -1,4 +1,5 @@
 use crate::LayerSource;
+use crate::OgcSource;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6,4 +7,6 @@ use serde::{Deserialize, Serialize};
 pub struct EarthquakesLayer {
     /// The layer's source, defining where the layer is loaded from.
     source: LayerSource,
+
+    pub ogc_source: Option<OgcSource>,
 }

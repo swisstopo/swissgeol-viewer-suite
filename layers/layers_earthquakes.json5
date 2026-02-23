@@ -6,12 +6,16 @@
       id: 'earthquakes_recent',
       source: {
         type: 'Url',
-        url: 'https://download.swissgeol.ch/earthquakes/earthquakes_last_90d.txt',
+        url: 'fdsn.txt',
       },
       opacity: 0.7,
       geocat_id: 'f44ee7fc-efd0-47ad-8a8c-db74dcc20610',
       custom_properties: {
         details_url: 'http://www.seismo.ethz.ch'
+      },
+      ogc_source: {
+        type: 'fdsn',
+        start_time: '3 months'
       }
     },
     // Earthquakes > mag 3"
@@ -26,6 +30,11 @@
       geocat_id: 'fab0e70e-6e33-4ba9-8c42-2b8ac1578384',
       custom_properties: {
         details_url: 'http://www.seismo.ethz.ch'
+      },
+      ogc_source: {
+        type: 'fdsn',
+        min_magnitude: 3,
+        start_time: '10 years'
       }
     }
   ]

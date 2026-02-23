@@ -1,5 +1,6 @@
 import { Cartesian3, Cartographic, Math as CesiumMath } from 'cesium';
 import { sleep } from 'src/utils/fn.utils';
+import { parseRelativeTimeToISO } from 'src/utils';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BaseService } from 'src/services/base.service';
 import {
@@ -7,6 +8,7 @@ import {
   LayerSourceType,
   LayerType,
   OgcSource,
+  OgcSourceType,
   WmtsLayerSource,
 } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
@@ -241,6 +243,24 @@ export class OgcService extends BaseService {
             },
           ];
       }
+    }
+    if (
+      layer.type === LayerType.Earthquakes &&
+      layer.ogcSource?.type === OgcSourceType.Fdsn
+    ) {
+      const startTime = layer.ogcSource.startTime
+        ? parseRelativeTimeToISO(layer.ogcSource.startTime)
+        : undefined;
+
+      return [
+        {
+          type: 'fdsn12',
+          identifier: 'fdsn@ethz',
+          requestArea,
+          minMagnitude: layer.ogcSource.minMagnitude,
+          // startTime,
+        },
+      ];
     }
 
     if (options.shouldWarnIfNotAvailable) {

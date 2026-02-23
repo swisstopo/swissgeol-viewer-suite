@@ -65,6 +65,12 @@ interface OgcTypeForWms {
 
 interface OgcTypeForFdsn {
   type: OgcSourceType.Fdsn;
+  minMagnitude?: number;
+  /**
+   * Relative time offset from now.
+   * Examples: "3 months", "90 days", "1 year"
+   */
+  startTime?: string;
 }
 
 export type OgcSource =

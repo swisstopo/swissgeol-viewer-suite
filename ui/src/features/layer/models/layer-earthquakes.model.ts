@@ -1,4 +1,9 @@
-import { BaseLayer, LayerSource, LayerType } from 'src/features/layer';
+import {
+  BaseLayer,
+  LayerSource,
+  LayerType,
+  OgcSource,
+} from 'src/features/layer';
 
 export interface EarthquakesLayer extends BaseLayer {
   type: LayerType.Earthquakes;
@@ -7,4 +12,6 @@ export interface EarthquakesLayer extends BaseLayer {
    * The location of the earthquakes file.
    */
   source: LayerSource;
+
+  ogcSource: OgcSource | null;
 }
