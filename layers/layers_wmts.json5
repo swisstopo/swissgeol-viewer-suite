@@ -782,6 +782,10 @@
       opacity: 0.7,
       geocat_id: '376f86bd-c46c-4b89-8f36-717641706226',
       legend: true,
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.swissalti3d',
+      }
     },
     {
       type: 'Wmts',
@@ -790,6 +794,10 @@
       opacity: 0.7,
       geocat_id: '1964cc81-5298-460f-9228-41120315bea8',
       legend: true,
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.swissalti3d',
+      }
     },
     {
       type: 'Wmts',
