@@ -293,6 +293,10 @@ export class LayerApiService extends BaseService {
     config: DynamicObject,
   ): Specific<EarthquakesLayer> => ({
     source: config.takeObject('source').apply(this.mapConfigToSource),
+    ogcSource:
+      config
+        .takeNullableObject('ogcSource')
+        ?.apply(this.mapConfigToOgcSource) ?? null,
   });
 
   private readonly mapConfigToGeoJsonLayer = (
@@ -365,6 +369,8 @@ export class LayerApiService extends BaseService {
       case OgcSourceType.Fdsn:
         return {
           type: OgcSourceType.Fdsn,
+          minMagnitude: config.takeNullable('minMagnitude') ?? undefined,
+          startTime: config.takeNullable('startTime') ?? undefined,
         };
       case OgcSourceType.Wms:
         return {

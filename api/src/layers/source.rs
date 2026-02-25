@@ -56,6 +56,9 @@ pub enum OgcSource {
     #[serde(rename = "fdsn", rename_all(serialize = "camelCase"))]
     Fdsn {
         // FDSN-spezifische Felder
+        min_magnitude: Option<f64>,
+        /// Relative time offset from now, e.g., "3 months", "90 days", "1 year"
+        start_time: Option<String>,
     },
 
     #[serde(rename = "wms", rename_all(serialize = "camelCase"))]
