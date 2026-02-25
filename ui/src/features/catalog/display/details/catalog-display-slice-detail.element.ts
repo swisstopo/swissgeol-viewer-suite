@@ -19,7 +19,7 @@ export class CatalogDisplaySliceDetail extends CoreElement {
   accessor layer!: Tiles3dLayer;
 
   @state()
-  accessor currentSliceIndex = 0;
+  accessor sliceIndices: [number, number, number] = [0, 0, 0];
 
   @state()
   accessor controller: Tiles3dLayerController | null = null;
@@ -39,31 +39,45 @@ export class CatalogDisplaySliceDetail extends CoreElement {
           layer.id,
         ) as Tiles3dLayerController;
 
-        // Initialize slice index
+        // Initialize slice indices
         if (this.controller?.supportsSliceSelection) {
-          const availableSlices = this.controller.getAvailableSlices();
-          this.currentSliceIndex = Math.floor(availableSlices.length / 2);
+          this.sliceIndices = this.controller.getCurrentSliceIndices();
         }
       }),
     );
   }
 
-  private readonly handleSliceChangeEvent = throttle(
+  private readonly handleAufschnitteChange = throttle(
     (event: SliderChangeEvent): void => {
-      if (!this.controller) {
-        return;
-      }
+      if (!this.controller) return;
 
-      const availableSlices = this.controller.getAvailableSlices();
       const index = Math.round(event.detail.value);
-      this.currentSliceIndex = index;
-
-      if (availableSlices.length > 0 && index < availableSlices.length) {
-        const sliceNumber = availableSlices[index];
-        this.controller.updateSlices([sliceNumber]);
-      }
+      this.sliceIndices = [index, this.sliceIndices[1], this.sliceIndices[2]];
+      this.controller.updateSliceAtIndex(0, index);
     },
-    200,
+    500,
+  );
+
+  private readonly handleSeitenansichtenChange = throttle(
+    (event: SliderChangeEvent): void => {
+      if (!this.controller) return;
+
+      const index = Math.round(event.detail.value);
+      this.sliceIndices = [this.sliceIndices[0], index, this.sliceIndices[2]];
+      this.controller.updateSliceAtIndex(1, index);
+    },
+    500,
+  );
+
+  private readonly handleQuerschnitteChange = throttle(
+    (event: SliderChangeEvent): void => {
+      if (!this.controller) return;
+
+      const index = Math.round(event.detail.value);
+      this.sliceIndices = [this.sliceIndices[0], this.sliceIndices[1], index];
+      this.controller.updateSliceAtIndex(2, index);
+    },
+    500,
   );
 
   readonly render = () => {
@@ -76,24 +90,80 @@ export class CatalogDisplaySliceDetail extends CoreElement {
       return html``;
     }
 
-    const currentSlice = availableSlices[this.currentSliceIndex] ?? 0;
-    const minIndex = 0;
-    const maxIndex = availableSlices.length - 1;
+    const ranges = this.controller.getSliceRanges();
+
+    // Calculate current slice numbers for each category
+    const aufschnitteSlice =
+      availableSlices[ranges[0].start + this.sliceIndices[0]] ?? 0;
+    const seitenansichtenSlice =
+      availableSlices[ranges[1].start + this.sliceIndices[1]] ?? 0;
+    const querschnitteSlice =
+      availableSlices[ranges[2].start + this.sliceIndices[2]] ?? 0;
 
     return html`
       <div class="slice-control">
-        <div class="slice-info">
-          <span class="slice-label">
-            ${i18next.t('catalog:slice_window.current_slice', {
-              defaultValue: 'Current Slice',
-            })}:
-          </span>
-          <span class="slice-value">${currentSlice}</span>
+        <!-- Aufschnitte Slider -->
+        <div class="slice-category">
+          <div class="slice-info">
+            <span class="slice-label">
+              ${i18next.t('catalog:slice_window.aufschnitte', {
+                defaultValue: 'Aufschnitte',
+              })}
+            </span>
+            <span class="slice-value">${aufschnitteSlice}</span>
+          </div>
+          <ngm-core-slider
+            .value="${this.sliceIndices[0]}"
+            .min="${0}"
+            .max="${ranges[0].end - ranges[0].start}"
+            .step="${1}"
+            @change="${this.handleAufschnitteChange}"
+          ></ngm-core-slider>
         </div>
+
+        <!-- Seitenansichten Slider -->
+        <div class="slice-category">
+          <div class="slice-info">
+            <span class="slice-label">
+              ${i18next.t('catalog:slice_window.seitenansichten', {
+                defaultValue: 'Seitenansichten',
+              })}
+            </span>
+            <span class="slice-value">${seitenansichtenSlice}</span>
+          </div>
+          <ngm-core-slider
+            .value="${this.sliceIndices[1]}"
+            .min="${0}"
+            .max="${ranges[1].end - ranges[1].start}"
+            .step="${1}"
+            @change="${this.handleSeitenansichtenChange}"
+          ></ngm-core-slider>
+        </div>
+
+        <!-- Querschnitte Slider -->
+        <div class="slice-category">
+          <div class="slice-info">
+            <span class="slice-label">
+              ${i18next.t('catalog:slice_window.querschnitte', {
+                defaultValue: 'Querschnitte',
+              })}
+            </span>
+            <span class="slice-value">${querschnitteSlice}</span>
+          </div>
+          <ngm-core-slider
+            .value="${this.sliceIndices[2]}"
+            .min="${0}"
+            .max="${ranges[2].end - ranges[2].start}"
+            .step="${1}"
+            @change="${this.handleQuerschnitteChange}"
+          ></ngm-core-slider>
+        </div>
+
+        <!-- Overall Range Info -->
         <div class="slice-range">
           <span class="range-label">
-            ${i18next.t('catalog:slice_window.range', {
-              defaultValue: 'Range',
+            ${i18next.t('catalog:slice_window.total_range', {
+              defaultValue: 'Gesamtbereich',
             })}:
           </span>
           <span class="range-value">
@@ -101,13 +171,6 @@ export class CatalogDisplaySliceDetail extends CoreElement {
             ${availableSlices[availableSlices.length - 1]}
           </span>
         </div>
-        <ngm-core-slider
-          .value="${this.currentSliceIndex}"
-          .min="${minIndex}"
-          .max="${maxIndex}"
-          .step="${1}"
-          @change="${this.handleSliceChangeEvent}"
-        ></ngm-core-slider>
       </div>
     `;
   };
@@ -126,7 +189,19 @@ export class CatalogDisplaySliceDetail extends CoreElement {
     .slice-control {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 24px;
+    }
+
+    .slice-category {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 4px;
+      background-color: var(
+        --color-background--emphasis-low,
+        rgba(0, 0, 0, 0.02)
+      );
     }
 
     .slice-info,
@@ -151,6 +226,12 @@ export class CatalogDisplaySliceDetail extends CoreElement {
     .range-value {
       ${applyTypography('body-2')};
       color: var(--color-text--emphasis-high);
+    }
+
+    .slice-range {
+      padding-top: 8px;
+      border-top: 1px solid
+        var(--color-border--emphasis-low, rgba(0, 0, 0, 0.1));
     }
   `;
 }
