@@ -1,4 +1,4 @@
-import { BaseLayer, LayerType } from 'src/features/layer';
+import { BaseLayer, LayerType, OgcSource } from 'src/features/layer';
 import type { Id } from 'src/models/id.model';
 
 /**
@@ -42,6 +42,11 @@ export interface WmtsLayer extends BaseLayer {
    * The name of the organization or entity that the layer is attributed to.
    */
   credit: string;
+
+  /**
+   * An optional source that will be used when exporting the layer via the OGC API.
+   */
+  ogcSource: OgcSource | null;
 }
 
 export interface WmtsLayerTimes {

@@ -1,3 +1,4 @@
+use crate::OgcSource;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7,4 +8,7 @@ pub struct WmtsLayer {
     /// Instead, this level's tiles will be scaled up to fit higher zoom levels.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_level: Option<u32>,
+
+    /// Some WMTS layers are displayed as  WMS/WMTS, but for the data export, a different source is used.
+    pub ogc_source: Option<OgcSource>,
 }
