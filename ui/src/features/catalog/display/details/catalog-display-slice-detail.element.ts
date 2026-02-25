@@ -1,7 +1,11 @@
 import { css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
-import { Tiles3dLayer, Tiles3dLayerController } from 'src/features/layer';
+import {
+  Tiles3dLayer,
+  Tiles3dLayerController,
+  SliceIndices,
+} from 'src/features/layer';
 import { consume } from '@lit/context';
 import { LayerService } from 'src/features/layer/layer.service';
 import { Id } from 'src/models/id.model';
@@ -19,7 +23,11 @@ export class CatalogDisplaySliceDetail extends CoreElement {
   accessor layer!: Tiles3dLayer;
 
   @state()
-  accessor sliceIndices: [number, number, number] = [0, 0, 0];
+  accessor sliceIndices: SliceIndices = {
+    inline: 0,
+    crossline: 0,
+    depth: 0,
+  };
 
   @state()
   accessor controller: Tiles3dLayerController | null = null;
@@ -34,12 +42,10 @@ export class CatalogDisplaySliceDetail extends CoreElement {
       this.layerService.layer$(this.layerId).subscribe((layer) => {
         this.layer = layer;
 
-        // Get and store controller
         this.controller = this.layerService.controller(
           layer.id,
         ) as Tiles3dLayerController;
 
-        // Initialize slice indices
         if (this.controller?.supportsSliceSelection) {
           this.sliceIndices = this.controller.getCurrentSliceIndices();
         }
@@ -47,38 +53,17 @@ export class CatalogDisplaySliceDetail extends CoreElement {
     );
   }
 
-  private readonly handleAufschnitteChange = throttle(
-    (event: SliderChangeEvent): void => {
+  private readonly handleSliceChange = (key: keyof SliceIndices) =>
+    throttle((event: SliderChangeEvent): void => {
       if (!this.controller) return;
 
       const index = Math.round(event.detail.value);
-      this.sliceIndices = [index, this.sliceIndices[1], this.sliceIndices[2]];
-      this.controller.updateSliceAtIndex(0, index);
-    },
-    500,
-  );
-
-  private readonly handleSeitenansichtenChange = throttle(
-    (event: SliderChangeEvent): void => {
-      if (!this.controller) return;
-
-      const index = Math.round(event.detail.value);
-      this.sliceIndices = [this.sliceIndices[0], index, this.sliceIndices[2]];
-      this.controller.updateSliceAtIndex(1, index);
-    },
-    500,
-  );
-
-  private readonly handleQuerschnitteChange = throttle(
-    (event: SliderChangeEvent): void => {
-      if (!this.controller) return;
-
-      const index = Math.round(event.detail.value);
-      this.sliceIndices = [this.sliceIndices[0], this.sliceIndices[1], index];
-      this.controller.updateSliceAtIndex(2, index);
-    },
-    500,
-  );
+      this.sliceIndices = {
+        ...this.sliceIndices,
+        [key]: index,
+      };
+      this.controller.updateSliceAtIndex(key, index);
+    }, 500);
 
   readonly render = () => {
     if (!this.controller || !this.controller.supportsSliceSelection) {
@@ -92,17 +77,16 @@ export class CatalogDisplaySliceDetail extends CoreElement {
 
     const ranges = this.controller.getSliceRanges();
 
-    // Calculate current slice numbers for each category
-    const aufschnitteSlice =
-      availableSlices[ranges[0].start + this.sliceIndices[0]] ?? 0;
-    const seitenansichtenSlice =
-      availableSlices[ranges[1].start + this.sliceIndices[1]] ?? 0;
-    const querschnitteSlice =
-      availableSlices[ranges[2].start + this.sliceIndices[2]] ?? 0;
+    const inlineSlice =
+      availableSlices[ranges.inline.start + this.sliceIndices.inline] ?? 0;
+    const crosslineSlice =
+      availableSlices[ranges.crossline.start + this.sliceIndices.crossline] ??
+      0;
+    const depthSlice =
+      availableSlices[ranges.depth.start + this.sliceIndices.depth] ?? 0;
 
     return html`
       <div class="slice-control">
-        <!-- Aufschnitte Slider -->
         <div class="slice-category">
           <div class="slice-info">
             <span class="slice-label">
@@ -110,18 +94,17 @@ export class CatalogDisplaySliceDetail extends CoreElement {
                 defaultValue: 'Aufschnitte',
               })}
             </span>
-            <span class="slice-value">${aufschnitteSlice}</span>
+            <span class="slice-value">${inlineSlice}</span>
           </div>
           <ngm-core-slider
-            .value="${this.sliceIndices[0]}"
+            .value="${this.sliceIndices.inline}"
             .min="${0}"
-            .max="${ranges[0].end - ranges[0].start}"
+            .max="${ranges.inline.end - ranges.inline.start}"
             .step="${1}"
-            @change="${this.handleAufschnitteChange}"
+            @change="${this.handleSliceChange('inline')}"
           ></ngm-core-slider>
         </div>
 
-        <!-- Seitenansichten Slider -->
         <div class="slice-category">
           <div class="slice-info">
             <span class="slice-label">
@@ -129,18 +112,17 @@ export class CatalogDisplaySliceDetail extends CoreElement {
                 defaultValue: 'Seitenansichten',
               })}
             </span>
-            <span class="slice-value">${seitenansichtenSlice}</span>
+            <span class="slice-value">${crosslineSlice}</span>
           </div>
           <ngm-core-slider
-            .value="${this.sliceIndices[1]}"
+            .value="${this.sliceIndices.crossline}"
             .min="${0}"
-            .max="${ranges[1].end - ranges[1].start}"
+            .max="${ranges.crossline.end - ranges.crossline.start}"
             .step="${1}"
-            @change="${this.handleSeitenansichtenChange}"
+            @change="${this.handleSliceChange('crossline')}"
           ></ngm-core-slider>
         </div>
 
-        <!-- Querschnitte Slider -->
         <div class="slice-category">
           <div class="slice-info">
             <span class="slice-label">
@@ -148,14 +130,14 @@ export class CatalogDisplaySliceDetail extends CoreElement {
                 defaultValue: 'Querschnitte',
               })}
             </span>
-            <span class="slice-value">${querschnitteSlice}</span>
+            <span class="slice-value">${depthSlice}</span>
           </div>
           <ngm-core-slider
-            .value="${this.sliceIndices[2]}"
+            .value="${this.sliceIndices.depth}"
             .min="${0}"
-            .max="${ranges[2].end - ranges[2].start}"
+            .max="${ranges.depth.end - ranges.depth.start}"
             .step="${1}"
-            @change="${this.handleQuerschnitteChange}"
+            @change="${this.handleSliceChange('depth')}"
           ></ngm-core-slider>
         </div>
 

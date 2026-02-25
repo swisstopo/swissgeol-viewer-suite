@@ -15,6 +15,23 @@ import {
 import { OBJECT_HIGHLIGHT_NORMALIZED_RGB } from 'src/constants';
 import { PickService, ScenePickingLock } from 'src/services/pick.service';
 
+export type SliceIndices = {
+  inline: number;
+  crossline: number;
+  depth: number;
+};
+
+export type SliceRange = {
+  start: number;
+  end: number;
+};
+
+export type SliceRanges = {
+  inline: SliceRange;
+  crossline: SliceRange;
+  depth: SliceRange;
+};
+
 export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   private _tileset!: Cesium3DTileset;
 
@@ -22,10 +39,13 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   private originalTilesetJson: any = null;
   private baseUrl: string = '';
   private availableSlices: number[] = [];
-  private currentBlobUrl: string | null = null;
   private isUpdatingSlices: boolean = false;
   private pendingSliceUpdate: number[] | null = null;
-  private currentSliceIndices: [number, number, number] = [0, 0, 0]; // Indices for the three sliders
+  private currentSliceIndices: SliceIndices = {
+    inline: 0,
+    crossline: 0,
+    depth: 0,
+  };
 
   get type(): LayerType.Tiles3d {
     return LayerType.Tiles3d;
@@ -44,49 +64,49 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
 
   /**
    * Get the slice ranges for the three categories.
-   * Returns [aufschnitte, seitenansichten, querschnitte] ranges.
+   * Returns ranges for inline (aufschnitte), crossline (seitenansichten), and depth (querschnitte).
    * Will be removed once we get the ranges from the backend
    */
-  getSliceRanges(): [
-    { start: number; end: number },
-    { start: number; end: number },
-    { start: number; end: number },
-  ] {
+  getSliceRanges(): SliceRanges {
     const total = this.availableSlices.length;
     const third = Math.floor(total / 3);
 
-    return [
-      { start: 0, end: third - 1 },
-      { start: third, end: 2 * third - 1 },
-      { start: 2 * third, end: total - 1 },
-    ];
+    return {
+      inline: { start: 0, end: third - 1 },
+      crossline: { start: third, end: 2 * third - 1 },
+      depth: { start: 2 * third, end: total - 1 },
+    };
   }
 
   /**
    * Get current slice indices for the three sliders.
    */
-  getCurrentSliceIndices(): [number, number, number] {
+  getCurrentSliceIndices(): SliceIndices {
     return this.currentSliceIndices;
   }
 
   /**
    * Update a specific slider's slice index.
-   * @param sliderIndex - 0 for Aufschnitte, 1 for Seitenansichten, 2 for Querschnitte
+   * @param key - The slice key to update ('inline', 'crossline', or 'depth')
    * @param index - The new index value
    */
   async updateSliceAtIndex(
-    sliderIndex: 0 | 1 | 2,
+    key: keyof SliceIndices,
     index: number,
   ): Promise<void> {
-    this.currentSliceIndices[sliderIndex] = index;
+    this.currentSliceIndices = {
+      ...this.currentSliceIndices,
+      [key]: index,
+    };
 
     // Get all three slice numbers
     const ranges = this.getSliceRanges();
     const sliceNumbers: number[] = [];
 
-    for (let i = 0; i < 3; i++) {
-      const range = ranges[i];
-      const localIndex = this.currentSliceIndices[i];
+    const keys: (keyof SliceIndices)[] = ['inline', 'crossline', 'depth'];
+    keys.forEach((k) => {
+      const range = ranges[k];
+      const localIndex = this.currentSliceIndices[k];
       const globalIndex = range.start + localIndex;
 
       if (
@@ -97,7 +117,7 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       ) {
         sliceNumbers.push(this.availableSlices[globalIndex]);
       }
-    }
+    });
 
     await this.updateSlices(sliceNumbers);
   }
@@ -106,7 +126,9 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
    * Check if this layer supports slice selection.
    */
   get supportsSliceSelection(): boolean {
-    return this.layer.source.type === 'Ogc' && this.availableSlices.length > 0;
+    return (
+      this.layer.id === 'seismic_3d_E11' && this.availableSlices.length > 0
+    );
   }
 
   zoomIntoView(): void {
@@ -121,9 +143,11 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
    * Update the displayed slices for OGC tileset sources.
    * @param sliceNumbers - Array of slice numbers to display (e.g., [227, 245, 348])
    */
+
   async updateSlices(sliceNumbers: number[]): Promise<void> {
-    if (this.layer.source.type !== 'Ogc') {
-      console.warn('updateSlices is only supported for OGC sources');
+    // TODO - This condition will have to be adapted as currenlty only one layer supports slicers
+    if (this.layer.id !== 'seismic_3d_E11') {
+      console.warn('updateSlices is only supported for seismic_3d_E11');
       return;
     }
 
@@ -182,15 +206,6 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
         this.tileset.destroy();
       }
     }
-
-    // Release old blob URL
-    if (this.currentBlobUrl) {
-      URL.revokeObjectURL(this.currentBlobUrl);
-      this.currentBlobUrl = null;
-    }
-
-    // Store new blob URL
-    this.currentBlobUrl = tilesetUrl;
 
     // Create new tileset with updated slices
     const tileset = await Cesium3DTileset.fromUrl(tilesetUrl, {
@@ -299,7 +314,8 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     const resource = await mapLayerSourceToResource(this.layer.source);
     let tilesetUrl: string;
 
-    if (this.layer.source.type === 'Ogc') {
+    // TODO - This condition will have to be adapted as currenlty only one layer supports slicers
+    if (this.layer.id === 'seismic_3d_E11') {
       const token = import.meta.env['VITE_OGC_GST_BASIC_AUTH'];
       const originalFetch = Resource.prototype.fetch;
       Resource.prototype.fetch = function (options) {
@@ -309,27 +325,31 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
         };
         return originalFetch.call(this, options);
       };
-      // For OGC sources, fetch the tileset JSON, prune it, and create a blob URL
       const tilesetJson = await resource.fetchJson();
       this.originalTilesetJson = tilesetJson;
       this.baseUrl = resource.url;
 
-      // Extract all available slices
       this.availableSlices = this.extractAvailableSlices(tilesetJson);
 
-      // Initialize the three sliders to their middle positions
       const ranges = this.getSliceRanges();
-      this.currentSliceIndices = [
-        Math.floor((ranges[0].end - ranges[0].start) / 2), // Middle of Aufschnitte
-        Math.floor((ranges[1].end - ranges[1].start) / 2), // Middle of Seitenansichten
-        Math.floor((ranges[2].end - ranges[2].start) / 2), // Middle of Querschnitte
-      ];
+      this.currentSliceIndices = {
+        inline: Math.floor((ranges.inline.end - ranges.inline.start) / 2),
+        crossline: Math.floor(
+          (ranges.crossline.end - ranges.crossline.start) / 2,
+        ),
+        depth: Math.floor((ranges.depth.end - ranges.depth.start) / 2),
+      };
 
-      // Start with the three middle slices
       const initialSlices = [
-        this.availableSlices[ranges[0].start + this.currentSliceIndices[0]],
-        this.availableSlices[ranges[1].start + this.currentSliceIndices[1]],
-        this.availableSlices[ranges[2].start + this.currentSliceIndices[2]],
+        this.availableSlices[
+          ranges.inline.start + this.currentSliceIndices.inline
+        ],
+        this.availableSlices[
+          ranges.crossline.start + this.currentSliceIndices.crossline
+        ],
+        this.availableSlices[
+          ranges.depth.start + this.currentSliceIndices.depth
+        ],
       ].filter((s) => s !== undefined);
 
       const keepSlices = new Set(initialSlices);
@@ -339,7 +359,6 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
         resource.url,
       );
       tilesetUrl = toBlobUrl(prunedTileset);
-      this.currentBlobUrl = tilesetUrl;
     } else {
       // For other sources, use the resource URL directly
       tilesetUrl = resource.url;
@@ -406,12 +425,6 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       tileset.destroy();
     }
     this._tileset = undefined as unknown as Cesium3DTileset;
-
-    // Release blob URL if it exists
-    if (this.currentBlobUrl) {
-      URL.revokeObjectURL(this.currentBlobUrl);
-      this.currentBlobUrl = null;
-    }
 
     this.scenePickingLock?.release();
     this.scenePickingLock = null;
