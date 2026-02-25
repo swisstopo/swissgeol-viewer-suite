@@ -60,6 +60,7 @@
           children: [
             'ch.swisstopo.geologie-geologischer_atlas_profile',
             'geomol_cs',
+            'j3d_profiles',
             'geoquat_aaretal_cs'
           ]
         },
