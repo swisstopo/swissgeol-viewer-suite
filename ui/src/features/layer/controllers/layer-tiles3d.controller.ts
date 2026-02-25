@@ -21,6 +21,9 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   private scenePickingLock: ScenePickingLock | null = null;
   private originalTilesetJson: any = null;
   private baseUrl: string = '';
+  private availableSlices: number[] = [];
+  private isUpdatingSlices: boolean = false;
+  private pendingSliceUpdate: number[] | null = null;
 
   get type(): LayerType.Tiles3d {
     return LayerType.Tiles3d;
@@ -28,6 +31,20 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
 
   get tileset(): Cesium3DTileset {
     return this._tileset;
+  }
+
+  /**
+   * Get all available slice numbers for OGC tileset sources.
+   */
+  getAvailableSlices(): number[] {
+    return this.availableSlices;
+  }
+
+  /**
+   * Check if this layer supports slice selection.
+   */
+  get supportsSliceSelection(): boolean {
+    return this.layer.source.type === 'Ogc' && this.availableSlices.length > 0;
   }
 
   zoomIntoView(): void {
@@ -53,6 +70,34 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       return;
     }
 
+    // If already updating, store this as pending update and return
+    if (this.isUpdatingSlices) {
+      this.pendingSliceUpdate = sliceNumbers;
+      return;
+    }
+
+    // Mark as updating
+    this.isUpdatingSlices = true;
+
+    try {
+      await this.performSliceUpdate(sliceNumbers);
+
+      // Check if there's a pending update
+      while (this.pendingSliceUpdate !== null) {
+        const nextSlices = this.pendingSliceUpdate;
+        this.pendingSliceUpdate = null;
+        await this.performSliceUpdate(nextSlices);
+      }
+    } finally {
+      // Always clear the updating flag
+      this.isUpdatingSlices = false;
+    }
+  }
+
+  /**
+   * Perform the actual slice update.
+   */
+  private async performSliceUpdate(sliceNumbers: number[]): Promise<void> {
     // Create pruned tileset with new slices
     const keepSlices = new Set(sliceNumbers);
     const prunedTileset = makePrunedTileset(
@@ -67,10 +112,13 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     const currentVisibility = this.layer.isVisible;
     const currentIndex = this.findIndexInPrimitives(this.tileset);
 
-    // Remove old tileset
-    this.viewer.scene.primitives.remove(this.tileset);
-    if (!this.tileset.isDestroyed()) {
-      this.tileset.destroy();
+    // Properly remove old tileset
+    if (this.tileset) {
+      this.viewer.scene.primitives.remove(this.tileset);
+
+      if (!this.tileset.isDestroyed()) {
+        this.tileset.destroy();
+      }
     }
 
     // Create new tileset with updated slices
@@ -110,6 +158,12 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       tileset.customShader?.setUniform('u_alpha', currentOpacity);
     }
 
+    // Release old picking lock
+    if (this.scenePickingLock) {
+      this.scenePickingLock.release();
+      this.scenePickingLock = null;
+    }
+
     // Set up load progress tracking
     const pickService = PickService.get();
     this.scenePickingLock = pickService.acquireScenePickingLock();
@@ -123,6 +177,32 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
         }
       },
     );
+  }
+
+  /**
+   * Extract all available slice numbers from the tileset JSON.
+   */
+  private extractAvailableSlices(tilesetJson: any): number[] {
+    const slices: number[] = [];
+
+    const traverse = (tile: any): void => {
+      const uri = tile?.content?.uri;
+      if (uri) {
+        const slice = parseSlice(uri);
+        if (slice !== null) {
+          slices.push(slice);
+        }
+      }
+      if (tile?.children?.length) {
+        tile.children.forEach(traverse);
+      }
+    };
+
+    if (tilesetJson?.root) {
+      traverse(tilesetJson.root);
+    }
+
+    return slices.sort((a, b) => a - b);
   }
 
   protected reactToChanges(): void {
@@ -163,7 +243,15 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       this.originalTilesetJson = tilesetJson;
       this.baseUrl = resource.url;
 
-      const keepSlices = new Set([1000]);
+      // Extract all available slices
+      this.availableSlices = this.extractAvailableSlices(tilesetJson);
+
+      // Start with the middle slice
+      const middleIndex = Math.floor(this.availableSlices.length / 2);
+      const initialSlice =
+        this.availableSlices.length > 0 ? this.availableSlices[middleIndex] : 0;
+
+      const keepSlices = new Set([initialSlice]);
       const prunedTileset = makePrunedTileset(
         tilesetJson,
         keepSlices,
@@ -290,7 +378,7 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
 }
 
 function parseSlice(uri: string): number | null {
-  const m = uri.match(/-slice-(\d+)\.glb$/);
+  const m = /-slice-(\d+)\.glb$/.exec(uri);
   return m ? Number(m[1]) : null;
 }
 
