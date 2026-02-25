@@ -199,6 +199,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
       opacity: isStandalone ? this.layer.opacity : 1,
       canUpdateOpacity: isStandalone,
       isVisible: isStandalone ? this.layer.isVisible : true,
+      ogcSource: null,
     };
   }
 }

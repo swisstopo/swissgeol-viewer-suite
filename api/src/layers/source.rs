@@ -51,9 +51,7 @@ pub enum OgcSource {
     },
 
     #[serde(rename = "stac", rename_all(serialize = "camelCase"))]
-    Stac {
-        collection: String,
-    },
+    Stac { collection: String },
 
     #[serde(rename = "fdsn", rename_all(serialize = "camelCase"))]
     Fdsn {
@@ -65,5 +63,3 @@ pub enum OgcSource {
         // WMS-spezifische Felder
     },
 }
-
-
