@@ -56,22 +56,6 @@
     ]
   },
   layers: [
-    /*
-            // Topic Title
-            // Layer title
-            {
-                type: 'Tiles3d',
-                id: '',
-                source: {
-                    type: '',
-                    id: ,
-                    style_id: ,
-                }
-                order_of_properties: '',
-                download_url: 'https://download.swissgeol.ch/ XXXX',
-                geocat_id: '',
-            },
-    */
     // Topic Boreholes
     // Boreholes 2021 - Public
     {
@@ -291,7 +275,7 @@
       id: 'j3d_horizon',
       source: {
         type: 'CesiumIon',
-        asset_id: 4171530
+        asset_id: 4481000
       },
       //order_of_properties: '',
       geocat_id: ''
@@ -302,7 +286,18 @@
       id: 'j3d_faults',
       source: {
         type: 'CesiumIon',
-        asset_id: 4171517
+        asset_id: 4481108
+      },
+      //order_of_properties: '',
+      geocat_id: ''
+    },
+    // Cross-section (profile)
+    {
+      type: 'Tiles3d',
+      id: 'j3d_profiles',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4436279
       },
       //order_of_properties: '',
       geocat_id: ''
