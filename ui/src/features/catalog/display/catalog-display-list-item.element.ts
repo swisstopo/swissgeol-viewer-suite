@@ -182,6 +182,20 @@ export class CatalogDisplayListItem extends CoreElement {
       `,
     });
 
+  private readonly openSlice = (): void =>
+    this.openWindow('slice', {
+      title: () =>
+        i18next.t('catalog:slice_window.title', {
+          defaultValue: 'Slice Selection',
+          layer: getLayerLabel(this.layer),
+        }),
+      body: () => html`
+        <ngm-catalog-display-slice-detail
+          .layerId=${this.layer.id}
+        ></ngm-catalog-display-slice-detail>
+      `,
+    });
+
   private readonly handleOpacityChangeEvent = throttle(
     (event: SliderChangeEvent): void => {
       this.layerService.update(this.layerId, { opacity: event.detail.value });
@@ -211,7 +225,6 @@ export class CatalogDisplayListItem extends CoreElement {
         </ngm-core-button>
 
         <span class="title">${title}</span>
-
         <div class="suffix">
           ${when(
             isBackgroundLayer(this.layer),
@@ -316,6 +329,22 @@ export class CatalogDisplayListItem extends CoreElement {
           >
             <ngm-core-icon icon="filter"></ngm-core-icon>
             ${i18next.t('catalog:display.filter')}
+          </ngm-core-dropdown-item>
+        `,
+      )}
+      ${when(
+        this.layer.type === LayerType.Tiles3d &&
+          (
+            this.layerService.controller(
+              this.layer.id,
+            ) as Tiles3dLayerController
+          )?.supportsSliceSelection,
+        () => html`
+          <ngm-core-dropdown-item role="button" @click="${this.openSlice}">
+            <ngm-core-icon icon="filter"></ngm-core-icon>
+            ${i18next.t('catalog:display.slice', {
+              defaultValue: 'Slice',
+            })}
           </ngm-core-dropdown-item>
         `,
       )}
@@ -533,7 +562,7 @@ export class CatalogDisplayListItem extends CoreElement {
   `;
 }
 
-type WindowName = 'legend' | 'times' | 'voxelFilter' | 'tiffFilter';
+type WindowName = 'legend' | 'times' | 'voxelFilter' | 'tiffFilter' | 'slice';
 
 type WindowMapping = Record<WindowName, CoreWindow | null>;
 
@@ -557,6 +586,7 @@ const getWindowsOfLayer = (layerId: Id<AnyLayer>): WindowMapping => {
     tiffFilter: null,
     times: null,
     voxelFilter: null,
+    slice: null,
   };
   windowMappingsByLayerId.set(layerId, newMapping);
   return newMapping;
