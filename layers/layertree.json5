@@ -60,6 +60,7 @@
           children: [
             'ch.swisstopo.geologie-geologischer_atlas_profile',
             'geomol_cs',
+            'j3d_profiles',
             'geoquat_aaretal_cs'
           ]
         },
@@ -88,8 +89,8 @@
                       id: 'j3d_ma_01',
                       children: [
                         'j3d_horizon',
-                        'j3d_faults'
-                        // Profile
+                        'j3d_faults',
+                        'j3d_profiles'
                       ]
                     }
                   ]
@@ -134,6 +135,7 @@
                         'sa3d_aaremassive_horizons',
                         'sa3d_aaremassive_structures',
                         'sa3d_aaremassive_cs'
+                        //2d-map draped to BEM
                       ]
                     }
                   ],

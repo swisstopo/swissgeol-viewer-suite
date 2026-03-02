@@ -30,6 +30,7 @@
     "geomol_cs": "Cross-sections GeoMol",
     "j3d_horizon": "Jura3D-MA1-Horizon",
     "j3d_faults": "Jura3D-MA1-Faults",
+    "j3d_profiles": "Jura3D-MA1-Cross-sections",
     "top_omm": "Top Upper Marine Molasse",
     "top_usm": "Top Lower Freshwater Molasse",
     "top_umm": "Top Lower Marine Molasse",
