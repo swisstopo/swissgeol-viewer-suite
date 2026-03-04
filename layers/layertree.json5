@@ -133,6 +133,7 @@
                       id: 'j3d_aare-massif',
                       children: [
                         'sa3d_aaremassive_horizons',
+                        'sa3d_aaremassive_horizons_TEST',
                         'sa3d_aaremassive_structures',
                         'sa3d_aaremassive_cs',
                         'ch.swisstopo.geojson_on_swissbedrock'

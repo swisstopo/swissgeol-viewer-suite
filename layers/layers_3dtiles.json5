@@ -568,6 +568,21 @@
             //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
             //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
         },
+        /// TEST
+        {
+            type: 'Tiles3d',
+            id: 'sa3d_aaremassive_horizons_TEST',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 4496841 //4499717
+            },
+            access: {
+                env: ['local', 'dev'],
+                // groups: ['ngm-dev-privileged']
+            },
+            //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
+            //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+        },
         // SA3D - Aaremassive - Structures
         {
             type: 'Tiles3d',
