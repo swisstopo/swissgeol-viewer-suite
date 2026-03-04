@@ -1,0 +1,62 @@
+publiccodeYmlVersion: 0.5.0
+name: viewer.swissgeol.ch
+applicationSuite: swissgeol.ch
+url: https://github.com/swisstopo/swissgeol-viewer-suite
+landingURL: https://www.swissgeol.ch/
+softwareVersion: 1.9.0
+releaseDate: 2020-06-19
+platforms:
+  - web
+categories:
+  - geographic-information-systems
+  - data-visualization
+usedBy:
+  - swisstopo
+developmentStatus: beta
+softwareType: standalone/web
+organisation:
+  uri: https://ld.admin.ch/office/IV.1.5a
+  name: Bundesamt für Landestopografie (swisstopo)
+description:
+  en:
+    localisedName: swissgeol-Viewer
+    shortDescription: 3D-Web-Viewer for geological data in Switzerland.
+    longDescription: >-
+      Use viewer.swissgeol.ch to explore geological data across Switzerland -
+      both at the surface and deep underground. You can view existing datasets,
+      combine different sources, and even integrate your own data for a tailored
+      experience.
+
+      With viewer.swissgeol.ch, you can...
+
+      ...get an overview of geological data available across Switzerland
+
+      ...combine surface and subsurface datasets
+
+      ...slice through 3D geological models to explore underground structures
+
+      ...upload and visualize your own geodata
+
+      ...and much more
+    documentation: https://www.swissgeol.ch/
+    features:
+      - 3D
+      - 3D-Geology
+      - web-visualisation
+    awards:
+      - Geospatial World Forum - Award (Excellence in Content Platform)
+legal:
+  license: BSD-3-Clause
+maintenance:
+  type: internal
+  contacts:
+    - name: Nils Oesterling
+      email: nils.oesterling@swisstopo.ch
+      phone: "0584690524"
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - de
+    - en
+    - fr
+    - it
