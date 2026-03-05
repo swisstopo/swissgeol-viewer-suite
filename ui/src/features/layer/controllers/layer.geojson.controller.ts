@@ -317,7 +317,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       That would discard all fragments of the tilesets, including parts that are covered by the GeoJson.
       Instead, we set the opacity to 0, making the tileset fully invisible, but still allowing the GeoJson to be clamped to it.
       */
-      opacity: 0,
+      opacity: 1,
       canUpdateOpacity: false,
       downloadUrl: null,
       geocatId: null,
