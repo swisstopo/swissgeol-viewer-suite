@@ -2,17 +2,18 @@
   layers: [
     {
       // Layer GeoJson on Top Bedrock as 3D-Tiles-Terrain
-      type: 'GeoJson', // <-- Type anpassen
+      type: 'GeoJson',
       id: 'ch.swisstopo.geojson_on_swissbedrock',
+      opacity: 0.5,
+      legend: true,
       source:  {
         type: 'CesiumIon',
-        asset_id: 4499184 //4499340 //4189871,
+        asset_id: 4499340,
       },
-      // terrain: {
-      //   type: 'CesiumIon',
-      //   asset_id: 4496841 //4182502 //
-      // },
-      opacity: 1,
+      terrain: {
+        type: 'CesiumIon',
+        asset_id: 4496841
+      },
     },
   ],
 }
