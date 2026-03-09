@@ -568,13 +568,13 @@
             //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
             //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
         },
-        /// TEST
+        /// SA3D - Aaremassive - Bedrock model
         {
             type: 'Tiles3d',
-            id: 'sa3d_aaremassive_horizons_TEST',
+            id: 'sa3d_aaremassive_bem',
             source: {
                 type: 'CesiumIon',
-                asset_id: 4496841 //4499717
+                asset_id: 4496841
             },
             access: {
                 env: ['local', 'dev'],
@@ -613,6 +613,22 @@
             //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
             //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
         },
+        // SA3D - Aaremassive - BBOX and Scale
+        {
+            type: 'Tiles3d',
+            id: 'sa3d_aaremassive_bbox',
+            source: {
+                type: 'CesiumIon',
+                asset_id: 4503290
+            },
+            access: {
+                env: ['local', 'dev'],
+                // groups: ['ngm-dev-privileged']
+            },
+            //download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
+            //geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+        },
+
         // City of Berne
         {
             type: 'Tiles3d',
