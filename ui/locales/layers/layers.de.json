@@ -49,6 +49,9 @@
     "sa3d_aaremassive_horizons": "SA3D - Horizonte",
     "sa3d_aaremassive_structures": "SA3D - Strukturen",
     "sa3d_aaremassive_cs": "SA3D - Profile",
+    "sa3d_aaremassive_map": "SA3D - Abgedecktekarte",
+    "sa3d_aaremassive_bem": "SA3D - Top-Fels Modell",
+    "sa3d_aaremassive_bbox": "SA3D - Bounding-Box & Massstab",
     "geoquat_aaretal_cs": "Profile GeoQuat Aaretal",
     "voxel_aaretal_modelling_units": "Lockergesteine Aaretal - Modelliereinheiten",
     "voxel_aaretal_conductivity": "Lockergesteine Aaretal - Hydraulische Leitfähigkeit",
@@ -178,6 +181,7 @@
     "geomol_horizons": "Horizonte",
     "sa3d_models": "Geologie der Alpen",
     "j3d_aare-massif": "Aare Massiv",
+    "s3d_aar-massif-horizons": "Aar Massiv Horizonte"
     "region_3d_models": "3D Modelle - regional",
     "local_3d_models": "3D Modelle - lokal",
     "boreholes": "Bohrdaten",

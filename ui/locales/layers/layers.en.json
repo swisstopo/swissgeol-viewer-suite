@@ -238,13 +238,12 @@
     "source": "Source",
     "version": "Version",
     "details_url": "URL",
-    "cell_center": "Cell Center",
-    "undefined": "undefined",
     "Voxel": {
       "cell_center": "Cell Center",
       "logk": "Hydraulic Conductivity",
       "Index": "Modelling Unit",
-      "Klasse": "Permeability"
+      "Klasse": "Permeability",
+    "undefined": "undefined"
     },
     "Tiff": {
       "BEM": "Bedrock elevation model",
