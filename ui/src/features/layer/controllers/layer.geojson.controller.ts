@@ -116,6 +116,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     if (this.layer.label == null) {
       LayerService.get().update(this.layer.id, { label: this.dataSource.name });
     }
+    this.setLayerOpacity(this.layer.opacity);
   }
 
   protected removeFromViewer(): void {
@@ -317,8 +318,8 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       That would discard all fragments of the tilesets, including parts that are covered by the GeoJson.
       Instead, we set the opacity to 0, making the tileset fully invisible, but still allowing the GeoJson to be clamped to it.
       */
-      opacity: 1,
-      canUpdateOpacity: false,
+      opacity: this.layer.opacity,
+      canUpdateOpacity: true,
       downloadUrl: null,
       geocatId: null,
       label: null,
@@ -355,6 +356,11 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
           Color.fromAlpha(base, opacity),
         );
       }
+    }
+
+    if (this.terrainController) {
+      this.terrainController.layer.opacity = opacity;
+      this.terrainController.update(this.terrainController.layer).then();
     }
   }
 
