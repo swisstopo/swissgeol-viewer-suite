@@ -130,13 +130,19 @@
                   children: [
                     {
                       // 05 - Aar Massif
-                      id: 'j3d_aare-massif',
+                      id: 's3d_aar-massif',
                       children: [
-                        'sa3d_aaremassive_horizons',
-                        'sa3d_aaremassive_horizons_TEST',
+                        {
+                          id: 's3d_aar-massif-horizons',
+                          children: [
+                            'sa3d_aaremassive_horizons',                            
+                          ],
+                        },                        
                         'sa3d_aaremassive_structures',
                         'sa3d_aaremassive_cs',
-                        'ch.swisstopo.geojson_on_swissbedrock'
+                        'sa3d_aaremassive_map',
+                        'sa3d_aaremassive_bem',
+                        'sa3d_aaremassive_bbox'
                       ]
                     }
                   ],
