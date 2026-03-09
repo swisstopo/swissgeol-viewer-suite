@@ -64,6 +64,10 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
 
     this.watch(this.layer.isVisible, (isVisible) => {
       this.dataSource.show = isVisible;
+      if (this.terrainController) {
+        this.terrainController.layer.isVisible = isVisible;
+        this.terrainController.update(this.terrainController.layer).then();
+      }
     });
 
     this.watch(this.layer.opacity, (opacity) => {
