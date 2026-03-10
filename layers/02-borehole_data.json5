@@ -18,7 +18,6 @@
       },
     },
   ],
-
   groups: [
     {
       id: 'grp_1802_label',

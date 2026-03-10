@@ -55,7 +55,6 @@
       'bh_pub_USCS3',
     ],
   },
-
   layers: [
     // Topic Boreholes
     // Boreholes 2021 - Public
@@ -67,8 +66,13 @@
         asset_id: 287568,
       },
       access: {
-        env: ['local', 'dev'],
-        groups: ['ngm-dev-privileged'],
+        env: [
+          'local',
+          'dev'
+        ],
+        groups: [
+          'ngm-dev-privileged'
+        ],
       },
       order_of_properties: 'boreholes_2021',
       download_url: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
@@ -84,8 +88,13 @@
         key: 'tiles/bh_private_20210201_00/tileset.json',
       },
       access: {
-        env: ['local', 'dev'],
-        groups: ['ngm-dev-privileged'],
+        env: [
+          'local',
+          'dev'
+        ],
+        groups: [
+          'ngm-dev-privileged'
+        ],
       },
       order_of_properties: 'boreholes_2021',
       download_url: '',
@@ -123,7 +132,10 @@
         style_id: 5,
       },
       access: {
-        env: ['local', 'dev'],
+        env: [
+          'local',
+          'dev'
+        ],
       },
     },
     // Geoenergy
@@ -235,7 +247,6 @@
       },
       geocat_id: '739e9095-77f6-462d-9a1e-438898cf0c9c',
     },
-
     // GeoQuat
     // GeoQuat Cross-sections
     {
@@ -283,7 +294,6 @@
       download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Cross-Sections.zip',
       geocat_id: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
     },
-
     // Horizons
     // TOMM
     {
@@ -536,7 +546,6 @@
       download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
       geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
     },
-
     // Aar3D - Aaremassive - Horizons
     // Plutonic rocks
     {
@@ -571,7 +580,6 @@
       //download_url: 'https://download.swissgeol.ch/XXX',
       //geocat_id: '',
     },
-
     // Clavaniev Zone
     {
       type: 'Tiles3d',
@@ -694,7 +702,6 @@
       //download_url: 'https://download.swissgeol.ch/XXX',
       //geocat_id: '',
     },
-
     // City of Berne
     {
       type: 'Tiles3d',
@@ -734,7 +741,6 @@
       },
       geocat_id: '71ee97cb-91f8-427d-b217-f293a0a9760a',
     },
-
     // swissBuildings
     {
       type: 'Tiles3d',

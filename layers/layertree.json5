@@ -6,7 +6,7 @@
     'special/voxels',
     'special/swissBEDROCK',
     'layers_earthquakes',
-    'special/geojson_terrain' // <--
+    'special/geojson_terrain'
   ],
   groups: [
     // 01 Topic - Maps, cross-sections & models
@@ -141,30 +141,30 @@
                             'aar3d_horizon_permo-carbon',
                             // GROUP Pre-Variscan basement,
                             {
-                            id: 'aar3d_pre_variscan_rocks',
-                            children: [
-                              // Ausserberg-Avat Zone
-                              'aar3d_horizon_Ausserberg_zone',
-                              // Clavaniev Zone
-                              'aar3d_horizon_Clavaniev_zone',
-                              // Cryst. basement sliver
-                              'aar3d_horizon_Cryst_basement_slivers',
-                              // Erstfeld-Gneis Komplex
-                              'aar3d_horizon_Erstfeld_gneis_complex',
-                              // Ferden-Guttannen Gneiskomplex
-                              'aar3d_horizon_Ferden-Guttannen_Gneis_Complex',
-                              // Innertkirchen-Lauterbrunnen Gneiskomplex
-                              'aar3d_horizon_Innertkirchen-Lauterbrunnen_Gneis_Complex',
-                              // Oberaar-Furka Gneiskomplex
-                              'aar3d_horizon_Oberaar-Furka_Gneis_Complex',
-                              // Sustenhorn Gneiskomplex
-                              'aar3d_horizon_Sustenhorn_Gneis_Complex',
-                            ],
+                              id: 'aar3d_pre_variscan_rocks',
+                              children: [
+                                // Ausserberg-Avat Zone
+                                'aar3d_horizon_Ausserberg_zone',
+                                // Clavaniev Zone
+                                'aar3d_horizon_Clavaniev_zone',
+                                // Cryst. basement sliver
+                                'aar3d_horizon_Cryst_basement_slivers',
+                                // Erstfeld-Gneis Komplex
+                                'aar3d_horizon_Erstfeld_gneis_complex',
+                                // Ferden-Guttannen Gneiskomplex
+                                'aar3d_horizon_Ferden-Guttannen_Gneis_Complex',
+                                // Innertkirchen-Lauterbrunnen Gneiskomplex
+                                'aar3d_horizon_Innertkirchen-Lauterbrunnen_Gneis_Complex',
+                                // Oberaar-Furka Gneiskomplex
+                                'aar3d_horizon_Oberaar-Furka_Gneis_Complex',
+                                // Sustenhorn Gneiskomplex
+                                'aar3d_horizon_Sustenhorn_Gneis_Complex',
+                              ],
                             },
                             // Base Mesozoic Molasse
-                            'aar3d_horizon_Base_Mesozoic_molasse',                                                     
+                            'aar3d_horizon_Base_Mesozoic_molasse',
                           ],
-                        },                        
+                        },
                         'aar3d_aaremassive_structures',
                         'aar3d_aaremassive_cs',
                         'aar3d_aaremassive_map',
@@ -174,7 +174,10 @@
                     }
                   ],
                   access: {
-                    env: ['local', 'dev'],
+                    env: [
+                      'local',
+                      'dev'
+                    ],
                     // groups: ['ngm-dev-privileged']
                   },
                 },

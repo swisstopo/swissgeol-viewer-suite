@@ -6,13 +6,13 @@
       id: 'aar3d_aaremassive_map',
       opacity: 0.5,
       legend: true,
-      source:  {
+      source: {
         type: 'CesiumIon',
         asset_id: 4499340,
       },
       terrain: {
         type: 'CesiumIon',
-        asset_id: 4518143 //4496841
+        asset_id: 4518143
       },
     },
     {
@@ -21,7 +21,7 @@
       id: 'aar3d_aaremassive_map_without_terrain',
       opacity: 0.5,
       legend: true,
-      source:  {
+      source: {
         type: 'CesiumIon',
         asset_id: 4499340,
       },
