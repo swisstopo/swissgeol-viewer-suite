@@ -3,7 +3,7 @@
     {
       // Layer GeoJson on Top Bedrock as 3D-Tiles-Terrain
       type: 'GeoJson',
-      id: 'sa3d_aaremassive_map',
+      id: 'aar3d_aaremassive_map',
       opacity: 0.5,
       legend: true,
       source:  {
@@ -12,7 +12,18 @@
       },
       terrain: {
         type: 'CesiumIon',
-        asset_id: 4496841
+        asset_id: 4518143 //4496841
+      },
+    },
+    {
+      // Layer GeoJson on Top Bedrock as 3D-Tiles-Terrain
+      type: 'GeoJson',
+      id: 'aar3d_aaremassive_map_without_terrain',
+      opacity: 0.5,
+      legend: true,
+      source:  {
+        type: 'CesiumIon',
+        asset_id: 4499340,
       },
     },
   ],
