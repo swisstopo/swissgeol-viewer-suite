@@ -131,7 +131,7 @@
                   children: [
                     {
                       // 05 - Aar Massif
-                      id: 's3d_aar-massif',
+                      id: 'sa3d_aar-massif',
                       children: [
                         {
                           id: 'aar3d_aar-massif-horizons',
