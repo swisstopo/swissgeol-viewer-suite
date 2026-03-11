@@ -65,8 +65,9 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     this.watch(this.layer.isVisible, (isVisible) => {
       this.dataSource.show = isVisible;
       if (this.terrainController) {
-        this.terrainController.layer.isVisible = isVisible;
-        this.terrainController.update(this.terrainController.layer).then();
+        this.terrainController
+          .update({ ...this.terrainController.layer, isVisible })
+          .then();
       }
     });
 
@@ -114,9 +115,6 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     dataSource.entities.resumeEvents();
     geoJsonDataSource.entities.resumeEvents();
 
-    if (this.layer.label == null) {
-      LayerService.get().update(this.layer.id, { label: this.dataSource.name });
-    }
     this.setLayerOpacity(this.layer.opacity);
   }
 
