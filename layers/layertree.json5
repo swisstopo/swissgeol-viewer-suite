@@ -169,8 +169,6 @@
                         },
                         'aar3d_aaremassive_structures',
                         'aar3d_aaremassive_cs',
-                        'aar3d_aaremassive_map',
-                        'aar3d_aaremassive_map_without_terrain',
                         'aar3d_aaremassive_bbox'
                       ]
                     }
