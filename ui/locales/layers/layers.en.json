@@ -55,7 +55,7 @@
     "aar3d_horizon_Erstfeld_gneis_complex": "Aar3D - Erstfeld Gneis Complex",
     "aar3d_horizon_Ferden-Guttannen_Gneis_Complex": "Aar3D - Ferden-Guttannen Gneis Complex",
     "aar3d_horizon_Innertkirchen-Lauterbrunnen_Gneis_Complex": "Aar3D - Innertkirchen-Lauterbrunnen Gneis Complex",
-    "aar3d_horizon_Oberaar-Furka_Gneis_Complex": "OAar3D - beraar-Furka Gneis Complex",
+    "aar3d_horizon_Oberaar-Furka_Gneis_Complex": "Aar3D - Oberaar-Furka Gneis Complex",
     "aar3d_horizon_Sustenhorn_Gneis_Complex": "Aar3D - Sustenhorn Gneis Complex",
     "aar3d_horizon_Base_Mesozoic_molasse": "Aar3D - Base Mesozoic Molasse",
     "aar3d_aaremassive_structures": "Aar3D - Structures",
@@ -193,7 +193,7 @@
     "sa3d_models": "Geology of the Alps",
     "sa3d_aar-massif": "Aar Massif",
     "aar3d_aar-massif-horizons": "Aar3D - Horizons",
-    "aar3d_pre_variscan_rocks":"Pre-Variscan rocks",
+    "aar3d_pre_variscan_rocks": "Pre-Variscan rocks",
     "region_3d_models": "3D models - regional",
     "local_3d_models": "3D models - local",
     "boreholes": "Borehole data",
@@ -255,7 +255,7 @@
       "logk": "Hydraulic Conductivity",
       "Index": "Modelling Unit",
       "Klasse": "Permeability",
-    "undefined": "undefined"
+      "undefined": "undefined"
     },
     "Tiff": {
       "BEM": "Bedrock elevation model",
