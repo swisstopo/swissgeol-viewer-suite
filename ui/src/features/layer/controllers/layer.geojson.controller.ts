@@ -1,6 +1,5 @@
 import {
   BaseLayerController,
-  LayerService,
   LayerStyle,
   LayerType,
   mapLayerSourceToResource,
