@@ -8,10 +8,10 @@
       opacity: 0.7,
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
       legend: true,
-      ogc_source: {
-        type: 'stac',
-        collection: 'ch.swisstopo.geologie-geocover',
-      }
+//      ogc_source: {
+//        type: 'stac',
+//        collection: 'ch.swisstopo.geologie-geocover',
+//      }
     },
     {
       type: 'Wmts',
@@ -782,10 +782,10 @@
       opacity: 0.7,
       geocat_id: '376f86bd-c46c-4b89-8f36-717641706226',
       legend: true,
-      ogc_source: {
-        type: 'stac',
-        collection: 'ch.swisstopo.swissalti3d',
-      }
+//      ogc_source: {
+//        type: 'stac',
+//        collection: 'ch.swisstopo.swissalti3d',
+//      }
     },
     {
       type: 'Wmts',
@@ -794,10 +794,10 @@
       opacity: 0.7,
       geocat_id: '1964cc81-5298-460f-9228-41120315bea8',
       legend: true,
-      ogc_source: {
-        type: 'stac',
-        collection: 'ch.swisstopo.swissalti3d',
-      }
+//      ogc_source: {
+//        type: 'stac',
+//        collection: 'ch.swisstopo.swissalti3d',
+//      }
     },
     {
       type: 'Wmts',

@@ -813,16 +813,20 @@
       type: 'Tiles3d',
       id: 'swiss_buildings',
       source: {
-        type: 'Ogc',
-        ogc_source: {
-          type: 'stac',
-          collection: 'ch.swisstopo.swissbuildings3d_2',
-        },
-        display_source: {
-          type: 'Url',
-          url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20201020/tileset.json'
-        }
+        type: 'Url',
+        url:'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20201020/tileset.json',
       },
+//      source: {
+//        type: 'Ogc',
+//        ogc_source: {
+//          type: 'stac',
+//          collection: 'ch.swisstopo.swissbuildings3d_2',
+//        },
+//        display_source: {
+//          type: 'Url',
+//          url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20201020/tileset.json'
+//        }
+//      },
       geocat_id: '21c98c73-48da-408b-ab73-8f1ab9d5fbe4',
     },
   ]
