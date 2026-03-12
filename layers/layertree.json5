@@ -62,6 +62,7 @@
             'ch.swisstopo.geologie-geologischer_atlas_profile',
             'geomol_cs',
             'j3d_profiles',
+            'aar3d_aaremassive_cs',
             'geoquat_aaretal_cs'
           ]
         },
@@ -168,16 +169,10 @@
                         },
                         'aar3d_aaremassive_structures',
                         'aar3d_aaremassive_cs',
-                        'aar3d_aaremassive_map',
-                        'aar3d_aaremassive_map_without_terrain',
                         'aar3d_aaremassive_bbox'
                       ]
                     }
                   ],
-                  access: {
-                    env: ['local', 'dev'],
-                    // groups: ['ngm-dev-privileged']
-                  },
                 },
               ]
             },
@@ -265,7 +260,6 @@
         {
           id: 'temp_models',
           children: [
-            'ch.swisstopo.geologie-geophysik-geothermie',
             'voxel_geomol_temp_c',
             'temp_iso_60',
             'temp_iso_100',
