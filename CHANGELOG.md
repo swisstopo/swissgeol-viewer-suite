@@ -6,6 +6,8 @@
 
 - GeoJSON and KML layers can now be configured and served via the backend API.
 - Layergroups in the layertree can now be hidden depending on user access groups or the environment.
+- Aar3D - Layergroup and Layers added
+- Jura3D - Cross sections added
 
 ### Changed
 
