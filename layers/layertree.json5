@@ -260,7 +260,6 @@
         {
           id: 'temp_models',
           children: [
-            'ch.swisstopo.geologie-geophysik-geothermie',
             'voxel_geomol_temp_c',
             'temp_iso_60',
             'temp_iso_100',
