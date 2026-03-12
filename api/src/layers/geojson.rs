@@ -1,4 +1,5 @@
 use crate::LayerSource;
+use crate::LayerStyle;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11,4 +12,9 @@ pub struct GeoJsonLayer {
     /// If absent, the GeoJson is draped directly onto the default terrain.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub terrain: Option<LayerSource>,
+
+    /// The styles for the GeoJson layer.
+    /// If absent, the styles will be automatically generated based on the GeoJson properties.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub styles: Option<LayerStyle>,
 }

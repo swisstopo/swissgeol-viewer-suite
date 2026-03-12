@@ -12,6 +12,10 @@
       geocat_id: 'f44ee7fc-efd0-47ad-8a8c-db74dcc20610',
       custom_properties: {
         details_url: 'http://www.seismo.ethz.ch'
+      },
+      ogc_source: {
+        type: 'fdsn',
+        start_time: '90 days'
       }
     },
     // Earthquakes > mag 3"
@@ -26,6 +30,10 @@
       geocat_id: 'fab0e70e-6e33-4ba9-8c42-2b8ac1578384',
       custom_properties: {
         details_url: 'http://www.seismo.ethz.ch'
+      },
+      ogc_source: {
+        type: 'fdsn',
+        min_magnitude: 3,
       }
     }
   ]

@@ -85,3 +85,30 @@ export function isEmail(email: string | undefined) {
   const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   return regex.test(email);
 }
+
+export function parseRelativeTimeToISO(relativeTime: string): string {
+  const match = /^(\d+)\s+(month|months|day|days|year|years)$/i.exec(
+    relativeTime,
+  );
+
+  if (!match) {
+    throw new Error(`Invalid relative time format: "${relativeTime}"`);
+  }
+
+  const amount = Number(match[1]);
+  const unit = match[2].toLowerCase().replace(/s$/, ''); // normalize
+
+  const date = new Date();
+  date.setUTCHours(0, 0, 0, 0);
+
+  const adjusters: Record<string, (n: number) => void> = {
+    month: (n) => date.setUTCMonth(date.getUTCMonth() - n),
+    day: (n) => date.setUTCDate(date.getUTCDate() - n),
+    year: (n) => date.setUTCFullYear(date.getUTCFullYear() - n),
+  };
+
+  adjusters[unit]?.(amount);
+
+  // Remove milliseconds from the date as the OGC API will throw when trying to parse the date string with a period.
+  return date.toISOString().split('.')[0];
+}

@@ -4,6 +4,7 @@ import {
   LayerSource,
   LayerSourceType,
   LayerType,
+  OgcSourceType,
 } from 'src/features/layer';
 import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
 import { Tiles3dLayerController } from 'src/features/layer/controllers/layer-tiles3d.controller';
@@ -445,10 +446,22 @@ export const mapLayerSourceToResource = async (
 
       // TODO At some point, we will have to differentiate between different formats.
       //      Right now, only 3dtiles can be fetched via OGC.
-      const url =
-        source.styleId === undefined
-          ? `https://ogc-api.gst-viewer.swissgeol.ch/collections/${source.id}/download_format/tiles3d`
-          : `https://ogc-api.gst-viewer.swissgeol.ch/collections/${source.id}/styles/${source.styleId}/download_format/tiles3d`;
+      const ogcSource = source.ogcSource;
+      let url: string;
+      switch (ogcSource.type) {
+        case OgcSourceType.Gst:
+          url = ogcSource.styleId
+            ? `https://ogc-api.gst-viewer.swissgeol.ch/collections/${ogcSource.id}/styles/${ogcSource.styleId}/download_format/tiles3d`
+            : `https://ogc-api.gst-viewer.swissgeol.ch/collections/${ogcSource.id}/download_format/tiles3d`;
+          break;
+        case OgcSourceType.Stac:
+          url = `https://ogc-api.gst-viewer.swissgeol.ch/collections/${ogcSource.collection}/download_format/tiles3d`;
+          break;
+        case OgcSourceType.Fdsn:
+        case OgcSourceType.Wms:
+          throw new Error(`Unsupported OGC source type: ${ogcSource.type}`);
+      }
+
       return new Resource({
         url,
         headers: {

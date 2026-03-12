@@ -1,9 +1,12 @@
 import { css, html, LitElement } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { applyTransition } from 'src/styles/theme';
 
 @customElement('ngm-core-dropdown-item')
 export class CoreDropdownItem extends LitElement {
+  @property({ type: Boolean, reflect: true })
+  accessor disabled = false;
+
   readonly render = () => html` <slot></slot> `;
 
   private static readonly containerStyles = css`
@@ -35,6 +38,12 @@ export class CoreDropdownItem extends LitElement {
     /* button item */
     :host([role='button']) {
       cursor: pointer;
+    }
+
+    :host([role='button'][disabled]) {
+      cursor: not-allowed;
+      opacity: 0.5;
+      pointer-events: none;
     }
 
     /* anchor item */

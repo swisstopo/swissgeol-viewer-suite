@@ -112,6 +112,7 @@ export class WmtsService extends BaseService {
         credit: layerName.split('.')[1],
         times: this.makeTimes(defaultTimestamp, timestamps),
         customProperties: {},
+        ogcSource: null,
       });
     }
     return configs;
@@ -177,6 +178,7 @@ export class WmtsService extends BaseService {
           credit: layerName.split('.')[1],
           times: this.makeTimes(defaultTimestamp, timestamps),
           customProperties: {},
+          ogcSource: null,
         });
       }
     }

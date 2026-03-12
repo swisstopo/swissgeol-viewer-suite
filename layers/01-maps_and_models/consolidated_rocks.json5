@@ -5,7 +5,10 @@
       id: 'top_omm',
       source: {
         type: 'Ogc',
-        id: 10486,
+        ogc_source: {
+          type: 'gst',
+          id: 10486
+        },
         display_source: {
           type: 'CesiumIon',
           asset_id: 3955170

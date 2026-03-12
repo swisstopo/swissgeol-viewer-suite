@@ -59,7 +59,9 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     const tileset = await Cesium3DTileset.fromUrl(resource, {
       show: true,
       backFaceCulling: false,
-      enableCollision: true,
+
+      // This feature flag has major performance implications. We turn it off so that large tilesets are performant.
+      enableCollision: false,
 
       maximumScreenSpaceError: 16,
       cullWithChildrenBounds: true,

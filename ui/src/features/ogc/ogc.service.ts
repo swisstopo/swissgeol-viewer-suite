@@ -1,11 +1,14 @@
 import { Cartesian3, Cartographic, Math as CesiumMath } from 'cesium';
 import { sleep } from 'src/utils/fn.utils';
+import { parseRelativeTimeToISO } from 'src/utils';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BaseService } from 'src/services/base.service';
 import {
   Layer,
   LayerSourceType,
   LayerType,
+  OgcSource,
+  OgcSourceType,
   WmtsLayerSource,
 } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
@@ -209,42 +212,17 @@ export class OgcService extends BaseService {
     };
 
     if (
-      layer.type === LayerType.Tiles3d &&
+      (layer.type === LayerType.Tiles3d || layer.type === LayerType.Tiff) &&
       layer.source.type === LayerSourceType.Ogc
     ) {
-      // A layer from the gst service, most likely a 3dtile.
-      const request = {
-        type: 'gst',
-        id: layer.source.id,
-
-        // The coordinate system used in the output file.
-        requestSrs: {
-          epsg: 4326,
-        },
-
-        // The volume that the output should take up.
-        // Unlike this WM(T)S layers, this is 3d.
-        requestVolume: {
-          ...requestArea,
-          polygon: {
-            points,
-            zMax: 100_000,
-            zMin: -100_000,
-          },
-        },
-      };
-      return [
-        {
-          ...request,
-          requestedFormat: 'gocad',
-        },
-        {
-          ...request,
-          requestedFormat: 'tiles3d',
-        },
-      ];
+      const ogcSource = layer.source.ogcSource;
+      return this.getOgcSourceForLayer(ogcSource, requestArea, points);
     }
     if (layer.type === LayerType.Wmts) {
+      // Some WMTS layers also have an OGC source, which should be preferred if available (GeoCover for example).
+      if (layer.ogcSource) {
+        return this.getOgcSourceForLayer(layer.ogcSource, requestArea, points);
+      }
       switch (layer.source) {
         case WmtsLayerSource.WMS:
           return [
@@ -266,6 +244,24 @@ export class OgcService extends BaseService {
           ];
       }
     }
+    if (
+      layer.type === LayerType.Earthquakes &&
+      layer.ogcSource?.type === OgcSourceType.Fdsn
+    ) {
+      const startTime = layer.ogcSource.startTime
+        ? parseRelativeTimeToISO(layer.ogcSource.startTime)
+        : undefined;
+
+      return [
+        {
+          type: 'fdsn12',
+          identifier: 'fdsn@ethz',
+          requestArea,
+          minMagnitude: layer.ogcSource.minMagnitude,
+          startTime,
+        },
+      ];
+    }
 
     if (options.shouldWarnIfNotAvailable) {
       console.warn(
@@ -273,6 +269,62 @@ export class OgcService extends BaseService {
       );
     }
     return [];
+  }
+
+  private getOgcSourceForLayer(
+    ogcSource: OgcSource,
+    requestArea: { srs: { epsg: number }; polygon: number[][] },
+    points: number[][],
+  ): object[] {
+    switch (ogcSource.type) {
+      case 'gst': {
+        const request = {
+          type: 'gst',
+          id: ogcSource.id,
+
+          // The coordinate system used in the output file.
+          requestSrs: {
+            epsg: 4326,
+          },
+
+          // The volume that the output should take up.
+          // Unlike this WM(T)S layers, this is 3d.
+          requestVolume: {
+            ...requestArea,
+            polygon: {
+              points,
+              zMax: 100_000,
+              zMin: -100_000,
+            },
+          },
+        };
+        return [
+          {
+            ...request,
+            requestedFormat: 'gocad',
+          },
+          {
+            ...request,
+            requestedFormat: 'tiles3d',
+          },
+        ];
+      }
+      case 'stac': {
+        return [
+          {
+            type: 'stac09',
+            collection: ogcSource.collection,
+            identifier: 'stac@swisstopo',
+            requestArea,
+          },
+        ];
+      }
+      case 'fdsn':
+      case 'wms':
+      default:
+        // Not yet implemented
+        return [];
+    }
   }
 }
 

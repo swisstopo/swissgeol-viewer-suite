@@ -1,10 +1,12 @@
 {
   include: [
     'layers_wmts',
+    'layers_geojson',
     'layers_3dtiles',
     'special/voxels',
     'special/swissBEDROCK',
-    'layers_earthquakes'
+    'layers_earthquakes',
+    'special/geojson_terrain'
   ],
   groups: [
     // 01 Topic - Maps, cross-sections & models
@@ -59,6 +61,8 @@
           children: [
             'ch.swisstopo.geologie-geologischer_atlas_profile',
             'geomol_cs',
+            'j3d_profiles',
+            'aar3d_aaremassive_cs',
             'geoquat_aaretal_cs'
           ]
         },
@@ -87,8 +91,8 @@
                       id: 'j3d_ma_01',
                       children: [
                         'j3d_horizon',
-                        'j3d_faults'
-                        // Profile
+                        'j3d_faults',
+                        'j3d_profiles'
                       ]
                     }
                   ]
@@ -128,18 +132,47 @@
                   children: [
                     {
                       // 05 - Aar Massif
-                      id: 'j3d_aare-massif',
+                      id: 'sa3d_aar-massif',
                       children: [
-                        'sa3d_aaremassive_horizons',
-                        'sa3d_aaremassive_structures',
-                        'sa3d_aaremassive_cs'
+                        {
+                          id: 'aar3d_aar-massif-horizons',
+                          children: [
+                            // Plutonic rocks
+                            'aar3d_horizon_plutonic_rocks',
+                            // Permocarbon
+                            'aar3d_horizon_permo-carbon',
+                            // GROUP Pre-Variscan basement,
+                            {
+                            id: 'aar3d_pre_variscan_rocks',
+                            children: [
+                              // Ausserberg-Avat Zone
+                              'aar3d_horizon_Ausserberg_zone',
+                              // Clavaniev Zone
+                              'aar3d_horizon_Clavaniev_zone',
+                              // Cryst. basement sliver
+                              'aar3d_horizon_Cryst_basement_slivers',
+                              // Erstfeld-Gneis Komplex
+                              'aar3d_horizon_Erstfeld_gneis_complex',
+                              // Ferden-Guttannen Gneiskomplex
+                              'aar3d_horizon_Ferden-Guttannen_Gneis_Complex',
+                              // Innertkirchen-Lauterbrunnen Gneiskomplex
+                              'aar3d_horizon_Innertkirchen-Lauterbrunnen_Gneis_Complex',
+                              // Oberaar-Furka Gneiskomplex
+                              'aar3d_horizon_Oberaar-Furka_Gneis_Complex',
+                              // Sustenhorn Gneiskomplex
+                              'aar3d_horizon_Sustenhorn_Gneis_Complex',
+                            ],
+                            },
+                            // Base Mesozoic Molasse
+                            'aar3d_horizon_Base_Mesozoic_molasse',
+                          ],
+                        },
+                        'aar3d_aaremassive_structures',
+                        'aar3d_aaremassive_cs',
+                        'aar3d_aaremassive_bbox'
                       ]
                     }
                   ],
-                  access: {
-                    env: ['local', 'dev'],
-                    // groups: ['ngm-dev-privileged']
-                  },
                 },
               ]
             },
@@ -227,8 +260,7 @@
         {
           id: 'temp_models',
           children: [
-            'ch.swisstopo.geologie-geophysik-geothermie',
-            // 'voxel_geomol_temp_c', // Temporaly de-published
+            'voxel_geomol_temp_c',
             'temp_iso_60',
             'temp_iso_100',
             'temp_iso_150',
