@@ -38,13 +38,19 @@ independent of their layer type.
   // @default null
   download_url: null,
   
-  // The id of the legend image to display.
-  // Can be set to `true` to instead fetch a WMTS HTML legend based on the layer's id.
-  // If left out, no legend will be available for the layer.
+  // Configuration for the layer's info box.
   //
-  // @type string | true | null
+  // Two modes are supported:
+  // - `wms`: The legend is fetched as HTML from geo.admin.ch via the layer's id.
+  // - `custom`: Displays translated info text (key: `layers:infoBox.{layerId}`),
+  //   an optional URL, and optional key-value `information` pairs.
+  //   The information value can be a string or a markdown link `[text](url)`.
+  //
+  // If left out, no info box will be available for the layer.
+  //
+  // @type { type: 'wms' } | { type: 'custom', legend_url?: string, information?: { [key: string]: string } } | null
   // @default null
-  legend: null,
+  info_box: null,
   
   // A JSON object containing custom properties.
   // These properties are appended to the layer's normal properties when picking.

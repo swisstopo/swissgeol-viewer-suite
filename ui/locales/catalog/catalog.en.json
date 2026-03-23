@@ -7,6 +7,7 @@
   "display": {
     "background": "Background",
     "opacity": "Opacity",
+    "info_box": "Info",
     "legend": "Legend",
     "download": "Download / Legend",
     "filter": "Open Filter",

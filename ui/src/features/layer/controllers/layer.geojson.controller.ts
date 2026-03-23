@@ -321,7 +321,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       downloadUrl: null,
       geocatId: null,
       label: null,
-      legend: null,
+      infoBox: null,
       orderOfProperties: [],
       customProperties: {},
       isPartiallyTransparent: false,

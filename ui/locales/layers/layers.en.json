@@ -310,5 +310,22 @@
   "info_window": {
     "title": "Info",
     "zoom_to_object": "Zoom to object"
+  },
+  "info_box": {
+    "labels": {
+      "legend": "Legend",
+      "information": "Information",
+      "extendInfoText": "show more"
+    },
+    "layer_description": {
+      "j3d_horizon": "This layer represents the horizon of the Jura3D-MA1 model, which depicts the boundary between the subsurface and the atmosphere. It is based on geological data and modelling to visualise the topography of the subsurface."
+    },
+    "information": {
+      "dataDate": "Data date",
+      "description": "Description",
+      "description_value": "Link to description",
+      "metadata": "Metadata",
+      "metadata_value": "Link to metadata"
+    }
   }
 }

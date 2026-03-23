@@ -7,6 +7,8 @@ import {
   FilterOperator,
   getTranslationKeyForLayerAttributeName,
   GeoJsonLayer,
+  InfoBox,
+  InfoBoxCustom,
   KmlLayer,
   Layer,
   LayerGroup,
@@ -91,13 +93,33 @@ export class LayerApiService extends BaseService {
     const type: LayerType = config.take('type');
     const opacity: number | 'Disabled' = config.takeNullable('opacity') ?? 1;
     const canUpdateOpacity = opacity !== 'Disabled';
-    const legend = run(() => {
-      const legendValue: string | boolean | null =
-        config.takeNullable('legend');
-      if (legendValue === null) {
+    const infoBox = run((): InfoBox | null => {
+      const infoBoxValue = config.takeNullableObject('infoBox');
+      if (infoBoxValue === null) {
         return null;
       }
-      return legendValue || null;
+      const infoBoxType: string = infoBoxValue.take('type');
+      switch (infoBoxType) {
+        case 'wms':
+          return { type: 'wms' };
+        case 'custom': {
+          const result: InfoBoxCustom = { type: 'custom' };
+          const legendUrl: string | null =
+            infoBoxValue.takeNullable('legendUrl');
+          if (legendUrl !== null) {
+            result.legendUrl = legendUrl;
+          }
+          const information: Record<string, string> | null =
+            infoBoxValue.takeNullable('information');
+          if (information !== null) {
+            result.information = information;
+          }
+          return result;
+        }
+        default:
+          console.error(`Unknown infoBox type: ${infoBoxType}`);
+          return null;
+      }
     });
     const base: BaseLayer = {
       type,
@@ -109,7 +131,7 @@ export class LayerApiService extends BaseService {
       geocatId: config.takeNullable('geocatId'),
       downloadUrl: config.takeNullable('downloadUrl'),
       customProperties: config.takeNullable('customProperties') ?? {},
-      legend,
+      infoBox,
     };
 
     switch (type) {

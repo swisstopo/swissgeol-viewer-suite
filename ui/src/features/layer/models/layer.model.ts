@@ -83,14 +83,11 @@ export interface BaseLayer extends Model {
   downloadUrl: TranslatedString | null;
 
   /**
-   * Whether the layer has a legend, and how that legend can be found.
+   * Configuration for the layer's info box.
    *
-   * - If this is `true`, the legend can be fetched as HTML from `geo.admin.ch` via the layer's id.
-   * - If this is a `string`, the legend can be fetched as PNG from `geo.admin.ch` by using that string as id.
-   * - If this is `null`, then the layer doesn't have a legend.
-   *
+   * If `null`, the layer has no info box.
    */
-  legend: true | string | null;
+  infoBox: InfoBox | null;
 
   /**
    * A mapping of custom properties that should be appended to each pick info on the layer.
@@ -112,6 +109,28 @@ export enum LayerType {
   Kml = 'Kml',
   Earthquakes = 'Earthquakes',
   GeoJson = 'GeoJson',
+}
+
+/**
+ * Configuration for the layer's info box.
+ *
+ * Two modes are available:
+ *
+ * - `wms`: The legend is fetched as HTML from `geo.admin.ch` via the layer's id.
+ * - `custom`: Displays translated info text (derived from the layer id), an optional URL,
+ *   and optional key-value pairs (`information`). The key is a translation key and the
+ *   value is a string or a markdown link `[text](url)`.
+ */
+export type InfoBox = InfoBoxWms | InfoBoxCustom;
+
+export interface InfoBoxWms {
+  type: 'wms';
+}
+
+export interface InfoBoxCustom {
+  type: 'custom';
+  legendUrl?: string;
+  information?: Record<string, string>;
 }
 
 export const getLayerLabel = (layer: AnyLayer): string =>

@@ -85,7 +85,7 @@ export const BACKGROUND_LAYER: BackgroundLayer = {
   isVisible: false,
   geocatId: null,
   downloadUrl: null,
-  legend: null,
+  infoBox: null,
   activeVariantId: DEFAULT_BACKGROUND_VARIANT.id,
   variants: makeModelMapping(LAYERS),
   customProperties: {},

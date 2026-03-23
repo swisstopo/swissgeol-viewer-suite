@@ -62,17 +62,18 @@ pub struct Layer {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub download_url: Option<TranslatedString>,
 
-    /// Where the legend for the layer can found.
-    /// If absent, then the layer doesn't have any such legend.
+    /// Configuration for the layer's info box.
+    /// The info box can display a WMS legend, custom content, or both.
+    /// If absent, the layer has no info box.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub legend: Option<LayerLegend>,
+    pub info_box: Option<InfoBox>,
 
     /// A mapping of custom properties that should be appended to each pick info on the layer.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub custom_properties: HashMap<String, String>,
 
-    /// Where the legend for the layer can found.
-    /// If absent, then the layer doesn't have any such legend.
+    /// Access control configuration for the layer.
+    /// If absent, then the layer doesn't have any access restrictions.
     #[serde(default, skip_serializing)]
     pub access: Option<LayerAccess>,
 
@@ -86,11 +87,24 @@ pub struct Layer {
     pub use_count: u32,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum LayerLegend {
-    IdOrDisabled(bool),
-    CustomId(String),
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
+#[serde(rename_all(serialize = "camelCase", deserialize = "snake_case"))]
+pub enum InfoBox {
+    /// The legend is fetched as HTML from geo.admin.ch via the layer's id.
+    Wms,
+    /// Custom info box content with an optional URL and key-value pairs.
+    #[serde(rename_all(serialize = "camelCase", deserialize = "snake_case"))]
+    Custom {
+        /// An optional URL to display in the info box.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        legend_url: Option<String>,
+
+        /// Key-value pairs displayed in the info box.
+        /// The key is a translation key; the value is a string or a markdown link.
+        #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+        information: HashMap<String, String>,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

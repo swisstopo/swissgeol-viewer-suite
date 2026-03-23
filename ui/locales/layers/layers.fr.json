@@ -66,5 +66,22 @@
   "info_window": {
     "title": "Info",
     "zoom_to_object": "Zoom sur l'objet"
+  },
+  "info_box": {
+    "labels": {
+      "legend": "Légende",
+      "information": "Informations",
+      "extendInfoText": "afficher plus"
+    },
+    "layer_description": {
+      "j3d_horizon": "Cette couche représente l'horizon du modèle Jura3D-MA1, qui illustre la limite entre le sous-sol et l'atmosphère. Elle est basée sur des données géologiques et des modélisations afin de visualiser la topographie du sous-sol."
+    },
+    "information": {
+      "dataDate": "Date des données",
+      "description": "Description",
+      "description_value": "Lien vers la description",
+      "metadata": "Métadonnées",
+      "metadata_value": "Lien vers les métadonnées"
+    }
   }
 }

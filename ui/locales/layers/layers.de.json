@@ -310,5 +310,22 @@
   "info_window": {
     "title": "Info",
     "zoom_to_object": "Auf Objekt zoomen"
+  },
+  "info_box": {
+    "labels": {
+      "legend": "Legende",
+      "information": "Informationen",
+      "extendInfoText": "mehr anzeigen"
+    },
+    "layer_description": {
+      "j3d_horizon": "Diese Schicht repräsentiert den Horizont des Jura3D-MA1-Modells, der die Grenze zwischen dem Untergrund und der Atmosphäre darstellt. Sie basiert auf geologischen Daten und Modellierungen, um die Topographie des Untergrunds zu visualisieren."
+    },
+    "information": {
+      "dataDate": "Datenstand",
+      "description": "Beschreibung",
+      "description_value": "Link zu Beschreibung",
+      "metadata": "Metadaten",
+      "metadata_value": "Link zu Metadaten"
+    }
   }
 }

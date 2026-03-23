@@ -66,5 +66,22 @@
   "info_window": {
     "title": "Info",
     "zoom_to_object": "Zoom sull'oggetto"
+  },
+  "info_box": {
+    "labels": {
+      "legend": "Legenda",
+      "information": "Informazioni",
+      "extendInfoText": "mostra di più"
+    },
+    "layer_description": {
+      "j3d_horizon": "Questo livello rappresenta l'orizzonte del modello Jura3D-MA1, che raffigura il confine tra il sottosuolo e l'atmosfera. Si basa su dati geologici e modellazioni per visualizzare la topografia del sottosuolo."
+    },
+    "information": {
+      "dataDate": "Data dei dati",
+      "description": "Descrizione",
+      "description_value": "Link alla descrizione",
+      "metadata": "Metadati",
+      "metadata_value": "Link ai metadati"
+    }
   }
 }

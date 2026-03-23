@@ -157,7 +157,7 @@ export class NgmIonModal extends CoreElement {
           label: ionAsset.name,
           geocatId: null,
           downloadUrl: null,
-          legend: null,
+          infoBox: null,
           customProperties: {},
           orderOfProperties: [],
           terrain: null,
@@ -180,7 +180,7 @@ export class NgmIonModal extends CoreElement {
           label: ionAsset.name,
           geocatId: null,
           downloadUrl: null,
-          legend: null,
+          infoBox: null,
           customProperties: {},
         } satisfies KmlLayer;
         break;
@@ -199,7 +199,7 @@ export class NgmIonModal extends CoreElement {
           isVisible: true,
           geocatId: null,
           downloadUrl: null,
-          legend: null,
+          infoBox: null,
           orderOfProperties: [],
           isPartiallyTransparent: false,
           customProperties: {},
