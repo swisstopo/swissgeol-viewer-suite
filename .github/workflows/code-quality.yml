@@ -456,7 +456,7 @@ jobs:
         with:
           command: |
             npm run cypress:run -- \
-              --browser edge \
+              --browser chrome \
               --record \
               --key ${{ secrets.CYPRESS_RECORD_KEY }}
           install: false
