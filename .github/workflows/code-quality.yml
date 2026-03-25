@@ -469,15 +469,18 @@ jobs:
           echo $! > ../ui.pid
           chmod +x ../.github/scripts/wait_for_port.sh
           ../.github/scripts/wait_for_port.sh localhost 8000
+      - name: Start Xvfb
+        run: |
+          Xvfb :99 -screen 0 1920x1280x24 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           command: |
-            xvfb-run --auto-servernum --server-args="-screen 0 1920x1280x24" \
-              npm run cypress:run -- \
-                --browser chrome \
-                --record \
-                --key ${{ secrets.CYPRESS_RECORD_KEY }}
+            npm run cypress:run -- \
+              --browser chrome \
+              --record \
+              --key ${{ secrets.CYPRESS_RECORD_KEY }}
           install: false
           wait-on: "http://localhost:8000"
           wait-on-timeout: 120
