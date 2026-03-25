@@ -9,6 +9,7 @@ import {
   GeoJsonLayer,
   InfoBox,
   InfoBoxCustom,
+  InformationValue,
   KmlLayer,
   Layer,
   LayerGroup,
@@ -98,18 +99,18 @@ export class LayerApiService extends BaseService {
       if (infoBoxValue === null) {
         return null;
       }
-      const infoBoxType: string = infoBoxValue.take('type');
-      switch (infoBoxType) {
-        case 'wms':
-          return { type: 'wms' };
+      const infoBoxSource: string = infoBoxValue.take('source');
+      switch (infoBoxSource) {
+        case 'api3.geo.admin.ch':
+          return { source: 'api3.geo.admin.ch' };
         case 'custom': {
-          const result: InfoBoxCustom = { type: 'custom' };
+          const result: InfoBoxCustom = { source: 'custom' };
           const legendUrl: string | null =
             infoBoxValue.takeNullable('legendUrl');
           if (legendUrl !== null) {
             result.legendUrl = legendUrl;
           }
-          const information: Record<string, string> | null =
+          const information: Record<string, InformationValue> | null =
             infoBoxValue.takeNullable('information');
           if (information !== null) {
             result.information = information;
@@ -117,7 +118,7 @@ export class LayerApiService extends BaseService {
           return result;
         }
         default:
-          console.error(`Unknown infoBox type: ${infoBoxType}`);
+          console.error(`Unknown infoBox source: ${infoBoxSource}`);
           return null;
       }
     });

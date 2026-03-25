@@ -88,12 +88,16 @@ pub struct Layer {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type")]
-#[serde(rename_all(serialize = "camelCase", deserialize = "snake_case"))]
+#[serde(tag = "source")]
 pub enum InfoBox {
-    /// The legend is fetched as HTML from geo.admin.ch via the layer's id.
-    Wms,
+    /// The legend is fetched as HTML from api3.geo.admin.ch via the layer's id.
+    #[serde(rename(
+        serialize = "api3.geo.admin.ch",
+        deserialize = "api3.geo.admin.ch"
+    ))]
+    Api3GeoAdminCh,
     /// Custom info box content with an optional URL and key-value pairs.
+    #[serde(rename(serialize = "custom", deserialize = "custom"))]
     #[serde(rename_all(serialize = "camelCase", deserialize = "snake_case"))]
     Custom {
         /// An optional URL to display in the info box.
@@ -101,10 +105,19 @@ pub enum InfoBox {
         legend_url: Option<String>,
 
         /// Key-value pairs displayed in the info box.
-        /// The key is a translation key; the value is a string or a markdown link.
+        /// The key is a translation key; the value is a string or a { key, url } object.
         #[serde(default, skip_serializing_if = "HashMap::is_empty")]
-        information: HashMap<String, String>,
+        information: HashMap<String, InformationValue>,
     },
+}
+
+/// A value in the info box's information table.
+/// Either a plain text string or a link with a translation key and URL.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum InformationValue {
+    Link { key: String, url: String },
+    Text(String),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -5,7 +5,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { CoreElement } from 'src/features/core';
-import { InfoBoxCustom, Layer } from 'src/features/layer';
+import { InfoBoxCustom, InformationValue, Layer } from 'src/features/layer';
 import { run } from 'src/utils/fn.utils';
 import { Id } from 'src/models/id.model';
 import { LayerService } from 'src/features/layer/layer.service';
@@ -41,8 +41,8 @@ export class CatalogDisplayInfoBox extends CoreElement {
       return nothing;
     }
 
-    switch (infoBox.type) {
-      case 'wms':
+    switch (infoBox.source) {
+      case 'api3.geo.admin.ch':
         return html` <div class="legend-html">${this.renderWmsLegend()}</div> `;
       case 'custom':
         return html`
@@ -53,7 +53,7 @@ export class CatalogDisplayInfoBox extends CoreElement {
             ${this.renderLegend(infoBox)}
             <br />
             <span>${i18next.t('layers:info_box.labels.information')}</span>
-            ${this.renderInformationen(infoBox)}
+            ${this.renderInformation(infoBox)}
           </div>
         `;
     }
@@ -101,7 +101,7 @@ export class CatalogDisplayInfoBox extends CoreElement {
     `;
   };
 
-  private readonly renderInformationen = (infoBox: InfoBoxCustom) => {
+  private readonly renderInformation = (infoBox: InfoBoxCustom) => {
     if (!infoBox.information || Object.keys(infoBox.information).length === 0) {
       return nothing;
     }
@@ -113,7 +113,7 @@ export class CatalogDisplayInfoBox extends CoreElement {
               <td class="info-key">
                 ${i18next.t(`layers:info_box.information.${key}`)}
               </td>
-              <td class="info-value">${this.renderMarkdownValue(value)}</td>
+              <td class="info-value">${this.renderInformationValue(value)}</td>
             </tr>
           `,
         )}
@@ -121,14 +121,14 @@ export class CatalogDisplayInfoBox extends CoreElement {
     `;
   };
 
-  private readonly renderMarkdownValue = (value: string) => {
-    const linkMatch = value.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
-    if (linkMatch) {
-      const url = linkMatch[2];
-      const label = i18next.t(`layers:info_box.information.${linkMatch[1]}`);
-      return html`<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
+  private readonly renderInformationValue = (value: InformationValue) => {
+    if (typeof value === 'string') {
+      return value;
     }
-    return value;
+    const label = i18next.t(`layers:info_box.information.${value.key}`);
+    return html`<a href="${value.url}" target="_blank" rel="noopener"
+      >${label}</a
+    >`;
   };
 
   private readonly renderWmsLegend = () => {

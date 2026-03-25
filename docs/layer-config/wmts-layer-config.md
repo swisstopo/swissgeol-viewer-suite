@@ -38,6 +38,6 @@ A simple Wmts layer configuration:
   opacity: 0.7,
   download_url: 'https://my-download-url.com',
   geocat_id: 'my-geocat-id',
-  info_box: { type: 'wms' },
+  info_box: { source: 'api3.geo.admin.ch' },
 }
 ```

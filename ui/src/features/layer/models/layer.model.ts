@@ -116,21 +116,23 @@ export enum LayerType {
  *
  * Two modes are available:
  *
- * - `wms`: The legend is fetched as HTML from `geo.admin.ch` via the layer's id.
+ * - `api3.geo.admin.ch`: The legend is fetched as HTML from `api3.geo.admin.ch` via the layer's id.
  * - `custom`: Displays translated info text (derived from the layer id), an optional URL,
  *   and optional key-value pairs (`information`). The key is a translation key and the
- *   value is a string or a markdown link `[text](url)`.
+ *   value is either a plain string or a `{ key, url }` object for links.
  */
-export type InfoBox = InfoBoxWms | InfoBoxCustom;
+export type InfoBox = InfoBoxApi3GeoAdminCh | InfoBoxCustom;
 
-export interface InfoBoxWms {
-  type: 'wms';
+export interface InfoBoxApi3GeoAdminCh {
+  source: 'api3.geo.admin.ch';
 }
 
+export type InformationValue = string | { key: string; url: string };
+
 export interface InfoBoxCustom {
-  type: 'custom';
+  source: 'custom';
   legendUrl?: string;
-  information?: Record<string, string>;
+  information?: Record<string, InformationValue>;
 }
 
 export const getLayerLabel = (layer: AnyLayer): string =>

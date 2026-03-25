@@ -41,14 +41,14 @@ independent of their layer type.
   // Configuration for the layer's info box.
   //
   // Two modes are supported:
-  // - `wms`: The legend is fetched as HTML from geo.admin.ch via the layer's id.
+  // - `api3.geo.admin.ch`: The legend is fetched as HTML from api3.geo.admin.ch via the layer's id.
   // - `custom`: Displays translated info text (key: `layers:infoBox.{layerId}`),
   //   an optional URL, and optional key-value `information` pairs.
-  //   The information value can be a string or a markdown link `[text](url)`.
+  //   The information value can be a plain string or a `{ key, url }` object for links.
   //
   // If left out, no info box will be available for the layer.
   //
-  // @type { type: 'wms' } | { type: 'custom', legend_url?: string, information?: { [key: string]: string } } | null
+  // @type { source: 'api3.geo.admin.ch' } | { source: 'custom', legend_url?: string, information?: { [key: string]: string | { key: string, url: string } } } | null
   // @default null
   info_box: null,
   

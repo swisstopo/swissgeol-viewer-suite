@@ -280,11 +280,11 @@
       //order_of_properties: '',
       geocat_id: '',
       info_box: {
-        type: 'custom',
+        source: 'custom',
         legend_url: 'https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_Übersichtskarte und Legende_DE_viewer.png',
         information: {
-          metadata: '[metadata_value](https://www.swissgeol.ch/)',
-          description: '[description_value](https://www.swissgeol.ch/)',
+          metadata: { key: 'metadata_value', url: 'https://www.swissgeol.ch/' },
+          description: { key: 'description_value', url: 'https://www.swissgeol.ch/' },
           dataDate: '26.02.2026'
         }
       }
