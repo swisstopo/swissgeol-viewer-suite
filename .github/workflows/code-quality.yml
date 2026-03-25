@@ -394,6 +394,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@1.90
+      - name: Install Mesa libraries for headless WebGL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libegl1 \
+            libegl1-mesa \
+            libgl1-mesa-dri \
+            libgles2 \
+            libgbm1 \
+            libvulkan1 \
+            mesa-vulkan-drivers \
+            xvfb
       - name: Restore cargo registry
         uses: actions/cache/restore@v4
         with:
@@ -455,10 +473,11 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           command: |
-            npm run cypress:run -- \
-              --browser chrome \
-              --record \
-              --key ${{ secrets.CYPRESS_RECORD_KEY }}
+            xvfb-run --auto-servernum --server-args="-screen 0 1920x1280x24" \
+              npm run cypress:run -- \
+                --browser chrome \
+                --record \
+                --key ${{ secrets.CYPRESS_RECORD_KEY }}
           install: false
           wait-on: "http://localhost:8000"
           wait-on-timeout: 120
