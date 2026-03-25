@@ -404,14 +404,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libegl1 \
-            libegl1-mesa \
-            libgl1-mesa-dri \
-            libgles2 \
+            xvfb \
             libgbm1 \
-            libvulkan1 \
-            mesa-vulkan-drivers \
-            xvfb
+            mesa-utils \
+            libnss3 \
+            libatk-bridge2.0-0 \
+            libxkbcommon0 \
+            libgtk-3-0
+
       - name: Restore cargo registry
         uses: actions/cache/restore@v4
         with:
