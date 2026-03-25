@@ -91,10 +91,7 @@ pub struct Layer {
 #[serde(tag = "source")]
 pub enum InfoBox {
     /// The legend is fetched as HTML from api3.geo.admin.ch via the layer's id.
-    #[serde(rename(
-        serialize = "api3.geo.admin.ch",
-        deserialize = "api3.geo.admin.ch"
-    ))]
+    #[serde(rename(serialize = "api3.geo.admin.ch", deserialize = "api3.geo.admin.ch"))]
     Api3GeoAdminCh,
     /// Custom info box content with an optional URL and key-value pairs.
     #[serde(rename(serialize = "custom", deserialize = "custom"))]
