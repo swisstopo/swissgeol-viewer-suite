@@ -317,15 +317,19 @@
       "information": "Informationen",
       "extendInfoText": "mehr anzeigen"
     },
-    "layer_description": {
-      "j3d_horizon": "Diese Schicht repräsentiert den Horizont des Jura3D-MA1-Modells, der die Grenze zwischen dem Untergrund und der Atmosphäre darstellt. Sie basiert auf geologischen Daten und Modellierungen, um die Topographie des Untergrunds zu visualisieren."
-    },
     "information": {
       "dataDate": "Datenstand",
       "description": "Beschreibung",
       "description_value": "Link zu Beschreibung",
+      "description_url": "https://www.swissgeol.ch/de",
       "metadata": "Metadaten",
       "metadata_value": "Link zu Metadaten"
+    },
+    "layers": {
+      "j3d_horizon": {
+        "description": "Das geologische 3D-Modell Jura3D stellt den Untergrund des Schweizer Juras nordwestlich des Molassebeckens bis zur Landesgrenze dreidimensional dar. Die Modellierung erfolgt im Rahmen der Entwicklung des Nationalen Geologischen Modells der Schweiz (NGM).\nJura3D besteht aus drei zentralen Komponenten: einem dichten Netzwerk geologischer Profile (Gittermodell), modellierten Störungsflächen sowie einem modellierten lithostratigraphischen Referenzhorizont (Top Ifenthal-Formation).\nAls wichtigste Datengrundlage dienen die geometrisch harmonisierten Vektordaten von GeoCover. Im Untergrund basiert das Modell auf geologischen Profilen, Bohrdaten und geophysikalischen Daten mit unterschiedlich dichter räumlicher Verteilung. Daher ist eine konsistente kinematische Interpretation zentral, um ein geometrisches und konzeptionell stimmiges geologisches 3D-Modell zu erstellen.\nDieser Download stellt das erste Modellgebiet dar. Bis 2030 sollen schrittweise weitere Modellgebiete folgen. Weitere Informationen sind im zugehörigen Modellbeschrieb dokumentiert.",
+        "legend_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.png"
+      }
     }
   }
 }

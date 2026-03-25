@@ -102,14 +102,22 @@ pub enum InfoBox {
         legend_url: Option<String>,
 
         /// Key-value pairs displayed in the info box.
-        /// The key is a translation key; the value is a string or a { key, url } object.
+        /// The key is a translation key for the label; the value is one of:
+        ///   - a plain string.
+        ///   - a `{ key, url }` object, rendered as a link whose label is translated from `key`. The url can be:
+        ///      - a URL string (starting with `http://` or `https://`)
+        ///      - a plain string used as a translation key to resolve a localized url.
         #[serde(default, skip_serializing_if = "HashMap::is_empty")]
         information: HashMap<String, InformationValue>,
     },
 }
 
 /// A value in the info box's information table.
-/// Either a plain text string or a link with a translation key and URL.
+///
+/// - [`Text`](InformationValue::Text): A plain string.
+/// - [`Link`](InformationValue::Link): A `{ key, url }` object rendered as a link whose label is
+///   the translation of `key`. Url can be a url which starts with `http://` or `https://`
+///   or a translation key to resolve a localized url.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum InformationValue {

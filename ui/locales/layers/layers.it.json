@@ -73,15 +73,19 @@
       "information": "Informazioni",
       "extendInfoText": "mostra di più"
     },
-    "layer_description": {
-      "j3d_horizon": "Questo livello rappresenta l'orizzonte del modello Jura3D-MA1, che raffigura il confine tra il sottosuolo e l'atmosfera. Si basa su dati geologici e modellazioni per visualizzare la topografia del sottosuolo."
-    },
     "information": {
       "dataDate": "Data dei dati",
       "description": "Descrizione",
       "description_value": "Link alla descrizione",
+      "description_url": "https://www.swissgeol.ch",
       "metadata": "Metadati",
       "metadata_value": "Link ai metadati"
+    },
+    "layers": {
+      "j3d_horizon": {
+        "description": "Il modello geologico 3D Jura3D rappresenta il sottosuolo del Giura svizzero a nord-ovest del bacino molassico fino al confine nazionale in tre dimensioni. La modellazione viene effettuata nell'ambito dello sviluppo del Modello Geologico Nazionale della Svizzera (NGM).\nJura3D è composto da tre componenti centrali: una fitta rete di sezioni geologiche (modello a griglia), superfici di faglia modellate e un orizzonte di riferimento litostratigrafico modellato (Top Formazione di Ifenthal).\nLa base di dati più importante è costituita dai dati vettoriali geometricamente armonizzati di GeoCover. Nel sottosuolo, il modello si basa su sezioni geologiche, dati di perforazione e dati geofisici con densità spaziale variabile. Un'interpretazione cinematica coerente è quindi essenziale per creare un modello geologico 3D geometricamente e concettualmente coerente.\nQuesto download rappresenta la prima area di modellazione. Ulteriori aree di modellazione seguiranno progressivamente fino al 2030. Informazioni aggiuntive sono documentate nel rapporto di modellazione associato.",
+        "legend_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.png"
+      }
     }
   }
 }

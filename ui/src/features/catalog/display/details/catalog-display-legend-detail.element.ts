@@ -50,7 +50,7 @@ export class CatalogDisplayInfoBox extends CoreElement {
             ${this.renderInfoText()}
             <br />
             <span>${i18next.t('layers:info_box.labels.legend')}</span>
-            ${this.renderLegend(infoBox)}
+            ${this.renderLegend()}
             <br />
             <span>${i18next.t('layers:info_box.labels.information')}</span>
             ${this.renderInformation(infoBox)}
@@ -64,7 +64,7 @@ export class CatalogDisplayInfoBox extends CoreElement {
   };
 
   private readonly renderInfoText = () => {
-    const key = `layers:info_box.layer_description.${this.layer.id}`;
+    const key = `layers:info_box.layers.${this.layer.id}.description`;
     const text = i18next.t(key);
     if (text === key) {
       return nothing;
@@ -84,15 +84,17 @@ export class CatalogDisplayInfoBox extends CoreElement {
         : nothing}`;
   };
 
-  private readonly renderLegend = (infoBox: InfoBoxCustom) => {
-    if (!infoBox.legendUrl) {
+  private readonly renderLegend = () => {
+    const key = `layers:info_box.layers.${this.layer.id}.legend_url`;
+    const legendUrl = i18next.t(key);
+    if (!legendUrl) {
       return nothing;
     }
     return html`
       <div class="info-url">
-        <a href="${infoBox.legendUrl}" target="_blank" rel="noopener">
+        <a href="${legendUrl}" target="_blank" rel="noopener">
           <img
-            src="${infoBox.legendUrl}"
+            src="${legendUrl}"
             alt="info-box-legend"
             class="info-box-legend"
           />
@@ -125,10 +127,14 @@ export class CatalogDisplayInfoBox extends CoreElement {
     if (typeof value === 'string') {
       return value;
     }
+
+    let url = value.url;
+    if (!url.startsWith('https://') && !url.startsWith('http://')) {
+      url = i18next.t(`layers:info_box.information.${url}`);
+    }
+
     const label = i18next.t(`layers:info_box.information.${value.key}`);
-    return html`<a href="${value.url}" target="_blank" rel="noopener"
-      >${label}</a
-    >`;
+    return html`<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
   };
 
   private readonly renderWmsLegend = () => {
