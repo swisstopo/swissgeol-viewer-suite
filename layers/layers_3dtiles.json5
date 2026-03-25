@@ -685,7 +685,7 @@
       id: 'aar3d_horizon_Ferden-Guttannen_Gneis_Complex',
       source: {
         type: 'CesiumIon',
-        asset_id: 4517664,
+        asset_id: 4517672,
       },
       //download_url: 'https://download.swissgeol.ch/XXX',
       //geocat_id: '',
