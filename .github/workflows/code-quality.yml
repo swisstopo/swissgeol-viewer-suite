@@ -458,7 +458,7 @@ jobs:
             npm run cypress:run -- \
               --browser edge \
               --record \
-              --key ${{ secrets.CYPRESS_RECORD_KEY }} \
+              --key ${{ secrets.CYPRESS_RECORD_KEY }}
           install: false
           wait-on: "http://localhost:8000"
           wait-on-timeout: 120

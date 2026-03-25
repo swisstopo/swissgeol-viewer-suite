@@ -26,6 +26,20 @@ const setupNodeEvents = async (
     }),
   );
   config.env.TAGS = 'not @skip';
+
+  // Stabilize WebGL in GitHub Actions / headless Linux for Cesium
+  on('before:browser:launch', (browser, launchOptions) => {
+    if (!process.env.CI) return launchOptions;
+
+    // Only affects Chromium-family browsers (Edge/Chrome). Electron uses ELECTRON_EXTRA_LAUNCH_ARGS.
+    if (browser.family === 'chromium') {
+      launchOptions.args.push('--use-gl=swiftshader');
+      launchOptions.args.push('--disable-dev-shm-usage');
+    }
+
+    return launchOptions;
+  });
+
   return config;
 };
 
