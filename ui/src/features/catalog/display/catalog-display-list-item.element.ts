@@ -24,6 +24,7 @@ import { when } from 'lit/directives/when.js';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
 import { throttle } from 'src/utils/fn.utils';
 import { classMap } from 'lit/directives/class-map.js';
+import { getTranslatedString } from 'src/models/translated-string.model';
 
 @customElement('ngm-catalog-display-list-item')
 export class CatalogDisplayListItem extends CoreElement {
@@ -297,7 +298,7 @@ export class CatalogDisplayListItem extends CoreElement {
         () => html`
           <ngm-core-dropdown-item role="link">
             <a
-              href="${this.layer.downloadUrl}"
+              href="${getTranslatedString(this.layer.downloadUrl)}"
               target="_blank"
               rel="external noopener"
             >
