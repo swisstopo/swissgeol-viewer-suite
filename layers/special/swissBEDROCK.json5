@@ -4,21 +4,21 @@
       // Layer Top Bedrock Geotiff
       type: 'Tiff',
       id: 'ch.swisstopo.swissbedrock-geotiff',
-//      source: {
-//        type: 'Ogc',
-//        ogc_source: {
-//          type: 'stac',
-//          collection: 'ch.swisstopo.geologie-swissbedrock',
-//        },
-//        display_source: {
-//          type: 'Url',
-//          url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif'
-//        },
-//      },
-      source:  {
-        type: 'Url',
-        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'stac',
+          collection: 'ch.swisstopo.geologie-swissbedrock',
+        },
+        display_source: {
+          type: 'Url',
+          url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif'
+        },
       },
+//      source:  {
+//        type: 'Url',
+//        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+//      },
       opacity: 0.5,
       download_url: {
         de: 'https://www.swisstopo.admin.ch/de/swissbedrock-de',
