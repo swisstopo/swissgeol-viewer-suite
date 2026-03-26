@@ -5,7 +5,7 @@
       type: 'GeoJson',
       id: 'aar3d_aaremassive_map',
       opacity: 0.5,
-      legend: true,
+      info_box: { source: 'api3.geo.admin.ch' },
       source:  {
         type: 'CesiumIon',
         asset_id: 4499340,
@@ -20,7 +20,7 @@
       type: 'GeoJson',
       id: 'aar3d_aaremassive_map_without_terrain',
       opacity: 0.5,
-      legend: true,
+      info_box: { source: 'api3.geo.admin.ch' },
       source:  {
         type: 'CesiumIon',
         asset_id: 4499340,

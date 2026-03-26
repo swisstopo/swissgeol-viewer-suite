@@ -62,17 +62,18 @@ pub struct Layer {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub download_url: Option<TranslatedString>,
 
-    /// Where the legend for the layer can found.
-    /// If absent, then the layer doesn't have any such legend.
+    /// Configuration for the layer's info box.
+    /// The info box can display a WMS legend, custom content, or both.
+    /// If absent, the layer has no info box.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub legend: Option<LayerLegend>,
+    pub info_box: Option<InfoBox>,
 
     /// A mapping of custom properties that should be appended to each pick info on the layer.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub custom_properties: HashMap<String, String>,
 
-    /// Where the legend for the layer can found.
-    /// If absent, then the layer doesn't have any such legend.
+    /// Access control configuration for the layer.
+    /// If absent, then the layer doesn't have any access restrictions.
     #[serde(default, skip_serializing)]
     pub access: Option<LayerAccess>,
 
@@ -86,11 +87,42 @@ pub struct Layer {
     pub use_count: u32,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "source")]
+pub enum InfoBox {
+    /// The legend is fetched as HTML from api3.geo.admin.ch via the layer's id.
+    #[serde(rename(serialize = "api3.geo.admin.ch", deserialize = "api3.geo.admin.ch"))]
+    Api3GeoAdminCh,
+    /// Custom info box content with an optional URL and key-value pairs.
+    #[serde(rename(serialize = "custom", deserialize = "custom"))]
+    #[serde(rename_all(serialize = "camelCase", deserialize = "snake_case"))]
+    Custom {
+        /// An optional URL to display in the info box.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        legend_url: Option<String>,
+
+        /// Key-value pairs displayed in the info box.
+        /// The key is a translation key for the label; the value is one of:
+        ///   - a plain string.
+        ///   - a `{ key, url }` object, rendered as a link whose label is translated from `key`. The url can be:
+        ///      - a URL string (starting with `http://` or `https://`)
+        ///      - a plain string used as a translation key to resolve a localized url.
+        #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+        information: HashMap<String, InformationValue>,
+    },
+}
+
+/// A value in the info box's information table.
+///
+/// - [`Text`](InformationValue::Text): A plain string.
+/// - [`Link`](InformationValue::Link): A `{ key, url }` object rendered as a link whose label is
+///   the translation of `key`. Url can be a url which starts with `http://` or `https://`
+///   or a translation key to resolve a localized url.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum LayerLegend {
-    IdOrDisabled(bool),
-    CustomId(String),
+pub enum InformationValue {
+    Link { key: String, url: String },
+    Text(String),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

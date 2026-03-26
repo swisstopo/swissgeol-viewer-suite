@@ -83,14 +83,11 @@ export interface BaseLayer extends Model {
   downloadUrl: TranslatedString | null;
 
   /**
-   * Whether the layer has a legend, and how that legend can be found.
+   * Configuration for the layer's info box.
    *
-   * - If this is `true`, the legend can be fetched as HTML from `geo.admin.ch` via the layer's id.
-   * - If this is a `string`, the legend can be fetched as PNG from `geo.admin.ch` by using that string as id.
-   * - If this is `null`, then the layer doesn't have a legend.
-   *
+   * If `null`, the layer has no info box.
    */
-  legend: true | string | null;
+  infoBox: InfoBox | null;
 
   /**
    * A mapping of custom properties that should be appended to each pick info on the layer.
@@ -112,6 +109,37 @@ export enum LayerType {
   Kml = 'Kml',
   Earthquakes = 'Earthquakes',
   GeoJson = 'GeoJson',
+}
+
+/**
+ * Configuration for the layer's info box.
+ *
+ * Two modes are available:
+ *
+ * - `api3.geo.admin.ch`: The legend is fetched as HTML from `api3.geo.admin.ch` via the layer's id.
+ * - `custom`: Displays translated info text (derived from the layer id), an optional URL,
+ *   and optional key-value pairs (`information`). The key is a translation key for the label
+ *   and the value is an {@link InformationValue}.
+ */
+export type InfoBox = InfoBoxApi3GeoAdminCh | InfoBoxCustom;
+
+export interface InfoBoxApi3GeoAdminCh {
+  source: 'api3.geo.admin.ch';
+}
+
+/**
+ * A value in the info box's information table.
+ *
+ * - If a `string` starting with `http://` or `https://`, it is rendered as a clickable link.
+ * - If a plain `string`, it is used as a translation key to resolve a localized label.
+ * - If a `{ key, url }` object, it is rendered as a link whose label is the translation of `key`.
+ */
+export type InformationValue = string | { key: string; url: string };
+
+export interface InfoBoxCustom {
+  source: 'custom';
+  legendUrl?: string;
+  information?: Record<string, InformationValue>;
 }
 
 export const getLayerLabel = (layer: AnyLayer): string =>

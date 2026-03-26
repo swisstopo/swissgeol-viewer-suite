@@ -7,6 +7,7 @@
   "display": {
     "background": "Hintergrund",
     "opacity": "Deckkraft",
+    "info_box": "Info",
     "legend": "Legende",
     "download": "Herunterladen / Legende",
     "filter": "Filter öffnen",

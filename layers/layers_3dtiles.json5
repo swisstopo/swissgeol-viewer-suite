@@ -278,7 +278,15 @@
         asset_id: 4481000
       },
       //order_of_properties: '',
-      geocat_id: ''
+      geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: {
+          metadata: { key: 'metadata_value', url: 'https://www.swissgeol.ch/' },
+          description: { key: 'description_value', url: 'description_url' },
+          dataDate: '26.02.2026'
+        }
+      }
     },
     // Faults
     {

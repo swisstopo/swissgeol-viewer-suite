@@ -59,7 +59,7 @@ export class IonService extends BaseService {
           label: asset.name,
           geocatId: null,
           downloadUrl: null,
-          legend: null,
+          infoBox: null,
           customProperties: {},
           orderOfProperties: [],
           terrain: null,
@@ -81,7 +81,7 @@ export class IonService extends BaseService {
           label: asset.name,
           geocatId: null,
           downloadUrl: null,
-          legend: null,
+          infoBox: null,
           customProperties: {},
         } satisfies KmlLayer;
       case '3DTILES':
@@ -99,7 +99,7 @@ export class IonService extends BaseService {
           isVisible: true,
           geocatId: null,
           downloadUrl: null,
-          legend: null,
+          infoBox: null,
           orderOfProperties: [],
           isPartiallyTransparent: false,
           customProperties: {},

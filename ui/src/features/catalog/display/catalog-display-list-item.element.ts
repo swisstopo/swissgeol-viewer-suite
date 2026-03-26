@@ -143,9 +143,9 @@ export class CatalogDisplayListItem extends CoreElement {
     this.openWindow('legend', {
       title: () => getLayerLabel(this.layer),
       body: () => html`
-        <ngm-catalog-display-legend-detail
+        <ngm-catalog-display-info-box-detail
           .layerId=${this.layer.id}
-        ></ngm-catalog-display-legend>
+        ></ngm-catalog-display-info-box-detail>
       `,
     });
 
@@ -284,11 +284,11 @@ export class CatalogDisplayListItem extends CoreElement {
         `,
       )}
       ${when(
-        this.layer.legend !== null,
+        this.layer.infoBox !== null,
         () => html`
           <ngm-core-dropdown-item role="button" @click="${this.openLegend}">
             <ngm-core-icon icon="legend"></ngm-core-icon>
-            ${i18next.t('catalog:display.legend')}
+            ${i18next.t('catalog:display.info_box')}
           </ngm-core-dropdown-item>
         `,
       )}

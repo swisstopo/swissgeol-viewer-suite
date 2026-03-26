@@ -292,7 +292,7 @@ export class NgmDashboard extends CoreElement {
         isVisible: true,
         geocatId: null,
         downloadUrl: null,
-        legend: null,
+        infoBox: null,
         customProperties: {},
         isLocal: true,
       } satisfies KmlLayer);
