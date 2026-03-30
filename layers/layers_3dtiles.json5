@@ -101,7 +101,7 @@
       geocat_id: '',
     },
     // 2DSeismik
-    // 2D-Seismik EGEO 001
+    // 2D-Seismik Survey EGEO21
     {
       type: 'Tiles3d',
       id: 'seismic_2d_21_egeo_001',
@@ -114,7 +114,6 @@
         }
       }
     },
-    // 2D-Seismik EGEO 002
     {
       type: 'Tiles3d',
       id: 'seismic_2d_21_egeo_002',
@@ -127,6 +126,176 @@
         }
       }
     },
+    // 2D-Seismik Survey 2023_23SIG_A
+    {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_001',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16129,
+          style_id: 5,
+        }
+      }
+    },
+    {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_002',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16130,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_003',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16131,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_004',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16132,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_005',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16134,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_006',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16135,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_007',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16136,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_008',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16137,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_009',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16139,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_010',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16138,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_011',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16140,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_012',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16141,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_101',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16142,
+          style_id: 5,
+        }
+      }
+    },
+   {
+      type: 'Tiles3d',
+      id: 'seismic_2d_2023_23SIG_A_102',
+      source: {
+        type: 'Ogc',
+        ogc_source: {
+          type: 'gst',
+          id: 16143,
+          style_id: 5,
+        }
+      }
+    },
+
     // 3D-Seismik
     // 3D-Seismik - Eclépens 2023
     {
