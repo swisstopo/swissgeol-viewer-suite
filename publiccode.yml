@@ -3,7 +3,6 @@ name: viewer.swissgeol.ch
 applicationSuite: swissgeol.ch
 url: https://github.com/swisstopo/swissgeol-viewer-suite
 landingURL: https://www.swissgeol.ch/
-softwareVersion: 1.9.0
 releaseDate: 2020-06-19
 platforms:
   - web
