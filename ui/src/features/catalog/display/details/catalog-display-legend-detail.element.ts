@@ -136,7 +136,7 @@ export class CatalogDisplayInfoBox extends CoreElement {
 
   private readonly renderInformationValue = (value: InformationValue) => {
     if (typeof value === 'string') {
-      return value;
+      return i18next.t(value);
     }
 
     let url = value.url;
