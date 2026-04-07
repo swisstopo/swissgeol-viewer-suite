@@ -447,13 +447,14 @@
         asset_id: 4481000
       },
       //order_of_properties: '',
-      geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          metadata: { key: 'metadata_value', url: 'https://www.swissgeol.ch/' },
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
           description: { key: 'description_value', url: 'description_url' },
-          dataDate: '26.02.2026'
+          download_movz: { key: 'download_movz_value', url: 'download_movz_url' },
+          download_gocad: { key: 'download_gocad_value', url: 'download_gocad_url' },
+          dataDate: '18.03.2026'   
         }
       }
     },
@@ -466,7 +467,6 @@
         asset_id: 4481108
       },
       //order_of_properties: '',
-      geocat_id: ''
     },
     // Cross-section (profile)
     {
@@ -477,7 +477,7 @@
         asset_id: 4436279
       },
       //order_of_properties: '',
-      geocat_id: ''
+      
     },
     // GeoMol
     // GeoMol-Cross-sections
