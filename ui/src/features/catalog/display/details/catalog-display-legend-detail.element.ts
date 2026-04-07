@@ -47,7 +47,7 @@ export class CatalogDisplayInfoBox extends CoreElement {
       case 'custom':
         return html`
           <div class="info-box-content">
-            ${this.renderInfoText()}
+            ${this.renderTitle()} ${this.renderInfoText()}
             <br />
             <span>${i18next.t('layers:info_box.labels.legend')}</span>
             ${this.renderLegend()}
@@ -63,6 +63,16 @@ export class CatalogDisplayInfoBox extends CoreElement {
     this.shortenInfoText = false;
   };
 
+  private readonly renderTitle = () => {
+    const titleKey = `layers:info_box.layers.${this.layer.id}.title`;
+    const title = i18next.t(titleKey);
+    if (title === titleKey) {
+      return nothing;
+    }
+
+    return html`<p class="bod-title">${title}</p>`;
+  };
+
   private readonly renderInfoText = () => {
     const key = `layers:info_box.layers.${this.layer.id}.description`;
     const text = i18next.t(key);
@@ -70,10 +80,9 @@ export class CatalogDisplayInfoBox extends CoreElement {
       return nothing;
     }
     return html`<p
-        class=${classMap({
-          'info-text': true,
+        class="info-text ${classMap({
           'shorten-info-text': this.shortenInfoText,
-        })}
+        })}"
       >
         ${text}
       </p>

@@ -200,6 +200,7 @@
     },
     "layers": {
       "j3d_horizon": {
+        "title": "Jura3D - Zone de modélisation MA 1",
         "description": "Le modèle géologique 3D Jura3D représente le sous-sol du Jura suisse au nord-ouest du bassin molassique jusqu'à la frontière nationale en trois dimensions. La modélisation est réalisée dans le cadre du développement du Modèle Géologique National de la Suisse (NGM).\nJura3D se compose de trois éléments centraux : un réseau dense de coupes géologiques (modèle en grille), des surfaces de failles modélisées ainsi qu'un horizon de référence lithostratigraphique modélisé (Top Formation d'Ifenthal).\nLa base de données la plus importante est constituée des données vectorielles géométriquement harmonisées de GeoCover. En profondeur, le modèle repose sur des coupes géologiques, des données de forage et des données géophysiques avec une densité spatiale variable. Une interprétation cinématique cohérente est donc essentielle pour créer un modèle géologique 3D géométriquement et conceptuellement cohérent.\nCe téléchargement représente la première zone de modélisation. D'autres zones de modélisation suivront progressivement jusqu'en 2030. Des informations complémentaires sont documentées dans le rapport de modélisation associé.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_FR_viewer.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_FR_viewer.pdf"
