@@ -96,16 +96,16 @@ export class CatalogDisplayInfoBox extends CoreElement {
   private readonly renderLegend = () => {
     const imageKey = `layers:info_box.layers.${this.layer.id}.legend_image_url`;
     const linkKey = `layers:info_box.layers.${this.layer.id}.legend_link_url`;
-    const legendUrl = i18next.t(imageKey);
+    const imageUrl = i18next.t(imageKey);
     const linkUrl = i18next.t(linkKey);
-    if (!legendUrl) {
+    if (!imageUrl) {
       return nothing;
     }
     return html`
       <div class="info-url">
-        <a href="${linkUrl ?? legendUrl}" target="_blank" rel="noopener">
+        <a href="${linkUrl ?? imageUrl}" target="_blank" rel="noopener">
           <img
-            src="${legendUrl}"
+            src="${imageUrl}"
             alt="info-box-legend"
             class="info-box-legend"
           />
