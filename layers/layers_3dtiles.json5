@@ -452,8 +452,8 @@
         information: { 
           contact: { key: 'contact_value', url: 'contact_url' },
           description: { key: 'description_value', url: 'description_url' },
-          download_movz: { key: 'download_movz_value', url: 'download_movz_url' },
-          download_gocad: { key: 'download_gocad_value', url: 'download_gocad_url' },
+          download_movz: { key: 'download_movz_value_j3d_horizon', url: 'download_movz_url_j3d_horizon' },
+          download_gocad: { key: 'download_gocad_value_j3d_horizon', url: 'download_gocad_url_j3d_horizon' },
           dataDate: '18.03.2026'   
         }
       }
@@ -477,7 +477,7 @@
         asset_id: 4436279
       },
       //order_of_properties: '',
-      
+
     },
     // GeoMol
     // GeoMol-Cross-sections

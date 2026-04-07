@@ -442,11 +442,11 @@
       "description_value": "Link zu Modellbeschrieb",
       "description_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Dokumentation_2025_DE.pdf",
       "download_movz": "Download (.movz)",
-      "download_movz_value": "Download (.movz)",
-      "download_movz_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
+      "download_movz_value_j3d_horizon": "Download (.movz)",
+      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
       "download_gocad": "Download (.gocad)",
-      "download_gocad_value": "Download (.gocad)",
-      "download_gocad_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
+      "download_gocad_value_j3d_horizon": "Download (.gocad)",
+      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
       "dataDate": "Datenstand"
     },
     "layers": {
