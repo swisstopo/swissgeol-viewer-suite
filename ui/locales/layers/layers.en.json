@@ -460,16 +460,16 @@
       "description_value": "Link to model description",
       "description_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Dokumentation_2025_DE.pdf",
       "download_movz": "Download (.movz)",
-      "download_movz_value": "Download (.movz)",
-      "download_movz_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
+      "download_movz_value_j3d_horizon": "Download (.movz)",
+      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
       "download_gocad": "Download (.gocad)",
-      "download_gocad_value": "Download (.gocad)",
-      "download_gocad_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
-      "dataDate": "Data date"      
+      "download_gocad_value_j3d_horizon": "Download (.gocad)",
+      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
+      "dataDate": "Data status"      
     },
     "layers": {
       "j3d_horizon": {
-        "title": "3D geological model of the Swiss Jura Jura3D – Model area 1 St-Cergue – Le Sentier",
+        "title": "3D geological model of the Swiss Jura. Jura3D – Model area 1 St-Cergue – Le Sentier",
         "description": "The 3D geological model Jura3D represents the subsurface of the Swiss Jura northwest of the Molasse Basin to the national border in three dimensions. The modelling is carried out as part of the development of the National Geological Model of Switzerland (NGM). Jura3D consists of three central components: a dense network of geological cross-sections (fence diagram), modelled fault surfaces, and a modelled lithostratigraphic reference horizon (Top Ifenthal Formation). The most important data basis is the geometrically harmonised vector data from GeoCover. In the subsurface, the model is based on geological cross-sections, borehole data and geophysical data with varying spatial density. Therefore, a consistent kinematic interpretation is essential to create a geometrically and conceptually coherent 3D geological model. This download represents the first model area. Further model areas are planned to follow step by step until 2030. Additional information is documented in the associated model report.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.pdf"
