@@ -90,9 +90,9 @@
                     {
                       id: 'j3d_ma_01',
                       children: [
-                        'j3d_horizon',
+                        'j3d_profiles',
                         'j3d_faults',
-                        'j3d_profiles'
+                        'j3d_horizon'
                       ]
                     }
                   ]
