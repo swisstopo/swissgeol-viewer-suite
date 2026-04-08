@@ -435,17 +435,41 @@
       "extendInfoText": "mehr anzeigen"
     },
     "information": {
-      "dataDate": "Datenstand",
-      "description": "Beschreibung",
-      "description_value": "Link zu Beschreibung",
-      "description_url": "https://www.swissgeol.ch/de",
-      "metadata": "Metadaten",
-      "metadata_value": "Link zu Metadaten"
+      "contact": "Kontakt",
+      "contact_url": "mailto:swissgeol@swisstopo.ch",
+      "contact_value": "swissgeol@swisstopo.ch",
+      "description": "Modellbeschrieb (DE)",
+      "description_value": "Link zu Modellbeschrieb",
+      "description_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Dokumentation_2025_DE.pdf",
+      "download_01": "Download (.movz)",
+      "download_movz_value_j3d_horizon": "Download (.movz)",
+      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
+      "download_movz_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
+      "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
+      "download_02": "Download (.gocad)",
+      "download_gocad_value_j3d_horizon": "Download (.gocad)",
+      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
+      "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_GOCAD_20260317.zip",
+      "download_shp_value": "Download (.shp)",
+      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Profiles_SHP_20260318.zip",
+      "dataDate": "Datenstand"
     },
     "layers": {
       "j3d_horizon": {
-        "title": "Jura3D - Modellgebiet MA 1",
-        "description": "Das geologische 3D-Modell Jura3D stellt den Untergrund des Schweizer Juras nordwestlich des Molassebeckens bis zur Landesgrenze dreidimensional dar. Die Modellierung erfolgt im Rahmen der Entwicklung des Nationalen Geologischen Modells der Schweiz (NGM).\nJura3D besteht aus drei zentralen Komponenten: einem dichten Netzwerk geologischer Profile (Gittermodell), modellierten Störungsflächen sowie einem modellierten lithostratigraphischen Referenzhorizont (Top Ifenthal-Formation).\nAls wichtigste Datengrundlage dienen die geometrisch harmonisierten Vektordaten von GeoCover. Im Untergrund basiert das Modell auf geologischen Profilen, Bohrdaten und geophysikalischen Daten mit unterschiedlich dichter räumlicher Verteilung. Daher ist eine konsistente kinematische Interpretation zentral, um ein geometrisches und konzeptionell stimmiges geologisches 3D-Modell zu erstellen.\nDieser Download stellt das erste Modellgebiet dar. Bis 2030 sollen schrittweise weitere Modellgebiete folgen. Weitere Informationen sind im zugehörigen Modellbeschrieb dokumentiert.",
+        "title": "Geologisches 3D-Modell des Schweizer Juras. Jura3D – Modellgebiet 1 St-Cergue – Le Sentier",
+        "description": "Das geologische 3D-Modell Jura3D stellt den Untergrund des Schweizer Juras nordwestlich des Molassebeckens bis zur Landesgrenze dreidimensional dar. Die Modellierung erfolgt im Rahmen der Entwicklung des Nationalen Geologischen Modells der Schweiz (NGM). Jura3D besteht aus drei zentralen Komponenten: einem dichten Netzwerk geologischer Profile (Gittermodell), modellierten Störungsflächen sowie einem modellierten lithostratigraphischen Referenzhorizont (Top Ifenthal-Formation). Als wichtigste Datengrundlage dienen die geometrisch harmonisierten Vektordaten von GeoCover. Im Untergrund basiert das Modell auf geologischen Profilen, Bohrdaten und geophysikalischen Daten mit unterschiedlich dichter räumlicher Verteilung. Daher ist eine konsistente kinematische Interpretation zentral, um ein geometrisches und konzeptionell stimmiges geologisches 3D-Modell zu erstellen. Dieser Download stellt das erste Modellgebiet dar. Bis 2030 sollen schrittweise weitere Modellgebiete folgen. Weitere Informationen sind im zugehörigen Modellbeschrieb dokumentiert.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.pdf"
+      },
+      "j3d_faults": {
+        "title": "Geologisches 3D-Modell des Schweizer Juras. Jura3D – Modellgebiet 1 St-Cergue – Le Sentier",
+        "description": "Das geologische 3D-Modell Jura3D stellt den Untergrund des Schweizer Juras nordwestlich des Molassebeckens bis zur Landesgrenze dreidimensional dar. Die Modellierung erfolgt im Rahmen der Entwicklung des Nationalen Geologischen Modells der Schweiz (NGM). Jura3D besteht aus drei zentralen Komponenten: einem dichten Netzwerk geologischer Profile (Gittermodell), modellierten Störungsflächen sowie einem modellierten lithostratigraphischen Referenzhorizont (Top Ifenthal-Formation). Als wichtigste Datengrundlage dienen die geometrisch harmonisierten Vektordaten von GeoCover. Im Untergrund basiert das Modell auf geologischen Profilen, Bohrdaten und geophysikalischen Daten mit unterschiedlich dichter räumlicher Verteilung. Daher ist eine konsistente kinematische Interpretation zentral, um ein geometrisches und konzeptionell stimmiges geologisches 3D-Modell zu erstellen. Dieser Download stellt das erste Modellgebiet dar. Bis 2030 sollen schrittweise weitere Modellgebiete folgen. Weitere Informationen sind im zugehörigen Modellbeschrieb dokumentiert.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.pdf"
+      },
+      "j3d_profiles": {
+        "title": "Geologisches 3D-Modell des Schweizer Juras. Jura3D – Modellgebiet 1 St-Cergue – Le Sentier",
+        "description": "Das geologische 3D-Modell Jura3D stellt den Untergrund des Schweizer Juras nordwestlich des Molassebeckens bis zur Landesgrenze dreidimensional dar. Die Modellierung erfolgt im Rahmen der Entwicklung des Nationalen Geologischen Modells der Schweiz (NGM). Jura3D besteht aus drei zentralen Komponenten: einem dichten Netzwerk geologischer Profile (Gittermodell), modellierten Störungsflächen sowie einem modellierten lithostratigraphischen Referenzhorizont (Top Ifenthal-Formation). Als wichtigste Datengrundlage dienen die geometrisch harmonisierten Vektordaten von GeoCover. Im Untergrund basiert das Modell auf geologischen Profilen, Bohrdaten und geophysikalischen Daten mit unterschiedlich dichter räumlicher Verteilung. Daher ist eine konsistente kinematische Interpretation zentral, um ein geometrisches und konzeptionell stimmiges geologisches 3D-Modell zu erstellen. Dieser Download stellt das erste Modellgebiet dar. Bis 2030 sollen schrittweise weitere Modellgebiete folgen. Weitere Informationen sind im zugehörigen Modellbeschrieb dokumentiert.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.pdf"
       }
