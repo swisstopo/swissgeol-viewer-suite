@@ -191,7 +191,7 @@
       "extendInfoText": "mostra di più"
     },
     "information": {
-     "contact": "Contatto",
+      "contact": "Contatto",
       "contact_url": "mailto:swissgeol@swisstopo.ch",
       "contact_value": "swissgeol@swisstopo.ch",
       "description": "Descrizione del modello (FR)",

@@ -470,7 +470,7 @@
       "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_GOCAD_20260317.zip",
       "download_shp_value": "Download (.shp)",
       "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Profiles_SHP_20260318.zip",
-      "dataDate": "Data status"      
+      "dataDate": "Data status"
     },
     "layers": {
       "j3d_horizon": {
@@ -490,7 +490,7 @@
         "description": "The 3D geological model Jura3D represents the subsurface of the Swiss Jura northwest of the Molasse Basin to the national border in three dimensions. The modelling is carried out as part of the development of the National Geological Model of Switzerland (NGM). Jura3D consists of three central components: a dense network of geological cross-sections (fence diagram), modelled fault surfaces, and a modelled lithostratigraphic reference horizon (Top Ifenthal Formation). The most important data basis is the geometrically harmonised vector data from GeoCover. In the subsurface, the model is based on geological cross-sections, borehole data and geophysical data with varying spatial density. Therefore, a consistent kinematic interpretation is essential to create a geometrically and conceptually coherent 3D geological model. This download represents the first model area. Further model areas are planned to follow step by step until 2030. Additional information is documented in the associated model report.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.pdf"
-      }   
+      }
     }
   }
 }
