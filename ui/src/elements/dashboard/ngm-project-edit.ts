@@ -74,7 +74,7 @@ export class NgmProjectEdit extends LitElementI18n {
       isVisible: true,
       geocatId: null,
       downloadUrl: null,
-      legend: null,
+      infoBox: null,
       customProperties: {},
       isLocal: true,
     } satisfies KmlLayer);

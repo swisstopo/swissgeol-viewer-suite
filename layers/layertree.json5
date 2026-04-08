@@ -70,7 +70,7 @@
         {
           id: '3d_models',
           children: [
-            'ch.swisstopo.geologie-geologische_3dmodelle',
+            // 'ch.swisstopo.geologie-geologische_3dmodelle',
             // 03 - National models
             {
               id: 'nat_3d_models',
@@ -90,9 +90,9 @@
                     {
                       id: 'j3d_ma_01',
                       children: [
-                        'j3d_horizon',
+                        'j3d_profiles',
                         'j3d_faults',
-                        'j3d_profiles'
+                        'j3d_horizon'
                       ]
                     }
                   ]
@@ -215,10 +215,48 @@
     {
       id: 'geophysics',
       children: [
-        'ch.swisstopo.geologie-reflexionsseismik',
-        'seismic_2d_21_egeo_001',
-        'seismic_2d_21_egeo_002',
-        'seismic_3d_E11',
+        {
+          id: '2d_reflexionseismics',
+          children: [
+            'ch.swisstopo.geologie-reflexionsseismik',
+            {
+              id: '2d_survey_EGEO21',
+              children: [
+                'seismic_2d_21_egeo_001',
+                'seismic_2d_21_egeo_002',
+              ],
+            },
+            {
+              id: '2d_survey_2023_23SIG_A',
+              children: [
+                'seismic_2d_2023_23SIG_A_001',
+                'seismic_2d_2023_23SIG_A_002',
+                'seismic_2d_2023_23SIG_A_003',
+                'seismic_2d_2023_23SIG_A_004',
+                'seismic_2d_2023_23SIG_A_005',
+                'seismic_2d_2023_23SIG_A_006',
+                'seismic_2d_2023_23SIG_A_007',
+                'seismic_2d_2023_23SIG_A_008',
+                'seismic_2d_2023_23SIG_A_009',
+                'seismic_2d_2023_23SIG_A_010',
+                'seismic_2d_2023_23SIG_A_011',
+                'seismic_2d_2023_23SIG_A_012',
+                'seismic_2d_2023_23SIG_A_101',
+                'seismic_2d_2023_23SIG_A_102',
+              ]
+            },
+          ],
+        },
+        {
+          id: '3d_reflexionseismics',
+          children: [
+            'seismic_3d_E11',
+          ],
+          access: {
+                    env: ['local', 'dev'],
+                    // groups: ['ngm-dev-privileged']
+                  },
+        },
         'ch.swisstopo.geologie-gesteinsdichte',
         'ch.swisstopo.geologie-bodenunruhe',
         'ch.swisstopo.geologie-dosisleistung-terrestrisch',
@@ -402,8 +440,8 @@
         {
           id: 'experience_geol',
           children: [
-            'ch.swisstopo.geologie-geoevents_demnaechst',
-            'ch.swisstopo.geologie-geoevents_anfrage',
+            //'ch.swisstopo.geologie-geoevents_demnaechst',
+            //'ch.swisstopo.geologie-geoevents_anfrage',
             'ch.swisstopo.geologie-geosites',
             'ch.swisstopo.geologie-geowege'
           ]
@@ -421,8 +459,8 @@
     {
       id: 'underground_space',
       children: [
-        'ch.swisstopo.geologie-felslabore',
-        'ch.bfe.sachplan-geologie-tiefenlager',
+        // 'ch.swisstopo.geologie-felslabore',
+        // 'ch.bfe.sachplan-geologie-tiefenlager',
         'tunnel_road',
         'tunnel_railway',
         'tunnel_water'

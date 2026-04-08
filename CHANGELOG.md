@@ -1,11 +1,30 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Infobox for Jura3D layers added
+- 2D-Seismik Survey Geneva added
+- Translation of attribute valus of regional voxel models added
+
+### Changed
+
+- 
+
+### Fixed
+
+- Cypress tests fixed
+- Download link swissBEDROCK fixed
+
 ## [1.10.0]
 
 ### Added
 
 - GeoJSON and KML layers can now be configured and served via the backend API.
 - Layergroups in the layertree can now be hidden depending on user access groups or the environment.
+- Aar3D - Layergroup and Layers added
+- Jura3D - Cross sections added
 
 ### Changed
 

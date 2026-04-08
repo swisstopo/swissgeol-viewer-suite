@@ -24,6 +24,7 @@ import { when } from 'lit/directives/when.js';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
 import { throttle } from 'src/utils/fn.utils';
 import { classMap } from 'lit/directives/class-map.js';
+import { getTranslatedString } from 'src/models/translated-string.model';
 
 @customElement('ngm-catalog-display-list-item')
 export class CatalogDisplayListItem extends CoreElement {
@@ -143,9 +144,9 @@ export class CatalogDisplayListItem extends CoreElement {
     this.openWindow('legend', {
       title: () => getLayerLabel(this.layer),
       body: () => html`
-        <ngm-catalog-display-legend-detail
+        <ngm-catalog-display-info-box-detail
           .layerId=${this.layer.id}
-        ></ngm-catalog-display-legend>
+        ></ngm-catalog-display-info-box-detail>
       `,
     });
 
@@ -284,11 +285,11 @@ export class CatalogDisplayListItem extends CoreElement {
         `,
       )}
       ${when(
-        this.layer.legend !== null,
+        this.layer.infoBox !== null,
         () => html`
           <ngm-core-dropdown-item role="button" @click="${this.openLegend}">
             <ngm-core-icon icon="legend"></ngm-core-icon>
-            ${i18next.t('catalog:display.legend')}
+            ${i18next.t('catalog:display.info_box')}
           </ngm-core-dropdown-item>
         `,
       )}
@@ -297,7 +298,7 @@ export class CatalogDisplayListItem extends CoreElement {
         () => html`
           <ngm-core-dropdown-item role="link">
             <a
-              href="${this.layer.downloadUrl}"
+              href="${getTranslatedString(this.layer.downloadUrl)}"
               target="_blank"
               rel="external noopener"
             >

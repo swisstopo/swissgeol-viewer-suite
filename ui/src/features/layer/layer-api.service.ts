@@ -7,6 +7,9 @@ import {
   FilterOperator,
   getTranslationKeyForLayerAttributeName,
   GeoJsonLayer,
+  InfoBox,
+  InfoBoxCustom,
+  InformationValue,
   KmlLayer,
   Layer,
   LayerGroup,
@@ -91,13 +94,33 @@ export class LayerApiService extends BaseService {
     const type: LayerType = config.take('type');
     const opacity: number | 'Disabled' = config.takeNullable('opacity') ?? 1;
     const canUpdateOpacity = opacity !== 'Disabled';
-    const legend = run(() => {
-      const legendValue: string | boolean | null =
-        config.takeNullable('legend');
-      if (legendValue === null) {
+    const infoBox = run((): InfoBox | null => {
+      const infoBoxValue = config.takeNullableObject('infoBox');
+      if (infoBoxValue === null) {
         return null;
       }
-      return legendValue || null;
+      const infoBoxSource: string = infoBoxValue.take('source');
+      switch (infoBoxSource) {
+        case 'api3.geo.admin.ch':
+          return { source: 'api3.geo.admin.ch' };
+        case 'custom': {
+          const result: InfoBoxCustom = { source: 'custom' };
+          const legendUrl: string | null =
+            infoBoxValue.takeNullable('legendUrl');
+          if (legendUrl !== null) {
+            result.legendUrl = legendUrl;
+          }
+          const information: Record<string, InformationValue> | null =
+            infoBoxValue.takeNullable('information');
+          if (information !== null) {
+            result.information = information;
+          }
+          return result;
+        }
+        default:
+          console.error(`Unknown infoBox source: ${infoBoxSource}`);
+          return null;
+      }
     });
     const base: BaseLayer = {
       type,
@@ -109,7 +132,7 @@ export class LayerApiService extends BaseService {
       geocatId: config.takeNullable('geocatId'),
       downloadUrl: config.takeNullable('downloadUrl'),
       customProperties: config.takeNullable('customProperties') ?? {},
-      legend,
+      infoBox,
     };
 
     switch (type) {

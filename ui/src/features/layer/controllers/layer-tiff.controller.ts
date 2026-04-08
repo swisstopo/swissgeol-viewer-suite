@@ -163,7 +163,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
       downloadUrl: null,
       geocatId: null,
       label: null,
-      legend: null,
+      infoBox: null,
       orderOfProperties: [],
       customProperties: {},
 
@@ -191,7 +191,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
       label: null,
       geocatId: null,
       downloadUrl: null,
-      legend: null,
+      infoBox: null,
       customProperties: {},
 
       // Standalone bands inherit the opacity and visibility of the tiff.

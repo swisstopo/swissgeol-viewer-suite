@@ -26,6 +26,24 @@ const setupNodeEvents = async (
     }),
   );
   config.env.TAGS = 'not @skip';
+
+  // Stabilize WebGL in headless / GPU-less environments for Cesium.
+  // Chrome 121+ blocks SwiftShader-WebGL by default; --enable-unsafe-swiftshader re-enables it.
+  // --use-angle=swiftshader-webgl replaces the deprecated --use-gl=swiftshader.
+  on('before:browser:launch', (browser, launchOptions) => {
+    if (browser.family === 'chromium') {
+      launchOptions.args.push('--use-angle=swiftshader-webgl');
+      launchOptions.args.push('--enable-unsafe-swiftshader');
+      launchOptions.args.push('--disable-gpu');
+      launchOptions.args.push('--disable-dev-shm-usage');
+      launchOptions.args.push('--ignore-gpu-blocklist');
+      launchOptions.args.push('--enable-webgl');
+      launchOptions.args.push('--disable-gpu-sandbox');
+    }
+
+    return launchOptions;
+  });
+
   return config;
 };
 
