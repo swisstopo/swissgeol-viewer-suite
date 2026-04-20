@@ -2,7 +2,7 @@ import { BaseService } from 'src/services/base.service';
 import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { User } from 'src/features/session/user.model';
-import { COGNITO_VARIABLES } from 'src/constants';
+import { getCognitoVariables } from 'src/constants';
 import { Role } from '@swissgeol/ui-core';
 import {
   BehaviorSubject,
@@ -24,6 +24,7 @@ const STORAGE_USER_KEY = 'swissgeol-viewer/Session.user';
 const STORAGE_TOKEN_KEY = 'swissgeol-viewer/Session.accessToken';
 
 export class SessionService extends BaseService {
+  private cognitoVariables = getCognitoVariables(window.location.host);
   private clientConfig!: ClientConfig;
 
   private readonly sessionSubject = new BehaviorSubject<Session | null>(null);
@@ -122,9 +123,9 @@ export class SessionService extends BaseService {
 
   signIn(): void {
     const url =
-      `https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize?` +
+      `https://ngm-${this.cognitoVariables(window.location.host).env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize?` +
       'response_type=token' +
-      `&client_id=${COGNITO_VARIABLES.clientId}` +
+      `&client_id=${this.cognitoVariables.clientId}` +
       `&redirect_uri=${location.origin}${location.pathname}` +
       '&scope=openid+profile' +
       `&state=${this.state}`;
@@ -233,7 +234,7 @@ export class SessionService extends BaseService {
     accessToken: string,
   ): Promise<User> {
     const res = await fetch(
-      `https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/userInfo`,
+      `https://ngm-${this.cognitoVariables.env}.auth.eu-west-1.amazoncognito.com/oauth2/userInfo`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       },
