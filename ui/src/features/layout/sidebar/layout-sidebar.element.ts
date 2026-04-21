@@ -121,12 +121,6 @@ export class LayoutSidebar extends CoreElement {
         icon: 'tools',
         counter: this.countOfGeometries,
       })}
-      <!-- Temporarilly switched off
-       ${this.renderItem({
-        panel: SidebarPanel.Projects,
-        icon: 'projects',
-      })}
-        -->
       ${this.renderItem({
         panel: SidebarPanel.Share,
         icon: 'share',
