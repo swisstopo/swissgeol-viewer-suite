@@ -176,6 +176,7 @@ export async function setupViewer(container: Element) {
   scene.useDepthPicking = true;
   scene.pickTranslucentDepth = true; // required to have accurate position when picking translucent objects
   scene.backgroundColor = Color.TRANSPARENT;
+  scene.screenSpaceCameraController.minimumCollisionTerrainHeight = 100000000000000000000000000000000000000000000000000000000000000000;
   globe.baseColor = Color.TRANSPARENT;
   globe.depthTestAgainstTerrain = true;
   globe.showGroundAtmosphere = false;
