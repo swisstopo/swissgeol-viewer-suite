@@ -4,13 +4,21 @@
 
 ### Added
 
+### Changed
+
+- The project tab is no longer visible until the project feature is fully refactored and ready to be used.
+
+### Fixed
+
+- Layer visibility is now correctly loaded from the url parameters on page reload or when sharing a link.
+
+## [v1.11.0]
+
+### Added
+
 - Infobox for Jura3D layers added
 - 2D-Seismik Survey Geneva added
 - Translation of attribute valus of regional voxel models added
-
-### Changed
-
-- 
 
 ### Fixed
 
