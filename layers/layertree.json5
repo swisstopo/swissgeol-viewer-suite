@@ -132,8 +132,8 @@
                   children: [
 // =================================================================
                     {
-                      // 05 - SA3D - HL
-                      id: 'sa3d_HL',
+                      // 05 - SA3D - SAM
+                      id: 'sa3d_SAM',
                       access: {
                           env: [
                             'local',
@@ -144,30 +144,22 @@
                           ]
                       },                      
                       children: [
-                        // 06 - Profiles HL
+                        // 06 - Profiles SAM
                         {
-                          id: 'sa3d_Profiles_HL',
+                          id: 'sa3d_Profiles_SAM',
                           children: [
-                            'sa3d_HL_profiles_01'
+                            'sa3d_SAM_profiles_01'
                           ]
                         },
-                        // 06 - Faults HL
+                        // 06 - Faults SAM
                         {
-                          id: 'sa3d_Faults_HL',
+                          id: 'sa3d_Faults_SAM',
                           children: [
-                            'sa3d_HL_faults_01'
+                            'sa3d_SAM_faults_01',
+                            'sa3d_SAM_thrust_faults_01'
                           ]
-                        },
-                        // 06 - Horizons HL
-                        {
-                          id: 'sa3d_Horizons_HL',
-                          children: [
-                            'sa3d_HL_horizons_nappe',
-                            'sa3d_HL_horizons_mesozoic_sed',
-                            'sa3d_HL_horizons_crystl_basement'
-                          ]
-                        },
-                      ],
+                        }
+                      ]
                     },
 // =================================================================
                     {
@@ -208,8 +200,8 @@
                     },
 // =================================================================
                     {
-                      // 05 - SA3D - SAM
-                      id: 'sa3d_SAM',
+                      // 05 - SA3D - HL
+                      id: 'sa3d_HL',
                       access: {
                           env: [
                             'local',
@@ -220,22 +212,30 @@
                           ]
                       },                      
                       children: [
-                        // 06 - Profiles SAM
+                        // 06 - Profiles HL
                         {
-                          id: 'sa3d_Profiles_SAM',
+                          id: 'sa3d_Profiles_HL',
                           children: [
-                            'sa3d_SAM_profiles_01'
+                            'sa3d_HL_profiles_01'
                           ]
                         },
-                        // 06 - Faults SAM
+                        // 06 - Faults HL
                         {
-                          id: 'sa3d_Faults_SAM',
+                          id: 'sa3d_Faults_HL',
                           children: [
-                            'sa3d_SAM_faults_01',
-                            'sa3d_SAM_thrust_faults_01'
+                            'sa3d_HL_faults_01'
                           ]
-                        }
-                      ]
+                        },
+                        // 06 - Horizons HL
+                        {
+                          id: 'sa3d_Horizons_HL',
+                          children: [
+                            'sa3d_HL_horizons_nappe',
+                            'sa3d_HL_horizons_mesozoic_sed',
+                            'sa3d_HL_horizons_crystl_basement'
+                          ]
+                        },
+                      ],
                     },
 // =================================================================
                     { 
