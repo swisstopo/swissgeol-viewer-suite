@@ -467,7 +467,7 @@
         asset_id: 4481108
       },
       //order_of_properties: '',
-            info_box: {
+        info_box: {
         source: 'custom',
         information: { 
           contact: { key: 'contact_value', url: 'contact_url' },
@@ -964,7 +964,224 @@
       //download_url: 'https://download.swissgeol.ch/XXX',
       //geocat_id: '',
     },
-
+// =================================================================
+    // SA3D - HL
+    // HL - Profiles
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_profiles_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662944,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+    // HL - Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_faults_01',
+      opacity: 0.18,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662876,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+    // HL - Horizons - Nappe
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_horizons_nappe',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662931,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+    // HL - Horizons - Mesozoic sediments
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_horizons_mesozoic_sed',
+      'opacity': 0.50,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662929,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },  
+    // HL - Horizons - Cristalline basement
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_horizons_crystl_basement',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662928,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+// =================================================================
+    // PR - Profiles
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_PR_profiles_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662980,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_PR_profiles_01: { key: 'description_value_sa3d_PR_profiles_01', url: 'description_url_sa3d_PR_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+    // PR - Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_PR_faults_01',
+      opacity: 0.18,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662974,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_PR_profiles_01: { key: 'description_value_sa3d_PR_profiles_01', url: 'description_url_sa3d_PR_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+    // PR - Horizons
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_PR_horizon_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662977,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_PR_profiles_01: { key: 'description_value_sa3d_PR_profiles_01', url: 'description_url_sa3d_PR_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+// =================================================================
+    // SAM - Profiles
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_SAM_profiles_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662980,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_SAM_profiles_01: { key: 'description_value_sa3d_SAM_profiles_01', url: 'description_url_sa3d_SAM_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+    // SAM - Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_SAM_faults_01',
+      opacity: 0.18,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662997,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_SAM_profiles_01: { key: 'description_value_sa3d_SAM_profiles_01', url: 'description_url_sa3d_SAM_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+    // SAM - Thrust Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_SAM_thrust_faults_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662998,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: { 
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_SAM_profiles_01: { key: 'description_value_sa3d_SAM_profiles_01', url: 'description_url_sa3d_SAM_profiles_01' },
+          dataDate: '28.04.2026'   
+        }
+      }
+    },
+// =================================================================
     // City of Berne
     {
       type: 'Tiles3d',
