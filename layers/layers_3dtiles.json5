@@ -964,7 +964,137 @@
       //download_url: 'https://download.swissgeol.ch/XXX',
       //geocat_id: '',
     },
-
+// =================================================================
+    // SA3D - HL
+    // HL - Profiles
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_profiles_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662944,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // HL - Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_faults_01',
+      opacity: 0.18,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662876,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // HL - Horizons - Nappe
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_horizons_nappe',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662931,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // HL - Horizons - Mesozoic sediments
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_horizons_mesozoic_sed',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662929,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },  
+    // HL - Horizons - Cristalline basement
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_HL_horizons_crystl_basement',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662928,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+// =================================================================
+    // PR - Profiles
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_PR_profiles_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662980,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // PR - Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_PR_faults_01',
+      opacity: 0.18,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662974,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // HL - Horizons - Cristalline basement
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_PR_horizon_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662977,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+// =================================================================
+    // SAM - Profiles
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_SAM_profiles_01',
+      opacity: 0.18,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662980,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // SAM - Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_SAM_faults_01',
+      opacity: 0.18,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662997,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+    // SAM - Thrust Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_SAM_thrust_faults_01',
+      opacity: 0.18,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662998,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+    },
+// =================================================================
     // City of Berne
     {
       type: 'Tiles3d',
