@@ -60,6 +60,7 @@
           id: 'cross-sections',
           children: [
             'ch.swisstopo.geologie-geologischer_atlas_profile',
+            'ga25Profiles_test',
             'geomol_cs',
             'j3d_profiles',
             'aar3d_aaremassive_cs',

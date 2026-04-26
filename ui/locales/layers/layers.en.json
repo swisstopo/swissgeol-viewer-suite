@@ -27,6 +27,7 @@
     "ch.swisstopo.swissbedrock-geotiff": "swissBEDROCK 2D",
     "ch.swisstopo.swissbedrock-geotiff-with-terrain": "swissBEDROCK 3D",
     "voxel_geomol_temp_c": "GeoMol Temperature model",
+    "ga25Profiles_test": "GA25 profiles TEST",
     "geomol_cs": "Cross-sections GeoMol",
     "j3d_horizon": "Jura3D-MA1-Top Ifenthal-Formation",
     "j3d_faults": "Jura3D-MA1-Faults",
