@@ -136,10 +136,6 @@
                       // 05 - SA3D - SAM
                       id: 'sa3d_SAM',
                       access: {
-                          env: [
-                            'local',
-                            'dev' // <-- Remove when data to be published on PROD
-                          ],
                           groups: [
                             'viewer.swissgeol-dev-sa3d-privileged'
                           ]
@@ -167,10 +163,6 @@
                       // 05 - SA3D - PR
                       id: 'sa3d_PR',
                       access: {
-                          env: [
-                            'local',
-                            'dev' // <-- Remove when data to be published on PROD
-                          ],
                           groups: [
                             'viewer.swissgeol-dev-sa3d-privileged'
                           ]
@@ -204,10 +196,6 @@
                       // 05 - SA3D - HL
                       id: 'sa3d_HL',
                       access: {
-                          env: [
-                            'local',
-                            'dev' // <-- Remove when data to be published on PROD
-                          ],
                           groups: [
                             'viewer.swissgeol-dev-sa3d-privileged'
                           ]
