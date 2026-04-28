@@ -629,7 +629,7 @@
         type: 'Ogc',
         ogc_source: {
           type: 'gst',
-          id: 10468,
+          id: 10500,
         },
         display_source: {
           type: 'CesiumIon',
