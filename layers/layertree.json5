@@ -137,8 +137,9 @@
                       id: 'sa3d_SAM',
                       access: {
                           groups: [
-                            'viewer.swissgeol-dev-sa3d-privileged'
-                          ]
+                            'viewer.swissgeol-dev-sa3d-privileged',
+                            'viewer.swissgeol-int-sa3d-privileged',
+                            'viewer.swissgeol-prod-sa3d-privileged'                          ]
                       },                      
                       children: [
                         // 06 - Profiles SAM
@@ -164,8 +165,9 @@
                       id: 'sa3d_PR',
                       access: {
                           groups: [
-                            'viewer.swissgeol-dev-sa3d-privileged'
-                          ]
+                            'viewer.swissgeol-dev-sa3d-privileged',
+                            'viewer.swissgeol-int-sa3d-privileged',
+                            'viewer.swissgeol-prod-sa3d-privileged'                          ]
                       },                      
                       children: [
                         // 06 - Profiles PR
@@ -197,7 +199,9 @@
                       id: 'sa3d_HL',
                       access: {
                           groups: [
-                            'viewer.swissgeol-dev-sa3d-privileged'
+                            'viewer.swissgeol-dev-sa3d-privileged',
+                            'viewer.swissgeol-int-sa3d-privileged',
+                            'viewer.swissgeol-prod-sa3d-privileged'
                           ]
                       },                      
                       children: [
