@@ -23,6 +23,15 @@ spec:
         imagePullPolicy: Always
         ports:
           - containerPort: 80
+
+        resources:
+          limits:
+            cpu: '500m'
+            memory: '1Gi'
+          requests:
+            cpu: 20m
+            memory: 100Mi
+
       imagePullSecrets:
       - name: {{ .Release.Namespace }}-registry
       

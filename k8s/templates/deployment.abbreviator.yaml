@@ -49,5 +49,13 @@ spec:
           - name: HOST_WHITELIST
             value: {{ .Values.abbreviator.host_whitelist }}
 
+        resources:
+          limits:
+            cpu: '500m'
+            memory: '1Gi'
+          requests:
+            cpu: 20m
+            memory: 100Mi
+
       imagePullSecrets:
       - name: {{ .Release.Namespace }}-registry

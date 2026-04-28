@@ -21,6 +21,7 @@ import {
 import { Id, makeId } from 'src/models/id.model';
 import { IonService } from 'src/services/ion.service';
 import { clientConfigContext } from 'src/context';
+import { parseBoolean } from 'src/utils/type.utils';
 
 export class LayerUrlService extends BaseService {
   private layerService!: LayerService;
@@ -86,7 +87,9 @@ export class LayerUrlService extends BaseService {
     const params: Params = {
       layers: {
         layers: this.getLayerParamFromUrl(url, 'layers') as Array<Id<Layer>>,
-        visibility: this.getLayerParamFromUrl(url, 'visibility').map(Boolean),
+        visibility: this.getLayerParamFromUrl(url, 'visibility').map(
+          (visibility) => parseBoolean(visibility),
+        ),
         transparency: this.getLayerParamFromUrl(url, 'transparency').map(
           Number,
         ),

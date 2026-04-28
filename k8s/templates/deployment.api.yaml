@@ -85,6 +85,9 @@ spec:
           limits:
             cpu: '1'
             memory: '5Gi'
+          requests:
+            cpu: 20m
+            memory: 100Mi
 
       imagePullSecrets:
       - name: {{ .Release.Namespace }}-registry
