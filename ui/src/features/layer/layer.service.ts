@@ -809,7 +809,9 @@ export class LayerService extends BaseService {
 
     // Ensure that the relationship between visibility and opacity is correct.
     // Note that we give precedence to `opacity` here, i.e. `isVisible` will be ignored if `opacity` is also updated.
-    if ('opacity' in data) {
+    if ('opacity' in data && 'isVisible' in data) {
+      // if both values are updated at the same time, we assume initialization and apply no automatisms.
+    } else if ('opacity' in data) {
       // opacity = 0 ==> isVisible = false
       // opacity > 0 ==> isVisible = true
       updatedLayer.isVisible = updatedLayer.opacity !== 0;
