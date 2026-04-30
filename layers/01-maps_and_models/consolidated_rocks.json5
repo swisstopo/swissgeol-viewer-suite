@@ -7,12 +7,12 @@
         type: 'Ogc',
         ogc_source: {
           type: 'gst',
-          id: 10486
+          id: 10486,
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 3955170
-        }
+          asset_id: 3955170,
+        },
       },
       order_of_properties: 'consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-UpperMarineMolasse.zip',
@@ -23,7 +23,7 @@
       id: 'top_usm',
       source: {
         type: 'CesiumIon',
-        asset_id: 267961
+        asset_id: 267961,
       },
       order_of_properties: 'consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Top-LowerFreshwaterMolasse.zip',
@@ -55,13 +55,8 @@
   groups: [
     {
       id: 'lyr_consolidated_rocks_label',
-      children: [
-        'top_omm',
-        'top_usm',
-        'top_umm',
-        'top_muschelkalk',
-      ]
-    }
+      children: ['top_omm', 'top_usm', 'top_umm', 'top_muschelkalk'],
+    },
   ],
   order_of_properties: {
     consolidated_rocks: [
@@ -73,6 +68,6 @@
       'Download DXF',
       'Download ASCII',
       'Download All data',
-    ]
-  }
+    ],
+  },
 }

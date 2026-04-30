@@ -1,6 +1,8 @@
 # Shared Layer Configs
+
 The following is an overview of the properties that are available to all layer configurations,
 independent of their layer type.
+
 ```json5
 {
   // The layer's type.
@@ -9,35 +11,35 @@ independent of their layer type.
   // @type 'Wmts' | 'Tiles3d' | 'Voxel' | 'Tiff' | 'Earthquakes'
   // @required
   type: '{required}',
-  
+
   // The layer's id.
   // This must be unique across all configured layer.
   //
   // @type string
   // @required
   id: 'the-layer-id',
-  
+
   // A value from 0 to 1 that defines the layer's default opacity.
   // Can be set to `Disabled` to fix the layer at an opacity of 1.
   //
   // @type 0..1 | 'Disabled'
   // @default 1
   opacity: 1,
-  
+
   // The id of the layer on https://geocat.ch, if available.
   // If left out, then the layer will not link to geocat.
   //
   // @type string | null
   // @default null
   geocat_id: null,
-  
+
   // The url at which the layer (or a representation of it) can be downloaded.
   // If left out, no such download will be available.
   //
   // @type string | { de: string, en: string, fr: string, it: string } | null
   // @default null
   download_url: null,
-  
+
   // Configuration for the layer's info box.
   //
   // Two modes are supported:
@@ -55,14 +57,14 @@ independent of their layer type.
   // @type { source: 'api3.geo.admin.ch' } | { source: 'custom', legend_url?: string, information?: { [key: string]: string | { key: string, url: string } } } | null
   // @default null
   info_box: null,
-  
+
   // A JSON object containing custom properties.
   // These properties are appended to the layer's normal properties when picking.
-  // 
+  //
   // @type { [key: string]: string }
   // @default null
   custom_properties: {},
-  
+
   // A JSON object defining who has access to this layer.
   // If left out, the layer is publicly available.
   //
@@ -82,7 +84,7 @@ independent of their layer type.
     //
     // @type Array<'local' | 'dev' | 'int' | 'prod'>
     // @default []
-    env: []
-  }
+    env: [],
+  },
 }
 ```

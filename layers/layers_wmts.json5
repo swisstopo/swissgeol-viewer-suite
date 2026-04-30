@@ -8,10 +8,10 @@
       opacity: 0.7,
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
       info_box: { source: 'api3.geo.admin.ch' },
-//      ogc_source: {
-//        type: 'stac',
-//        collection: 'ch.swisstopo.geologie-geocover',
-//      }
+      //      ogc_source: {
+      //        type: 'stac',
+      //        collection: 'ch.swisstopo.geologie-geocover',
+      //      }
     },
     {
       type: 'Wmts',
@@ -19,7 +19,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '258814a5-8fcf-47df-b0c6-160602b0078c',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -27,7 +27,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '435522fb-599e-41c0-a7c0-49d922ea6acf',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -35,7 +35,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'ca917a71-dcc9-44b6-8804-823c694be516',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -43,7 +43,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'a4cdef47-505e-41ab-b6a7-ad5b92d80e41',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -51,7 +51,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'f2c81b93-f0c5-4899-83a9-974ce36c48e6',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -59,7 +59,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '65652bdd-76e3-4df2-9329-140a04a2a66c',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // Thematic maps
     {
@@ -68,7 +68,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'f1455593-7571-48b0-8603-307ec59a6702',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -76,7 +76,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '75c2f212-413c-4d55-8a93-c021c8bbfc95',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -84,7 +84,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '57052989-5074-4841-abb6-22d1989d615f',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -92,7 +92,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'f6fb6139-f13e-4a56-bf01-01b7dd4358d5',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -100,7 +100,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '1bf16162-a44c-4970-9da1-044383bacff8',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // Historic maps
     {
@@ -109,7 +109,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'f6416e51-bf55-445a-946e-3eee2134d131',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // Sheet divisions
     {
@@ -118,7 +118,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'c17ba742-9a43-4ed2-9331-e776d6e9065d',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -126,7 +126,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '5a7e79b5-0aef-4514-9df4-62fb92edee97',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -134,7 +134,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'b15b89ac-d7e5-412c-bd4a-5077c935806c',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -142,7 +142,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'a891e1e7-7f85-4c92-94d9-7120edf91a9c',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -150,7 +150,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'f7485f4f-2224-4b76-a43c-52cbf8883a42',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // Cross-sections
     {
@@ -159,7 +159,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '345d02a3-9628-46d7-9e57-e0ab1d9faf8a',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // 3D models
     {
@@ -168,7 +168,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '11836d3b-181e-4078-b83f-f55fc44b5776',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // Boreholes
     {
@@ -177,7 +177,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'a61d9f7a-00cd-4448-a36d-b81423f1f566',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // Geophysics
     {
@@ -186,7 +186,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '61866340-a491-444a-8f60-9a6e70df37d8',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -194,7 +194,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'c4a7ceb5-8bf5-457d-ab0a-57216dafce53',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -202,7 +202,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '4dba9c57-2e2b-4b69-844b-bd2001fa53a8',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -210,7 +210,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'eccbc751-9928-4221-89e1-1184cbb3aff5',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // Earth's gravity field
     {
@@ -219,7 +219,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '95879cd4-e93d-4d4d-af57-4ec6731b9c97',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -227,7 +227,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '7234896a-842c-4524-8710-5d900953cb1d',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -235,7 +235,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '618c9697-129f-47c7-830a-7a256b4c2499',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -243,7 +243,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '732cb247-8307-4cc7-8c31-b1c505a94633',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -251,7 +251,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '297a1958-3636-45af-a17c-e90120605132',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -259,7 +259,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'b20aece-5cb1-41f1-a618-7c6e1ff6a81b',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // Earth's magnetic field
     {
@@ -268,7 +268,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '4cc706a2-0005-4cc6-8326-7b944a1d5b05',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -276,7 +276,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'f952b9be-9a11-478c-a21c-9d5e8631c7c2',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -284,7 +284,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '2ffdbb13-27dc-4380-8349-8debfeca4fd9',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -292,7 +292,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'b814401b-9eb2-4e6c-b4a9-f24df7b8bba6',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -300,7 +300,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '8f38b25f-f984-450a-ae48-02290e82136c',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -308,7 +308,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '639c0536-bfea-44d3-b088-ed7b6b43cde9',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     {
       type: 'Wmts',
@@ -316,7 +316,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '132d9ff6-92de-4c02-87a7-72df26bcb33e',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
     // Geoenergy
     {
@@ -782,10 +782,10 @@
       opacity: 0.7,
       geocat_id: '376f86bd-c46c-4b89-8f36-717641706226',
       info_box: { source: 'api3.geo.admin.ch' },
-//      ogc_source: {
-//        type: 'stac',
-//        collection: 'ch.swisstopo.swissalti3d',
-//      }
+      //      ogc_source: {
+      //        type: 'stac',
+      //        collection: 'ch.swisstopo.swissalti3d',
+      //      }
     },
     {
       type: 'Wmts',
@@ -794,10 +794,10 @@
       opacity: 0.7,
       geocat_id: '1964cc81-5298-460f-9228-41120315bea8',
       info_box: { source: 'api3.geo.admin.ch' },
-//      ogc_source: {
-//        type: 'stac',
-//        collection: 'ch.swisstopo.swissalti3d',
-//      }
+      //      ogc_source: {
+      //        type: 'stac',
+      //        collection: 'ch.swisstopo.swissalti3d',
+      //      }
     },
     {
       type: 'Wmts',
@@ -807,5 +807,5 @@
       geocat_id: '1949e93-f552-42b6-ab4b-5a2d529a7768',
       info_box: { source: 'api3.geo.admin.ch' },
     },
-  ]
+  ],
 }

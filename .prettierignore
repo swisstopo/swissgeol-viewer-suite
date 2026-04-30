@@ -1,0 +1,14 @@
+# Own formatting
+api/
+ui/
+
+dist/
+node_modules/
+package-lock.json
+
+# Docker & K8s
+titiler/
+k8s/
+
+# Other
+.git/

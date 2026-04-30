@@ -32,10 +32,13 @@ Follow the steps below to run viewer.swissgeol.ch in your local development envi
 > However, we recommend installing every programming language to optimize your experience.
 
 ### Set Up the Development Environment
+
 Follow these steps to set up the development environment on your local machine:
 
 #### 1. Install API Dependencies
+
 Navigate to the API directory and download its dependencies:
+
 ```bash
 cd api && cargo fetch
 ```
@@ -43,18 +46,23 @@ cd api && cargo fetch
 #### 2. Install UI Dependencies
 
 Install the UI's dependencies:
+
 ```bash
 cd ui && npm install
 ```
 
 ### Start Development Environment
+
 Start the application's Docker containers:
+
 ```bash
 docker compose up
 ```
+
 This will automatically install all dockerized dependencies and also initialize the database.
 
 ## Usage
+
 The viewer's API and UI are available as Docker images:
 
 - [`ghcr.io/swisstopo/swissgeol-viewer-api`](https://github.com/swisstopo/swissgeol-viewer-suite/pkgs/container/swissgeol-viewer-api)
@@ -79,7 +87,6 @@ A few URL parameters will modify the behavior of the viewer:
 - `inspector` display the Cesium Inspector widget
 - `inspector_wireframe` enable the wireframe mode
 - `cesiumToolbar` display configuration panel for fog, ambient, background color and terrain underground color
-
 
 ## Support
 

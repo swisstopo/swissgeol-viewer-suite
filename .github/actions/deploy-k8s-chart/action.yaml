@@ -1,23 +1,23 @@
-name: "Deploy K8s Chart"
-description: "Deploys a Kubernetes Chart"
+name: 'Deploy K8s Chart'
+description: 'Deploys a Kubernetes Chart'
 inputs:
   TARGET_ENV:
-    description: "The environment to which the chart is deployed."
+    description: 'The environment to which the chart is deployed.'
     required: true
   DEPLOYMENT_NAME:
     description: "The deployment's name under which it will appear in Kubernetes."
     required: true
   REPO_PATH:
-    description: "The path at which the Helm charts can be found within the repo."
+    description: 'The path at which the Helm charts can be found within the repo.'
     required: true
   VAULT_PATH:
     description: "The path at which the chart's secrets can be found within the Vault."
     required: true
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: "Load secrets"
+    - name: 'Load secrets'
       id: load-secrets
       uses: hashicorp/vault-action@v3
       with:
@@ -30,28 +30,28 @@ runs:
           viewer/data/${{ inputs.TARGET_ENV }}/${{ inputs.VAULT_PATH }} helm_secrets | HELM_SECRETS;
           viewer/data/${{ inputs.TARGET_ENV }}/${{ inputs.VAULT_PATH }} namespace    | K8S_NAMESPACE;
 
-    - name: "Write values to file"
+    - name: 'Write values to file'
       shell: bash
       run: |
         cat <<'EOF' > ./k8s/values.yaml
         ${{ env.HELM_VALUES }}
         EOF
 
-    - name: "Write secrets to file"
+    - name: 'Write secrets to file'
       shell: bash
       run: |
         cat <<'EOF' > ./k8s/secrets.yaml
         ${{ env.HELM_SECRETS }}
         EOF
 
-    - name: "Write kubeconfig to file"
+    - name: 'Write kubeconfig to file'
       shell: bash
       run: |
         cat <<'EOF' > kubeconfig.yaml
         ${{ env.KUBECONFIG }}
         EOF
 
-    - name: "Deploy helm charts"
+    - name: 'Deploy helm charts'
       shell: bash
       run: |
         helm upgrade --install ${{ inputs.DEPLOYMENT_NAME }} ${{ inputs.REPO_PATH }} \

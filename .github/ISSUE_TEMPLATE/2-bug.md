@@ -1,9 +1,9 @@
 ---
 name: Bug
 about: Melde einen neuen Bug
-title: "Bug: "
+title: 'Bug: '
 labels: bug
-assignees: ""
+assignees: ''
 ---
 
 **Beschreibung**

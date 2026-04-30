@@ -6,7 +6,7 @@
     'special/voxels',
     'special/swissBEDROCK',
     'layers_earthquakes',
-    'special/geojson_terrain'
+    'special/geojson_terrain',
   ],
   groups: [
     // 01 Topic - Maps, cross-sections & models
@@ -24,7 +24,7 @@
             'ch.swisstopo.geologie-tektonische_karte',
             'ch.swisstopo.geologie-geotechnik-gk500-gesteinsklassierung',
             'ch.swisstopo.geologie-geotechnik-gk500-genese',
-          ]
+          ],
         },
         // 02 - Thematic_maps
         {
@@ -34,15 +34,13 @@
             'ch.swisstopo.geologie-eiszeit-lgm',
             'ch.swisstopo.geologie-gletschermaechtigkeit',
             'ch.swisstopo.geologie-gletscherausdehnung',
-            'ch.swisstopo.geologie-geomorphologie'
-          ]
+            'ch.swisstopo.geologie-geomorphologie',
+          ],
         },
         // 02 - Historic_maps
         {
           id: 'historic_maps',
-          children: [
-            'ch.swisstopo.geologie-generalkarte-ggk200'
-          ]
+          children: ['ch.swisstopo.geologie-generalkarte-ggk200'],
         },
         // 02 - Sheet divisions
         {
@@ -52,8 +50,8 @@
             'ch.swisstopo.geologie-spezialkarten_schweiz.metadata',
             'ch.swisstopo.geologie-spezialkarten_schweiz_vector.metadata',
             'ch.swisstopo.geologie-geologischer_atlas.metadata',
-            'ch.swisstopo.geologie-geocover.metadata'
-          ]
+            'ch.swisstopo.geologie-geocover.metadata',
+          ],
         },
         // 02 - Cross-sections
         {
@@ -64,8 +62,8 @@
             'geomol_cs',
             'j3d_profiles',
             'aar3d_aaremassive_cs',
-            'geoquat_aaretal_cs'
-          ]
+            'geoquat_aaretal_cs',
+          ],
         },
         // 02 - 3D models
         {
@@ -82,7 +80,7 @@
                   children: [
                     'ch.swisstopo.swissbedrock-geotiff',
                     'ch.swisstopo.swissbedrock-geotiff-with-terrain',
-                  ]
+                  ],
                 },
                 // 04 - Jura 3D
                 {
@@ -90,13 +88,9 @@
                   children: [
                     {
                       id: 'j3d_ma_01',
-                      children: [
-                        'j3d_profiles',
-                        'j3d_faults',
-                        'j3d_horizon'
-                      ]
-                    }
-                  ]
+                      children: ['j3d_profiles', 'j3d_faults', 'j3d_horizon'],
+                    },
+                  ],
                 },
                 // 04 - GeoMol
                 {
@@ -121,103 +115,93 @@
                         'top_carb',
                         'base_mes',
                         'base_pc',
-                        'base_pc_vermutet'
-                      ]
+                        'base_pc_vermutet',
+                      ],
                     },
-                    'geomol_faults'
-                  ]
+                    'geomol_faults',
+                  ],
                 },
                 // 04 - SwissAlps 3D
                 {
                   id: 'sa3d_models',
                   children: [
-// =================================================================
+                    // =================================================================
                     {
                       // 05 - SA3D - SAM
                       id: 'sa3d_SAM',
                       access: {
-                          groups: [
-                            'viewer.swissgeol-dev-sa3d-privileged',
-                            'viewer.swissgeol-int-sa3d-privileged',
-                            'viewer.swissgeol-prod-sa3d-privileged'                          ]
-                      },                      
+                        groups: [
+                          'viewer.swissgeol-dev-sa3d-privileged',
+                          'viewer.swissgeol-int-sa3d-privileged',
+                          'viewer.swissgeol-prod-sa3d-privileged',
+                        ],
+                      },
                       children: [
                         // 06 - Profiles SAM
                         {
                           id: 'sa3d_Profiles_SAM',
-                          children: [
-                            'sa3d_SAM_profiles_01'
-                          ]
+                          children: ['sa3d_SAM_profiles_01'],
                         },
                         // 06 - Faults SAM
                         {
                           id: 'sa3d_Faults_SAM',
                           children: [
                             'sa3d_SAM_faults_01',
-                            'sa3d_SAM_thrust_faults_01'
-                          ]
-                        }
-                      ]
+                            'sa3d_SAM_thrust_faults_01',
+                          ],
+                        },
+                      ],
                     },
-// =================================================================
+                    // =================================================================
                     {
                       // 05 - SA3D - PR
                       id: 'sa3d_PR',
                       access: {
-                          groups: [
-                            'viewer.swissgeol-dev-sa3d-privileged',
-                            'viewer.swissgeol-int-sa3d-privileged',
-                            'viewer.swissgeol-prod-sa3d-privileged'                          ]
-                      },                      
+                        groups: [
+                          'viewer.swissgeol-dev-sa3d-privileged',
+                          'viewer.swissgeol-int-sa3d-privileged',
+                          'viewer.swissgeol-prod-sa3d-privileged',
+                        ],
+                      },
                       children: [
                         // 06 - Profiles PR
                         {
                           id: 'sa3d_Profiles_PR',
-                          children: [
-                            'sa3d_PR_profiles_01'
-                          ]
+                          children: ['sa3d_PR_profiles_01'],
                         },
                         // 06 - Faults PR
                         {
                           id: 'sa3d_Faults_PR',
-                          children: [
-                            'sa3d_PR_faults_01'
-                          ]
+                          children: ['sa3d_PR_faults_01'],
                         },
                         // 06 - Horizons PR
                         {
                           id: 'sa3d_Horizons_PR',
-                          children: [
-                            'sa3d_PR_horizon_01',
-                          ]
+                          children: ['sa3d_PR_horizon_01'],
                         },
                       ],
                     },
-// =================================================================
+                    // =================================================================
                     {
                       // 05 - SA3D - HL
                       id: 'sa3d_HL',
                       access: {
-                          groups: [
-                            'viewer.swissgeol-dev-sa3d-privileged',
-                            'viewer.swissgeol-int-sa3d-privileged',
-                            'viewer.swissgeol-prod-sa3d-privileged'
-                          ]
-                      },                      
+                        groups: [
+                          'viewer.swissgeol-dev-sa3d-privileged',
+                          'viewer.swissgeol-int-sa3d-privileged',
+                          'viewer.swissgeol-prod-sa3d-privileged',
+                        ],
+                      },
                       children: [
                         // 06 - Profiles HL
                         {
                           id: 'sa3d_Profiles_HL',
-                          children: [
-                            'sa3d_HL_profiles_01'
-                          ]
+                          children: ['sa3d_HL_profiles_01'],
                         },
                         // 06 - Faults HL
                         {
                           id: 'sa3d_Faults_HL',
-                          children: [
-                            'sa3d_HL_faults_01'
-                          ]
+                          children: ['sa3d_HL_faults_01'],
                         },
                         // 06 - Horizons HL
                         {
@@ -225,13 +209,13 @@
                           children: [
                             'sa3d_HL_horizons_nappe',
                             'sa3d_HL_horizons_mesozoic_sed',
-                            'sa3d_HL_horizons_crystl_basement'
-                          ]
+                            'sa3d_HL_horizons_crystl_basement',
+                          ],
                         },
                       ],
                     },
-// =================================================================
-                    { 
+                    // =================================================================
+                    {
                       // 05 - Aar Massif
                       id: 'sa3d_aar-massif',
                       children: [
@@ -244,25 +228,25 @@
                             'aar3d_horizon_permo-carbon',
                             // GROUP Pre-Variscan basement,
                             {
-                            id: 'aar3d_pre_variscan_rocks',
-                            children: [
-                              // Ausserberg-Avat Zone
-                              'aar3d_horizon_Ausserberg_zone',
-                              // Clavaniev Zone
-                              'aar3d_horizon_Clavaniev_zone',
-                              // Cryst. basement sliver
-                              'aar3d_horizon_Cryst_basement_slivers',
-                              // Erstfeld-Gneis Komplex
-                              'aar3d_horizon_Erstfeld_gneis_complex',
-                              // Ferden-Guttannen Gneiskomplex
-                              'aar3d_horizon_Ferden-Guttannen_Gneis_Complex',
-                              // Innertkirchen-Lauterbrunnen Gneiskomplex
-                              'aar3d_horizon_Innertkirchen-Lauterbrunnen_Gneis_Complex',
-                              // Oberaar-Furka Gneiskomplex
-                              'aar3d_horizon_Oberaar-Furka_Gneis_Complex',
-                              // Sustenhorn Gneiskomplex
-                              'aar3d_horizon_Sustenhorn_Gneis_Complex',
-                            ],
+                              id: 'aar3d_pre_variscan_rocks',
+                              children: [
+                                // Ausserberg-Avat Zone
+                                'aar3d_horizon_Ausserberg_zone',
+                                // Clavaniev Zone
+                                'aar3d_horizon_Clavaniev_zone',
+                                // Cryst. basement sliver
+                                'aar3d_horizon_Cryst_basement_slivers',
+                                // Erstfeld-Gneis Komplex
+                                'aar3d_horizon_Erstfeld_gneis_complex',
+                                // Ferden-Guttannen Gneiskomplex
+                                'aar3d_horizon_Ferden-Guttannen_Gneis_Complex',
+                                // Innertkirchen-Lauterbrunnen Gneiskomplex
+                                'aar3d_horizon_Innertkirchen-Lauterbrunnen_Gneis_Complex',
+                                // Oberaar-Furka Gneiskomplex
+                                'aar3d_horizon_Oberaar-Furka_Gneis_Complex',
+                                // Sustenhorn Gneiskomplex
+                                'aar3d_horizon_Sustenhorn_Gneis_Complex',
+                              ],
                             },
                             // Base Mesozoic Molasse
                             'aar3d_horizon_Base_Mesozoic_molasse',
@@ -270,12 +254,12 @@
                         },
                         'aar3d_aaremassive_structures',
                         'aar3d_aaremassive_cs',
-                        'aar3d_aaremassive_bbox'
-                      ]
-                    }
+                        'aar3d_aaremassive_bbox',
+                      ],
+                    },
                   ],
                 },
-              ]
+              ],
             },
             // 03 - Regional models
             {
@@ -289,19 +273,17 @@
                 'voxel_genf_conductivity',
                 'voxel_sgrheintal_conductivity',
                 'voxel_visp_modelling_units',
-                'voxel_visp_conductivity'
-              ]
+                'voxel_visp_conductivity',
+              ],
             },
             // 03 - Local models
             {
               id: 'local_3d_models',
-              children: [
-                'local_model_city_berne'
-              ]
-            }
-          ]
-        }
-      ]
+              children: ['local_model_city_berne'],
+            },
+          ],
+        },
+      ],
     },
     // 01 Topic - Boreholes
     {
@@ -309,8 +291,8 @@
       children: [
         'ch.swisstopo.geologie-bohrungen_tiefer_500',
         'boreholes_public',
-        'boreholes_private'
-      ]
+        'boreholes_private',
+      ],
     },
     // 01 Topic - Geophysics
     {
@@ -322,10 +304,7 @@
             'ch.swisstopo.geologie-reflexionsseismik',
             {
               id: '2d_survey_EGEO21',
-              children: [
-                'seismic_2d_21_egeo_001',
-                'seismic_2d_21_egeo_002',
-              ],
+              children: ['seismic_2d_21_egeo_001', 'seismic_2d_21_egeo_002'],
             },
             {
               id: '2d_survey_2023_23SIG_A',
@@ -344,19 +323,17 @@
                 'seismic_2d_2023_23SIG_A_012',
                 'seismic_2d_2023_23SIG_A_101',
                 'seismic_2d_2023_23SIG_A_102',
-              ]
+              ],
             },
           ],
         },
         {
           id: '3d_reflexionseismics',
-          children: [
-            'seismic_3d_E11',
-          ],
+          children: ['seismic_3d_E11'],
           access: {
-                    env: ['local', 'dev'],
-                    // groups: ['ngm-dev-privileged']
-                  },
+            env: ['local', 'dev'],
+            // groups: ['ngm-dev-privileged']
+          },
         },
         'ch.swisstopo.geologie-gesteinsdichte',
         'ch.swisstopo.geologie-bodenunruhe',
@@ -369,8 +346,8 @@
             'ch.swisstopo.geologie-geodaesie-bouguer_anomalien',
             'ch.swisstopo.geologie-gravimetrischer_atlas',
             'ch.swisstopo.geologie-gravimetrischer_atlas.messpunkte',
-            'ch.swisstopo.geoidmodell-ch1903'
-          ]
+            'ch.swisstopo.geoidmodell-ch1903',
+          ],
         },
         {
           id: 'earth_magnetic_field',
@@ -381,10 +358,10 @@
             'ch.nagra.aeromagnetische-karte_1500',
             'ch.swisstopo.geologie-geophysik-deklination',
             'ch.swisstopo.geologie-geophysik-inklination',
-            'ch.swisstopo.geologie-geophysik-totalintensitaet'
-          ]
+            'ch.swisstopo.geologie-geophysik-totalintensitaet',
+          ],
         },
-      ]
+      ],
     },
     // 01 Topic - Geopenergy
     {
@@ -411,10 +388,10 @@
             'temp_depth_1500',
             'temp_depth_2000',
             'temp_depth_3000',
-            'temp_depth_4000'
-          ]
+            'temp_depth_4000',
+          ],
         },
-      ]
+      ],
     },
     // 01 Topic - Mineral resourcesroup name
     {
@@ -430,30 +407,26 @@
             'ch.swisstopo.geologie-rohstoffe-gebrochene_gesteine_abbau',
             'ch.swisstopo.geologie-rohstoffe-ziegel_abbau',
             'ch.swisstopo.geologie-rohstoffe-naturwerksteine_abbau',
-            'ch.swisstopo.geologie-geotechnik-steine_historische_bauwerke'
-          ]
+            'ch.swisstopo.geologie-geotechnik-steine_historische_bauwerke',
+          ],
         },
         {
           id: 'metallic_raw_material',
-          children: [
-            'ch.swisstopo.geologie-rohstoffe-vererzungen'
-          ]
+          children: ['ch.swisstopo.geologie-rohstoffe-vererzungen'],
         },
         {
           id: 'industrial_minerals',
           children: [
             'ch.swisstopo.geologie-rohstoffe-gips_abbau_verarbeitung',
             'ch.swisstopo.geologie-rohstoffe-salz_abbau_verarbeitung',
-            'ch.swisstopo.geologie-rohstoffe-industrieminerale'
-          ]
+            'ch.swisstopo.geologie-rohstoffe-industrieminerale',
+          ],
         },
         {
           id: 'energy_raw_materials',
-          children: [
-            'ch.swisstopo.geologie-rohstoffe-kohlen_bitumen_erdgas'
-          ]
+          children: ['ch.swisstopo.geologie-rohstoffe-kohlen_bitumen_erdgas'],
         },
-      ]
+      ],
     },
     // 01 Topic - Groundwater
     {
@@ -470,8 +443,8 @@
           id: 'groundwater_quantity',
           children: [
             'ch.bafu.hydroweb-messstationen_grundwasser',
-            'ch.bafu.hydroweb-messstationen_grundwasserzustand'
-          ]
+            'ch.bafu.hydroweb-messstationen_grundwasserzustand',
+          ],
         },
         'ch.bafu.hydrogeologie-markierversuche',
         // 02 Topic - Groundwater quality
@@ -479,10 +452,10 @@
           id: 'groundwater_quality',
           children: [
             'ch.bafu.naqua-grundwasser_nitrat',
-            'ch.bafu.naqua-grundwasser_voc'
-          ]
-        }
-      ]
+            'ch.bafu.naqua-grundwasser_voc',
+          ],
+        },
+      ],
     },
     // 01 Topic - Natural hazards
     {
@@ -496,8 +469,8 @@
             'ch.bafu.silvaprotect-hangmuren',
             'ch.bafu.silvaprotect-murgang',
             'ch.bafu.silvaprotect-sturz',
-            'ch.bafu.silvaprotect-uebersarung'
-          ]
+            'ch.bafu.silvaprotect-uebersarung',
+          ],
         },
         // 02 Topic - Earthquakes
         {
@@ -508,15 +481,13 @@
             'earthquakes_mag_3',
             'ch.bafu.gefahren-gefaehrdungszonen',
             'ch.bafu.gefahren-baugrundklassen',
-            'ch.bafu.gefahren-spektral'
-          ]
+            'ch.bafu.gefahren-spektral',
+          ],
         },
         // 02 Topic - Permafrost
         {
           id: 'permafrost',
-          children: [
-            'ch.bafu.permafrost'
-          ]
+          children: ['ch.bafu.permafrost'],
         },
         // 02 Topic - Floods
         {
@@ -529,10 +500,10 @@
             'ch.bafu.aquaprotect_500',
             'ch.bafu.hydroweb-messstationen_gefahren',
             'ch.bafu.hydroweb-messstationen_vorhersage',
-            'ch.bafu.hydroweb-warnkarte_national'
-          ]
-        }
-      ]
+            'ch.bafu.hydroweb-warnkarte_national',
+          ],
+        },
+      ],
     },
     // 01 Topic - Geotourism
     {
@@ -544,17 +515,17 @@
             //'ch.swisstopo.geologie-geoevents_demnaechst',
             //'ch.swisstopo.geologie-geoevents_anfrage',
             'ch.swisstopo.geologie-geosites',
-            'ch.swisstopo.geologie-geowege'
-          ]
+            'ch.swisstopo.geologie-geowege',
+          ],
         },
         {
           id: 'geotopes',
           children: [
             'ch.swisstopo.geologie-geotope',
-            'ch.swisstopo.geologie-geotope_kantone_stand'
-          ]
+            'ch.swisstopo.geologie-geotope_kantone_stand',
+          ],
         },
-      ]
+      ],
     },
     // 01 Topic - Underground space
     {
@@ -564,8 +535,8 @@
         // 'ch.bfe.sachplan-geologie-tiefenlager',
         'tunnel_road',
         'tunnel_railway',
-        'tunnel_water'
-      ]
+        'tunnel_water',
+      ],
     },
     // 01 Topic - Background data
     {
@@ -577,8 +548,8 @@
         'ch.swisstopo.swissalti3d-reliefschattierung_monodirektional',
         'ch.swisstopo.swissalti3d-reliefschattierung',
         'ch.swisstopo.swissbathy3d-reliefschattierung',
-        'swiss_buildings'
-      ]
-    }
-  ]
+        'swiss_buildings',
+      ],
+    },
+  ],
 }

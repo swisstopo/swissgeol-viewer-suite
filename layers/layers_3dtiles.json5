@@ -9,7 +9,7 @@
       'Download GoCad',
       'Download DXF',
       'Download ASCII',
-      'Download All data'
+      'Download All data',
     ],
     geoquat_cs: [
       'CS-AAT-Cross-section',
@@ -53,7 +53,7 @@
       'bh_pub_USCS1',
       'bh_pub_USCS2',
       'bh_pub_USCS3',
-    ]
+    ],
   },
   layers: [
     // GA25-Profiles
@@ -62,14 +62,11 @@
       id: 'ga25Profiles_test',
       source: {
         type: 'CesiumIon',
-        asset_id: 4605732
+        asset_id: 4605732,
       },
       access: {
-        env: [
-          'local',
-          'dev'
-        ]
-      }
+        env: ['local', 'dev'],
+      },
     },
     // Topic Boreholes
     // Boreholes 2021 - Public
@@ -81,13 +78,8 @@
         asset_id: 287568,
       },
       access: {
-        env: [
-          'local',
-          'dev'
-        ],
-        groups: [
-          'ngm-dev-privileged'
-        ]
+        env: ['local', 'dev'],
+        groups: ['ngm-dev-privileged'],
       },
       order_of_properties: 'boreholes_2021',
       download_url: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
@@ -100,16 +92,11 @@
       source: {
         type: 'S3',
         bucket: 'ngm-protected-prod',
-        key: 'tiles/bh_private_20210201_00/tileset.json'
+        key: 'tiles/bh_private_20210201_00/tileset.json',
       },
       access: {
-        env: [
-          'local',
-          'dev'
-        ],
-        groups: [
-          'ngm-dev-privileged'
-        ]
+        env: ['local', 'dev'],
+        groups: ['ngm-dev-privileged'],
       },
       order_of_properties: 'boreholes_2021',
       download_url: '',
@@ -126,8 +113,8 @@
           type: 'gst',
           id: 13327,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
     {
       type: 'Tiles3d',
@@ -138,8 +125,8 @@
           type: 'gst',
           id: 13328,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
     // 2D-Seismik Survey 2023_23SIG_A
     {
@@ -151,8 +138,8 @@
           type: 'gst',
           id: 16129,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
     {
       type: 'Tiles3d',
@@ -163,10 +150,10 @@
           type: 'gst',
           id: 16130,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_003',
       source: {
@@ -175,10 +162,10 @@
           type: 'gst',
           id: 16131,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_004',
       source: {
@@ -187,10 +174,10 @@
           type: 'gst',
           id: 16132,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_005',
       source: {
@@ -199,10 +186,10 @@
           type: 'gst',
           id: 16134,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_006',
       source: {
@@ -211,10 +198,10 @@
           type: 'gst',
           id: 16135,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_007',
       source: {
@@ -223,10 +210,10 @@
           type: 'gst',
           id: 16136,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_008',
       source: {
@@ -235,10 +222,10 @@
           type: 'gst',
           id: 16137,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_009',
       source: {
@@ -247,10 +234,10 @@
           type: 'gst',
           id: 16139,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_010',
       source: {
@@ -259,10 +246,10 @@
           type: 'gst',
           id: 16138,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_011',
       source: {
@@ -271,10 +258,10 @@
           type: 'gst',
           id: 16140,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_012',
       source: {
@@ -283,10 +270,10 @@
           type: 'gst',
           id: 16141,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_101',
       source: {
@@ -295,10 +282,10 @@
           type: 'gst',
           id: 16142,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
-   {
+    {
       type: 'Tiles3d',
       id: 'seismic_2d_2023_23SIG_A_102',
       source: {
@@ -307,8 +294,8 @@
           type: 'gst',
           id: 16143,
           style_id: 5,
-        }
-      }
+        },
+      },
     },
 
     // 3D-Seismik
@@ -322,14 +309,11 @@
           type: 'gst',
           id: 14279,
           style_id: 5,
-        }
+        },
       },
       access: {
-        env: [
-          'local',
-          'dev'
-        ]
-      }
+        env: ['local', 'dev'],
+      },
     },
     // Geoenergy
     {
@@ -339,7 +323,7 @@
         type: 'CesiumIon',
         asset_id: 251755,
       },
-      geocat_id: '6edca35d-0f08-43b9-9faf-4c7b207888a1'
+      geocat_id: '6edca35d-0f08-43b9-9faf-4c7b207888a1',
     },
     {
       type: 'Tiles3d',
@@ -348,7 +332,7 @@
         type: 'CesiumIon',
         asset_id: 251787,
       },
-      geocat_id: '8681fb45-6220-41ef-825a-86210d8a72fc'
+      geocat_id: '8681fb45-6220-41ef-825a-86210d8a72fc',
     },
     {
       type: 'Tiles3d',
@@ -357,7 +341,7 @@
         type: 'CesiumIon',
         asset_id: 251783,
       },
-      geocat_id: '31dc428e-a62b-4f6b-a263-e5eca9d9a074'
+      geocat_id: '31dc428e-a62b-4f6b-a263-e5eca9d9a074',
     },
     {
       type: 'Tiles3d',
@@ -366,7 +350,7 @@
         type: 'CesiumIon',
         asset_id: 251747,
       },
-      geocat_id: '4f9e3f59-891e-434b-bba5-40db1b9495e0'
+      geocat_id: '4f9e3f59-891e-434b-bba5-40db1b9495e0',
     },
     {
       type: 'Tiles3d',
@@ -375,7 +359,7 @@
         type: 'CesiumIon',
         asset_id: 251782,
       },
-      geocat_id: '613cdc6f-0237-416d-af16-ae5d2f1934ff'
+      geocat_id: '613cdc6f-0237-416d-af16-ae5d2f1934ff',
     },
     {
       type: 'Tiles3d',
@@ -384,7 +368,7 @@
         type: 'CesiumIon',
         asset_id: 251781,
       },
-      geocat_id: 'e0be0de5-4ed0-488a-a952-5eb385fd5595'
+      geocat_id: 'e0be0de5-4ed0-488a-a952-5eb385fd5595',
     },
     {
       type: 'Tiles3d',
@@ -393,7 +377,7 @@
         type: 'CesiumIon',
         asset_id: 251756,
       },
-      geocat_id: '08e66941-4ebb-4017-8018-b39caa8fd107'
+      geocat_id: '08e66941-4ebb-4017-8018-b39caa8fd107',
     },
     {
       type: 'Tiles3d',
@@ -402,7 +386,7 @@
         type: 'CesiumIon',
         asset_id: 251788,
       },
-      geocat_id: '5e32ea72-a356-4250-b40a-a441165fd936'
+      geocat_id: '5e32ea72-a356-4250-b40a-a441165fd936',
     },
     {
       type: 'Tiles3d',
@@ -411,7 +395,7 @@
         type: 'CesiumIon',
         asset_id: 251790,
       },
-      geocat_id: '162989d7-5c1c-48fb-8d16-2ccf5be339b9'
+      geocat_id: '162989d7-5c1c-48fb-8d16-2ccf5be339b9',
     },
     {
       type: 'Tiles3d',
@@ -420,7 +404,7 @@
         type: 'CesiumIon',
         asset_id: 251786,
       },
-      geocat_id: 'ac604460-7a7a-44c5-bc5a-41062fbd21ff'
+      geocat_id: 'ac604460-7a7a-44c5-bc5a-41062fbd21ff',
     },
     {
       type: 'Tiles3d',
@@ -429,7 +413,7 @@
         type: 'CesiumIon',
         asset_id: 251785,
       },
-      geocat_id: '47f79661-212e-4297-b048-2606db7affa8'
+      geocat_id: '47f79661-212e-4297-b048-2606db7affa8',
     },
     {
       type: 'Tiles3d',
@@ -438,7 +422,7 @@
         type: 'CesiumIon',
         asset_id: 251789,
       },
-      geocat_id: '739e9095-77f6-462d-9a1e-438898cf0c9c'
+      geocat_id: '739e9095-77f6-462d-9a1e-438898cf0c9c',
     },
     // GeoQuat
     // GeoQuat Cross-sections
@@ -450,7 +434,7 @@
         asset_id: 472446,
       },
       order_of_properties: 'geoquat_cs',
-      geocat_id: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a'
+      geocat_id: 'ab34eb52-30c4-4b69-840b-ef41f47f9e9a',
     },
     // Jura 3D
     // Horizon
@@ -459,19 +443,25 @@
       id: 'j3d_horizon',
       source: {
         type: 'CesiumIon',
-        asset_id: 4481000
+        asset_id: 4481000,
       },
       //order_of_properties: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
           description: { key: 'description_value', url: 'description_url' },
-          download_01: { key: 'download_movz_value', url: 'download_movz_url_j3d_horizon' },
-          download_02: { key: 'download_gocad_value', url: 'download_gocad_url_j3d_horizon' },
-          dataDate: '18.03.2026'   
-        }
-      }
+          download_01: {
+            key: 'download_movz_value',
+            url: 'download_movz_url_j3d_horizon',
+          },
+          download_02: {
+            key: 'download_gocad_value',
+            url: 'download_gocad_url_j3d_horizon',
+          },
+          dataDate: '18.03.2026',
+        },
+      },
     },
     // Faults
     {
@@ -479,19 +469,25 @@
       id: 'j3d_faults',
       source: {
         type: 'CesiumIon',
-        asset_id: 4481108
+        asset_id: 4481108,
       },
       //order_of_properties: '',
-        info_box: {
+      info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
           description: { key: 'description_value', url: 'description_url' },
-          download_01: { key: 'download_movz_value', url: 'download_movz_url_j3d_faults' },
-          download_02: { key: 'download_gocad_value', url: 'download_gocad_url_j3d_faults' },
-          dataDate: '18.03.2026'   
-        }
-      }      
+          download_01: {
+            key: 'download_movz_value',
+            url: 'download_movz_url_j3d_faults',
+          },
+          download_02: {
+            key: 'download_gocad_value',
+            url: 'download_gocad_url_j3d_faults',
+          },
+          dataDate: '18.03.2026',
+        },
+      },
     },
     // Cross-section (profile)
     {
@@ -499,19 +495,25 @@
       id: 'j3d_profiles',
       source: {
         type: 'CesiumIon',
-        asset_id: 4436279
+        asset_id: 4436279,
       },
       //order_of_properties: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
           description: { key: 'description_value', url: 'description_url' },
-          download_01: { key: 'download_movz_value', url: 'download_movz_url_j3d_profiles' },
-          download_02: { key: 'download_shp_value', url: 'download_shp_url_j3d_profiles' },
-          dataDate: '18.03.2026'   
-        }
-      }
+          download_01: {
+            key: 'download_movz_value',
+            url: 'download_movz_url_j3d_profiles',
+          },
+          download_02: {
+            key: 'download_shp_value',
+            url: 'download_shp_url_j3d_profiles',
+          },
+          dataDate: '18.03.2026',
+        },
+      },
     },
     // GeoMol
     // GeoMol-Cross-sections
@@ -520,10 +522,10 @@
       id: 'geomol_cs',
       source: {
         type: 'CesiumIon',
-        asset_id: 452436
+        asset_id: 452436,
       },
       download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Cross-Sections.zip',
-      geocat_id: '2cec200c-a47b-4934-8dc1-62c19c39a3dd'
+      geocat_id: '2cec200c-a47b-4934-8dc1-62c19c39a3dd',
     },
     // Horizons
     // TOMM
@@ -538,8 +540,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4180339
-        }
+          asset_id: 4180339,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TOMM_OBJ.zip',
@@ -557,8 +559,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182186
-        }
+          asset_id: 4182186,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUSM_OBJ.zip',
@@ -576,8 +578,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182207
-        }
+          asset_id: 4182207,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMM_OBJ.zip',
@@ -595,8 +597,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182277
-        }
+          asset_id: 4182277,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BCen_OBJ.zip',
@@ -614,8 +616,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182209
-        }
+          asset_id: 4182209,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCret_OBJ.zip',
@@ -633,8 +635,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182292
-        }
+          asset_id: 4182292,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMa_OBJ.zip',
@@ -652,8 +654,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182306
-        }
+          asset_id: 4182306,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLMa_OBJ.zip',
@@ -671,8 +673,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182314
-        }
+          asset_id: 4182314,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TDo_OBJ.zip',
@@ -690,12 +692,12 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182351
-        }
+          asset_id: 4182351,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLi_OBJ.zip',
-      geocat_id: '793a40d6-ab83-4e1e-80d7-d7c49bf00f3c'
+      geocat_id: '793a40d6-ab83-4e1e-80d7-d7c49bf00f3c',
     },
     // TKeu
     {
@@ -709,12 +711,12 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182626
-        }
+          asset_id: 4182626,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TKeu_OBJ.zip',
-      geocat_id: 'e2344c21-2139-4494-8679-36fe30d034f9'
+      geocat_id: 'e2344c21-2139-4494-8679-36fe30d034f9',
     },
     //TMus
     {
@@ -728,8 +730,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182378
-        }
+          asset_id: 4182378,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TMus_OBJ.zip',
@@ -747,8 +749,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182395
-        }
+          asset_id: 4182395,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BMes_OBJ.zip',
@@ -766,8 +768,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182413
-        }
+          asset_id: 4182413,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCarb_OBJ.zip',
@@ -785,8 +787,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182446
-        }
+          asset_id: 4182446,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_OBJ.zip',
@@ -804,8 +806,8 @@
         },
         display_source: {
           type: 'CesiumIon',
-          asset_id: 4182486
-        }
+          asset_id: 4182486,
+        },
       },
       order_of_properties: 'geomol_consolidated_rocks',
       download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_vermutet_OBJ.zip',
@@ -817,7 +819,7 @@
       id: 'geomol_faults',
       source: {
         type: 'CesiumIon',
-        asset_id: 267872
+        asset_id: 267872,
       },
       download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
       geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
@@ -979,7 +981,7 @@
       //download_url: 'https://download.swissgeol.ch/XXX',
       //geocat_id: '',
     },
-// =================================================================
+    // =================================================================
     // SA3D - HL
     // HL - Profiles
     {
@@ -993,12 +995,15 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_HL_profiles_01: {
+            key: 'description_value_sa3d_HL_profiles_01',
+            url: 'description_url_sa3d_HL_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
     // HL - Faults
     {
@@ -1013,12 +1018,15 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_HL_profiles_01: {
+            key: 'description_value_sa3d_HL_profiles_01',
+            url: 'description_url_sa3d_HL_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
     // HL - Horizons - Nappe
     {
@@ -1032,18 +1040,21 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_HL_profiles_01: {
+            key: 'description_value_sa3d_HL_profiles_01',
+            url: 'description_url_sa3d_HL_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
     // HL - Horizons - Mesozoic sediments
     {
       type: 'Tiles3d',
       id: 'sa3d_HL_horizons_mesozoic_sed',
-      'opacity': 0.50,
+      opacity: 0.5,
       source: {
         type: 'CesiumIon',
         asset_id: 4662929,
@@ -1052,13 +1063,16 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
-    },  
+          description_sa3d_HL_profiles_01: {
+            key: 'description_value_sa3d_HL_profiles_01',
+            url: 'description_url_sa3d_HL_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
+    },
     // HL - Horizons - Cristalline basement
     {
       type: 'Tiles3d',
@@ -1071,14 +1085,17 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: { key: 'description_value_sa3d_HL_profiles_01', url: 'description_url_sa3d_HL_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_HL_profiles_01: {
+            key: 'description_value_sa3d_HL_profiles_01',
+            url: 'description_url_sa3d_HL_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
-// =================================================================
+    // =================================================================
     // PR - Profiles
     {
       type: 'Tiles3d',
@@ -1091,12 +1108,15 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_PR_profiles_01: { key: 'description_value_sa3d_PR_profiles_01', url: 'description_url_sa3d_PR_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_PR_profiles_01: {
+            key: 'description_value_sa3d_PR_profiles_01',
+            url: 'description_url_sa3d_PR_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
     // PR - Faults
     {
@@ -1111,12 +1131,15 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_PR_profiles_01: { key: 'description_value_sa3d_PR_profiles_01', url: 'description_url_sa3d_PR_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_PR_profiles_01: {
+            key: 'description_value_sa3d_PR_profiles_01',
+            url: 'description_url_sa3d_PR_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
     // PR - Horizons
     {
@@ -1130,14 +1153,17 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_PR_profiles_01: { key: 'description_value_sa3d_PR_profiles_01', url: 'description_url_sa3d_PR_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_PR_profiles_01: {
+            key: 'description_value_sa3d_PR_profiles_01',
+            url: 'description_url_sa3d_PR_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
-// =================================================================
+    // =================================================================
     // SAM - Profiles
     {
       type: 'Tiles3d',
@@ -1150,12 +1176,15 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_SAM_profiles_01: { key: 'description_value_sa3d_SAM_profiles_01', url: 'description_url_sa3d_SAM_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_SAM_profiles_01: {
+            key: 'description_value_sa3d_SAM_profiles_01',
+            url: 'description_url_sa3d_SAM_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
     // SAM - Faults
     {
@@ -1170,12 +1199,15 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_SAM_profiles_01: { key: 'description_value_sa3d_SAM_profiles_01', url: 'description_url_sa3d_SAM_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_SAM_profiles_01: {
+            key: 'description_value_sa3d_SAM_profiles_01',
+            url: 'description_url_sa3d_SAM_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
     // SAM - Thrust Faults
     {
@@ -1189,14 +1221,17 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: { 
+        information: {
           contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_SAM_profiles_01: { key: 'description_value_sa3d_SAM_profiles_01', url: 'description_url_sa3d_SAM_profiles_01' },
-          dataDate: '28.04.2026'   
-        }
-      }
+          description_sa3d_SAM_profiles_01: {
+            key: 'description_value_sa3d_SAM_profiles_01',
+            url: 'description_url_sa3d_SAM_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
     },
-// =================================================================
+    // =================================================================
     // City of Berne
     {
       type: 'Tiles3d',
@@ -1214,7 +1249,7 @@
       id: 'tunnel_road',
       source: {
         type: 'CesiumIon',
-        asset_id: 244982
+        asset_id: 244982,
       },
       geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
     },
@@ -1242,20 +1277,20 @@
       id: 'swiss_buildings',
       source: {
         type: 'Url',
-        url:'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20201020/tileset.json',
+        url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20201020/tileset.json',
       },
-//      source: {
-//        type: 'Ogc',
-//        ogc_source: {
-//          type: 'stac',
-//          collection: 'ch.swisstopo.swissbuildings3d_2',
-//        },
-//        display_source: {
-//          type: 'Url',
-//          url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20201020/tileset.json'
-//        }
-//      },
+      //      source: {
+      //        type: 'Ogc',
+      //        ogc_source: {
+      //          type: 'stac',
+      //          collection: 'ch.swisstopo.swissbuildings3d_2',
+      //        },
+      //        display_source: {
+      //          type: 'Url',
+      //          url: 'https://vectortiles0.geo.admin.ch/3d-tiles/ch.swisstopo.swisstlm3d.3d/20201020/tileset.json'
+      //        }
+      //      },
       geocat_id: '21c98c73-48da-408b-ab73-8f1ab9d5fbe4',
     },
-  ]
+  ],
 }
