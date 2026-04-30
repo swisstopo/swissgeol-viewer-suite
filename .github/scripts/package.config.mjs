@@ -4,4 +4,4 @@ export const packages = {
   sync: `${process.env.BASE_IMAGE_NAME}-sync`,
 };
 
-export const packageType = "container";
+export const packageType = 'container';

@@ -3,3 +3,4 @@ build
 coverage
 dist/**
 manuals/dist/**
+temp-ogc-tests/

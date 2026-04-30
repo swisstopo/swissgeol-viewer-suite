@@ -42,9 +42,9 @@ const PROPERTIES_TO_EXCLUDE = new Set([
   'style_transparency',
 ]);
 
-export abstract class LayerInfoDrillPicker<T extends Layer>
-  implements LayerInfoPicker
-{
+export abstract class LayerInfoDrillPicker<
+  T extends Layer,
+> implements LayerInfoPicker {
   constructor(
     private readonly controller: BaseLayerController<T>,
     private readonly viewer: Viewer,

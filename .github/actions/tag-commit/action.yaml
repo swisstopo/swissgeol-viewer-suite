@@ -1,15 +1,15 @@
-name: "Tag Commit"
-description: "Creates or updates a commit tag"
+name: 'Tag Commit'
+description: 'Creates or updates a commit tag'
 inputs:
   TAG_NAME:
     description: "The tag's name"
     required: true
   SHA:
-    description: "The SHA of the commit to be tagged"
+    description: 'The SHA of the commit to be tagged'
     required: true
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Create/update tag
       uses: actions/github-script@v7

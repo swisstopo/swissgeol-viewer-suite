@@ -3,11 +3,11 @@ name: Publish DEV
 on:
   push:
     branches:
-      - "develop"
+      - 'develop'
 
 # Run all publish workflow in sequence to ensure consistent version numbers.
 concurrency:
-  group: "publish"
+  group: 'publish'
 
 jobs:
   publish:
@@ -20,8 +20,8 @@ jobs:
           determineNextDevVersion,
           stringifyVersion,
         } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/version.utils.mjs`);
-        
+
         const [source, target] = await findSourceAndTargetBranches(context);
         const nextVersion = await determineNextDevVersion(source);
-        
+
         return stringifyVersion(nextVersion);
