@@ -18,6 +18,7 @@
     "check": "npm run check:src && npm run check:cypress",
     "check:src": "tsc -p tsconfig.json --noEmit",
     "check:cypress": "tsc -b . && cd cypress && tsc -p tsconfig.json --noEmit",
+    "test:ogc": "vitest run --config vitest.ogc.config.ts",
     "e2e": "start-server-and-test start http-get://localhost:8000 cypress:run",
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts",
     "cypress:run": "cypress run --config-file cypress/cypress.config.ts",
@@ -67,11 +68,12 @@
     "@types/chai": "^5.0.1",
     "@types/geojson": "^7946.0.14",
     "@types/jquery": "^3.5.32",
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.19.17",
     "@types/proj4": "^2.5.6",
     "@types/sortablejs": "^1.15.8",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
+    "@vitest/ui": "^4.1.4",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^10.0.0",
     "chai": "^5.1.2",
@@ -111,6 +113,7 @@
     "typescript": "^5.8.2",
     "undici-types": "^7.16.0",
     "vite-bundle-analyzer": "^0.18.0",
-    "vite-plugin-static-copy": "^2.2.0"
+    "vite-plugin-static-copy": "^2.2.0",
+    "vitest": "^4.1.4"
   }
 }

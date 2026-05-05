@@ -18,7 +18,7 @@ import DashboardStore from '../../store/dashboard';
 import LocalStorageController from '../../LocalStorageController';
 import type { Viewer } from 'cesium';
 import { showSnackbarError } from 'src/notifications';
-import { DEFAULT_PROJECT_COLOR, PROJECT_ASSET_URL } from 'src/constants';
+import { DEFAULT_PROJECT_COLOR } from 'src/constants';
 import type { NgmGeometry } from 'src/toolbox/interfaces';
 import { ApiClient } from 'src/api/api-client';
 import '../hide-overflow';
@@ -32,6 +32,12 @@ import { Id, makeId } from 'src/models/id.model';
 import { KmlLayer, LayerSourceType, LayerType } from 'src/features/layer';
 import { CesiumService } from 'src/services/cesium.service';
 import { CoreElement } from 'src/features/core';
+
+const hostname = document.location.hostname;
+export const PROJECT_ASSET_URL =
+  hostname === 'localhost'
+    ? 'http://localhost:9000/ngmpub-project-files-local/assets/saved/'
+    : `https://project-files.${hostname}/assets/saved/`;
 
 type TextualAttribute = string | TranslatedText;
 
