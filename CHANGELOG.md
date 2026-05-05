@@ -4,6 +4,16 @@
 
 ### Added
 
+- Missing it, fr and de translations.
+
+### Changed
+
+### Fixed
+
+## [v1.12.0]
+
+### Added
+
 ### Changed
 
 - The project tab is no longer visible until the project feature is fully refactored and ready to be used.
