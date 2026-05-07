@@ -38,6 +38,7 @@
   border-radius: 104px;
   height: 52px;
   margin: auto 12px;
+  position: relative;
 
   display: flex;
   align-items: center;
@@ -98,3 +99,21 @@
 .ngm-bg-chooser-map .ngm-selected-map-container:hover .ngm-map-preview {
   background-color: #dee2e6;
 }
+
+.ngm-bg-chooser-map .ngm-compass-button {
+  position: absolute;
+  right: 4px;
+  bottom: calc(100% + 8px);
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  background: #f1f3f5;
+  box-shadow: 4px 4px 2px #00000029;
+  color: var(--ngm-interaction);
+  cursor: pointer;
+}
+
+.ngm-bg-chooser-map .ngm-compass-button:hover {
+  background-color: #dee2e6;
+}
+

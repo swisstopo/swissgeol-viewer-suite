@@ -520,7 +520,6 @@ export class NgmNavTools extends CoreElement {
           @click=${() => this.dispatchEvent(new CustomEvent('togglecamconfig'))}
         ></div>
         <control-2d></control-2d>
-        <control-compass></control-compass>
       </div>
       ${dragArea}
     `;
