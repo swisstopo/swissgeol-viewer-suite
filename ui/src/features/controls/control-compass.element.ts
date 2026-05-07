@@ -11,47 +11,111 @@ import {
   Viewer,
 } from 'cesium';
 import { CesiumService } from 'src/services/cesium.service';
+import { getCameraView } from 'src/permalink';
 
 @customElement('control-compass')
 export class ControlCompass extends CoreElement {
   @consume({ context: CesiumService.context() })
   accessor cesiumService!: CesiumService;
 
-  private viewer!: Viewer;
+  private viewer: Viewer | null = null;
+  private compassBody: HTMLElement | null = null;
+  private removePostRenderListener: (() => void) | null = null;
 
   connectedCallback(): void {
     super.connectedCallback();
     this.role = 'button';
     this.addEventListener('click', this.toggle);
+    this.register(() => this.removeEventListener('click', this.toggle));
 
-    this.viewer = this.cesiumService.viewer;
-
-    this.viewer.camera.changed.addEventListener(this.handleCameraChange);
     this.register(() =>
-      this.viewer.camera.changed.removeEventListener(this.handleCameraChange),
+      this.viewer?.camera.changed.removeEventListener(this.handleCameraChange),
+    );
+    this.register(() => this.removePostRenderListener?.());
+
+    // The Cesium viewer is created asynchronously in ngm-app.
+    this.register(
+      this.cesiumService.viewer$.subscribe((viewer) => {
+        this.removePostRenderListener?.();
+        this.removePostRenderListener = null;
+
+        if (this.viewer !== null) {
+          this.viewer.camera.changed.removeEventListener(
+            this.handleCameraChange,
+          );
+        }
+        this.viewer = viewer;
+        this.viewer.camera.changed.addEventListener(this.handleCameraChange);
+        this.removePostRenderListener =
+          this.viewer.scene.postRender.addEventListener(
+            this.handleCameraChange,
+          );
+        this.handleCameraChange();
+      }),
     );
   }
 
   protected firstUpdated() {
-    this.handleCameraChange();
+    this.syncFromPermalink();
+  }
+
+  private syncFromPermalink() {
+    const orientation = getCameraView().orientation;
+    if (orientation == null) {
+      return;
+    }
+
+    this.applyTransform(
+      CesiumMath.toDegrees(orientation.heading),
+      CesiumMath.toDegrees(orientation.pitch),
+      CesiumMath.toDegrees(orientation.roll ?? 0),
+    );
+  }
+
+  private applyTransform(h: number, p: number, r: number) {
+    if (this.compassBody === null || !this.compassBody.isConnected) {
+      this.compassBody = this.shadowRoot?.querySelector(
+        '.ngm-compass-body',
+      ) as HTMLElement | null;
+    }
+
+    if (this.compassBody === null) {
+      return;
+    }
+
+    // The compass glyph is a flat SVG; rotateX quickly collapses it into a thin
+    // edge where the bottom (gray) half visually dominates. Model pitch as a
+    // vertical squash to keep both halves readable.
+    const pitchScale = Math.max(
+      0.25,
+      Math.abs(Math.sin(CesiumMath.toRadians(p))),
+    );
+
+    this.compassBody.style.transform = `
+      rotateZ(${-h}deg)
+      scaleY(${pitchScale})
+      rotateZ(${r}deg)
+    `;
   }
 
   private readonly handleCameraChange = () => {
-    const { heading, pitch, roll } = this.viewer.camera;
-    const h = CesiumMath.toDegrees(heading);
-    const p = CesiumMath.toDegrees(pitch);
-    const r = CesiumMath.toDegrees(roll);
-    const target = this.shadowRoot?.children[0] as HTMLElement | undefined;
-    if (target !== undefined) {
-      target.style.transform = `
-        rotateZ(${-h}deg)
-        rotateX(${90 + p}deg)
-        rotateZ(${r}deg)
-      `;
+    if (this.viewer === null) {
+      return;
     }
+
+    const { heading, pitch, roll } = this.viewer.camera;
+    this.applyTransform(
+      CesiumMath.toDegrees(heading),
+      CesiumMath.toDegrees(pitch),
+      CesiumMath.toDegrees(roll),
+    );
   };
 
   private readonly toggle = () => {
+    if (this.viewer === null) {
+      return;
+    }
+
     const { camera, scene } = this.viewer;
 
     const wnd = new Cartesian2(
@@ -77,7 +141,11 @@ export class ControlCompass extends CoreElement {
     });
   };
 
-  readonly render = () => html`<ngm-core-icon icon="compass"></ngm-core-icon>`;
+  readonly render = () => html`
+    <div class="ngm-compass-body">
+      <ngm-core-icon icon="compass"></ngm-core-icon>
+    </div>
+  `;
 
   static readonly styles = css`
     :host {
@@ -87,6 +155,15 @@ export class ControlCompass extends CoreElement {
 
       perspective: 600px;
       transform-style: preserve-3d;
+    }
+
+    .ngm-compass-body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+      transform-origin: 50% 50%;
+      will-change: transform;
     }
 
     ngm-core-icon {
