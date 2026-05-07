@@ -123,7 +123,7 @@ export class SessionService extends BaseService {
 
   signIn(): void {
     const url =
-      `https://ngm-${this.cognitoVariables(window.location.host).env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize?` +
+      `https://ngm-${this.cognitoVariables.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize?` +
       'response_type=token' +
       `&client_id=${this.cognitoVariables.clientId}` +
       `&redirect_uri=${location.origin}${location.pathname}` +
