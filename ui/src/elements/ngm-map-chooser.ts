@@ -45,7 +45,6 @@ export class NgmMapChooser extends CoreElement {
   }
 
   readonly render = () => html`
-    <control-compass class="ngm-compass-button"></control-compass>
     <div class="ngm-maps-container" ?hidden=${!this.open}>
       <ngm-background-layer-select></ngm-background-layer-select>
       <div class="ngm-close-icon" @click=${() => (this.open = false)}></div>

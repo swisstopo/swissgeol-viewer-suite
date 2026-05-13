@@ -528,7 +528,14 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
   bottom: 44px;
   right: 54px;
   display: flex;
-  align-content: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.on-map-menu .ngm-bg-chooser-map,
+.on-map-menu .ngm-compass-button {
+  margin: 0;
 }
 
 .ui.loader {

@@ -100,10 +100,7 @@
   background-color: #dee2e6;
 }
 
-.ngm-bg-chooser-map .ngm-compass-button {
-  position: absolute;
-  right: 4px;
-  bottom: calc(100% + 8px);
+.ngm-compass-button {
   width: 48px;
   height: 48px;
   border-radius: 24px;
@@ -113,7 +110,7 @@
   cursor: pointer;
 }
 
-.ngm-bg-chooser-map .ngm-compass-button:hover {
+.ngm-compass-button:hover {
   background-color: #dee2e6;
 }
 
