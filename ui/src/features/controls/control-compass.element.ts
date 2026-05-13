@@ -275,9 +275,20 @@ export class ControlCompass extends CoreElement {
       display: flex;
       justify-content: center;
       align-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 24px;
+      background: #f1f3f5;
+      box-shadow: 4px 4px 2px #00000029;
+      color: var(--ngm-interaction);
+      cursor: pointer;
 
       perspective: 600px;
       transform-style: preserve-3d;
+    }
+
+    :host(:hover) {
+      background-color: #dee2e6;
     }
 
     .ngm-compass-body {

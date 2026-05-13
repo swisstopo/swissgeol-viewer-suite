@@ -534,7 +534,7 @@ ngm-voxel-filter .ngm-action-btn.ui.button {
 }
 
 .on-map-menu .ngm-bg-chooser-map,
-.on-map-menu .ngm-compass-button {
+.on-map-menu control-compass {
   margin: 0;
 }
 
