@@ -127,7 +127,7 @@ export class ControlCompass extends CoreElement {
     this.pitchGroup.add(this.rollGroup);
     this.scene3d.add(this.headingGroup);
 
-    this.resizeObserver = new ResizeObserver(() => this.resizeRenderer());
+    this.resizeObserver = new ResizeObserver(this.resizeRenderer);
     this.resizeObserver.observe(this);
 
     this.resizeRenderer();
@@ -157,7 +157,7 @@ export class ControlCompass extends CoreElement {
     });
   }
 
-  private resizeRenderer() {
+  private readonly resizeRenderer = () => {
     if (
       this.renderer === null ||
       this.camera3d === null ||
@@ -172,7 +172,7 @@ export class ControlCompass extends CoreElement {
     this.camera3d.aspect = width / height;
     this.camera3d.updateProjectionMatrix();
     this.redrawCompass();
-  }
+  };
 
   private applyModelRotation() {
     if (
