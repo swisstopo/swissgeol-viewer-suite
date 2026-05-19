@@ -50,9 +50,6 @@ export class ControlCompass extends CoreElement {
     this.addEventListener('click', this.toggle);
     this.register(() => this.removeEventListener('click', this.toggle));
 
-    this.register(() =>
-      this.viewer?.camera.changed.removeEventListener(this.handleCameraChange),
-    );
     this.register(() => this.removePostRenderListener?.());
     this.register(() => this.destroyThreeScene());
 
@@ -62,13 +59,7 @@ export class ControlCompass extends CoreElement {
         this.removePostRenderListener?.();
         this.removePostRenderListener = null;
 
-        if (this.viewer !== null) {
-          this.viewer.camera.changed.removeEventListener(
-            this.handleCameraChange,
-          );
-        }
         this.viewer = viewer;
-        this.viewer.camera.changed.addEventListener(this.handleCameraChange);
         this.removePostRenderListener =
           this.viewer.scene.postRender.addEventListener(
             this.handleCameraChange,
