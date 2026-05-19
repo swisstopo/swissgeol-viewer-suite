@@ -20,7 +20,10 @@ import {
   WebGLRenderer,
   DirectionalLight,
 } from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {
+  GLTFLoader,
+  type GLTF,
+} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { CesiumService } from 'src/services/cesium.service';
 import { getCameraView } from 'src/permalink';
 
@@ -139,7 +142,7 @@ export class ControlCompass extends CoreElement {
     this.resizeRenderer();
 
     const loader = new GLTFLoader();
-    loader.load('/images/compass.gltf', (gltf: { scene: any }) => {
+    loader.load('/images/compass.gltf', (gltf: GLTF) => {
       if (this.rollGroup === null) {
         return;
       }
@@ -282,9 +285,6 @@ export class ControlCompass extends CoreElement {
       box-shadow: 4px 4px 2px #00000029;
       color: var(--ngm-interaction);
       cursor: pointer;
-
-      perspective: 600px;
-      transform-style: preserve-3d;
     }
 
     :host(:hover) {
