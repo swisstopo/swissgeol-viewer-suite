@@ -184,7 +184,7 @@ export class ControlCompass extends CoreElement {
     }
 
     const { heading, pitch, roll } = this.latestOrientation;
-    this.headingGroup.rotation.z = -CesiumMath.toRadians(heading);
+    this.headingGroup.rotation.z = CesiumMath.toRadians(heading);
     this.pitchGroup.rotation.x = -CesiumMath.toRadians(90 + pitch);
     this.rollGroup.rotation.z = CesiumMath.toRadians(roll);
   }
