@@ -530,6 +530,7 @@ export class NgmApp extends LitElementI18n {
             )}
 
             <div class="on-map-menu">
+              <control-compass></control-compass>
               <ngm-map-chooser
                 .hidden=${this.mobileView}
                 class="ngm-bg-chooser-map"
