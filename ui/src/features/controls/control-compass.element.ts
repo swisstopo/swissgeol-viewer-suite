@@ -13,12 +13,14 @@ import {
 import {
   AmbientLight,
   Box3,
+  BufferGeometry,
+  DirectionalLight,
   Group,
+  Material,
   PerspectiveCamera,
   Scene,
   Vector3,
   WebGLRenderer,
-  DirectionalLight,
 } from 'three';
 import {
   GLTFLoader,
@@ -32,6 +34,14 @@ export class ControlCompass extends CoreElement {
   @consume({ context: CesiumService.context() })
   accessor cesiumService!: CesiumService;
 
+  /** Tolerance (rad) around ±π used to recognise a heading singularity flip. */
+  private static readonly HEADING_FLIP_TOLERANCE = CesiumMath.toRadians(17);
+
+  /** Pitch distance (rad) from ±π/2 within which Cesium's heading singularity can fire. */
+  private static readonly PITCH_SINGULARITY_ZONE = CesiumMath.toRadians(5);
+
+  private static readonly ORIENTATION_EPSILON = 1e-12;
+
   private viewer: Viewer | null = null;
   private removePostRenderListener: (() => void) | null = null;
   private canvas: HTMLCanvasElement | null = null;
@@ -42,7 +52,9 @@ export class ControlCompass extends CoreElement {
   private pitchGroup: Group | null = null;
   private rollGroup: Group | null = null;
   private resizeObserver: ResizeObserver | null = null;
-  private latestOrientation = { heading: 0, pitch: -90, roll: 0 };
+  private latestOrientationRad = { heading: 0, pitch: -Math.PI / 2, roll: 0 };
+  private safeHeadingRad = 0;
+  private prevRawHeadingRad: number | null = null;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -80,15 +92,16 @@ export class ControlCompass extends CoreElement {
       return;
     }
 
-    this.applyTransform(
-      CesiumMath.toDegrees(orientation.heading),
-      CesiumMath.toDegrees(orientation.pitch),
-      CesiumMath.toDegrees(orientation.roll ?? 0),
+    // Permalink values are already in radians — pass through directly.
+    this.applyTransformRad(
+      orientation.heading,
+      orientation.pitch,
+      orientation.roll ?? 0,
     );
   }
 
-  private applyTransform(heading: number, pitch: number, roll: number) {
-    this.latestOrientation = { heading, pitch, roll };
+  private applyTransformRad(heading: number, pitch: number, roll: number) {
+    this.latestOrientationRad = { heading, pitch, roll };
     this.applyModelRotation();
     this.redrawCompass();
   }
@@ -183,15 +196,68 @@ export class ControlCompass extends CoreElement {
       return;
     }
 
-    const { heading, pitch, roll } = this.latestOrientation;
-    this.headingGroup.rotation.z = CesiumMath.toRadians(heading);
-    this.pitchGroup.rotation.x = -CesiumMath.toRadians(90 + pitch);
-    this.rollGroup.rotation.z = CesiumMath.toRadians(roll);
+    const { heading: rawHeadingRad, pitch, roll } = this.latestOrientationRad;
+    this.advanceSafeHeading(rawHeadingRad, pitch);
+
+    this.headingGroup.rotation.z = this.safeHeadingRad;
+    this.pitchGroup.rotation.x = -(Math.PI / 2 + pitch);
+    this.rollGroup.rotation.z = roll;
+  }
+
+  /**
+   * Advances safeHeadingRad by the shortest-path delta from the previous heading,
+   * but suppresses Cesium's ~180° heading flip that occurs when pitch is near the
+   * ±90° singularity (where heading is undefined and can jump arbitrarily).
+   */
+  private advanceSafeHeading(rawHeadingRad: number, pitch: number): void {
+    if (this.prevRawHeadingRad === null) {
+      // First call: seed both trackers with the current heading.
+      this.safeHeadingRad = rawHeadingRad;
+      // Still advance prevRawHeadingRad so a persistent Cesium-side flipped heading
+      // does not cause the same artifact to be reprocessed every frame.
+      this.prevRawHeadingRad = rawHeadingRad;
+      return;
+    }
+
+    const delta = CesiumMath.negativePiToPi(
+      rawHeadingRad - this.prevRawHeadingRad,
+    );
+    this.prevRawHeadingRad = rawHeadingRad;
+
+    const isNearVertical =
+      Math.abs(Math.abs(pitch) - Math.PI / 2) <
+      ControlCompass.PITCH_SINGULARITY_ZONE;
+    const isFlipArtifact =
+      Math.abs(Math.abs(delta) - Math.PI) <
+      ControlCompass.HEADING_FLIP_TOLERANCE;
+
+    if (isNearVertical && isFlipArtifact) {
+      return; // suppress the singularity artifact, carry safeHeadingRad forward unchanged
+    }
+
+    this.safeHeadingRad = CesiumMath.negativePiToPi(
+      this.safeHeadingRad + delta,
+    );
   }
 
   private destroyThreeScene() {
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
+
+    // Traverse the scene and dispose all GPU-side resources before dropping refs.
+    this.scene3d?.traverse((object) => {
+      if ('geometry' in object && object.geometry instanceof BufferGeometry) {
+        object.geometry.dispose();
+      }
+      if ('material' in object) {
+        const mat = (object as { material: Material | Material[] }).material;
+        if (Array.isArray(mat)) {
+          mat.forEach((m) => m.dispose());
+        } else {
+          mat?.dispose();
+        }
+      }
+    });
 
     this.renderer?.dispose();
     this.renderer = null;
@@ -215,17 +281,36 @@ export class ControlCompass extends CoreElement {
     this.renderer.render(this.scene3d, this.camera3d);
   }
 
+  private hasSameOrientation(
+    heading: number,
+    pitch: number,
+    roll: number,
+  ): boolean {
+    return (
+      Math.abs(heading - this.latestOrientationRad.heading) <
+        ControlCompass.ORIENTATION_EPSILON &&
+      Math.abs(pitch - this.latestOrientationRad.pitch) <
+        ControlCompass.ORIENTATION_EPSILON &&
+      Math.abs(roll - this.latestOrientationRad.roll) <
+        ControlCompass.ORIENTATION_EPSILON
+    );
+  }
+
   private readonly handleCameraChange = () => {
     if (this.viewer === null) {
       return;
     }
 
     const { heading, pitch, roll } = this.viewer.camera;
-    this.applyTransform(
-      CesiumMath.toDegrees(heading),
-      CesiumMath.toDegrees(pitch),
-      CesiumMath.toDegrees(roll),
-    );
+
+    // Cesium fires postRender every frame even when the camera is stationary.
+    // Skip all work (rotation math + GPU redraw) if nothing has changed.
+    if (this.hasSameOrientation(heading, pitch, roll)) {
+      return;
+    }
+
+    // Cesium's camera angles are already in radians — no conversion needed.
+    this.applyTransformRad(heading, pitch, roll);
   };
 
   private readonly toggle = () => {
