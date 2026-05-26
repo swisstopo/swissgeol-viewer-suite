@@ -123,9 +123,9 @@ export class ControlCompass extends CoreElement {
     this.headingGroup = new Group();
     this.pitchGroup = new Group();
     this.rollGroup = new Group();
-    this.headingGroup.add(this.pitchGroup);
-    this.pitchGroup.add(this.rollGroup);
-    this.scene3d.add(this.headingGroup);
+    this.pitchGroup.add(this.headingGroup);
+    this.headingGroup.add(this.rollGroup);
+    this.scene3d.add(this.pitchGroup);
 
     this.resizeObserver = new ResizeObserver(this.resizeRenderer);
     this.resizeObserver.observe(this);
