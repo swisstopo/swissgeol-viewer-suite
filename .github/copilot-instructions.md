@@ -72,6 +72,7 @@ Layers are defined in **JSON5** files with a hierarchical include system. `layer
 Layer types: `Wmts`, `Tiles3d`, `Voxel`, `Tiff`, `Earthquakes`, `GeoJson`, `Kml`.
 
 The info box config uses a `source` discriminator:
+
 - `{ source: 'api3.geo.admin.ch' }` — legend fetched from geo.admin.ch
 - `{ source: 'custom', legend_url?, information? }` — custom content with optional `{ key, url }` link objects
 
@@ -94,9 +95,11 @@ Features self-register their custom elements via side-effect imports in `*.modul
 ### Barrel Exports
 
 Each feature re-exports its public API through `index.ts` barrel files:
+
 ```
 features/layer/index.ts → features/layer/models/index.ts → features/layer/models/layer.model.ts
 ```
+
 Import from the feature root (e.g., `import { LayerService } from 'src/features/layer'`), not from internal paths.
 
 ### Path Aliases
@@ -105,11 +108,12 @@ TypeScript and Vite both resolve `src/*` to `ui/src/*`. Use `import { ... } from
 
 ### CSS / Styling
 
-New components use Lit's `static readonly styles = css\`...\`` with Shadow DOM scoping. Shared design tokens are in `ui/src/styles/theme.ts` (provides `applyTypography()`, `applyEffect()`, `applyTransition()`, `hostStyles`). Global CSS and Fomantic UI are in `ui/src/styles/`.
+New components use Lit's `static readonly styles = css\`...\``with Shadow DOM scoping. Shared design tokens are in`ui/src/styles/theme.ts`(provides`applyTypography()`, `applyEffect()`, `applyTransition()`, `hostStyles`). Global CSS and Fomantic UI are in `ui/src/styles/`.
 
 ### ESLint: Class Member Ordering
 
 The ESLint config enforces a specific order for Lit element class members:
+
 1. Decorated properties/accessors (`@property`, `@state`, `@consume`, `@query`)
 2. Constructor
 3. Lifecycle methods and other methods
