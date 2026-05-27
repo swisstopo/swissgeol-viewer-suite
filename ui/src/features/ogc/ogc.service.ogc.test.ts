@@ -105,6 +105,7 @@ import { existsSync } from 'fs';
  */
 
 const ERROR_FILE_NAME = 'stac@swisstopo_error.txt';
+const shouldDeleteFilesAfterTests = false;
 
 describe('OgcService - Real API Integration Tests', () => {
   let service: OgcService;
@@ -135,10 +136,10 @@ describe('OgcService - Real API Integration Tests', () => {
 
     // Clean up temp directory
     const tempDir = join(process.cwd(), 'temp-ogc-tests');
-    if (existsSync(tempDir)) {
+    if (shouldDeleteFilesAfterTests && existsSync(tempDir)) {
       try {
-        // await rm(tempDir, { recursive: true, force: true });
-        // console.log('  [Cleanup] Removed temp directory');
+        await rm(tempDir, { recursive: true, force: true });
+        console.log('  [Cleanup] Removed temp directory');
       } catch (error) {
         console.warn('  [Cleanup] Failed to remove temp directory:', error);
       }
