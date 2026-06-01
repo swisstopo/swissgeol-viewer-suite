@@ -90,12 +90,6 @@ export const SWISSTOPO_IT_HIGHLIGHT_COLOR = Color.fromCssColorString(
 );
 export const OBJECT_ZOOMTO_RADIUS = 500;
 
-const hostname = document.location.hostname;
-export const PROJECT_ASSET_URL =
-  hostname === 'localhost'
-    ? 'http://localhost:9000/ngmpub-project-files-local/assets/saved/'
-    : `https://project-files.${hostname}/assets/saved/`;
-
 // Size in MB. DefaultBodyLimit should be updated on backend after this value update
 export const PROJECT_ASSET_MAX_SIZE = 2;
 
@@ -240,6 +234,6 @@ const COGNITO_ENV_BY_PAGE_HOST = {
   'viewer.swissgeol.ch': 'prod',
 };
 
-export const COGNITO_VARIABLES =
-  _COGNITO_VARIABLES[COGNITO_ENV_BY_PAGE_HOST[window.location.host] ?? 'dev'] ??
+export const getCognitoVariables = (host: string) =>
+  _COGNITO_VARIABLES[COGNITO_ENV_BY_PAGE_HOST[host] ?? 'dev'] ??
   _COGNITO_VARIABLES['dev'];
