@@ -1243,6 +1243,25 @@
       order_of_properties: 'city_berne',
       geocat_id: '372c25ac-fb8a-44ee-8f81-6427939f6353',
     },
+    // Mont-Terri Rock lab
+    {
+      type: 'Tiles3d',
+      id: 'rocklab_mont-terri',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4841426,
+      },
+      //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+      info_box: {
+        source: 'custom',
+        information: {
+          contact: {
+            key: 'contact_value_rocklab_mont-terri',
+            url: 'contact_url_rocklab_mont-terri',
+          },
+        },
+      },
+    },
     // Tunnel
     {
       type: 'Tiles3d',

@@ -189,6 +189,7 @@
     "top_uma": "Tetto Malm superiore",
     "top_umm": "Tetto della Molassa marina inferiore",
     "top_usm": "Tetto della Molassa d'acqua dolce inferiore",
+    "rocklab_mont-terri": "Laboratorio sotterreneo Mont-Terri",
     "tunnel_railway": "Galleria ferroviaria",
     "tunnel_road": "Galleria stradale",
     "tunnel_water": "Galleria idrica sotterranea",
@@ -511,8 +512,8 @@
       "download_01": "Download (.movz)",
       "download_movz_value_j3d_horizon": "Download (.movz)",
       "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
-      "download_02": "Download (.gocad)",
-      "download_gocad_value_j3d_horizon": "Download (.gocad)",
+      "download_02": "Download (.ts)",
+      "download_gocad_value_j3d_horizon": "Download (.ts)",
       "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
       "dataDate": "Stato d'attualità",
       "description_sa3d_HL_profiles_01": "Rapporto del modello (ENG)",
@@ -527,10 +528,12 @@
       "download_movz_value": "Scarica (.movz)",
       "download_movz_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
       "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
-      "download_gocad_value": "Scarica (.gocad)",
+      "download_gocad_value": "Scarica (.ts)",
       "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_GOCAD_20260317.zip",
       "download_shp_value": "Scarica (.shp)",
-      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Profiles_SHP_20260318.zip"
+      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Profiles_SHP_20260318.zip",
+      "contact_url_rocklab_mont-terri": "https://www.mont-terri.ch/fr/contacts",
+      "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contacts"
     },
     "layers": {
       "j3d_horizon": {
@@ -616,6 +619,12 @@
         "description": "Il modello geologico 3D SAM è una rappresentazione armonizzata delle principali unità litostratigrafiche e strutturali del sottosuolo del dominio tettonico della Molassa subalpina, sviluppata nel progetto swissAlps3D nell'ambito del programma National Geological Model (NGM). Il modello comprende profili di riferimento, superfici di faglia e orizzonti litostratigrafici (limiti geologici). Il suo quadro tettono-stratigrafico si basa sulla Carta tettonica della Svizzera (swisstopo, 2024). I dati di superficie sono armonizzati da dati vettoriali GeoCover, carte GA25 e carte geologiche pubblicate. Nel sottosuolo integra sezioni geologiche, dati di perforazione e dataset geofisici con diversa densità spaziale, combinati tramite un'interpretazione cinematica coerente per garantire un modello geologico 3D consistente. Ulteriori dettagli sono forniti nel rapporto del modello associato e nelle pubblicazioni.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
+      },
+      "rocklab_mont-terri": {
+        "title": "Laboratorio sotterreneo Mont-Terri",
+        "description": "3Modello 3D delle gallerie del Laboratorio Roccioso di Mont-Terri. Il Progetto Mont Terri è un progetto di ricerca internazionale per la caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (Argilla Opalinus).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
       }
     }
   }

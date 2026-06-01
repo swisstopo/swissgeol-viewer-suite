@@ -188,6 +188,7 @@
     "top_uma": "Top Upper Malm",
     "top_umm": "Top Lower Marine Molasse",
     "top_usm": "Top Lower Freshwater Molasse",
+    "rocklab_mont-terri": "Mont-Terri Rock Lab",
     "tunnel_railway": "Railway tunnel",
     "tunnel_road": "Road tunnel",
     "tunnel_water": "Underground water tunnel",
@@ -496,13 +497,15 @@
       "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
       "download_movz_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
       "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
-      "download_02": "Download (.gocad)",
-      "download_gocad_value": "Download (.gocad)",
+      "download_02": "Download (.ts)",
+      "download_gocad_value": "Download (.ts)",
       "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
       "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_GOCAD_20260317.zip",
       "download_shp_value": "Download (.shp)",
       "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Profiles_SHP_20260318.zip",
-      "dataDate": "Data status"
+      "dataDate": "Data status",
+      "contact_url_rocklab_mont-terri": "https://www.mont-terri.ch/en/contact",
+      "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contact"
     },
     "layers": {
       "j3d_horizon": {
@@ -588,6 +591,12 @@
         "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissAlps3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
+      },
+      "rocklab_mont-terri": {
+        "title": "Mont-Terri Rock Laboratory",
+        "description": "3D model of the gallaries of the Mont-Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay)",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
       }
     }
   }
