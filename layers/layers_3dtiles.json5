@@ -1232,6 +1232,74 @@
       },
     },
     // =================================================================
+    // WP - Profiles
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_WP_profiles_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4670818, // <=== CHANGE
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: {
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_SAM_profiles_01: {
+            key: 'description_value_sa3d_SAM_profiles_01',
+            url: 'description_url_sa3d_SAM_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
+    },
+    // WP - Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_WP_faults_01',
+      opacity: 0.18,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662997, // <=== CHANGE
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: {
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_SAM_profiles_01: {
+            key: 'description_value_sa3d_SAM_profiles_01',
+            url: 'description_url_sa3d_SAM_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
+    },
+    // WP - Horizons
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_WP_horizon_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4662977, // <=== CHANGE
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: {
+          contact: { key: 'contact_value', url: 'contact_url' },
+          description_sa3d_PR_profiles_01: {
+            key: 'description_value_sa3d_PR_profiles_01',
+            url: 'description_url_sa3d_PR_profiles_01',
+          },
+          dataDate: '28.04.2026',
+        },
+      },
+    },
+    // =================================================================
     // City of Berne
     {
       type: 'Tiles3d',
