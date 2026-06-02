@@ -121,7 +121,7 @@ export class ControlCompass extends CoreElement {
       antialias: true,
       alpha: true,
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio((window.devicePixelRatio || 1) * 2);
 
     this.scene3d.add(new AmbientLight(0xffffff, 1.1));
 
@@ -146,7 +146,7 @@ export class ControlCompass extends CoreElement {
     this.resizeRenderer();
 
     const loader = new GLTFLoader();
-    loader.load('/images/compass.gltf', (gltf: GLTF) => {
+    loader.load('/3D-models/compass.gltf', (gltf: GLTF) => {
       if (this.rollGroup === null) {
         return;
       }
@@ -155,6 +155,8 @@ export class ControlCompass extends CoreElement {
       const box = new Box3().setFromObject(model);
       const center = box.getCenter(new Vector3());
       model.position.sub(center);
+      model.position.y -= 0.1;
+      model.position.x += 0.05;
 
       // The imported GLTF is authored with a different up/forward basis.
       // Rebase once so the default top-down camera shows the top face and north up.
@@ -162,7 +164,7 @@ export class ControlCompass extends CoreElement {
 
       const size = box.getSize(new Vector3());
       const maxSize = Math.max(size.x, size.y, size.z, 1);
-      model.scale.multiplyScalar(2.4 / maxSize);
+      model.scale.multiplyScalar(2 / maxSize);
 
       this.rollGroup.add(model);
       this.applyModelRotation();
