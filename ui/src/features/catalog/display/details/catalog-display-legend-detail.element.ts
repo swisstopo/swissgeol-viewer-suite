@@ -131,7 +131,9 @@ export class CatalogDisplayInfoBox extends CoreElement {
               </td>
               <td
                 class="info-value"
-                title=${typeof value === 'string' ? i18next.t(value) : nothing}
+                title=${typeof value === 'string'
+                  ? i18next.t(value)
+                  : i18next.t(`layers:info_box.information.${value.key}`)}
               >
                 ${this.renderInformationValue(value)}
               </td>
