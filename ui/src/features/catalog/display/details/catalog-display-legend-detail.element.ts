@@ -123,15 +123,12 @@ export class CatalogDisplayInfoBox extends CoreElement {
         ${Object.entries(infoBox.information).map(
           ([key, value]) => html`
             <tr>
-              <td
-                class="info-key"
-                title=${i18next.t(`layers:info_box.information.${key}`)}
-              >
-                ${i18next.t(`layers:info_box.information.${key}`)}
+              <td class="info-key" title=${this.getInformationKeyTitle(key)}>
+                ${this.getInformationKeyTitle(key)}
               </td>
               <td
                 class="info-value"
-                title=${typeof value === 'string' ? i18next.t(value) : nothing}
+                title=${this.getInformationValueContent(value).label}
               >
                 ${this.renderInformationValue(value)}
               </td>
@@ -142,9 +139,15 @@ export class CatalogDisplayInfoBox extends CoreElement {
     `;
   };
 
-  private readonly renderInformationValue = (value: InformationValue) => {
+  private readonly getInformationKeyTitle = (key: string): string => {
+    return i18next.t(`layers:info_box.information.${key}`);
+  };
+
+  private readonly getInformationValueContent = (
+    value: InformationValue,
+  ): { url: string | null; label: string } => {
     if (typeof value === 'string') {
-      return i18next.t(value);
+      return { url: null, label: i18next.t(value) };
     }
 
     let url = value.url;
@@ -153,6 +156,11 @@ export class CatalogDisplayInfoBox extends CoreElement {
     }
 
     const label = i18next.t(`layers:info_box.information.${value.key}`);
+    return { url, label };
+  };
+
+  private readonly renderInformationValue = (value: InformationValue) => {
+    const { url, label } = this.getInformationValueContent(value);
     return html`<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
   };
 
