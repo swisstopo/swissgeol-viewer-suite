@@ -125,15 +125,13 @@ export class CatalogDisplayInfoBox extends CoreElement {
             <tr>
               <td
                 class="info-key"
-                @mouseenter=${this.updateOverflowTooltip}
-                @focusin=${this.updateOverflowTooltip}
+                title=${i18next.t(`layers:info_box.information.${key}`)}
               >
                 ${i18next.t(`layers:info_box.information.${key}`)}
               </td>
               <td
                 class="info-value"
-                @mouseenter=${this.updateOverflowTooltip}
-                @focusin=${this.updateOverflowTooltip}
+                title=${typeof value === 'string' ? i18next.t(value) : nothing}
               >
                 ${this.renderInformationValue(value)}
               </td>
@@ -142,24 +140,6 @@ export class CatalogDisplayInfoBox extends CoreElement {
         )}
       </table>
     `;
-  };
-
-  private readonly updateOverflowTooltip = (event: Event) => {
-    if (!(event.currentTarget instanceof HTMLElement)) {
-      return;
-    }
-
-    const valueCell = event.currentTarget;
-    const tooltipTarget =
-      valueCell.querySelector<HTMLElement>('a') ?? valueCell;
-    const text = tooltipTarget.textContent?.trim() ?? '';
-
-    if (text.length > 0) {
-      tooltipTarget.title = text;
-      return;
-    }
-
-    tooltipTarget.removeAttribute('title');
   };
 
   private readonly renderInformationValue = (value: InformationValue) => {
