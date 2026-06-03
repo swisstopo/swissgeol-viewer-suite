@@ -161,6 +161,9 @@ export class CatalogDisplayInfoBox extends CoreElement {
 
   private readonly renderInformationValue = (value: InformationValue) => {
     const { url, label } = this.getInformationValueContent(value);
+    if (!url) {
+      return html`${label}`;
+    }
     return html`<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
   };
 
