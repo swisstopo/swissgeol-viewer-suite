@@ -153,9 +153,8 @@ export class CatalogDisplayInfoBox extends CoreElement {
     const tooltipTarget =
       valueCell.querySelector<HTMLElement>('a') ?? valueCell;
     const text = tooltipTarget.textContent?.trim() ?? '';
-    const isTruncated = tooltipTarget.scrollWidth > tooltipTarget.clientWidth;
 
-    if (isTruncated && text.length > 0) {
+    if (text.length > 0) {
       tooltipTarget.title = text;
       return;
     }
