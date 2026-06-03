@@ -128,7 +128,7 @@ export class CatalogDisplayInfoBox extends CoreElement {
               </td>
               <td
                 class="info-value"
-                title=${this.getInformationValueTitle(value)}
+                title=${this.getInformationValueContent(value).label}
               >
                 ${this.renderInformationValue(value)}
               </td>
@@ -143,18 +143,11 @@ export class CatalogDisplayInfoBox extends CoreElement {
     return i18next.t(`layers:info_box.information.${key}`);
   };
 
-  private readonly getInformationValueTitle = (
+  private readonly getInformationValueContent = (
     value: InformationValue,
-  ): string => {
+  ): { url: string | null; label: string } => {
     if (typeof value === 'string') {
-      return i18next.t(value);
-    }
-    return i18next.t(`layers:info_box.information.${value.key}`);
-  };
-
-  private readonly renderInformationValue = (value: InformationValue) => {
-    if (typeof value === 'string') {
-      return this.getInformationValueTitle(value);
+      return { url: null, label: i18next.t(value) };
     }
 
     let url = value.url;
@@ -163,6 +156,11 @@ export class CatalogDisplayInfoBox extends CoreElement {
     }
 
     const label = i18next.t(`layers:info_box.information.${value.key}`);
+    return { url, label };
+  };
+
+  private readonly renderInformationValue = (value: InformationValue) => {
+    const { url, label } = this.getInformationValueContent(value);
     return html`<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
   };
 
