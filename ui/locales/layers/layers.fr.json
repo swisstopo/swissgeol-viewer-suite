@@ -507,13 +507,13 @@
       "contact_value": "swissgeol@swisstopo.ch",
       "description": "Description du modèle",
       "description_value": "Lien vers la description du modèle",
-      "description_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Documentation_2025_FR.pdf",
+      "description_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/swissJURA3D_MA1_Documentation_2025_FR.pdf",
       "download_01": "Download (.movz)",
       "download_movz_value_j3d_horizon": "Download (.movz)",
-      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
+      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_MOVZ_20260316.zip",
       "download_02": "Download (.gocad)",
       "download_gocad_value_j3d_horizon": "Download (.gocad)",
-      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
+      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_GOCAD_20260318.zip",
       "dataDate": "État d'actualité",
       "description_sa3d_HL_profiles_01": "Rapport du modèle (ENG)",
       "description_value_sa3d_HL_profiles_01": "Helvetic3D_Interim_Report_M1",
@@ -525,12 +525,12 @@
       "description_value_sa3d_SAM_profiles_01": "SubalpineMolasse3D_Interim_Report_M1_M2",
       "description_url_sa3d_SAM_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SubalpineMolasse3D_Interim_Report_M1_M2.pdf",
       "download_movz_value": "Télécharger (.movz)",
-      "download_movz_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
-      "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
+      "download_movz_url_j3d_faults": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Faults_MOVZ_20260316.zip",
+      "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_MOVZ_20260316.zip",
       "download_gocad_value": "Télécharger (.gocad)",
-      "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_GOCAD_20260317.zip",
+      "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Faults_GOCAD_20260318.zip",
       "download_shp_value": "Télécharger (.shp)",
-      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Profiles_SHP_20260318.zip"
+      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_SHP_20260318.zip"
     },
     "layers": {
       "j3d_horizon": {
