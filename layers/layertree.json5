@@ -59,6 +59,7 @@
           children: [
             'ch.swisstopo.geologie-geologischer_atlas_profile',
             'ga25Profiles_test',
+            'ga25Profiles_test_02',
             'geomol_cs',
             'j3d_profiles',
             'aar3d_aaremassive_cs',
@@ -239,7 +240,7 @@
                         // 06 - Horizons WP
                         {
                           id: 'sa3d_Horizons_WP',
-                          children: ['sa3d_WP_horizon_01'],
+                          children: ['sa3d_WP_horizons_01'],
                         },
                       ],
                     },

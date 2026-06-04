@@ -129,6 +129,7 @@
     "earthquakes_mag_3": "Earthquakes - Magnitude > 3",
     "earthquakes_recent": "Earthquakes - last 90 days",
     "ga25Profiles_test": "GA25 profiles TEST",
+    "ga25Profiles_test": "GA25 profiles TEST 2026-06-02",
     "geomol_cs": "Cross-sections GeoMol",
     "geomol_faults": "Fault zones Midlands",
     "geoquat_aaretal_cs": "Cross-sections GeoQuat Aaretal",
@@ -147,6 +148,9 @@
     "sa3d_SAM_faults_01": "SAM - M1-2 Faults",
     "sa3d_SAM_profiles_01": "SAM - M1-2 All Profiles",
     "sa3d_SAM_thrust_faults_01": "SAM - M1-2 Thrust Faults",
+    "sa3d_WP_profiles_01":"WP - M1 Profiles",
+    "sa3d_WP_faults_01":"WP - M1 Faults",
+    "sa3d_WP_horizons_01":"WP - M1 Horizons",
     "seismic_2d_2023_23SIG_A_001": "23SIG_A_001",
     "seismic_2d_2023_23SIG_A_002": "23SIG_A_002",
     "seismic_2d_2023_23SIG_A_003": "23SIG_A_003",
@@ -246,13 +250,16 @@
     "sa3d_Faults_HL": "Faults",
     "sa3d_Faults_PR": "Faults",
     "sa3d_Faults_SAM": "Faults",
+    "sa3d_Faults_WP":"Faults",
     "sa3d_HL": "Helvetic (HL)",
     "sa3d_Horizons_HL": "Horizons",
     "sa3d_Horizons_PR": "Horizons",
+    "sa3d_Horizons_WP":"Horizons",
     "sa3d_PR": "Prealps (PR)",
     "sa3d_Profiles_HL": "Profiles",
     "sa3d_Profiles_PR": "Profiles",
     "sa3d_Profiles_SAM": "Profiles",
+    "sa3d_Profiles_WP":"Profiles",
     "sa3d_SAM": "Subalpine Molasse (SAM)",
     "sa3d_aar-massif": "Aar Massif",
     "sa3d_WP": "West Penninic (WP)",
@@ -492,6 +499,8 @@
       "description_sa3d_SAM_profiles_01": "Model report (ENG)",
       "description_value_sa3d_SAM_profiles_01": "SubalpineMolasse3D_Interim_Report_M1_M2",
       "description_url_sa3d_SAM_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SubalpineMolasse3D_Interim_Report_M1_M2.pdf",
+      "description_value_sa3d_WP_profiles_01": "West_Penninic_Interim_Report_M1_M2",
+      "description_url_sa3d_WP_profiles_01":"https://download.swissgeol.ch/docu-data/placeholder/placeholder_text.pdf",
       "download_01": "Download (.movz)",
       "download_movz_value": "Download (.movz)",
       "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
@@ -589,6 +598,24 @@
         "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissAlps3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
+      },
+      "sa3d_WP_profiles_01": {
+        "title": "West Penninic 3D (WP) – Milestone 1 - 3D geological model of the Swiss Alps",
+        "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the West Penninic tectonic domain subsurface, ...",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "sa3d_WP_faults_01": {
+        "title": "West Penninic 3D (WP) – Milestone 1 - 3D geological model of the Swiss Alps",
+        "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the West Penninic tectonic domain subsurface, ...",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "sa3d_WP_horizons_01": {
+        "title": "West Penninic 3D (WP) – Milestone 1 - 3D geological model of the Swiss Alps",
+        "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the West Penninic tectonic domain subsurface, ...",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
       }
     }
   }

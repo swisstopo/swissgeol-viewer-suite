@@ -68,6 +68,17 @@
         env: ['local', 'dev'],
       },
     },
+    {
+      type: 'Tiles3d',
+      id: 'ga25Profiles_test_02',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4872440,
+      },
+      access: {
+        env: ['local', 'dev'],
+      },
+    },
     // Topic Boreholes
     // Boreholes 2021 - Public
     {
@@ -1247,10 +1258,10 @@
         information: {
           contact: { key: 'contact_value', url: 'contact_url' },
           description_sa3d_SAM_profiles_01: {
-            key: 'description_value_sa3d_SAM_profiles_01',
-            url: 'description_url_sa3d_SAM_profiles_01',
+            key: 'description_value_sa3d_WP_profiles_01',
+            url: 'description_url_sa3d_WP_profiles_01',
           },
-          dataDate: '28.04.2026',
+          dataDate: 'dd.mm.yyyy',
         },
       },
     },
@@ -1270,17 +1281,17 @@
         information: {
           contact: { key: 'contact_value', url: 'contact_url' },
           description_sa3d_SAM_profiles_01: {
-            key: 'description_value_sa3d_SAM_profiles_01',
-            url: 'description_url_sa3d_SAM_profiles_01',
+            key: 'description_value_sa3d_WP_profiles_01',
+            url: 'description_url_sa3d_WP_profiles_01',
           },
-          dataDate: '28.04.2026',
+          dataDate: 'dd.mm.yyyy',
         },
       },
     },
     // WP - Horizons
     {
       type: 'Tiles3d',
-      id: 'sa3d_WP_horizon_01',
+      id: 'sa3d_WP_horizons_01',
       source: {
         type: 'CesiumIon',
         asset_id: 4662977, // <=== CHANGE
@@ -1292,10 +1303,10 @@
         information: {
           contact: { key: 'contact_value', url: 'contact_url' },
           description_sa3d_PR_profiles_01: {
-            key: 'description_value_sa3d_PR_profiles_01',
-            url: 'description_url_sa3d_PR_profiles_01',
+            key: 'description_value_sa3d_WP_profiles_01',
+            url: 'description_url_sa3d_WP_profiles_01',
           },
-          dataDate: '28.04.2026',
+          dataDate: 'dd.mm.yyyy',
         },
       },
     },
