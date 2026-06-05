@@ -101,15 +101,25 @@ pub enum InfoBox {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         legend_url: Option<String>,
 
-        /// Key-value pairs displayed in the info box.
-        /// The key is a translation key for the label; the value is one of:
+        /// Ordered entries displayed in the info box.
+        /// `label_key` is a translation key for the row label; `value` is one of:
         ///   - a plain string.
         ///   - a `{ key, url }` object, rendered as a link whose label is translated from `key`. The url can be:
         ///      - a URL string (starting with `http://` or `https://`)
         ///      - a plain string used as a translation key to resolve a localized url.
-        #[serde(default, skip_serializing_if = "HashMap::is_empty")]
-        information: HashMap<String, InformationValue>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        information: Vec<InformationEntry>,
     },
+}
+
+/// Information entries displayed in the info box.
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase", deserialize = "snake_case"))]
+pub struct InformationEntry {
+    #[serde(alias = "key")]
+    pub label_key: String,
+    pub value: InformationValue,
 }
 
 /// A value in the info box's information table.

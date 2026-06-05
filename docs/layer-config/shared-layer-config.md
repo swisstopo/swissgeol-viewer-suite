@@ -45,8 +45,9 @@ independent of their layer type.
   // Two modes are supported:
   // - `api3.geo.admin.ch`: The legend is fetched as HTML from api3.geo.admin.ch via the layer's id.
   // - `custom`: Displays translated info text (key: `layers:infoBox.{layerId}`),
-  //   an optional URL, and optional key-value `information` pairs.
-  //   The information value can be:
+  //   an optional URL, and optional `information` entries.
+  //   `information` is an ordered array of `{ label_key, value }` entries.
+  //   The information `value` can be:
   //   - a plain string.
   //   - a `{ key, url }` object, rendered as a link whose label is translated from `key`. The url can be:
   //      - a URL string (starting with `http://` or `https://`)
@@ -54,7 +55,7 @@ independent of their layer type.
   //
   // If left out, no info box will be available for the layer.
   //
-  // @type { source: 'api3.geo.admin.ch' } | { source: 'custom', legend_url?: string, information?: { [key: string]: string | { key: string, url: string } } } | null
+  // @type { source: 'api3.geo.admin.ch' } | { source: 'custom', legend_url?: string, information?: Array<{ label_key: string, value: string | { key: string, url: string } }> } | null
   // @default null
   info_box: null,
 
