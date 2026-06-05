@@ -10,6 +10,9 @@ import i18next from 'i18next';
 import { Id, makeId } from 'src/models/id.model';
 import { BehaviorSubject, filter, map, Observable, switchMap } from 'rxjs';
 
+const DEFAULT_WMS_SERVICE_URL = 'https://wms.geo.admin.ch/';
+const DEFAULT_WMTS_SERVICE_URL = 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml';
+
 export class WmtsService extends BaseService {
   private readonly _layers$ = new BehaviorSubject(
     new Map<Id<WmtsLayer>, WmtsLayer>(),
@@ -61,7 +64,7 @@ export class WmtsService extends BaseService {
 
   private async fetchWmsCapabilities(): Promise<WmtsLayer[]> {
     const xml = await this.fetchCapabilitiesXml({
-      host: 'https://wms.geo.admin.ch/',
+      host: DEFAULT_WMS_SERVICE_URL,
       params: {
         SERVICE: 'WMS',
         REQUEST: 'GetCapabilities',
@@ -101,6 +104,7 @@ export class WmtsService extends BaseService {
         id: makeId(`${layerName}`),
         label: layerTitle ?? null,
         source: WmtsLayerSource.WMS,
+        serviceUrl: null,
         opacity: 1,
         canUpdateOpacity: true,
         isVisible: true,
@@ -120,7 +124,7 @@ export class WmtsService extends BaseService {
 
   private async fetchWmtsCapabilities(): Promise<WmtsLayer[]> {
     const xml = await this.fetchCapabilitiesXml({
-      host: 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml',
+      host: DEFAULT_WMTS_SERVICE_URL,
       params: {
         lang: i18next.language,
       },
@@ -166,6 +170,7 @@ export class WmtsService extends BaseService {
           type: LayerType.Wmts,
           id: makeId(`${layerName}`),
           source: WmtsLayerSource.WMTS,
+          serviceUrl: null,
           label: titles?.[0]?.textContent ?? layerName,
           opacity: 1,
           canUpdateOpacity: true,
