@@ -448,19 +448,31 @@
       //order_of_properties: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description: { key: 'description_value', url: 'description_url' },
-          download_01: {
-            key: 'download_movz_value',
-            url: 'download_movz_url_j3d_horizon',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          download_02: {
-            key: 'download_gocad_value',
-            url: 'download_gocad_url_j3d_horizon',
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
           },
-          dataDate: '18.03.2026',
-        },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value',
+              url: 'download_movz_url_j3d_horizon',
+            },
+          },
+          {
+            key: 'download_02',
+            value: {
+              key: 'download_gocad_value',
+              url: 'download_gocad_url_j3d_horizon',
+            },
+          },
+          { key: 'dataDate', value: '18.03.2026' },
+        ],
       },
     },
     // Faults
@@ -474,19 +486,31 @@
       //order_of_properties: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description: { key: 'description_value', url: 'description_url' },
-          download_01: {
-            key: 'download_movz_value',
-            url: 'download_movz_url_j3d_faults',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          download_02: {
-            key: 'download_gocad_value',
-            url: 'download_gocad_url_j3d_faults',
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
           },
-          dataDate: '18.03.2026',
-        },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value',
+              url: 'download_movz_url_j3d_faults',
+            },
+          },
+          {
+            key: 'download_02',
+            value: {
+              key: 'download_gocad_value',
+              url: 'download_gocad_url_j3d_faults',
+            },
+          },
+          { key: 'dataDate', value: '18.03.2026' },
+        ],
       },
     },
     // Cross-section (profile)
@@ -500,19 +524,31 @@
       //order_of_properties: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description: { key: 'description_value', url: 'description_url' },
-          download_01: {
-            key: 'download_movz_value',
-            url: 'download_movz_url_j3d_profiles',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          download_02: {
-            key: 'download_shp_value',
-            url: 'download_shp_url_j3d_profiles',
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
           },
-          dataDate: '18.03.2026',
-        },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value',
+              url: 'download_movz_url_j3d_profiles',
+            },
+          },
+          {
+            key: 'download_02',
+            value: {
+              key: 'download_shp_value',
+              url: 'download_shp_url_j3d_profiles',
+            },
+          },
+          { key: 'dataDate', value: '18.03.2026' },
+        ],
       },
     },
     // GeoMol
