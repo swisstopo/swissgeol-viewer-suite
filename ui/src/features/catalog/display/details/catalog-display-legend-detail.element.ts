@@ -122,10 +122,13 @@ export class CatalogDisplayInfoBox extends CoreElement {
     return html`
       <table class="info-table">
         ${informationEntries.map(
-          ({ key, value }) => html`
+          ({ labelKey, value }) => html`
             <tr>
-              <td class="info-key" title=${this.getInformationKeyTitle(key)}>
-                ${this.getInformationKeyTitle(key)}
+              <td
+                class="info-key"
+                title=${this.getInformationKeyTitle(labelKey)}
+              >
+                ${this.getInformationKeyTitle(labelKey)}
               </td>
               <td
                 class="info-value"

@@ -136,7 +136,7 @@ export interface InfoBoxApi3GeoAdminCh {
 export type InformationValue = string | { key: string; url: string };
 
 export interface InformationEntry {
-  key: string;
+  labelKey: string;
   value: InformationValue;
 }
 
