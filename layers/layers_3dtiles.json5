@@ -1031,14 +1031,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: {
-            key: 'description_value_sa3d_HL_profiles_01',
-            url: 'description_url_sa3d_HL_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_HL_profiles_01',
+            value: {
+              key: 'description_value_sa3d_HL_profiles_01',
+              url: 'description_url_sa3d_HL_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // HL - Faults
@@ -1054,14 +1060,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: {
-            key: 'description_value_sa3d_HL_profiles_01',
-            url: 'description_url_sa3d_HL_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_HL_profiles_01',
+            value: {
+              key: 'description_value_sa3d_HL_profiles_01',
+              url: 'description_url_sa3d_HL_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // HL - Horizons - Nappe
@@ -1076,14 +1088,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: {
-            key: 'description_value_sa3d_HL_profiles_01',
-            url: 'description_url_sa3d_HL_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_HL_profiles_01',
+            value: {
+              key: 'description_value_sa3d_HL_profiles_01',
+              url: 'description_url_sa3d_HL_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // HL - Horizons - Mesozoic sediments
@@ -1099,14 +1117,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: {
-            key: 'description_value_sa3d_HL_profiles_01',
-            url: 'description_url_sa3d_HL_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_HL_profiles_01',
+            value: {
+              key: 'description_value_sa3d_HL_profiles_01',
+              url: 'description_url_sa3d_HL_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // HL - Horizons - Cristalline basement
@@ -1121,14 +1145,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_HL_profiles_01: {
-            key: 'description_value_sa3d_HL_profiles_01',
-            url: 'description_url_sa3d_HL_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_HL_profiles_01',
+            value: {
+              key: 'description_value_sa3d_HL_profiles_01',
+              url: 'description_url_sa3d_HL_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // =================================================================
@@ -1144,14 +1174,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_PR_profiles_01: {
-            key: 'description_value_sa3d_PR_profiles_01',
-            url: 'description_url_sa3d_PR_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_PR_profiles_01',
+            value: {
+              key: 'description_value_sa3d_PR_profiles_01',
+              url: 'description_url_sa3d_PR_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // PR - Faults
@@ -1167,14 +1203,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_PR_profiles_01: {
-            key: 'description_value_sa3d_PR_profiles_01',
-            url: 'description_url_sa3d_PR_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_PR_profiles_01',
+            value: {
+              key: 'description_value_sa3d_PR_profiles_01',
+              url: 'description_url_sa3d_PR_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // PR - Horizons
@@ -1189,14 +1231,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_PR_profiles_01: {
-            key: 'description_value_sa3d_PR_profiles_01',
-            url: 'description_url_sa3d_PR_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_PR_profiles_01',
+            value: {
+              key: 'description_value_sa3d_PR_profiles_01',
+              url: 'description_url_sa3d_PR_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // =================================================================
@@ -1212,14 +1260,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_SAM_profiles_01: {
-            key: 'description_value_sa3d_SAM_profiles_01',
-            url: 'description_url_sa3d_SAM_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_SAM_profiles_01',
+            value: {
+              key: 'description_value_sa3d_SAM_profiles_01',
+              url: 'description_url_sa3d_SAM_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // SAM - Faults
@@ -1235,14 +1289,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_SAM_profiles_01: {
-            key: 'description_value_sa3d_SAM_profiles_01',
-            url: 'description_url_sa3d_SAM_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_SAM_profiles_01',
+            value: {
+              key: 'description_value_sa3d_SAM_profiles_01',
+              url: 'description_url_sa3d_SAM_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // SAM - Thrust Faults
@@ -1257,14 +1317,20 @@
       //geocat_id: '',
       info_box: {
         source: 'custom',
-        information: {
-          contact: { key: 'contact_value', url: 'contact_url' },
-          description_sa3d_SAM_profiles_01: {
-            key: 'description_value_sa3d_SAM_profiles_01',
-            url: 'description_url_sa3d_SAM_profiles_01',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
           },
-          dataDate: '28.04.2026',
-        },
+          {
+            key: 'description_sa3d_SAM_profiles_01',
+            value: {
+              key: 'description_value_sa3d_SAM_profiles_01',
+              url: 'description_url_sa3d_SAM_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '28.04.2026' },
+        ],
       },
     },
     // =================================================================
@@ -1290,12 +1356,15 @@
       //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
       info_box: {
         source: 'custom',
-        information: {
-          contact: {
-            key: 'contact_value_rocklab_mont-terri',
-            url: 'contact_url_rocklab_mont-terri',
+        information: [
+          {
+            key: 'contact',
+            value: {
+              key: 'contact_value_rocklab_mont-terri',
+              url: 'contact_url_rocklab_mont-terri',
+            },
           },
-        },
+        ],
       },
     },
     // Tunnel
