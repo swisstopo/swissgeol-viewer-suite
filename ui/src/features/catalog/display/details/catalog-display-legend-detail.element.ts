@@ -5,7 +5,12 @@ import { customElement, property, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { CoreElement } from 'src/features/core';
-import { InfoBoxCustom, InformationValue, Layer } from 'src/features/layer';
+import {
+  InfoBoxCustom,
+  InformationEntry,
+  InformationValue,
+  Layer,
+} from 'src/features/layer';
 import { run } from 'src/utils/fn.utils';
 import { Id } from 'src/models/id.model';
 import { LayerService } from 'src/features/layer/layer.service';
@@ -115,13 +120,14 @@ export class CatalogDisplayInfoBox extends CoreElement {
   };
 
   private readonly renderInformation = (infoBox: InfoBoxCustom) => {
-    if (!infoBox.information || Object.keys(infoBox.information).length === 0) {
+    const informationEntries = this.getInformationEntries(infoBox.information);
+    if (informationEntries.length === 0) {
       return nothing;
     }
     return html`
       <table class="info-table">
-        ${Object.entries(infoBox.information).map(
-          ([key, value]) => html`
+        ${informationEntries.map(
+          ({ key, value }) => html`
             <tr>
               <td class="info-key" title=${this.getInformationKeyTitle(key)}>
                 ${this.getInformationKeyTitle(key)}
@@ -137,6 +143,18 @@ export class CatalogDisplayInfoBox extends CoreElement {
         )}
       </table>
     `;
+  };
+
+  private readonly getInformationEntries = (
+    information: InfoBoxCustom['information'],
+  ): InformationEntry[] => {
+    if (information === undefined) {
+      return [];
+    }
+    if (Array.isArray(information)) {
+      return information;
+    }
+    return Object.entries(information).map(([key, value]) => ({ key, value }));
   };
 
   private readonly getInformationKeyTitle = (key: string): string => {

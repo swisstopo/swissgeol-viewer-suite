@@ -9,7 +9,7 @@ import {
   GeoJsonLayer,
   InfoBox,
   InfoBoxCustom,
-  InformationValue,
+  InformationEntry,
   KmlLayer,
   Layer,
   LayerGroup,
@@ -110,10 +110,10 @@ export class LayerApiService extends BaseService {
           if (legendUrl !== null) {
             result.legendUrl = legendUrl;
           }
-          const information: Record<string, InformationValue> | null =
+          const information: InfoBoxCustom['information'] | null =
             infoBoxValue.takeNullable('information');
           if (information !== null) {
-            result.information = information;
+            result.information = this.normalizeInformationEntries(information);
           }
           return result;
         }
@@ -400,6 +400,18 @@ export class LayerApiService extends BaseService {
           type: OgcSourceType.Wms,
         };
     }
+  };
+
+  private readonly normalizeInformationEntries = (
+    information: InfoBoxCustom['information'],
+  ): InformationEntry[] => {
+    if (information === undefined) {
+      return [];
+    }
+    if (Array.isArray(information)) {
+      return information;
+    }
+    return Object.entries(information).map(([key, value]) => ({ key, value }));
   };
 }
 
