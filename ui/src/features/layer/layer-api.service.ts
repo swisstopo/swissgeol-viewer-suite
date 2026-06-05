@@ -400,7 +400,6 @@ export class LayerApiService extends BaseService {
         };
     }
   };
-
 }
 
 type Specific<L extends Layer> = Omit<L, keyof BaseLayer>;

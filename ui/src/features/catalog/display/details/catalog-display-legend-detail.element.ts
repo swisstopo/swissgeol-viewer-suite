@@ -5,11 +5,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import i18next from 'i18next';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { CoreElement } from 'src/features/core';
-import {
-  InfoBoxCustom,
-  InformationValue,
-  Layer,
-} from 'src/features/layer';
+import { InfoBoxCustom, InformationValue, Layer } from 'src/features/layer';
 import { run } from 'src/utils/fn.utils';
 import { Id } from 'src/models/id.model';
 import { LayerService } from 'src/features/layer/layer.service';
@@ -143,7 +139,6 @@ export class CatalogDisplayInfoBox extends CoreElement {
       </table>
     `;
   };
-
 
   private readonly getInformationKeyTitle = (key: string): string => {
     return i18next.t(`layers:info_box.information.${key}`);
