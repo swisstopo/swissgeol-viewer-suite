@@ -107,37 +107,12 @@ pub enum InfoBox {
         ///   - a `{ key, url }` object, rendered as a link whose label is translated from `key`. The url can be:
         ///      - a URL string (starting with `http://` or `https://`)
         ///      - a plain string used as a translation key to resolve a localized url.
-        #[serde(default, skip_serializing_if = "InformationEntries::is_empty")]
-        information: InformationEntries,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        information: Vec<InformationEntry>,
     },
 }
 
 /// Information entries displayed in the info box.
-///
-/// Supported config formats:
-/// - ordered list: `[{ key, value }, ...]`
-/// - legacy object: `{ key1: value1, key2: value2, ... }`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum InformationEntries {
-    Ordered(Vec<InformationEntry>),
-    Legacy(HashMap<String, InformationValue>),
-}
-
-impl Default for InformationEntries {
-    fn default() -> Self {
-        Self::Ordered(vec![])
-    }
-}
-
-impl InformationEntries {
-    fn is_empty(&self) -> bool {
-        match self {
-            Self::Ordered(entries) => entries.is_empty(),
-            Self::Legacy(entries) => entries.is_empty(),
-        }
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InformationEntry {

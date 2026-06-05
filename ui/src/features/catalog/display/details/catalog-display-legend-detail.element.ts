@@ -7,7 +7,6 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { CoreElement } from 'src/features/core';
 import {
   InfoBoxCustom,
-  InformationEntry,
   InformationValue,
   Layer,
 } from 'src/features/layer';
@@ -120,7 +119,7 @@ export class CatalogDisplayInfoBox extends CoreElement {
   };
 
   private readonly renderInformation = (infoBox: InfoBoxCustom) => {
-    const informationEntries = this.getInformationEntries(infoBox.information);
+    const informationEntries = infoBox.information ?? [];
     if (informationEntries.length === 0) {
       return nothing;
     }
@@ -145,17 +144,6 @@ export class CatalogDisplayInfoBox extends CoreElement {
     `;
   };
 
-  private readonly getInformationEntries = (
-    information: InfoBoxCustom['information'],
-  ): InformationEntry[] => {
-    if (information === undefined) {
-      return [];
-    }
-    if (Array.isArray(information)) {
-      return information;
-    }
-    return Object.entries(information).map(([key, value]) => ({ key, value }));
-  };
 
   private readonly getInformationKeyTitle = (key: string): string => {
     return i18next.t(`layers:info_box.information.${key}`);

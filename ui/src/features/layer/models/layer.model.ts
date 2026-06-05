@@ -140,18 +140,10 @@ export interface InformationEntry {
   value: InformationValue;
 }
 
-export type InformationEntries =
-  | InformationEntry[]
-  | Record<string, InformationValue>;
-
 export interface InfoBoxCustom {
   source: 'custom';
   legendUrl?: string;
-  /**
-   * Preferred format: ordered array (`[{ key, value }, ...]`).
-   * Legacy format: object map (`{ [key]: value }`).
-   */
-  information?: InformationEntries;
+  information?: InformationEntry[];
 }
 
 export const getLayerLabel = (layer: AnyLayer): string =>
