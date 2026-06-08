@@ -14,7 +14,7 @@ pub struct WmtsLayer {
     /// For WMS sources, this is the service base URL
     /// For WMTS sources, this is the capabilities document URL
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub service_url: Option<String>
+    pub service_url: Option<String>,
 
     /// Some WMTS layers are displayed as  WMS/WMTS, but for the data export, a different source is used.
     pub ogc_source: Option<OgcSource>,
