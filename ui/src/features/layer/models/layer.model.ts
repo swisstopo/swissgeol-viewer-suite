@@ -118,8 +118,7 @@ export enum LayerType {
  *
  * - `api3.geo.admin.ch`: The legend is fetched as HTML from `api3.geo.admin.ch` via the layer's id.
  * - `custom`: Displays translated info text (derived from the layer id), an optional URL,
- *   and optional key-value pairs (`information`). The key is a translation key for the label
- *   and the value is an {@link InformationValue}.
+ *   and optional `information` entries.
  */
 export type InfoBox = InfoBoxApi3GeoAdminCh | InfoBoxCustom;
 
@@ -136,10 +135,15 @@ export interface InfoBoxApi3GeoAdminCh {
  */
 export type InformationValue = string | { key: string; url: string };
 
+export interface InformationEntry {
+  labelKey: string;
+  value: InformationValue;
+}
+
 export interface InfoBoxCustom {
   source: 'custom';
   legendUrl?: string;
-  information?: Record<string, InformationValue>;
+  information?: InformationEntry[];
 }
 
 export const getLayerLabel = (layer: AnyLayer): string =>

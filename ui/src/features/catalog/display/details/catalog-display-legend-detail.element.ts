@@ -115,16 +115,20 @@ export class CatalogDisplayInfoBox extends CoreElement {
   };
 
   private readonly renderInformation = (infoBox: InfoBoxCustom) => {
-    if (!infoBox.information || Object.keys(infoBox.information).length === 0) {
+    const informationEntries = infoBox.information ?? [];
+    if (informationEntries.length === 0) {
       return nothing;
     }
     return html`
       <table class="info-table">
-        ${Object.entries(infoBox.information).map(
-          ([key, value]) => html`
+        ${informationEntries.map(
+          ({ labelKey, value }) => html`
             <tr>
-              <td class="info-key" title=${this.getInformationKeyTitle(key)}>
-                ${this.getInformationKeyTitle(key)}
+              <td
+                class="info-key"
+                title=${this.getInformationKeyTitle(labelKey)}
+              >
+                ${this.getInformationKeyTitle(labelKey)}
               </td>
               <td
                 class="info-value"
