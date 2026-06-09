@@ -165,7 +165,7 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
 
   private makeProviderForWms(): WmtsImageryProvider {
     return new WebMapServiceImageryProvider({
-      url: 'https://wms{s}.geo.admin.ch?version=1.3.0',
+      url: this.layer.serviceUrl ?? 'https://wms{s}.geo.admin.ch?version=1.3.0',
       crs: 'EPSG:4326',
       parameters: {
         FORMAT: this.layer.format,
