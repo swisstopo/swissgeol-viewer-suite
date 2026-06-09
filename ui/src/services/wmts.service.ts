@@ -11,7 +11,8 @@ import { Id, makeId } from 'src/models/id.model';
 import { BehaviorSubject, filter, map, Observable, switchMap } from 'rxjs';
 
 const DEFAULT_WMS_SERVICE_URL = 'https://wms.geo.admin.ch/';
-const DEFAULT_WMTS_SERVICE_URL = 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml';
+const DEFAULT_WMTS_SERVICE_URL =
+  'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml';
 
 export class WmtsService extends BaseService {
   private readonly _layers$ = new BehaviorSubject(
