@@ -29,6 +29,7 @@ import {
   VoxelLayerMappingType,
   VoxelRangeMapping,
   WmtsLayer,
+  WmtsLayerSource,
 } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
 import { firstValueFrom } from 'rxjs';
@@ -201,19 +202,50 @@ export class LayerApiService extends BaseService {
   ): Specific<WmtsLayer> | null => {
     const id: Id<WmtsLayer> = config.get('id');
     const def = this.wmtsService.layer(id);
+
+    const source = config.takeNullable('source') as WmtsLayerSource | null;
+    const serviceUrl = config.takeNullable('serviceUrl') as string | null;
+    const maxLevel = config.takeNullable('maxLevel');
+    const ogcSource =
+      config
+        .takeNullableObject('ogcSource')
+        ?.apply(this.mapConfigToOgcSource) ?? null;
+
     if (def === null) {
-      console.error(
-        `Layer not found in WMS/WMTS (layer will be ignored): ${id}`,
-      );
-      return null;
+      if (source === null || serviceUrl === null) {
+        console.error(
+          `Layer not found in WMS/WMTS (layer will be ignored): ${id}`,
+        );
+        return null;
+      }
+
+      return {
+        type: LayerType.Wmts,
+        id,
+        label: null,
+        source,
+        serviceUrl,
+        opacity: 1,
+        canUpdateOpacity: true,
+        isVisible: true,
+        geocatId: null,
+        downloadUrl: null,
+        maxLevel,
+        infoBox: null,
+        format: 'image/png',
+        credit: '',
+        times: null,
+        customProperties: {},
+        ogcSource,
+      } as Specific<WmtsLayer>;
     }
+
     return {
       ...def,
+      source: source ?? def.source,
+      serviceUrl: serviceUrl ?? def.serviceUrl,
       maxLevel: config.takeNullable('maxLevel'),
-      ogcSource:
-        config
-          .takeNullableObject('ogcSource')
-          ?.apply(this.mapConfigToOgcSource) ?? null,
+      ogcSource: ogcSource,
     };
   };
 
