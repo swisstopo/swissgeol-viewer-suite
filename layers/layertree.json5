@@ -26,6 +26,13 @@
             'ch.swisstopo.geologie-geotechnik-gk500-genese',
           ],
         },
+
+        // 02 - Lexic augmented layers
+        {
+          id: 'lexic_augmented_layers',
+          children: ['gc_bedrock', 'gc_unco_deposits', 'tecto_units_augm'],
+        },
+
         // 02 - Thematic_maps
         {
           id: 'thematic_maps',

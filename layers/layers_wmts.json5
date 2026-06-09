@@ -61,6 +61,33 @@
       geocat_id: '65652bdd-76e3-4df2-9329-140a04a2a66c',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+
+    // Lexic augmented layers
+    {
+      type: 'Wmts',
+      id: 'gc_bedrock',
+      source: 'WMS',
+      service_url: 'https://dev-ogcservices.swissgeol.ch/geoserver/swisstopo/ows?SERVICE=WMS&',
+      max_level: 18,
+      opacity: 0.7,
+    },
+    {
+      type: 'Wmts',
+      id: 'gc_unco_deposits',
+      source: 'WMS',
+      service_url: 'https://dev-ogcservices.swissgeol.ch/geoserver/swisstopo/ows?SERVICE=WMS&',
+      max_level: 18,
+      opacity: 0.7,
+    },
+    {
+      type: 'Wmts',
+      id: 'tecto_units_augm',
+      source: 'WMS',
+      service_url: 'https://dev-ogcservices.swissgeol.ch/geoserver/swisstopo/ows?SERVICE=WMS&',
+      max_level: 18,
+      opacity: 0.7,
+    },
+
     // Thematic maps
     {
       type: 'Wmts',
