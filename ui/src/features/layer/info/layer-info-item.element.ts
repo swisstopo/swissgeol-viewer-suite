@@ -283,7 +283,10 @@ export class LayerInfoItem extends CoreElement {
     }
 
     .attributes > ul > li {
+      display: flex;
+      align-items: center;
       padding: 12px 0;
+      min-height: 44px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
