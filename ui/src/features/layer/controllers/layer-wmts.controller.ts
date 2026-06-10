@@ -182,8 +182,18 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
   }
 
   private makeProviderForWmts(): WmtsImageryProvider {
+    const url =
+      this.layer.serviceUrl === null
+        ? 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}'
+        : `${this.layer.serviceUrl
+            .replace(/\?.*$/, '')
+            .replace(
+              /\/$/,
+              '',
+            )}/rest/{layer}/polygon/EPSG:900913/EPSG:900913:{z}/{y}/{x}?format=image/png`;
+
     return new UrlTemplateImageryProvider({
-      url: 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}',
+      url,
       maximumLevel: this.layer.maxLevel ?? undefined,
       rectangle: SWITZERLAND_RECTANGLE,
       credit: new Credit(this.layer.credit),
