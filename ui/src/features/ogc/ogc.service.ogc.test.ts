@@ -111,11 +111,18 @@ describe('OgcService - Real API Integration Tests', () => {
   let service: OgcService;
   const createdJobs: OgcJob[] = [];
 
-  const testShape: Cartesian3[] = [
+  /*   const testShape: Cartesian3[] = [
     Cartesian3.fromDegrees(7.484139740740058, 46.866399208725426),
     Cartesian3.fromDegrees(7.262777583098003, 47.05193186194356),
     Cartesian3.fromDegrees(7.602817483892908, 47.24114070475815),
     Cartesian3.fromDegrees(7.823774240032048, 47.05495172711942),
+  ]; */
+
+  const testShape: Cartesian3[] = [
+    Cartesian3.fromDegrees(7.5141550065882301, 47.0334232190750114),
+    Cartesian3.fromDegrees(7.5141550065882301, 47.0939095135301997),
+    Cartesian3.fromDegrees(7.6356294410061549, 47.0939095135301997),
+    Cartesian3.fromDegrees(7.6356294410061549, 47.0334232190750114),
   ];
 
   beforeEach(() => {
