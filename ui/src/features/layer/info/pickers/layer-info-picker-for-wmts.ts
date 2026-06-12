@@ -449,9 +449,30 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
       }
 
       // Keep custom path prefixes, but strip WM(T)S endpoint suffixes.
-      const pathPrefix = parsed.pathname
-        .replace(/\/+$/, '')
-        .replace(/(?:\/gwc\/service\/wmts|\/service\/wmts|\/wmts|\/wms)$/i, '');
+      // Strip trailing slashes without a regex to avoid any ReDoS surface.
+      const rawPathname = parsed.pathname;
+      let trimEnd = rawPathname.length;
+      while (trimEnd > 0 && rawPathname[trimEnd - 1] === '/') trimEnd--;
+      let strippedPathname = rawPathname.slice(0, trimEnd);
+
+      // Strip WM(T)S endpoint suffixes using plain endsWith checks (case-insensitive).
+      const WMS_SUFFIXES = [
+        '/gwc/service/wmts',
+        '/service/wmts',
+        '/wmts',
+        '/wms',
+      ];
+      const lowerPathname = strippedPathname.toLowerCase();
+      for (const suffix of WMS_SUFFIXES) {
+        if (lowerPathname.endsWith(suffix)) {
+          strippedPathname = strippedPathname.slice(
+            0,
+            strippedPathname.length - suffix.length,
+          );
+          break;
+        }
+      }
+      const pathPrefix = strippedPathname;
       const normalizedPrefix = pathPrefix.length > 0 ? `${pathPrefix}/` : '/';
       return `${parsed.origin}${normalizedPrefix}`;
     } catch {

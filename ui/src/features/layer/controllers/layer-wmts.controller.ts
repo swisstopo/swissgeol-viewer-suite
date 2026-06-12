@@ -186,7 +186,7 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
       this.layer.serviceUrl === null
         ? 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}'
         : `${this.layer.serviceUrl
-            .replace(/\?.*$/, '')
+            .split('?')[0]
             .replace(
               /\/$/,
               '',
