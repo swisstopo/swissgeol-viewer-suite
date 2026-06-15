@@ -1,6 +1,22 @@
 import { BaseService } from 'src/services/base.service';
 import { LEXIC_API_BY_PAGE_HOST } from 'src/constants';
-import { clientConfigContext } from 'src/context';
+import {
+  getLayers,
+  getLayersLayerIdAttributeList,
+  getLayersLayerIdDefaultFilters,
+  getLayersLayerIdFilters,
+  getVocabularies,
+  getVocabulariesChronostratigraphyLayers,
+  getVocabulariesChronostratigraphyTerms,
+  getVocabulariesLithologyLayers,
+  getVocabulariesLithologyTerms,
+  getVocabulariesLithostratigraphyLayers,
+  getVocabulariesLithostratigraphyTerms,
+  getVocabulariesTectonicUnitsLayers,
+  getVocabulariesTectonicUnitsTerms,
+  postGenerateWmsRequest,
+} from './generated/lexic-api';
+import { configureLexicClient } from './lexic-orval.mutator';
 import {
   LexicDefaultFiltersResponse,
   LexicLanguage,
@@ -17,152 +33,117 @@ import {
 const DEFAULT_BASE_URL = 'https://dev-webmap-api.swissgeol.ch';
 
 export class LexicApiService extends BaseService {
-  private apiKey: string | null = null;
   private baseUrl: string;
 
   constructor() {
     super();
     this.baseUrl = LEXIC_API_BY_PAGE_HOST[this.getHost()] ?? DEFAULT_BASE_URL;
-
-    BaseService.inject$(clientConfigContext).subscribe((clientConfig) => {
-      if (clientConfig.lexicApiKey !== undefined) {
-        this.apiKey = clientConfig.lexicApiKey;
-      }
-    });
-  }
-
-  configure(config: { apiKey?: string | null; baseUrl?: string }): void {
-    if (config.apiKey !== undefined) {
-      this.apiKey = config.apiKey;
-    }
-    if (config.baseUrl !== undefined) {
-      this.baseUrl = trimTrailingSlash(config.baseUrl);
-    }
+    this.configureGeneratedClient();
   }
 
   async getLayers(lang: LexicLanguage = 'en'): Promise<LexicLayersResponse> {
-    return this.getJson('/layers', { lang });
+    const response = await getLayers({ lang });
+    return this.getData(response);
   }
 
   async getLayerFilters(
     layerId: string,
     lang: LexicLanguage = 'en',
   ): Promise<LexicLayerFiltersResponse> {
-    return this.getJson(`/layers/${encodeURIComponent(layerId)}/filters`, {
-      lang,
-    });
+    const response = await getLayersLayerIdFilters(
+      encodeURIComponent(layerId),
+      {
+        lang,
+      },
+    );
+    return this.getData(response);
   }
 
   async getLayerDefaultFilters(
     layerId: string,
     term: string,
   ): Promise<LexicDefaultFiltersResponse> {
-    return this.getJson(
-      `/layers/${encodeURIComponent(layerId)}/defaultFilters`,
-      {
-        term,
-      },
+    const response = await getLayersLayerIdDefaultFilters(
+      encodeURIComponent(layerId),
+      { term },
     );
+    return this.getData(response);
   }
 
   async getLayerAttributes(
     layerId: string,
   ): Promise<LexicLayerAttributesResponse> {
-    return this.getJson(`/layers/${encodeURIComponent(layerId)}/attributeList`);
+    const response = await getLayersLayerIdAttributeList(
+      encodeURIComponent(layerId),
+    );
+    return this.getData(response);
   }
 
   async getVocabularies(
     lang: LexicLanguage = 'en',
   ): Promise<LexicVocabulariesResponse> {
-    return this.getJson('/vocabularies', { lang });
+    const response = await getVocabularies({ lang });
+    return this.getData(response);
   }
 
   async getVocabularyTerms(
     vocabularyId: string,
     lang: LexicLanguage = 'en',
   ): Promise<LexicVocabularyTermsResponse> {
-    return this.getJson(
-      `/vocabularies/${encodeURIComponent(vocabularyId)}/terms`,
-      { lang },
-    );
+    const vocabulary = vocabularyId.toLowerCase();
+    switch (vocabulary) {
+      case 'chronostratigraphy':
+        return this.getData(
+          await getVocabulariesChronostratigraphyTerms({ lang }),
+        );
+      case 'tectonic-units':
+      case 'tectonicunits':
+        return this.getData(await getVocabulariesTectonicUnitsTerms({ lang }));
+      case 'lithostratigraphy':
+        return this.getData(
+          await getVocabulariesLithostratigraphyTerms({ lang }),
+        );
+      case 'lithology':
+        return this.getData(await getVocabulariesLithologyTerms({ lang }));
+      default:
+        throw new Error(`Unsupported Lexic vocabulary id: ${vocabularyId}`);
+    }
   }
 
   async getVocabularyLayers(
     vocabularyId: string,
   ): Promise<LexicVocabularyLayersResponse> {
-    return this.getJson(
-      `/vocabularies/${encodeURIComponent(vocabularyId)}/layers`,
-    );
+    const vocabulary = vocabularyId.toLowerCase();
+    switch (vocabulary) {
+      case 'chronostratigraphy':
+        return this.getData(await getVocabulariesChronostratigraphyLayers());
+      case 'tectonic-units':
+      case 'tectonicunits':
+        return this.getData(await getVocabulariesTectonicUnitsLayers());
+      case 'lithostratigraphy':
+        return this.getData(await getVocabulariesLithostratigraphyLayers());
+      case 'lithology':
+        return this.getData(await getVocabulariesLithologyLayers());
+      default:
+        throw new Error(`Unsupported Lexic vocabulary id: ${vocabularyId}`);
+    }
   }
 
   async generateWmsRequest(
     payload: LexicWmsRequest,
   ): Promise<LexicWmsResponse> {
-    return this.postJson('/generateWmsRequest', payload);
+    const response = await postGenerateWmsRequest(payload);
+    return this.getData(response);
   }
 
-  private async getJson<T>(
-    path: string,
-    query?: Record<string, string>,
-  ): Promise<T> {
-    return this.request<T>(path, {
-      method: 'GET',
-      query,
-    });
+  private getData<T>(response: { data: unknown }): T {
+    return response.data as T;
   }
 
-  private async postJson<T>(path: string, body: object): Promise<T> {
-    return this.request<T>(path, {
-      method: 'POST',
-      body,
+  private configureGeneratedClient(): void {
+    configureLexicClient({
+      baseUrl: this.baseUrl,
     });
-  }
-
-  // Keep all transport and auth details in one place so callers remain API-agnostic.
-  private async request<T>(
-    path: string,
-    options: {
-      method: 'GET' | 'POST';
-      query?: Record<string, string>;
-      body?: object;
-    },
-  ): Promise<T> {
-    const apiKey = this.apiKey;
-    if (apiKey === null || apiKey.trim().length === 0) {
-      throw new Error(
-        'Lexic API key is not configured. Call LexicApiService.configure({ apiKey }) first.',
-      );
-    }
-
-    const url = new URL(this.baseUrl + path);
-    for (const [key, value] of Object.entries(options.query ?? {})) {
-      url.searchParams.set(key, value);
-    }
-
-    const headers = new Headers({
-      Accept: 'application/json',
-      'X-API-Key': apiKey,
-    });
-
-    const body =
-      options.body === undefined ? undefined : JSON.stringify(options.body);
-    if (body !== undefined) {
-      headers.set('Content-Type', 'application/json');
-    }
-
-    const response = await fetch(url.toString(), {
-      method: options.method,
-      headers,
-      body,
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to call Lexic API (${options.method} ${path}): [HTTP ${response.status}] ${await response.text()}`,
-      );
-    }
-
-    return (await response.json()) as T;
   }
 
   private getHost(): string {
@@ -173,6 +154,3 @@ export class LexicApiService extends BaseService {
   }
 }
 
-function trimTrailingSlash(value: string): string {
-  return value.endsWith('/') ? value.slice(0, -1) : value;
-}

@@ -1,110 +1,40 @@
-export type LexicLanguage = 'en' | 'it' | 'de' | 'fr';
+import type {
+  ByAttributeFilterParameter,
+  ChronostratigraphyFilterParameter,
+  DefaultFiltersResponse,
+  Filter,
+  FilterId,
+  GetLayersLang,
+  InlineResponse200,
+  InlineResponse2001,
+  InlineResponse2002,
+  TermFilterParameter,
+  VocabulariesList,
+  VocabularyLayersResponse,
+  VocabularyTerms,
+  WmsRequest,
+  WmsRequestFilters,
+  WmsResponse,
+} from './generated/lexic-schemas';
 
-export type LexicFilterId =
-  | 'f-chronostrat-term'
-  | 'f-tectonic-term'
-  | 'f-lithostrat-term'
-  | 'f-lithology-term'
-  | 'f-byAttribute';
-
-export interface LexicFilter {
-  id: LexicFilterId | string;
-  name: string;
-  title: string;
-  description: string;
-}
-
-export interface LexicLayer {
-  id: string;
-  name: string;
-  filterable: boolean;
-  availableFilters: LexicFilter[];
-}
-
-export interface LexicLayersResponse {
-  webmapId: string;
-  layers: LexicLayer[];
-}
-
-export interface LexicLayerFiltersResponse {
-  layerId: string;
-  filters: LexicFilter[];
-}
-
-export interface LexicLayerAttributesResponse {
-  layerId: string;
-  attributes: string[];
-}
-
-export interface LexicVocabulariesResponse {
-  vocabularies: LexicVocabularyDescriptor[];
-}
-
-export interface LexicVocabularyDescriptor {
-  id: string;
-  name: string;
-}
-
-export interface LexicVocabularyTermsResponse {
-  terms: LexicVocabularyTerm[];
-}
-
-export interface LexicVocabularyTerm {
-  term: string;
-  label: string;
-  description: string;
-  breadcrumbs: Record<string, string>;
-}
-
-export interface LexicVocabularyLayersResponse {
-  layers: LexicVocabularyLayer[];
-}
-
-export interface LexicVocabularyLayer {
-  id: string;
-  name: string;
-}
-
-export interface LexicChronostratigraphyFilterParameter {
-  type: 'Younger' | 'From-To' | 'Older';
-  from?: string;
-  to?: string;
-}
-
-export interface LexicTermFilterParameter {
-  term: string;
-  includeNarrowers?: boolean;
-}
-
-export interface LexicByAttributeFilterParameter {
-  attribute: string;
-  value: string | number | boolean;
-}
-
+export type LexicLanguage = GetLayersLang;
+export type LexicFilterId = FilterId;
+export type LexicFilter = Filter;
+export type LexicLayersResponse = InlineResponse200;
+export type LexicLayerFiltersResponse = InlineResponse2001;
+export type LexicLayerAttributesResponse = InlineResponse2002;
+export type LexicVocabulariesResponse = VocabulariesList;
+export type LexicVocabularyTermsResponse = VocabularyTerms;
+export type LexicVocabularyLayersResponse = VocabularyLayersResponse;
+export type LexicChronostratigraphyFilterParameter =
+  ChronostratigraphyFilterParameter;
+export type LexicTermFilterParameter = TermFilterParameter;
+export type LexicByAttributeFilterParameter = ByAttributeFilterParameter;
 export type LexicFilterParameter =
   | LexicChronostratigraphyFilterParameter
   | LexicTermFilterParameter
   | LexicByAttributeFilterParameter;
-
-export interface LexicWmsRequestFilter {
-  filterId: LexicFilterId | string;
-  parameters: LexicFilterParameter;
-}
-
-export interface LexicWmsRequest {
-  webmapId: string;
-  layerId: string;
-  filters?: LexicWmsRequestFilter[];
-}
-
-export interface LexicWmsResponse {
-  url: string;
-  body: string;
-  mimeType: string;
-  note: string;
-}
-
-export interface LexicDefaultFiltersResponse {
-  layerId: string;
-  filters: LexicWmsRequestFilter[];
-}
+export type LexicWmsRequestFilter = WmsRequestFilters;
+export type LexicWmsRequest = WmsRequest;
+export type LexicWmsResponse = WmsResponse;
+export type LexicDefaultFiltersResponse = DefaultFiltersResponse;
