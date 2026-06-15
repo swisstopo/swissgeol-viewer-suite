@@ -1,5 +1,6 @@
 import { BaseService } from 'src/services/base.service';
 import { LEXIC_API_BY_PAGE_HOST } from 'src/constants';
+import { clientConfigContext } from 'src/context';
 import {
   LexicDefaultFiltersResponse,
   LexicLanguage,
@@ -22,6 +23,12 @@ export class LexicApiService extends BaseService {
   constructor() {
     super();
     this.baseUrl = LEXIC_API_BY_PAGE_HOST[this.getHost()] ?? DEFAULT_BASE_URL;
+
+    BaseService.inject$(clientConfigContext).subscribe((clientConfig) => {
+      if (clientConfig.lexicApiKey !== undefined) {
+        this.apiKey = clientConfig.lexicApiKey;
+      }
+    });
   }
 
   configure(config: { apiKey?: string | null; baseUrl?: string }): void {

@@ -3,6 +3,7 @@ export interface ClientConfig {
   version: string;
   ionDefaultAccessToken: string;
   gstUrl: string;
+  lexicApiKey?: string;
   auth: {
     cognito_client_id: string;
     cognito_pool_id: string;

@@ -38,6 +38,11 @@ pub struct ClientConfig {
     #[clap(long, env)]
     pub gst_url: String,
 
+    /// Optional API key for the SwissTopo WebMap Semantic Filter (Lexic) API.
+    /// Set via LEXIC_API_KEY environment variable.
+    #[clap(long, env)]
+    pub lexic_api_key: Option<String>,
+
     #[clap(flatten)]
     pub auth: Auth,
 }
