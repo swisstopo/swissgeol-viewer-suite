@@ -6,6 +6,7 @@ import { LayerType, Tiles3dLayer } from 'src/features/layer';
 import {
   Cartesian2,
   Cesium3DTileset,
+  Cesium3DTileStyle,
   CustomShader,
   CustomShaderTranslucencyMode,
   ImageBasedLighting,
@@ -60,25 +61,35 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       show: true,
       backFaceCulling: false,
 
-      // This feature flag has major performance implications. We turn it off so that large tilesets are performant.
-      enableCollision: false,
-
-      maximumScreenSpaceError: 16,
-      cullWithChildrenBounds: true,
-      cullRequestsWhileMoving: true,
-      cullRequestsWhileMovingMultiplier: 100,
-      preloadWhenHidden: false,
-      preferLeaves: true,
-      dynamicScreenSpaceError: true,
-      foveatedScreenSpaceError: true,
-      foveatedConeSize: 0.2,
-      foveatedMinimumScreenSpaceErrorRelaxation: 3,
-      foveatedTimeDelay: 0.2,
+      // // This feature flag has major performance implications. We turn it off so that large tilesets are performant.
+      // enableCollision: false,
+      //
+      // maximumScreenSpaceError: 16,
+      // cullWithChildrenBounds: true,
+      // cullRequestsWhileMoving: true,
+      // cullRequestsWhileMovingMultiplier: 100,
+      // preloadWhenHidden: false,
+      // preferLeaves: true,
+      // dynamicScreenSpaceError: true,
+      // foveatedScreenSpaceError: true,
+      // foveatedConeSize: 0.2,
+      // foveatedMinimumScreenSpaceErrorRelaxation: 3,
+      // foveatedTimeDelay: 0.2,
     });
 
     tileset.imageBasedLighting = new ImageBasedLighting();
     tileset.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(1, 0);
     tileset.customShader = this.makeShader();
+
+    const showConditions =
+      "${className} === 'IfcGeoslice' || " +
+      "${className} === 'IfcPipeSegment' || " +
+      "${className} === 'IfcGeotechnicalStratum' || " +
+      "${className} === 'IfcBorehole' || " +
+      "${className} === 'IfcBuildingElementProxy'";
+    tileset.style = new Cesium3DTileStyle({
+      show: showConditions,
+    });
 
     const pickService = PickService.get();
     const scenePickingLock = pickService.acquireScenePickingLock();
@@ -125,49 +136,68 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   }
 
   private makeShader(): CustomShader {
-    const { opacity } = this.layer;
-    return new CustomShader({
-      translucencyMode:
-        opacity === 1
-          ? CustomShaderTranslucencyMode.OPAQUE
-          : CustomShaderTranslucencyMode.TRANSLUCENT,
-
-      //language=glsl
-      fragmentShaderText: `
-        const float WHITE_CUTOFF = 0.985;
-
-        bool isWhite(vec3 color) {
-          return all(greaterThanEqual(color, vec3(WHITE_CUTOFF)));
-        }
-
-        void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
-            material.specular = vec3(0.0);   // no view-dependent spec
-            material.occlusion = 1.0;        // full diffuse
-            material.alpha = u_alpha;
-            if (u_isHighlighted) {
-              material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}); // highlight color
-            }
-
-            // Discard fully white (uncolored) fragments for partially transparent layers.
-            if (u_isPartiallyTransparent && isWhite(material.baseColor.rgb)) {
-              discard;
-            }
-          }
-        `,
+    const radiusShader = new CustomShader({
       uniforms: {
-        u_alpha: {
+        u_globalScale: {
           type: UniformType.FLOAT,
-          value: opacity,
-        },
-        u_isHighlighted: {
-          type: UniformType.BOOL,
-          value: false,
-        },
-        u_isPartiallyTransparent: {
-          type: UniformType.BOOL,
-          value: this.layer.isPartiallyTransparent,
+          value: 100, //100,
         },
       },
+      vertexShaderText: `
+    void vertexMain(VertexInput vsInput, inout czm_modelVertexOutput vsOutput)
+    {
+        // Metadata attributes can be accessed in the shader via vsInput.metadata.<propertyName>
+        // To discover the available property names, clicking on boreholes in the sandcastle will open a panel with metadata info.
+
+        vsOutput.positionMC += vsInput.attributes.normalMC * u_globalScale;
+    }
+  `,
     });
+    return radiusShader;
+
+    // const { opacity } = this.layer;
+    // return new CustomShader({
+    //   translucencyMode:
+    //     opacity === 1
+    //       ? CustomShaderTranslucencyMode.OPAQUE
+    //       : CustomShaderTranslucencyMode.TRANSLUCENT,
+    //
+    //   //language=glsl
+    //   fragmentShaderText: `
+    //     const float WHITE_CUTOFF = 0.985;
+    //
+    //     bool isWhite(vec3 color) {
+    //       return all(greaterThanEqual(color, vec3(WHITE_CUTOFF)));
+    //     }
+    //
+    //     void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
+    //         material.specular = vec3(0.0);   // no view-dependent spec
+    //         material.occlusion = 1.0;        // full diffuse
+    //         material.alpha = u_alpha;
+    //         if (u_isHighlighted) {
+    //           material.diffuse = vec3(${OBJECT_HIGHLIGHT_NORMALIZED_RGB}); // highlight color
+    //         }
+    //
+    //         // Discard fully white (uncolored) fragments for partially transparent layers.
+    //         if (u_isPartiallyTransparent && isWhite(material.baseColor.rgb)) {
+    //           discard;
+    //         }
+    //       }
+    //     `,
+    //   uniforms: {
+    //     u_alpha: {
+    //       type: UniformType.FLOAT,
+    //       value: opacity,
+    //     },
+    //     u_isHighlighted: {
+    //       type: UniformType.BOOL,
+    //       value: false,
+    //     },
+    //     u_isPartiallyTransparent: {
+    //       type: UniformType.BOOL,
+    //       value: this.layer.isPartiallyTransparent,
+    //     },
+    //   },
+    // });
   }
 }

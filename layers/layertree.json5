@@ -289,6 +289,7 @@
     {
       id: 'boreholes',
       children: [
+        'borehole-3d-test',
         'ch.swisstopo.geologie-bohrungen_tiefer_500',
         'boreholes_public',
         'boreholes_private',

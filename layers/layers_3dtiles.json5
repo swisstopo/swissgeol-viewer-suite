@@ -68,6 +68,17 @@
         env: ['local', 'dev'],
       },
     },
+    {
+      type: 'Tiles3d',
+      id: 'borehole-3d-test',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4546972,
+      },
+      access: {
+        env: ['local', 'dev'],
+      },
+    },
     // Topic Boreholes
     // Boreholes 2021 - Public
     {
