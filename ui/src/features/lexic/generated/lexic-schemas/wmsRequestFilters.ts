@@ -17,5 +17,8 @@ import type { WmsRequestFiltersFilterId } from './wmsRequestFiltersFilterId';
 
 export interface WmsRequestFilters {
   filterId?: WmsRequestFiltersFilterId;
-  parameters?: ChronostratigraphyFilterParameter | TermFilterParameter | ByAttributeFilterParameter;
+  parameters?:
+    | ChronostratigraphyFilterParameter
+    | TermFilterParameter
+    | ByAttributeFilterParameter;
 }

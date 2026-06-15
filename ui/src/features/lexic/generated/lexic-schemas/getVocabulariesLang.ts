@@ -11,8 +11,8 @@
  * OpenAPI spec version: 1.6.0
  */
 
-export type GetVocabulariesLang = typeof GetVocabulariesLang[keyof typeof GetVocabulariesLang];
-
+export type GetVocabulariesLang =
+  (typeof GetVocabulariesLang)[keyof typeof GetVocabulariesLang];
 
 export const GetVocabulariesLang = {
   en: 'en',

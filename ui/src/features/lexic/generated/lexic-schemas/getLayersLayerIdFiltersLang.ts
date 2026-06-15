@@ -11,8 +11,8 @@
  * OpenAPI spec version: 1.6.0
  */
 
-export type GetLayersLayerIdFiltersLang = typeof GetLayersLayerIdFiltersLang[keyof typeof GetLayersLayerIdFiltersLang];
-
+export type GetLayersLayerIdFiltersLang =
+  (typeof GetLayersLayerIdFiltersLang)[keyof typeof GetLayersLayerIdFiltersLang];
 
 export const GetLayersLayerIdFiltersLang = {
   en: 'en',

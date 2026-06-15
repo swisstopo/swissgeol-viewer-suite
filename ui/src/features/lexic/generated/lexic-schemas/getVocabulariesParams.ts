@@ -13,8 +13,8 @@
 import type { GetVocabulariesLang } from './getVocabulariesLang';
 
 export type GetVocabulariesParams = {
-/**
- * Language for vocabulary labels
- */
-lang?: GetVocabulariesLang;
+  /**
+   * Language for vocabulary labels
+   */
+  lang?: GetVocabulariesLang;
 };

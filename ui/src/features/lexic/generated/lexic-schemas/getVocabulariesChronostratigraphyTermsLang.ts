@@ -11,8 +11,8 @@
  * OpenAPI spec version: 1.6.0
  */
 
-export type GetVocabulariesChronostratigraphyTermsLang = typeof GetVocabulariesChronostratigraphyTermsLang[keyof typeof GetVocabulariesChronostratigraphyTermsLang];
-
+export type GetVocabulariesChronostratigraphyTermsLang =
+  (typeof GetVocabulariesChronostratigraphyTermsLang)[keyof typeof GetVocabulariesChronostratigraphyTermsLang];
 
 export const GetVocabulariesChronostratigraphyTermsLang = {
   en: 'en',

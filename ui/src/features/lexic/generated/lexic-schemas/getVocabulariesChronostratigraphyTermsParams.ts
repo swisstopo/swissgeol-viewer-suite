@@ -13,8 +13,8 @@
 import type { GetVocabulariesChronostratigraphyTermsLang } from './getVocabulariesChronostratigraphyTermsLang';
 
 export type GetVocabulariesChronostratigraphyTermsParams = {
-/**
- * Language for vocabulary related data
- */
-lang?: GetVocabulariesChronostratigraphyTermsLang;
+  /**
+   * Language for vocabulary related data
+   */
+  lang?: GetVocabulariesChronostratigraphyTermsLang;
 };

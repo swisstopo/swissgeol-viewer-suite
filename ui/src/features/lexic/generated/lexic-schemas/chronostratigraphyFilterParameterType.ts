@@ -11,8 +11,8 @@
  * OpenAPI spec version: 1.6.0
  */
 
-export type ChronostratigraphyFilterParameterType = typeof ChronostratigraphyFilterParameterType[keyof typeof ChronostratigraphyFilterParameterType];
-
+export type ChronostratigraphyFilterParameterType =
+  (typeof ChronostratigraphyFilterParameterType)[keyof typeof ChronostratigraphyFilterParameterType];
 
 export const ChronostratigraphyFilterParameterType = {
   Younger: 'Younger',

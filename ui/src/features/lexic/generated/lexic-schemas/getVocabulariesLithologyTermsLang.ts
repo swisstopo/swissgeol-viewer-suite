@@ -11,8 +11,8 @@
  * OpenAPI spec version: 1.6.0
  */
 
-export type GetVocabulariesLithologyTermsLang = typeof GetVocabulariesLithologyTermsLang[keyof typeof GetVocabulariesLithologyTermsLang];
-
+export type GetVocabulariesLithologyTermsLang =
+  (typeof GetVocabulariesLithologyTermsLang)[keyof typeof GetVocabulariesLithologyTermsLang];
 
 export const GetVocabulariesLithologyTermsLang = {
   en: 'en',

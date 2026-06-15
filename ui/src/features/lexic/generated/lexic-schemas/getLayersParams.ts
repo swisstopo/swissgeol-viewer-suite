@@ -13,8 +13,8 @@
 import type { GetLayersLang } from './getLayersLang';
 
 export type GetLayersParams = {
-/**
- * Language for filter labels and descriptions
- */
-lang?: GetLayersLang;
+  /**
+   * Language for filter labels and descriptions
+   */
+  lang?: GetLayersLang;
 };

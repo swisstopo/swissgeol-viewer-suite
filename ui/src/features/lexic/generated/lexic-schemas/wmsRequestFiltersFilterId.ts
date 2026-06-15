@@ -11,8 +11,8 @@
  * OpenAPI spec version: 1.6.0
  */
 
-export type WmsRequestFiltersFilterId = typeof WmsRequestFiltersFilterId[keyof typeof WmsRequestFiltersFilterId];
-
+export type WmsRequestFiltersFilterId =
+  (typeof WmsRequestFiltersFilterId)[keyof typeof WmsRequestFiltersFilterId];
 
 export const WmsRequestFiltersFilterId = {
   'f-chronostrat-term': 'f-chronostrat-term',

@@ -13,8 +13,8 @@
 import type { GetVocabulariesLithologyTermsLang } from './getVocabulariesLithologyTermsLang';
 
 export type GetVocabulariesLithologyTermsParams = {
-/**
- * Language for vocabulary related data
- */
-lang?: GetVocabulariesLithologyTermsLang;
+  /**
+   * Language for vocabulary related data
+   */
+  lang?: GetVocabulariesLithologyTermsLang;
 };

@@ -12,8 +12,8 @@
  */
 
 export type GetLayersLayerIdDefaultFiltersParams = {
-/**
- * Vocabulary term URI used to infer the vocabulary and build the default filter
- */
-term: string;
+  /**
+   * Vocabulary term URI used to infer the vocabulary and build the default filter
+   */
+  term: string;
 };

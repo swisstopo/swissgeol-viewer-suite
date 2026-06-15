@@ -13,8 +13,8 @@
 import type { GetVocabulariesTectonicUnitsTermsLang } from './getVocabulariesTectonicUnitsTermsLang';
 
 export type GetVocabulariesTectonicUnitsTermsParams = {
-/**
- * Language for vocabulary related data
- */
-lang?: GetVocabulariesTectonicUnitsTermsLang;
+  /**
+   * Language for vocabulary related data
+   */
+  lang?: GetVocabulariesTectonicUnitsTermsLang;
 };

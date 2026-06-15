@@ -24,4 +24,3 @@ npm run openapi:lexic:watch
 - `src/features/lexic/lexic-orval.mutator.ts` - runtime base URL and `X-API-Key` injection
 
 Do not edit generated files manually. Regenerate them from the OpenAPI source.
-

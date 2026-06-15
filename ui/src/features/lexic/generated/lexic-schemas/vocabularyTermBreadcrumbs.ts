@@ -14,4 +14,4 @@
 /**
  * Ordered breadcrumb map. Keys represent numeric positions and are serialized as strings in JSON, for example "0", "1", "2".
  */
-export type VocabularyTermBreadcrumbs = {[key: string]: string};
+export type VocabularyTermBreadcrumbs = { [key: string]: string };

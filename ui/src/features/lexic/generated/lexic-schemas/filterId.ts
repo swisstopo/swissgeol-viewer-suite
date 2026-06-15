@@ -11,8 +11,7 @@
  * OpenAPI spec version: 1.6.0
  */
 
-export type FilterId = typeof FilterId[keyof typeof FilterId];
-
+export type FilterId = (typeof FilterId)[keyof typeof FilterId];
 
 export const FilterId = {
   'f-chronostrat-term': 'f-chronostrat-term',

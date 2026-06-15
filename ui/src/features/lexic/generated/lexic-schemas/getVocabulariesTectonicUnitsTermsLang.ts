@@ -11,8 +11,8 @@
  * OpenAPI spec version: 1.6.0
  */
 
-export type GetVocabulariesTectonicUnitsTermsLang = typeof GetVocabulariesTectonicUnitsTermsLang[keyof typeof GetVocabulariesTectonicUnitsTermsLang];
-
+export type GetVocabulariesTectonicUnitsTermsLang =
+  (typeof GetVocabulariesTectonicUnitsTermsLang)[keyof typeof GetVocabulariesTectonicUnitsTermsLang];
 
 export const GetVocabulariesTectonicUnitsTermsLang = {
   en: 'en',
