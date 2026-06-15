@@ -1,4 +1,5 @@
 import { BaseService } from 'src/services/base.service';
+import { LEXIC_API_BY_PAGE_HOST } from 'src/constants';
 import {
   LexicDefaultFiltersResponse,
   LexicLanguage,
@@ -11,14 +12,6 @@ import {
   LexicWmsRequest,
   LexicWmsResponse,
 } from './lexic-api.model';
-
-const LEXIC_API_BY_PAGE_HOST: Record<string, string> = {
-  'localhost:8000': 'https://dev-webmap-api.swissgeol.ch',
-  'dev-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
-  'int-viewer.swissgeol.ch': 'https://int-webmap-api.swissgeol.ch',
-  'swissgeol.ch': 'https://webmap-api.swissgeol.ch',
-  'viewer.swissgeol.ch': 'https://webmap-api.swissgeol.ch',
-};
 
 const DEFAULT_BASE_URL = 'https://dev-webmap-api.swissgeol.ch';
 
