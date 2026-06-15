@@ -10,8 +10,19 @@ import i18next from 'i18next';
 import { Id, makeId } from 'src/models/id.model';
 import { BehaviorSubject, filter, map, Observable, switchMap } from 'rxjs';
 
-const DEFAULT_WMS_SERVICE_URL = 'https://wms.geo.admin.ch/';
-const DEFAULT_WMTS_SERVICE_URL =
+/**
+ * Base URL for swisstopo's WMS service, used to fetch WMS GetCapabilities.
+ * Layers discovered from this endpoint use `serviceUrl: null`,
+ * which the controller resolves to the default tile URL.
+ */
+const SWISSTOPO_WMS_CAPABILITIES_URL = 'https://wms.geo.admin.ch/';
+
+/**
+ * Full URL of swisstopo's WMTS capabilities document.
+ * Layers discovered from this endpoint use `serviceUrl: null`,
+ * which the controller resolves to the default tile template URL.
+ */
+const SWISSTOPO_WMTS_CAPABILITIES_URL =
   'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml';
 
 export class WmtsService extends BaseService {
@@ -65,7 +76,7 @@ export class WmtsService extends BaseService {
 
   private async fetchWmsCapabilities(): Promise<WmtsLayer[]> {
     const xml = await this.fetchCapabilitiesXml({
-      host: DEFAULT_WMS_SERVICE_URL,
+      host: SWISSTOPO_WMS_CAPABILITIES_URL,
       params: {
         SERVICE: 'WMS',
         REQUEST: 'GetCapabilities',
@@ -79,7 +90,7 @@ export class WmtsService extends BaseService {
     return this.parseWmsCapabilities(xml);
   }
 
-  parseWmsCapabilities(xml: Document): WmtsLayer[] {
+  private parseWmsCapabilities(xml: Document): WmtsLayer[] {
     const configs: WmtsLayer[] = [];
     const layers = xml.querySelectorAll('Layer');
     for (const layer of layers.values()) {
@@ -125,7 +136,7 @@ export class WmtsService extends BaseService {
 
   private async fetchWmtsCapabilities(): Promise<WmtsLayer[]> {
     const xml = await this.fetchCapabilitiesXml({
-      host: DEFAULT_WMTS_SERVICE_URL,
+      host: SWISSTOPO_WMTS_CAPABILITIES_URL,
       params: {
         lang: i18next.language,
       },
