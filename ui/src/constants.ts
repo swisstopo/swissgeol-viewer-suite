@@ -201,9 +201,9 @@ export const TITILER_BY_PAGE_HOST = {
 export const LEXIC_API_BY_PAGE_HOST = {
   'localhost:8000': 'https://dev-webmap-api.swissgeol.ch',
   'dev-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
-  'int-viewer.swissgeol.ch': 'https://int-webmap-api.swissgeol.ch',
-  'swissgeol.ch': 'https://webmap-api.swissgeol.ch',
-  'viewer.swissgeol.ch': 'https://webmap-api.swissgeol.ch',
+  'int-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
 };
 
 export const DEFAULT_UPLOADED_KML_COLOR = Color.fromCssColorString('#0056A4');
