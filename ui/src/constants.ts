@@ -198,6 +198,14 @@ export const TITILER_BY_PAGE_HOST = {
   'viewer.swissgeol.ch': 'https://api.swissgeol.ch/titiler',
 };
 
+export const LEXIC_API_BY_PAGE_HOST = {
+  'localhost:8000': 'https://dev-webmap-api.swissgeol.ch',
+  'dev-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'int-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+};
+
 export const DEFAULT_UPLOADED_KML_COLOR = Color.fromCssColorString('#0056A4');
 export const DEFAULT_UPLOADED_GEOJSON_COLOR =
   Color.fromCssColorString('#0056A4');
