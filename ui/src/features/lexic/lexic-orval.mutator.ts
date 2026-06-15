@@ -1,16 +1,6 @@
-interface LexicClientConfig {
-  baseUrl: string;
-}
+import { LEXIC_API_BY_PAGE_HOST } from 'src/constants';
 
-const config: LexicClientConfig = {
-  baseUrl: '',
-};
-
-export function configureLexicClient(next: Partial<LexicClientConfig>): void {
-  if (next.baseUrl !== undefined) {
-    config.baseUrl = trimTrailingSlash(next.baseUrl);
-  }
-}
+const DEFAULT_BASE_URL = 'https://dev-webmap-api.swissgeol.ch';
 
 export async function lexicFetch<T>(
   requestUrl: string,
@@ -21,9 +11,10 @@ export async function lexicFetch<T>(
     headers.set('Accept', 'application/json');
   }
 
+  const baseUrl = LEXIC_API_BY_PAGE_HOST[getHost()] ?? DEFAULT_BASE_URL;
   const url = requestUrl.startsWith('http')
     ? requestUrl
-    : `${config.baseUrl}${requestUrl}`;
+    : `${baseUrl}${requestUrl}`;
 
   const response = await fetch(url, {
     ...requestOptions,
@@ -72,6 +63,9 @@ async function parseResponseBody(response: Response): Promise<unknown> {
   }
 }
 
-function trimTrailingSlash(value: string): string {
-  return value.endsWith('/') ? value.slice(0, -1) : value;
+function getHost(): string {
+  if (typeof globalThis.location === 'undefined') {
+    return 'localhost:8000';
+  }
+  return globalThis.location.host;
 }

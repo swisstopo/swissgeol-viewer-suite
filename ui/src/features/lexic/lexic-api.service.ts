@@ -1,5 +1,4 @@
 import { BaseService } from 'src/services/base.service';
-import { LEXIC_API_BY_PAGE_HOST } from 'src/constants';
 import {
   getLayers,
   getLayersLayerIdAttributeList,
@@ -16,7 +15,6 @@ import {
   getVocabulariesTectonicUnitsTerms,
   postGenerateWmsRequest,
 } from './generated/lexic-api';
-import { configureLexicClient } from './lexic-orval.mutator';
 import {
   LexicDefaultFiltersResponse,
   LexicLanguage,
@@ -30,15 +28,9 @@ import {
   LexicWmsResponse,
 } from './lexic-api.model';
 
-const DEFAULT_BASE_URL = 'https://dev-webmap-api.swissgeol.ch';
-
 export class LexicApiService extends BaseService {
-  private baseUrl: string;
-
   constructor() {
     super();
-    this.baseUrl = LEXIC_API_BY_PAGE_HOST[this.getHost()] ?? DEFAULT_BASE_URL;
-    this.configureGeneratedClient();
   }
 
   async getLayers(lang: LexicLanguage = 'en'): Promise<LexicLayersResponse> {
@@ -139,18 +131,4 @@ export class LexicApiService extends BaseService {
   private getData<T>(response: { data: unknown }): T {
     return response.data as T;
   }
-
-  private configureGeneratedClient(): void {
-    configureLexicClient({
-      baseUrl: this.baseUrl,
-    });
-  }
-
-  private getHost(): string {
-    if (typeof globalThis.location === 'undefined') {
-      return 'localhost:8000';
-    }
-    return globalThis.location.host;
-  }
 }
-
