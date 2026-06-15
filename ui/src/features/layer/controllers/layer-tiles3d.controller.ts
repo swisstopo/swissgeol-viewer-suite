@@ -81,14 +81,31 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     tileset.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(1, 0);
     tileset.customShader = this.makeShader();
 
-    const showConditions =
-      "${className} === 'IfcGeoslice' || " +
-      "${className} === 'IfcPipeSegment' || " +
-      "${className} === 'IfcGeotechnicalStratum' || " +
-      "${className} === 'IfcBorehole' || " +
-      "${className} === 'IfcBuildingElementProxy'";
+    const ifcSystemLayers = [
+      'COMPLETIONS : Backfills',
+      'COMPLETIONS : Casings',
+      'COMPLETIONS : Instrumentation',
+      'COMPLETIONS : Sections',
+      'OBSERVATIONS : Field Measurement',
+      'OBSERVATIONS : Groundwater Level',
+      'OBSERVATIONS : Hydrotest',
+      'OBSERVATIONS : Water Ingress',
+      'STRATIGRAPHIES : Chronostratigraphy',
+      'STRATIGRAPHIES : Lithostratigraphy',
+      'STRATIGRAPHIES : Lithologies',
+      'Paths',
+    ];
+
+    const showConditions = ifcSystemLayers
+      .map(
+        (layerName) =>
+          `(\${ifcSystem} !== undefined && \${ifcSystem} === '${layerName}')`,
+      )
+      .join(' || ');
+
     tileset.style = new Cesium3DTileStyle({
       show: showConditions,
+      // show: 'true',
     });
 
     const pickService = PickService.get();

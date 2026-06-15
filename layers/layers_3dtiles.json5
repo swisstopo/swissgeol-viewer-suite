@@ -73,7 +73,7 @@
       id: 'borehole-3d-test',
       source: {
         type: 'CesiumIon',
-        asset_id: 4546972,
+        asset_id: 4944201,
       },
       access: {
         env: ['local', 'dev'],
