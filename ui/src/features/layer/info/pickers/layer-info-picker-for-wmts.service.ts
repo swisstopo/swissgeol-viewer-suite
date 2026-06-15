@@ -36,6 +36,15 @@ interface ServiceFeatureInfoResponse {
 
 type WmtsLayerForInfo = Pick<WmtsLayer, 'id' | 'serviceUrl' | 'source'>;
 
+/**
+ * Facade used by the WMTS picker.
+ *
+ * Why this exists:
+ * - geo.admin uses ArcGIS-style endpoints (`identify`, `htmlPopup`)
+ * - external services use WMS `GetFeatureInfo`
+ *
+ * The picker does not need to know protocol details; it calls this facade.
+ */
 export class LayerInfoPickerForWmtsService {
   private readonly geoAdminClient: GeoAdminWmtsInfoClient;
   private readonly externalClient: ExternalWmtsInfoClient;
@@ -82,6 +91,10 @@ export class LayerInfoPickerForWmtsService {
 class GeoAdminWmtsInfoClient {
   constructor(private readonly layer: WmtsLayerForInfo) {}
 
+  /**
+   * Identify is only reliable for geo.admin-like hosts.
+   * For unknown/external hosts, the caller should use WMS GetFeatureInfo instead.
+   */
   shouldUseIdentify(): boolean {
     const { serviceUrl } = this.layer;
     if (serviceUrl === null) {
@@ -101,6 +114,7 @@ class GeoAdminWmtsInfoClient {
     tolerance: number,
     lang: string,
   ): Promise<IdentifyResult[] | null> {
+    // Try the layer-derived base first, then the default api3 host.
     for (const baseUrl of this.buildRestApiBaseUrls()) {
       const identifyUrl = this.buildIdentifyUrl(
         geom2056,
@@ -131,6 +145,7 @@ class GeoAdminWmtsInfoClient {
   }
 
   async fetchHtmlPopup(result: IdentifyResult, lang: string): Promise<string> {
+    // Use the same endpoint fallback order as identify.
     for (const baseUrl of this.buildRestApiBaseUrls()) {
       const popupUrl = this.buildHtmlPopupUrl(result, lang, baseUrl);
       try {
@@ -152,6 +167,7 @@ class GeoAdminWmtsInfoClient {
   }
 
   extractPopupAttributes(html: string): LayerInfoAttribute[] {
+    // htmlPopup returns an HTML table; we flatten it to key/value pairs for the info box.
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     const rows = [...doc.querySelectorAll('.htmlpopup-content table tr')];
@@ -289,6 +305,10 @@ class GeoAdminWmtsInfoClient {
 class ExternalWmtsInfoClient {
   constructor(private readonly layer: WmtsLayerForInfo) {}
 
+  /**
+   * External WMTS/WMS fallback:
+   * call WMS GetFeatureInfo and return raw features, if present.
+   */
   async fetchServiceFeatureInfo(
     geom2056: [number, number],
     lang: string,
@@ -322,6 +342,7 @@ class ExternalWmtsInfoClient {
   mapFeaturePropertiesToAttributes(
     properties: Record<string, unknown> | null | undefined,
   ): LayerInfoAttribute[] {
+    // External payload keys/values are normalized for readability in the info box.
     if (properties == null) {
       return [];
     }

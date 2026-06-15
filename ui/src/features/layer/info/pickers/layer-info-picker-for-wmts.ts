@@ -55,6 +55,11 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
     if (!this.controller.layer.isVisible) {
       return [];
     }
+
+    // Flow:
+    // 1) Try geo.admin identify/htmlPopup when supported.
+    // 2) If no results, fallback to external WMS GetFeatureInfo.
+    // 3) Convert returned geometry + attributes to LayerInfo objects.
     const geom2056 = radiansToLv95([
       pick.globePosition.cartographic.longitude,
       pick.globePosition.cartographic.latitude,
