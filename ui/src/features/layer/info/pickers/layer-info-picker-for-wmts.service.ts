@@ -37,9 +37,52 @@ interface ServiceFeatureInfoResponse {
 type WmtsLayerForInfo = Pick<WmtsLayer, 'id' | 'serviceUrl' | 'source'>;
 
 export class LayerInfoPickerForWmtsService {
-  constructor(private readonly layer: WmtsLayerForInfo) {}
+  private readonly geoAdminClient: GeoAdminWmtsInfoClient;
+  private readonly externalClient: ExternalWmtsInfoClient;
+
+  constructor(layer: WmtsLayerForInfo) {
+    this.geoAdminClient = new GeoAdminWmtsInfoClient(layer);
+    this.externalClient = new ExternalWmtsInfoClient(layer);
+  }
 
   shouldUseGeoAdminIdentify(): boolean {
+    return this.geoAdminClient.shouldUseIdentify();
+  }
+
+  async fetchIdentifyResults(
+    geom2056: [number, number],
+    tolerance: number,
+    lang: string,
+  ): Promise<IdentifyResult[] | null> {
+    return this.geoAdminClient.fetchIdentifyResults(geom2056, tolerance, lang);
+  }
+
+  async fetchHtmlPopup(result: IdentifyResult, lang: string): Promise<string> {
+    return this.geoAdminClient.fetchHtmlPopup(result, lang);
+  }
+
+  async fetchServiceFeatureInfo(
+    geom2056: [number, number],
+    lang: string,
+  ): Promise<ServiceFeatureInfoFeature[] | null> {
+    return this.externalClient.fetchServiceFeatureInfo(geom2056, lang);
+  }
+
+  mapFeaturePropertiesToAttributes(
+    properties: Record<string, unknown> | null | undefined,
+  ): LayerInfoAttribute[] {
+    return this.externalClient.mapFeaturePropertiesToAttributes(properties);
+  }
+
+  extractPopupAttributes(html: string): LayerInfoAttribute[] {
+    return this.geoAdminClient.extractPopupAttributes(html);
+  }
+}
+
+class GeoAdminWmtsInfoClient {
+  constructor(private readonly layer: WmtsLayerForInfo) {}
+
+  shouldUseIdentify(): boolean {
     const { serviceUrl } = this.layer;
     if (serviceUrl === null) {
       return true;
@@ -108,49 +151,6 @@ export class LayerInfoPickerForWmtsService {
     return '';
   }
 
-  async fetchServiceFeatureInfo(
-    geom2056: [number, number],
-    lang: string,
-  ): Promise<ServiceFeatureInfoFeature[] | null> {
-    const infoUrl = this.buildServiceFeatureInfoUrl(geom2056, lang);
-    if (infoUrl === null) {
-      return null;
-    }
-
-    try {
-      const response = await fetch(infoUrl);
-      if (!response.ok) {
-        return null;
-      }
-
-      const body = await response.text();
-      const parsed = JSON.parse(body) as Partial<ServiceFeatureInfoResponse>;
-      if (Array.isArray(parsed.features)) {
-        return parsed.features;
-      }
-    } catch (e) {
-      console.warn(
-        `[LayerInfoPickerForWmtsService] GetFeatureInfo failed for ${infoUrl}:`,
-        e,
-      );
-    }
-
-    return null;
-  }
-
-  mapFeaturePropertiesToAttributes(
-    properties: Record<string, unknown> | null | undefined,
-  ): LayerInfoAttribute[] {
-    if (properties == null) {
-      return [];
-    }
-
-    return Object.entries(properties).map(([key, rawValue]) => ({
-      key: this.humanizeExternalAttributeKey(key),
-      value: this.normalizeAttributeValue(rawValue),
-    }));
-  }
-
   extractPopupAttributes(html: string): LayerInfoAttribute[] {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
@@ -188,6 +188,18 @@ export class LayerInfoPickerForWmtsService {
     }, [] as LayerInfoAttribute[]);
   }
 
+  private buildRestApiBaseUrls(): string[] {
+    const primary = this.deriveRestApiBaseUrl();
+    const normalizedDefault = `${DEFAULT_GEO_ADMIN_API_URL}/`;
+    if (
+      primary === normalizedDefault ||
+      primary === DEFAULT_GEO_ADMIN_API_URL
+    ) {
+      return [normalizedDefault];
+    }
+    return [primary, normalizedDefault];
+  }
+
   private buildIdentifyUrl(
     geom2056: [number, number],
     tolerance: number,
@@ -219,65 +231,6 @@ export class LayerInfoPickerForWmtsService {
     );
     url.searchParams.set('lang', lang);
     return url.toString();
-  }
-
-  private buildServiceFeatureInfoUrl(
-    geom2056: [number, number],
-    lang: string,
-  ): string | null {
-    const { serviceUrl } = this.layer;
-    if (serviceUrl === null) {
-      return null;
-    }
-
-    let base: URL;
-    try {
-      base = new URL(serviceUrl);
-    } catch {
-      return null;
-    }
-
-    base.pathname = base.pathname
-      .replace(/\/gwc\/service\/wmts\/?$/i, '/wms')
-      .replace(/\/service\/wmts\/?$/i, '/wms')
-      .replace(/\/wmts\/?$/i, '/wms');
-    base.search = '';
-    base.hash = '';
-
-    const [x, y] = geom2056;
-
-    base.searchParams.set('SERVICE', 'WMS');
-    base.searchParams.set('VERSION', '1.3.0');
-    base.searchParams.set('REQUEST', 'GetFeatureInfo');
-    base.searchParams.set('LAYERS', String(this.layer.id));
-    base.searchParams.set('QUERY_LAYERS', String(this.layer.id));
-    base.searchParams.set('STYLES', '');
-    base.searchParams.set('CRS', 'EPSG:2056');
-    base.searchParams.set(
-      'BBOX',
-      `${x - FEATURE_INFO_BBOX_DELTA},${y - FEATURE_INFO_BBOX_DELTA},${x + FEATURE_INFO_BBOX_DELTA},${y + FEATURE_INFO_BBOX_DELTA}`,
-    );
-    base.searchParams.set('WIDTH', String(FEATURE_INFO_WIDTH));
-    base.searchParams.set('HEIGHT', String(FEATURE_INFO_HEIGHT));
-    base.searchParams.set('I', String(Math.floor(FEATURE_INFO_WIDTH / 2)));
-    base.searchParams.set('J', String(Math.floor(FEATURE_INFO_HEIGHT / 2)));
-    base.searchParams.set('INFO_FORMAT', 'application/json');
-    base.searchParams.set('FEATURE_COUNT', '10');
-    base.searchParams.set('LANG', lang);
-
-    return base.toString();
-  }
-
-  private buildRestApiBaseUrls(): string[] {
-    const primary = this.deriveRestApiBaseUrl();
-    const normalizedDefault = `${DEFAULT_GEO_ADMIN_API_URL}/`;
-    if (
-      primary === normalizedDefault ||
-      primary === DEFAULT_GEO_ADMIN_API_URL
-    ) {
-      return [normalizedDefault];
-    }
-    return [primary, normalizedDefault];
   }
 
   private deriveRestApiBaseUrl(): string {
@@ -330,6 +283,100 @@ export class LayerInfoPickerForWmtsService {
       return { url: anchor.href, name: anchor.text };
     }
     return element.textContent?.trim() ?? '';
+  }
+}
+
+class ExternalWmtsInfoClient {
+  constructor(private readonly layer: WmtsLayerForInfo) {}
+
+  async fetchServiceFeatureInfo(
+    geom2056: [number, number],
+    lang: string,
+  ): Promise<ServiceFeatureInfoFeature[] | null> {
+    const infoUrl = this.buildServiceFeatureInfoUrl(geom2056, lang);
+    if (infoUrl === null) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(infoUrl);
+      if (!response.ok) {
+        return null;
+      }
+
+      const body = await response.text();
+      const parsed = JSON.parse(body) as Partial<ServiceFeatureInfoResponse>;
+      if (Array.isArray(parsed.features)) {
+        return parsed.features;
+      }
+    } catch (e) {
+      console.warn(
+        `[LayerInfoPickerForWmtsService] GetFeatureInfo failed for ${infoUrl}:`,
+        e,
+      );
+    }
+
+    return null;
+  }
+
+  mapFeaturePropertiesToAttributes(
+    properties: Record<string, unknown> | null | undefined,
+  ): LayerInfoAttribute[] {
+    if (properties == null) {
+      return [];
+    }
+
+    return Object.entries(properties).map(([key, rawValue]) => ({
+      key: this.humanizeExternalAttributeKey(key),
+      value: this.normalizeAttributeValue(rawValue),
+    }));
+  }
+
+  private buildServiceFeatureInfoUrl(
+    geom2056: [number, number],
+    lang: string,
+  ): string | null {
+    const { serviceUrl } = this.layer;
+    if (serviceUrl === null) {
+      return null;
+    }
+
+    let base: URL;
+    try {
+      base = new URL(serviceUrl);
+    } catch {
+      return null;
+    }
+
+    base.pathname = base.pathname
+      .replace(/\/gwc\/service\/wmts\/?$/i, '/wms')
+      .replace(/\/service\/wmts\/?$/i, '/wms')
+      .replace(/\/wmts\/?$/i, '/wms');
+    base.search = '';
+    base.hash = '';
+
+    const [x, y] = geom2056;
+
+    base.searchParams.set('SERVICE', 'WMS');
+    base.searchParams.set('VERSION', '1.3.0');
+    base.searchParams.set('REQUEST', 'GetFeatureInfo');
+    base.searchParams.set('LAYERS', String(this.layer.id));
+    base.searchParams.set('QUERY_LAYERS', String(this.layer.id));
+    base.searchParams.set('STYLES', '');
+    base.searchParams.set('CRS', 'EPSG:2056');
+    base.searchParams.set(
+      'BBOX',
+      `${x - FEATURE_INFO_BBOX_DELTA},${y - FEATURE_INFO_BBOX_DELTA},${x + FEATURE_INFO_BBOX_DELTA},${y + FEATURE_INFO_BBOX_DELTA}`,
+    );
+    base.searchParams.set('WIDTH', String(FEATURE_INFO_WIDTH));
+    base.searchParams.set('HEIGHT', String(FEATURE_INFO_HEIGHT));
+    base.searchParams.set('I', String(Math.floor(FEATURE_INFO_WIDTH / 2)));
+    base.searchParams.set('J', String(Math.floor(FEATURE_INFO_HEIGHT / 2)));
+    base.searchParams.set('INFO_FORMAT', 'application/json');
+    base.searchParams.set('FEATURE_COUNT', '10');
+    base.searchParams.set('LANG', lang);
+
+    return base.toString();
   }
 
   private normalizeAttributeValue(value: unknown): LayerInfoAttribute['value'] {
