@@ -80,7 +80,15 @@ spec:
           # GST
           - name: GST_URL
             value: "{{ .Values.gst_url }}"
-        
+
+          # Lexic (SwissTopo WebMap Semantic Filter API)
+          - name: LEXIC_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: lexic_api_key
+                optional: true
+
         resources:
           limits:
             cpu: '1'
