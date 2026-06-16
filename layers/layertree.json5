@@ -563,6 +563,7 @@
       children: [
         // 'ch.swisstopo.geologie-felslabore',
         // 'ch.bfe.sachplan-geologie-tiefenlager',
+        'rocklab_mont-terri',
         'tunnel_road',
         'tunnel_railway',
         'tunnel_water',

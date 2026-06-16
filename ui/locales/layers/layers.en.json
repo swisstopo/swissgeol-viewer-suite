@@ -13,11 +13,11 @@
     "aar3d_horizon_Base_Mesozoic_molasse": "Aar3D - Base Mesozoic Molasse",
     "aar3d_horizon_Clavaniev_zone": "Aar3D - Clavaniev Zone",
     "aar3d_horizon_Cryst_basement_slivers": "Aar3D - Crystallin basement slivers",
-    "aar3d_horizon_Erstfeld_gneis_complex": "Aar3D - Erstfeld Gneis Complex",
-    "aar3d_horizon_Ferden-Guttannen_Gneis_Complex": "Aar3D - Ferden-Guttannen Gneis Complex",
-    "aar3d_horizon_Innertkirchen-Lauterbrunnen_Gneis_Complex": "Aar3D - Innertkirchen-Lauterbrunnen Gneis Complex",
-    "aar3d_horizon_Oberaar-Furka_Gneis_Complex": "Aar3D - Oberaar-Furka Gneis Complex",
-    "aar3d_horizon_Sustenhorn_Gneis_Complex": "Aar3D - Sustenhorn Gneis Complex",
+    "aar3d_horizon_Erstfeld_gneis_complex": "Aar3D - Erstfeld Gneiss Complex",
+    "aar3d_horizon_Ferden-Guttannen_Gneis_Complex": "Aar3D - Ferden-Guttannen Gneiss Complex",
+    "aar3d_horizon_Innertkirchen-Lauterbrunnen_Gneis_Complex": "Aar3D - Innertkirchen-Lauterbrunnen Gneiss Complex",
+    "aar3d_horizon_Oberaar-Furka_Gneis_Complex": "Aar3D - Oberaar-Furka Gneiss Complex",
+    "aar3d_horizon_Sustenhorn_Gneis_Complex": "Aar3D - Sustenhorn Gneiss Complex",
     "aar3d_horizon_permo-carbon": "Aar3D - Permo-Carboniferous rocks",
     "aar3d_horizon_plutonic_rocks": "Aar3D - Plutonic rocks",
     "base_cen": "Base Cenozoic",
@@ -192,6 +192,7 @@
     "top_uma": "Top Upper Malm",
     "top_umm": "Top Lower Marine Molasse",
     "top_usm": "Top Lower Freshwater Molasse",
+    "rocklab_mont-terri": "Mont-Terri Rock Lab",
     "tunnel_railway": "Railway tunnel",
     "tunnel_road": "Road tunnel",
     "tunnel_water": "Underground water tunnel",
@@ -503,16 +504,18 @@
       "description_url_sa3d_WP_profiles_01":"https://download.swissgeol.ch/docu-data/placeholder/placeholder_text.pdf",
       "download_01": "Download (.movz)",
       "download_movz_value": "Download (.movz)",
-      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_MOVZ_20260316.zip",
-      "download_movz_url_j3d_faults": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Faults_MOVZ_20260316.zip",
-      "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_MOVZ_20260316.zip",
-      "download_02": "Download (.gocad)",
-      "download_gocad_value": "Download (.gocad)",
-      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_GOCAD_20260318.zip",
-      "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Faults_GOCAD_20260318.zip",
+      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
+      "download_movz_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
+      "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
+      "download_02": "Download (.ts)",
+      "download_gocad_value": "Download (.ts)",
+      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
+      "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_GOCAD_20260317.zip",
       "download_shp_value": "Download (.shp)",
-      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_SHP_20260318.zip",
-      "dataDate": "Data status"
+      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Profiles_SHP_20260318.zip",
+      "dataDate": "Data status",
+      "contact_url_rocklab_mont-terri": "https://www.mont-terri.ch/en/contact",
+      "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contact"
     },
     "layers": {
       "j3d_horizon": {
@@ -616,6 +619,12 @@
         "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the West Penninic tectonic domain subsurface, ...",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "rocklab_mont-terri": {
+        "title": "Mont-Terri Rock Laboratory",
+        "description": "3D model of the gallaries of the Mont-Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay)",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
       }
     }
   }

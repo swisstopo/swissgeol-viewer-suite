@@ -9,7 +9,6 @@ import {
   GeoJsonLayer,
   InfoBox,
   InfoBoxCustom,
-  InformationValue,
   KmlLayer,
   Layer,
   LayerGroup,
@@ -110,7 +109,7 @@ export class LayerApiService extends BaseService {
           if (legendUrl !== null) {
             result.legendUrl = legendUrl;
           }
-          const information: Record<string, InformationValue> | null =
+          const information: InfoBoxCustom['information'] | null =
             infoBoxValue.takeNullable('information');
           if (information !== null) {
             result.information = information;

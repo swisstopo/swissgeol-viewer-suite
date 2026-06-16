@@ -38,6 +38,7 @@ pub struct ClientConfig {
     #[clap(long, env)]
     pub gst_url: String,
 
+
     #[clap(flatten)]
     pub auth: Auth,
 }

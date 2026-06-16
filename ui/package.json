@@ -23,7 +23,9 @@
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts",
     "cypress:run": "cypress run --config-file cypress/cypress.config.ts",
     "analyze": "cross-env ANALYZE=true npx analyze",
-    "config:validate": "docker compose run --rm --no-deps api sh -c \"cargo run -- --validate-only\""
+    "config:validate": "docker compose run --rm --no-deps api sh -c \"cargo run -- --validate-only\"",
+    "openapi:lexic": "orval --config orval.lexic.config.ts",
+    "openapi:lexic:watch": "orval --config orval.lexic.config.ts --watch"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.768.0",
@@ -100,6 +102,7 @@
     "marked": "~15.0.7",
     "mini-css-extract-plugin": "2.9.2",
     "node-fetch": "^3.3.2",
+    "orval": "^8.17.0",
     "postcss": "^8.5.3",
     "postcss-import": "^16.1.0",
     "postcss-inline-svg": "^6.0.0",

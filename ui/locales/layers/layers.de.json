@@ -188,6 +188,7 @@
     "top_uma": "Top Oberer Malm",
     "top_umm": "Top Untere Meeresmolasse",
     "top_usm": "Top Untere Süsswassermolasse",
+    "rocklab_mont-terri": "Mont-Terri Felslabor",
     "tunnel_railway": "Eisenbahntunnel",
     "tunnel_road": "Strassentunnel",
     "tunnel_water": "Unterirdische Wassertunnel",
@@ -493,18 +494,20 @@
       "description_value_sa3d_PR_profiles_01": "PR3D_Report_M1",
       "description_value_sa3d_SAM_profiles_01": "SubalpineMolasse3D_Interim_Report_M1_M2",
       "download_01": "Download (.movz)",
-      "download_02": "Download (.gocad)",
-      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_GOCAD_20260318.zip",
-      "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Faults_GOCAD_20260318.zip",
-      "download_gocad_value": "Download (.gocad)",
-      "download_gocad_value_j3d_horizon": "Download (.gocad)",
-      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_MOVZ_20260316.zip",
-      "download_movz_url_j3d_faults": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Faults_MOVZ_20260316.zip",
-      "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_MOVZ_20260316.zip",
+      "download_02": "Download (.ts)",
+      "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_GOCAD_20260317.zip",
+      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
+      "download_gocad_value": "Download (.ts)",
+      "download_gocad_value_j3d_horizon": "Download (.ts)",
+      "download_movz_url_j3d_faults": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
+      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
+      "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Faults_MOVZ_20260316.zip",
       "download_movz_value": "Download (.movz)",
       "download_movz_value_j3d_horizon": "Download (.movz)",
-      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_SHP_20260318.zip",
-      "download_shp_value": "Download (.shp)"
+      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Profiles_SHP_20260318.zip",
+      "download_shp_value": "Download (.shp)",
+      "contact_url_rocklab_mont-terri": "https://www.mont-terri.ch/de/kontakt",
+      "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > Kontakt"
     },
     "layers": {
       "j3d_horizon": {
@@ -590,6 +593,12 @@
         "description": "Das geologische 3D-Modell SAM ist eine harmonisierte Darstellung der wichtigsten lithostratigraphischen und strukturellen Einheiten des Untergrunds der tektonischen Domäne der Subalpinen Molasse. Es wurde im Projekt swissAlps3D im Rahmen des Programms Nationales Geologisches Modell (NGM) entwickelt. Das Modell umfasst Referenzprofile, Störungsflächen und lithostratigraphische Horizonte (geologische Grenzen). Sein tektono-stratigraphischer Rahmen basiert auf der Tektonischen Karte der Schweiz (swisstopo, 2024). Oberflächendaten werden aus GeoCover-Vektordaten, GA25-Karten und publizierten geologischen Karten harmonisiert. Im Untergrund integriert es geologische Profile, Bohrdaten und geophysikalische Datensätze mit unterschiedlicher räumlicher Dichte, die durch eine konsistente kinematische Interpretation zusammengeführt werden, um ein kohärentes geologisches 3D-Modell zu gewährleisten. Weitere Details sind im zugehörigen Modellbericht und in Publikationen enthalten.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
+      },
+      "rocklab_mont-terri": {
+        "title": "Mont-Terri Felslabor",
+        "description": "3D-Modell der Tunnelgallerie des Mont-Terri Felslabors. Das Mont Terri Projekt ist ein internationales Forschungsprojekt zur hydrogeologischen, geochemischen und geotechnischen Charakterisierung einer Tonformation (Opalinus-Ton).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
       }
     }
   }

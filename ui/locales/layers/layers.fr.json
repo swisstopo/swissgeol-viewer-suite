@@ -189,6 +189,7 @@
     "top_uma": "Toit du Malm supérieur",
     "top_umm": "Toit de la Molasse marine inférieure",
     "top_usm": "Toit de la Molasse d'eau douce inférieure",
+    "rocklab_mont-terri": "Laboratoire souterrain Mont-Terri",
     "tunnel_railway": "Tunnel ferroviaire",
     "tunnel_road": "Tunnel routier",
     "tunnel_water": "Tunnel hydraulique souterrain",
@@ -510,10 +511,10 @@
       "description_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/swissJURA3D_MA1_Documentation_2025_FR.pdf",
       "download_01": "Download (.movz)",
       "download_movz_value_j3d_horizon": "Download (.movz)",
-      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_MOVZ_20260316.zip",
-      "download_02": "Download (.gocad)",
-      "download_gocad_value_j3d_horizon": "Download (.gocad)",
-      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_GOCAD_20260318.zip",
+      "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
+      "download_02": "Download (.ts)",
+      "download_gocad_value_j3d_horizon": "Download (.ts)",
+      "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_GOCAD_20260317.zip",
       "dataDate": "État d'actualité",
       "description_sa3d_HL_profiles_01": "Rapport du modèle (ENG)",
       "description_value_sa3d_HL_profiles_01": "Helvetic3D_Interim_Report_M1",
@@ -530,7 +531,9 @@
       "download_gocad_value": "Télécharger (.gocad)",
       "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Faults_GOCAD_20260318.zip",
       "download_shp_value": "Télécharger (.shp)",
-      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_SHP_20260318.zip"
+      "download_shp_url_j3d_profiles": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Profiles_SHP_20260318.zip",
+      "contact_url_rocklab_mont-terri": "https://www.mont-terri.ch/fr/contacts",
+      "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contacts"
     },
     "layers": {
       "j3d_horizon": {
@@ -616,6 +619,12 @@
         "description": "Le modèle géologique 3D SAM est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique de la Molasse subalpine, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
+      },
+      "rocklab_mont-terri": {
+        "title": "Laboratoire souterrain Mont-Terri",
+        "description": "Modèle 3D des galeries du Laboratoire de roches de Mont-Terri. Le projet Mont Terri est un projet de recherche international pour la caractérisation hydrogéologique, géochimique et géotechnique d'une formation argileuse (Argiles à Opalinus)",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
       }
     }
   }
