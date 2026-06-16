@@ -59,6 +59,7 @@
           children: [
             'ch.swisstopo.geologie-geologischer_atlas_profile',
             'ga25Profiles_test',
+            'ga25Profiles_test_02',
             'geomol_cs',
             'j3d_profiles',
             'aar3d_aaremassive_cs',

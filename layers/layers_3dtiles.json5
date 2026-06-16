@@ -68,6 +68,17 @@
         env: ['local', 'dev'],
       },
     },
+    {
+      type: 'Tiles3d',
+      id: 'ga25Profiles_test_02',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4872440,
+      },
+      access: {
+        env: ['local', 'dev'],
+      },
+    },
     // Topic Boreholes
     // Boreholes 2021 - Public
     {
