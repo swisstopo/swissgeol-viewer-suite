@@ -180,6 +180,14 @@ export class SessionService extends BaseService {
     const payload = atob(accessToken.split('.')[1]);
     const claims: CognitoUser = JSON.parse(payload);
     const token = params.get('id_token') ?? '';
+
+    // Remove tokens from the URL to avoid exposing them in the address bar and browser history.
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}${window.location.search}`,
+    );
+
     const [user, cognitoIdentityCredentials] = await Promise.all([
       this.fetchUser(claims, accessToken),
       this.fetchCognito(token),
