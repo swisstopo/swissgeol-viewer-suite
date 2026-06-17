@@ -145,12 +145,12 @@
     "sa3d_PR_faults_01": "PR - M1 All Faults",
     "sa3d_PR_horizon_01": "PR - M1 All Horizons",
     "sa3d_PR_profiles_01": "PR - M1 All Profiles",
-    "sa3d_SAM_faults_01": "SAM - M1-2 Faults",
-    "sa3d_SAM_profiles_01": "SAM - M1-2 All Profiles",
-    "sa3d_SAM_thrust_faults_01": "SAM - M1-2 Thrust Faults",
-    "sa3d_WP_profiles_01":"WP - M1 Profiles",
-    "sa3d_WP_faults_01":"WP - M1 Faults",
-    "sa3d_WP_horizons_01":"WP - M1 Horizons",
+    "sa3d_SAM_faults_01": "SAM - M3 Faults",
+    "sa3d_SAM_profiles_01": "SAM - M3 All Profiles",
+    "sa3d_SAM_thrust_faults_01": "SAM - M3 Thrust Faults",
+    "sa3d_WP_profiles_01":"WP - M1 All Profiles",
+    "sa3d_WP_faults_01":"WP - M1 All Faults",
+    "sa3d_WP_horizons_01":"WP - M1 All Horizons",
     "seismic_2d_2023_23SIG_A_001": "23SIG_A_001",
     "seismic_2d_2023_23SIG_A_002": "23SIG_A_002",
     "seismic_2d_2023_23SIG_A_003": "23SIG_A_003",
@@ -503,10 +503,10 @@
       "description_value_sa3d_PR_profiles_01": "PR3D_Report_M1",
       "description_url_sa3d_PR_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Prealps_PR/PR3D_Report_M1.pdf",
       "description_sa3d_SAM_profiles_01": "Model report (ENG)",
-      "description_value_sa3d_SAM_profiles_01": "SubalpineMolasse3D_Interim_Report_M1_M2",
-      "description_url_sa3d_SAM_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SubalpineMolasse3D_Interim_Report_M1_M2.pdf",
-      "description_value_sa3d_WP_profiles_01": "West_Penninic_Interim_Report_M1_M2",
-      "description_url_sa3d_WP_profiles_01":"https://download.swissgeol.ch/docu-data/placeholder/placeholder_text.pdf",
+      "description_value_sa3d_SAM_profiles_01": "SAM3D_Report_M3",
+      "description_url_sa3d_SAM_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SubAlpineMolasse3D_Interim_Report_M3.pdf",
+      "description_value_sa3d_WP_profiles_01": "WP3D_Report_M1",
+      "description_url_sa3d_WP_profiles_01":"https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WestPenninic3D_Interim_Report_M1.pdf",
       "download_01": "Download (.movz)",
       "download_movz_value": "Download (.movz)",
       "download_movz_url_j3d_horizon": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Jura3D_MA1_Horizon_MOVZ_20260316.zip",
@@ -590,40 +590,39 @@
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Prealps_PR/PR3D_Legend.pdf"
       },
       "sa3d_SAM_profiles_01": {
-        "title": "Subalpine Molasse 3D (SAM) – Milestone 1 and 2 - 3D geological model of the Swiss Alps",
-        "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissAlps3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
+        "title": "Subalpine Molasse 3D (SAM) – Milestone 3 - 3D geological model of the Swiss Alps",
+        "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend_M3.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend_M3.pdf"
       },
       "sa3d_SAM_faults_01": {
-        "title": "Subalpine Molasse 3D (SAM) – Milestone 1 and 2 - 3D geological model of the Swiss Alps",
-        "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissAlps3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
+        "title": "Subalpine Molasse 3D (SAM) – Milestone 3 - 3D geological model of the Swiss Alps",
+        "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend_M3.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend_M3.pdf"
       },
       "sa3d_SAM_thrust_faults_01": {
-        "title": "Subalpine Molasse 3D (SAM) – Milestone 1 and 2 - 3D geological model of the Swiss Alps",
-        "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissAlps3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
+        "title": "Subalpine Molasse 3D (SAM) – Milestone 3 - 3D geological model of the Swiss Alps",
+        "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend_M3.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend_M3.pdf"
       },
       "sa3d_WP_profiles_01": {
         "title": "West Penninic 3D (WP) – Milestone 1 - 3D geological model of the Swiss Alps",
-        "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the West Penninic tectonic domain subsurface, ...",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+        "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the western portion of the Penninic tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.pdf"
       },
       "sa3d_WP_faults_01": {
-        "title": "West Penninic 3D (WP) – Milestone 1 - 3D geological model of the Swiss Alps",
-        "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the West Penninic tectonic domain subsurface, ...",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+        "title": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the western portion of the Penninic tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.pdf"
       },
       "sa3d_WP_horizons_01": {
         "title": "West Penninic 3D (WP) – Milestone 1 - 3D geological model of the Swiss Alps",
-        "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the West Penninic tectonic domain subsurface, ...",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+        "description": "The WP 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the western portion of the Penninic tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.pdf"
       },
       "rocklab_mont-terri_tunnel": {
         "title": "Mont-Terri Rock Laboratory - Tunnel",
