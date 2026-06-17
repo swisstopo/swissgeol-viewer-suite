@@ -70,7 +70,7 @@
     },
     {
       type: 'Tiles3d',
-      id: 'ga25Profiles_test_02',
+      id: 'ga25Profiles_test-02',
       source: {
         type: 'CesiumIon',
         asset_id: 4872440,
@@ -1445,12 +1445,101 @@
       geocat_id: '372c25ac-fb8a-44ee-8f81-6427939f6353',
     },
     // Mont-Terri Rock lab
+    // Full Tunnel
     {
       type: 'Tiles3d',
-      id: 'rocklab_mont-terri',
+      id: 'rocklab_mont-terri_tunnel',
       source: {
         type: 'CesiumIon',
         asset_id: 4841426,
+      },
+      //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: {
+              key: 'contact_value_rocklab_mont-terri',
+              url: 'contact_url_rocklab_mont-terri',
+            },
+          },
+        ],
+      },
+    },
+    // Galleries
+    {
+      type: 'Tiles3d',
+      id: 'rocklab_mont-terri_galleries',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4912617,
+      },
+      //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: {
+              key: 'contact_value_rocklab_mont-terri',
+              url: 'contact_url_rocklab_mont-terri',
+            },
+          },
+        ],
+      },
+    },
+    // Main Fault
+    {
+      type: 'Tiles3d',
+      id: 'rocklab_mont-terri_main-fault',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4912616,
+      },
+      //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: {
+              key: 'contact_value_rocklab_mont-terri',
+              url: 'contact_url_rocklab_mont-terri',
+            },
+          },
+        ],
+      },
+    },
+    // Geol Contacts
+    {
+      type: 'Tiles3d',
+      id: 'rocklab_mont-terri_geol-contacts',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4912586,
+      },
+      //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: {
+              key: 'contact_value_rocklab_mont-terri',
+              url: 'contact_url_rocklab_mont-terri',
+            },
+          },
+        ],
+      },
+    },
+    // Geol Units
+    {
+      type: 'Tiles3d',
+      id: 'rocklab_mont-terri_geol-units',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4912614,
       },
       //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
       info_box: {

@@ -129,6 +129,7 @@
     "earthquakes_mag_3": "Séismes - magnitude > 3",
     "earthquakes_recent": "Séismes - 90 derniers jours",
     "ga25Profiles_test": "GA25 Profils TEST",
+    "ga25Profiles_test-02": "GA25 profiles TEST 2026-06-02",
     "geomol_cs": "swissGEOMOL3D-Coupes",
     "geomol_faults": "swissGEOMOL3D-Zones de failles",
     "geoquat_aaretal_cs": "Coupes GeoQuat Aaretal",
@@ -147,6 +148,9 @@
     "sa3d_SAM_faults_01": "SAM - M1-2 Failles",
     "sa3d_SAM_profiles_01": "SAM - M1-2 Tous les profils",
     "sa3d_SAM_thrust_faults_01": "SAM - M1-2 Failles de chevauchement",
+    "sa3d_WP_profiles_01":"WP - M1 Profiles",
+    "sa3d_WP_faults_01":"WP - M1 Faults",
+    "sa3d_WP_horizons_01":"WP - M1 Horizons",
     "seismic_2d_2023_23SIG_A_001": "23SIG_A_001",
     "seismic_2d_2023_23SIG_A_002": "23SIG_A_002",
     "seismic_2d_2023_23SIG_A_003": "23SIG_A_003",
@@ -189,7 +193,11 @@
     "top_uma": "Toit du Malm supérieur",
     "top_umm": "Toit de la Molasse marine inférieure",
     "top_usm": "Toit de la Molasse d'eau douce inférieure",
-    "rocklab_mont-terri": "Laboratoire souterrain Mont-Terri",
+    "rocklab_mont-terri_tunnel": "TLaboratoire de roches de Mont-Terri - Tunnel",
+    "rocklab_mont-terri_galleries": "Laboratoire de roches de Mont-Terri - Galeries ",
+    "rocklab_mont-terri_main-fault": "Laboratoire de roches de Mont-Terri - Failles principales",
+    "rocklab_mont-terri_geol-contacts": "Laboratoire de roches de Mont-Terri - Contacts géologiques",
+    "rocklab_mont-terri_geol-units": "Laboratoire de la roche de Mont-Terri - Unités géologiques",
     "tunnel_railway": "Tunnel ferroviaire",
     "tunnel_road": "Tunnel routier",
     "tunnel_water": "Tunnel hydraulique souterrain",
@@ -274,7 +282,8 @@
     "temp_models": "Modèles de température",
     "thematic_maps": "Cartes thématiques",
     "uncon_rocks_bedrock": "Roches non consolidées et socle rocheux",
-    "underground_space": "Espace souterrain"
+    "underground_space": "Espace souterrain",
+    "mont-terri-rocklab-layers": "Mont-Terri Rock Lab"
   },
   "properties": {
     "ch.swisstopo.swissbedrock-geotiff": {
@@ -620,9 +629,33 @@
         "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
       },
-      "rocklab_mont-terri": {
-        "title": "Laboratoire souterrain Mont-Terri",
-        "description": "Modèle 3D des galeries du Laboratoire de roches de Mont-Terri. Le projet Mont Terri est un projet de recherche international pour la caractérisation hydrogéologique, géochimique et géotechnique d'une formation argileuse (Argiles à Opalinus)",
+      "rocklab_mont-terri_tunnel": {
+        "title": "Laboratoire souterrain Mont-Terri - Tunnel",
+        "description": "Modèle 3D du tunnel du laboratoire souterrain du Mont-Terri. Le projet Mont-Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "rocklab_mont-terri_galleries": {
+        "title": "Laboratoire souterrain Mont-Terri - Galeries",
+        "description": "Modèle 3D des galeries du laboratoire souterrain du Mont-Terri. Le projet Mont-Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "rocklab_mont-terri_main-fault": {
+        "title": "Laboratoire souterrain Mont-Terri - Faille principale",
+        "description": "Modèle 3D de la faille principale du laboratoire souterrain du Mont-Terri. Le projet Mont-Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "rocklab_mont-terri_geol-contacts": {
+        "title": "Laboratoire souterrain Mont-Terri - Contact géologique",
+        "description": "Modèle 3D des contacts géologiques du laboratoire souterrain du Mont-Terri. Le projet Mont Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "rocklab_mont-terri_geol-units": {
+        "title": "Laboratoire souterrain Mont-Terri - Unités géologique",
+        "description": "Modèle 3D des unités géologiques du laboratoire souterrain du Mont Terri. Le projet Mont Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       }

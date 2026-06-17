@@ -129,6 +129,7 @@
     "earthquakes_mag_3": "Erdbeben - Magnitude > 3",
     "earthquakes_recent": "Erdbeben - letzte 90 Tage",
     "ga25Profiles_test": "GA25-Profile TEST",
+    "ga25Profiles_test-02": "GA25 profiles TEST 2026-06-02",
     "geomol_cs": "swissGEOMOL3D-Profile",
     "geomol_faults": "swissGEOMOL3D-Störungszonen/Brüche",
     "geoquat_aaretal_cs": "Profile GeoQuat Aaretal",
@@ -147,6 +148,9 @@
     "sa3d_SAM_faults_01": "SAM - M1-2 Störungen",
     "sa3d_SAM_profiles_01": "SAM - M1-2 Alle Profile",
     "sa3d_SAM_thrust_faults_01": "SAM - M1-2 Überschiebungen",
+    "sa3d_WP_profiles_01":"WP - M1 Profiles",
+    "sa3d_WP_faults_01":"WP - M1 Faults",
+    "sa3d_WP_horizons_01":"WP - M1 Horizons",
     "seismic_2d_2023_23SIG_A_001": "23SIG_A_001",
     "seismic_2d_2023_23SIG_A_002": "23SIG_A_002",
     "seismic_2d_2023_23SIG_A_003": "23SIG_A_003",
@@ -189,6 +193,10 @@
     "top_umm": "Top Untere Meeresmolasse",
     "top_usm": "Top Untere Süsswassermolasse",
     "rocklab_mont-terri": "Mont-Terri Felslabor",
+    "rocklab_mont-terri_galleries": "Mont-Terri Felslabor – Galerien",
+    "rocklab_mont-terri_main-fault": "Mont-Terri Felslabor - Hauptverwerfung",
+    "rocklab_mont-terri_geol-contacts": "Mont-Terri Felslabor - Geol. Kontakte",
+    "rocklab_mont-terri_geol-units": "Mont-Terri Felslabor - Geol. Einheiten",
     "tunnel_railway": "Eisenbahntunnel",
     "tunnel_road": "Strassentunnel",
     "tunnel_water": "Unterirdische Wassertunnel",
@@ -254,14 +262,17 @@
     "sa3d_Profiles_HL": "Profile",
     "sa3d_Profiles_PR": "Profile",
     "sa3d_Profiles_SAM": "Profile",
+    "sa3d_Profiles_WP":"Profiles",
     "sa3d_SAM": "Subalpine Molasse (SAM)",
     "sa3d_aar-massif": "Aar-Massiv",
+    "sa3d_WP": "West Penninic (WP)",
     "sa3d_models": "Alpen",
     "sheet_divisions": "Blatteinteilungen",
     "temp_models": "Temperaturmodelle",
     "thematic_maps": "Thematische Karten",
     "uncon_rocks_bedrock": "Lockergesteine and Felsoberfläche",
-    "underground_space": "Unterirdischer Raum"
+    "underground_space": "Unterirdischer Raum",
+    "mont-terri-rocklab-layers": "Mont-Terri Rock Lab"
   },
   "properties": {
     "d_ANZAHL_S": "Anzahl Gleise",
@@ -594,9 +605,33 @@
         "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
       },
-      "rocklab_mont-terri": {
-        "title": "Mont-Terri Felslabor",
-        "description": "3D-Modell der Tunnelgallerie des Mont-Terri Felslabors. Das Mont Terri Projekt ist ein internationales Forschungsprojekt zur hydrogeologischen, geochemischen und geotechnischen Charakterisierung einer Tonformation (Opalinus-Ton).",
+      "rocklab_mont-terri_tunnel": {
+        "title": "Mont-Terri Felslabor - Tunnel",
+        "description": "3D-Modell des Tunnels des Mont-Terri-Gesteinslabors. Das Mont-Terri-Projekt ist ein internationales Forschungsprojekt zur hydrogeologischen, geochemischen und geotechnischen Charakterisierung einer Tonformation (Opalinus-Ton).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "rocklab_mont-terri_galleries": {
+        "title": "Mont-Terri Felslabor - Stollen",
+        "description": "3D-Modell der Stollen des Mont-Terri-Felslabors. Das Mont-Terri-Projekt ist ein internationales Forschungsprojekt zur hydrogeologischen, geochemischen und geotechnischen Charakterisierung einer Tonformation (Opalinus-Ton).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "rocklab_mont-terri_main-fault": {
+        "title": "Mont-Terri Felslabor - Hauptverwerfung",
+        "description": "3D-Modell der Hauptverwerfung des Mont-Terri-Gesteinslabors. Das Mont-Terri-Projekt ist ein internationales Forschungsprojekt zur hydrogeologischen, geochemischen und geotechnischen Charakterisierung einer Tonformation (Opalinus-Ton).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "rocklab_mont-terri_geol-contacts": {
+        "title": "Mont-Terri Felslabor - Geol. Kontakte",
+        "description": "3D-Modell der geologischen Kontakte im Felslabor Mont Terri. Das Mont-Terri-Projekt ist ein internationales Forschungsprojekt zur hydrogeologischen, geochemischen und geotechnischen Charakterisierung einer Tonformation (Opalinus-Ton).3D model of the gallaries of the Mont-Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
+        "legend_link_url": "https://www.mont-terri.ch/"
+      },
+      "rocklab_mont-terri_geol-units": {
+        "title": "Mont-Terri Felslabor - Geol. Einheiten",
+        "description": "3D-Modell der geologischen Einheiten des Mont-Terri-Gesteinslabors. Das Mont-Terri-Projekt ist ein internationales Forschungsprojekt zur hydrogeologischen, geochemischen und geotechnischen Charakterisierung einer Tonformation (Opalinus-Ton).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       }

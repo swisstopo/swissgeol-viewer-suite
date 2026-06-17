@@ -59,7 +59,7 @@
           children: [
             'ch.swisstopo.geologie-geologischer_atlas_profile',
             'ga25Profiles_test',
-            'ga25Profiles_test_02',
+            'ga25Profiles_test-02',
             'geomol_cs',
             'j3d_profiles',
             'aar3d_aaremassive_cs',
@@ -309,7 +309,19 @@
             // 03 - Local models
             {
               id: 'local_3d_models',
-              children: ['local_model_city_berne'],
+              children: [
+                'local_model_city_berne',
+                {
+                  id: 'mont-terri-rocklab-layers',
+                  children: [
+                    'rocklab_mont-terri_tunnel',
+                    'rocklab_mont-terri_galleries',
+                    'rocklab_mont-terri_main-fault',
+                    'rocklab_mont-terri_geol-contacts',
+                    'rocklab_mont-terri_geol-units',
+                  ],
+                },
+              ],
             },
           ],
         },
@@ -563,7 +575,16 @@
       children: [
         // 'ch.swisstopo.geologie-felslabore',
         // 'ch.bfe.sachplan-geologie-tiefenlager',
-        'rocklab_mont-terri',
+        {
+          id: 'mont-terri-rocklab-layers',
+          children: [
+            'rocklab_mont-terri_tunnel',
+            'rocklab_mont-terri_galleries',
+            'rocklab_mont-terri_main-fault',
+            'rocklab_mont-terri_geol-contacts',
+            'rocklab_mont-terri_geol-units',
+          ],
+        },
         'tunnel_road',
         'tunnel_railway',
         'tunnel_water',
