@@ -220,11 +220,11 @@
                       // 05 - SA3D - WP
                       id: 'sa3d_WP',
                       access: {
-                        /*groups: [
+                        groups: [
                           'viewer.swissgeol-dev-sa3d-privileged', // <=== Reactivate
                           'viewer.swissgeol-int-sa3d-privileged',
                           'viewer.swissgeol-prod-sa3d-privileged',
-                        ], */
+                        ],
                       },
                       children: [
                         // 06 - Profiles WP
