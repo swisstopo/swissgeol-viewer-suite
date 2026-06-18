@@ -19,18 +19,28 @@ export class WmtsService extends BaseService {
     new Map<string, Map<Id<WmtsLayer>, WmtsLayer>>(),
   );
 
+  // simple flag to signal load completion even if all services fail
+  private readonly _hasLoaded$ = new BehaviorSubject(false);
+
+  private _failedSources: string[] = [];
+
   constructor() {
     super();
-    language$
-      .pipe(switchMap(() => this.load()))
-      .subscribe((mapping) => this._layersByService$.next(mapping));
+    language$.pipe(switchMap(() => this.load())).subscribe((mapping) => {
+      this._layersByService$.next(mapping);
+      this._hasLoaded$.next(true);
+    });
   }
 
   get ready$(): Observable<void> {
-    return this._layersByService$.pipe(
-      filter((it) => it.size !== 0),
+    return this._hasLoaded$.pipe(
+      filter((hasLoaded) => hasLoaded),
       map(() => {}),
     );
+  }
+
+  get failedSources(): string[] {
+    return this._failedSources;
   }
 
   get layers$(): Observable<WmtsLayer[]> {
@@ -80,8 +90,12 @@ export class WmtsService extends BaseService {
             this.fetchWmsCapabilities(service, links),
             this.fetchWmtsCapabilities(service, links),
           ]);
-          const layers = new Map<Id<WmtsLayer>, WmtsLayer>();
-          for (const layer of [...wms, ...wmts]) {
+          this._failedSources = [
+      ...(wms.hasFailed ? ['wms.geo.admin.ch'] : []),
+      ...(wmts.hasFailed ? ['wmts.geo.admin.ch'] : []),
+    ];
+    const layers = new Map<Id<WmtsLayer>, WmtsLayer>();
+          for (const layer of [...wms.layers, ...wmts.layers]) {
             layers.set(layer.id, layer);
           }
           return [service, layers] as const;
@@ -99,7 +113,10 @@ export class WmtsService extends BaseService {
   private async fetchWmsCapabilities(
     service: string,
     links: WmtsCapabilitiesLinks,
-  ): Promise<WmtsLayer[]> {
+  ): Promise<{
+    layers: WmtsLayer[];
+    hasFailed: boolean;
+  }> {
     const xml = await this.fetchCapabilitiesXml({
       host: links.wms,
       params: {
@@ -110,15 +127,18 @@ export class WmtsService extends BaseService {
       },
     });
     if (xml === null) {
-      return [];
+      return { layers: [], hasFailed: true };
     }
-    return parseWmsCapabilities(xml, service);
+    return { layers: parseWmsCapabilities(xml, service), hasFailed: false };
   }
 
   private async fetchWmtsCapabilities(
     service: string,
     links: WmtsCapabilitiesLinks,
-  ): Promise<WmtsLayer[]> {
+  ): Promise<{
+    layers: WmtsLayer[];
+    hasFailed: boolean;
+  }> {
     const xml = await this.fetchCapabilitiesXml({
       host: links.wmts,
       params: {
@@ -126,9 +146,9 @@ export class WmtsService extends BaseService {
       },
     });
     if (xml === null) {
-      return [];
+      return { layers: [], hasFailed: true };
     }
-    return parseWmtsCapabilities(xml, service);
+    return { layers: parseWmtsCapabilities(xml, service), hasFailed: false };
   }
 
   private async fetchCapabilitiesXml(options: {
@@ -140,13 +160,18 @@ export class WmtsService extends BaseService {
     const url = hasQuery
       ? `${options.host}&${params}`
       : `${options.host}?${params}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      console.error(`Failed to fetch capabilities from "${options.host}"`);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.error(`Failed to fetch capabilities from "${options.host}"`);
+        return null;
+      }
+      const parser = new DOMParser();
+      return parser.parseFromString(await res.text(), 'text/xml');
+    } catch (e) {
+      // network error (service unreachable), treat as unavailable
+      console.error(`Failed to fetch capabilities from "${options.host}":`, e);
       return null;
     }
-
-    const parser = new DOMParser();
-    return parser.parseFromString(await res.text(), 'text/xml');
   }
 }
