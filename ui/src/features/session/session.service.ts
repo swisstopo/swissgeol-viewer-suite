@@ -24,7 +24,7 @@ const STORAGE_USER_KEY = 'swissgeol-viewer/Session.user';
 const STORAGE_TOKEN_KEY = 'swissgeol-viewer/Session.accessToken';
 
 export class SessionService extends BaseService {
-  private cognitoVariables = getCognitoVariables(window.location.host);
+  private cognitoVariables = getCognitoVariables(globalThis.location.host);
   private clientConfig!: ClientConfig;
 
   private readonly sessionSubject = new BehaviorSubject<Session | null>(null);
@@ -130,7 +130,7 @@ export class SessionService extends BaseService {
       '&scope=openid+profile' +
       `&state=${this.state}`;
 
-    window.location.assign(url);
+    globalThis.location.assign(url);
   }
 
   signOut(): void {
@@ -156,11 +156,11 @@ export class SessionService extends BaseService {
 
   private async initializeFromUrl(): Promise<void> {
     // https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
-    if (!window.location.hash.startsWith('#')) {
+    if (!globalThis.location.hash.startsWith('#')) {
       return;
     }
 
-    const response = window.location.hash.substring(1);
+    const response = globalThis.location.hash.substring(1);
     const params = new URLSearchParams(response);
 
     if (params.has('error')) {
@@ -180,6 +180,14 @@ export class SessionService extends BaseService {
     const payload = atob(accessToken.split('.')[1]);
     const claims: CognitoUser = JSON.parse(payload);
     const token = params.get('id_token') ?? '';
+
+    // Remove tokens from the URL to avoid exposing them in the address bar and browser history.
+    globalThis.history.replaceState(
+      null,
+      '',
+      `${globalThis.location.pathname}${globalThis.location.search}`,
+    );
+
     const [user, cognitoIdentityCredentials] = await Promise.all([
       this.fetchUser(claims, accessToken),
       this.fetchCognito(token),
