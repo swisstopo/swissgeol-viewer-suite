@@ -24,12 +24,10 @@ pub struct WmtsLayer {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_level: Option<u32>,
 
-    /// The URL of the WMS/WMTS service used to render this layer.
-    /// If absent, the default swisstopo service URL for the configured source is used.
-    /// For WMS sources, this is the service base URL
-    /// For WMTS sources, this is the capabilities document URL
+    /// Optional service key used by the UI to resolve WMS/WMTS capabilities endpoints.
+    /// If absent, the default maps.geo.admin service is used.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub service_url: Option<String>,
+    pub service: Option<String>,
 
     /// Some WMTS layers are displayed as  WMS/WMTS, but for the data export, a different source is used.
     pub ogc_source: Option<OgcSource>,
