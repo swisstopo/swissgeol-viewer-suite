@@ -26,9 +26,15 @@ import {
 import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
 import { WmtsLayer } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
+import {
+  IdentifiedGeometry,
+  IdentifyResult,
+  LayerInfoPickerForWmtsService,
+} from 'src/features/layer/info/pickers/layer-info-picker-for-wmts.service';
 
 export class LayerInfoPickerForWmts implements LayerInfoPicker {
   private readonly highlights: CustomDataSource;
+  private readonly service: LayerInfoPickerForWmtsService;
 
   constructor(
     private readonly controller: WmtsLayerController,
@@ -37,6 +43,7 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
     this.highlights = new CustomDataSource(
       `${this.constructor.name}.${controller.layer.id}`,
     );
+    this.service = new LayerInfoPickerForWmtsService(controller.layer);
     this.viewer.dataSources.add(this.highlights).then();
   }
 
@@ -48,30 +55,57 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
     if (!this.controller.layer.isVisible) {
       return [];
     }
+
+    // Flow:
+    // 1) Try geo.admin identify/htmlPopup when supported.
+    // 2) If no results, fallback to external WMS GetFeatureInfo.
+    // 3) Convert returned geometry + attributes to LayerInfo objects.
     const geom2056 = radiansToLv95([
       pick.globePosition.cartographic.longitude,
       pick.globePosition.cartographic.latitude,
-    ]);
+    ]) as [number, number];
     const tolerance = getTolerance(pick.distance);
     const lang = i18next.language;
 
-    const response = await fetch(
-      `https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=${geom2056}&geometryFormat=geojson&geometryType=esriGeometryPoint&mapExtent=0,0,100,100&imageDisplay=100,100,100&lang=${lang}&layers=all:${this.controller.layer.id}&returnGeometry=true&sr=2056&tolerance=${tolerance}`,
+    const results = this.service.shouldUseGeoAdminIdentify()
+      ? await this.service.fetchIdentifyResults(geom2056, tolerance, lang)
+      : null;
+    if (results != null && results.length > 0) {
+      const entities: Array<Promise<LayerInfo>> = [];
+      for (const result of results) {
+        if (result.geometry == null) {
+          continue;
+        }
+        const entity = this.createEntityForGeometry(result.geometry);
+        entities.push(this.getInfoForResult(result, entity));
+      }
+      return Promise.all(entities);
+    }
+
+    // For external (non-geo.admin) layers, or when identify returns no results,
+    // fall back to a standard WMS GetFeatureInfo request against the layer's serviceUrl.
+    const serviceFeatures = await this.service.fetchServiceFeatureInfo(
+      geom2056,
+      lang,
     );
-    const { results }: { results?: IdentifyResult[] } = await response.json();
-    if (results == null || results.length === 0) {
+    if (serviceFeatures == null || serviceFeatures.length === 0) {
       return [];
     }
 
-    const entities: Array<Promise<LayerInfo>> = [];
-    for (const result of results) {
-      if (result.geometry == null) {
-        continue;
-      }
-      const entity = this.createEntityForGeometry(result.geometry);
-      entities.push(this.getInfoForResult(result, entity));
-    }
-    return Promise.all(entities);
+    return serviceFeatures.map((feature) => {
+      const entity =
+        feature.geometry == null
+          ? this.createPointEntity(geom2056)
+          : this.createEntityForGeometry(feature.geometry);
+      return new LayerInfoForWmts(this.viewer, this.highlights, {
+        entity,
+        title: `layers:layers.${this.controller.layer.id}`,
+        layerId: this.controller.layer.id,
+        attributes: this.service.mapFeaturePropertiesToAttributes(
+          feature.properties,
+        ),
+      });
+    });
   }
 
   destroy(): void {
@@ -82,64 +116,9 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
     result: IdentifyResult,
     entity: Entity,
   ): Promise<LayerInfoForWmts> {
-    const extractTextOrLink = (
-      element: HTMLElement,
-    ): LayerInfoAttribute['value'] => {
-      if (
-        element.childElementCount === 1 &&
-        element.children[0].tagName === 'A'
-      ) {
-        const anchor = element.children[0] as HTMLAnchorElement;
-        return { url: anchor.href, name: anchor.text };
-      }
-      return element.textContent!.trim();
-    };
-
     const lang = i18next.language;
-    const response = await fetch(
-      `https://api3.geo.admin.ch/rest/services/api/MapServer/${result.layerBodId}/${result.featureId}/htmlPopup?lang=${lang}`,
-    );
-    const html = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-    const rows = [...doc.querySelectorAll('.htmlpopup-content table tr')];
-
-    let savedTitle: string | null = null;
-    const attributes = rows.reduce((attributes, row) => {
-      const [key, val, addition] = row.querySelectorAll('td');
-      const keyValue = key.textContent?.trim();
-
-      // Ignore rows that only contain a single value.
-      if (val === undefined) {
-        if (keyValue) {
-          savedTitle = keyValue;
-        }
-        return attributes;
-      }
-
-      // Some rows contain three columns.
-      // The first one is a colored rectangle, the second is a buffer, and the third is the layer's name.
-      if (
-        !keyValue?.length &&
-        !val.textContent?.trim().length &&
-        addition !== undefined
-      ) {
-        attributes.push({
-          key: savedTitle ?? '',
-          value: extractTextOrLink(addition),
-        });
-        return attributes;
-      }
-
-      // The rest are normal key-value rows.
-      const value = extractTextOrLink(val);
-      attributes.push({
-        key: keyValue!,
-        value,
-      });
-      return attributes;
-    }, [] as LayerInfoAttribute[]);
+    const html = await this.service.fetchHtmlPopup(result, lang);
+    const attributes = this.service.extractPopupAttributes(html);
     return new LayerInfoForWmts(this.viewer, this.highlights, {
       entity,
       title: `layers:layers.${this.controller.layer.id}`,
@@ -313,14 +292,3 @@ const getTolerance = (distance: number) => {
     return 100;
   }
 };
-
-interface IdentifyResult {
-  layerBodId: string;
-  featureId: string;
-  geometry?: IdentifiedGeometry | null;
-}
-
-interface IdentifiedGeometry {
-  type: string;
-  coordinates: number[] | number[][] | number[][][] | number[][][][];
-}

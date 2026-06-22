@@ -1,67 +1,107 @@
-import { BaseService } from 'src/services/base.service';
-import { language$ } from 'src/i18n';
 import {
-  LayerType,
-  WmtsLayer,
-  WmtsLayerTimes,
-  WmtsLayerSource,
-} from 'src/features/layer';
+  DEFAULT_WMTS_SERVICE,
+  WMTS_CAPABILITIES_BY_SERVICE,
+  WmtsCapabilitiesLinks,
+} from 'src/constants';
+import { WmtsLayer } from 'src/features/layer';
+import { language$ } from 'src/i18n';
+import { Id } from 'src/models/id.model';
+import { BaseService } from 'src/services/base.service';
+import {
+  parseWmsCapabilities,
+  parseWmtsCapabilities,
+} from 'src/services/wmts-capabilities.parser';
 import i18next from 'i18next';
-import { Id, makeId } from 'src/models/id.model';
 import { BehaviorSubject, filter, map, Observable, switchMap } from 'rxjs';
 
 export class WmtsService extends BaseService {
-  private readonly _layers$ = new BehaviorSubject(
-    new Map<Id<WmtsLayer>, WmtsLayer>(),
+  private readonly _layersByService$ = new BehaviorSubject(
+    new Map<string, Map<Id<WmtsLayer>, WmtsLayer>>(),
   );
 
   constructor() {
     super();
     language$
       .pipe(switchMap(() => this.load()))
-      .subscribe((mapping) => this._layers$.next(mapping));
+      .subscribe((mapping) => this._layersByService$.next(mapping));
   }
 
   get ready$(): Observable<void> {
-    return this._layers$.pipe(
+    return this._layersByService$.pipe(
       filter((it) => it.size !== 0),
       map(() => {}),
     );
   }
 
   get layers$(): Observable<WmtsLayer[]> {
-    return this._layers$.pipe(map((layers) => [...layers.values()]));
+    return this._layersByService$.pipe(
+      map((services) =>
+        [...services.values()].flatMap((layers) => [...layers.values()]),
+      ),
+    );
   }
 
-  layer(id: Id<WmtsLayer>): WmtsLayer | null {
-    return this._layers$.value.get(id) ?? null;
+  layer(id: Id<WmtsLayer>, service: string | null = null): WmtsLayer | null {
+    const resolvedService = this.resolveServiceName(service);
+    return this._layersByService$.value.get(resolvedService)?.get(id) ?? null;
   }
 
-  layer$(id: Id<WmtsLayer>): Observable<WmtsLayer | null> {
-    return this._layers$.pipe(map((layers) => layers.get(id) ?? null));
+  layer$(
+    id: Id<WmtsLayer>,
+    service: string | null = null,
+  ): Observable<WmtsLayer | null> {
+    const resolvedService = this.resolveServiceName(service);
+    return this._layersByService$.pipe(
+      map((services) => services.get(resolvedService)?.get(id) ?? null),
+    );
   }
 
-  exists(id: Id<WmtsLayer>): boolean {
-    return this._layers$.value.has(id);
+  exists(id: Id<WmtsLayer>, service: string | null = null): boolean {
+    const resolvedService = this.resolveServiceName(service);
+    return this._layersByService$.value.get(resolvedService)?.has(id) ?? false;
   }
 
-  private async load(): Promise<Map<Id<WmtsLayer>, WmtsLayer>> {
-    const [wms, wmts] = await Promise.all([
-      this.fetchWmsCapabilities(),
-      this.fetchWmtsCapabilities(),
-    ]);
-    const map = new Map<Id<WmtsLayer>, WmtsLayer>();
-    for (const layers of [wms, wmts]) {
-      for (const layer of layers) {
-        map.set(layer.id, layer);
-      }
+  private resolveServiceName(service: string | null): string {
+    const serviceName = service ?? DEFAULT_WMTS_SERVICE;
+    if (serviceName in WMTS_CAPABILITIES_BY_SERVICE) {
+      return serviceName;
     }
-    return map;
+    console.error(
+      `Unknown WM(T)S service "${serviceName}", falling back to "${DEFAULT_WMTS_SERVICE}"`,
+    );
+    return DEFAULT_WMTS_SERVICE;
   }
 
-  private async fetchWmsCapabilities(): Promise<WmtsLayer[]> {
+  private async load(): Promise<Map<string, Map<Id<WmtsLayer>, WmtsLayer>>> {
+    const byServiceEntries = await Promise.all(
+      Object.entries(WMTS_CAPABILITIES_BY_SERVICE).map(
+        async ([service, links]) => {
+          const [wms, wmts] = await Promise.all([
+            this.fetchWmsCapabilities(service, links),
+            this.fetchWmtsCapabilities(service, links),
+          ]);
+          const layers = new Map<Id<WmtsLayer>, WmtsLayer>();
+          for (const layer of [...wms, ...wmts]) {
+            layers.set(layer.id, layer);
+          }
+          return [service, layers] as const;
+        },
+      ),
+    );
+
+    const byService = new Map<string, Map<Id<WmtsLayer>, WmtsLayer>>();
+    for (const [service, layers] of byServiceEntries) {
+      byService.set(service, layers);
+    }
+    return byService;
+  }
+
+  private async fetchWmsCapabilities(
+    service: string,
+    links: WmtsCapabilitiesLinks,
+  ): Promise<WmtsLayer[]> {
     const xml = await this.fetchCapabilitiesXml({
-      host: 'https://wms.geo.admin.ch/',
+      host: links.wms,
       params: {
         SERVICE: 'WMS',
         REQUEST: 'GetCapabilities',
@@ -72,55 +112,15 @@ export class WmtsService extends BaseService {
     if (xml === null) {
       return [];
     }
-    return this.parseWmsCapabilities(xml);
+    return parseWmsCapabilities(xml, service);
   }
 
-  parseWmsCapabilities(xml: Document): WmtsLayer[] {
-    const configs: WmtsLayer[] = [];
-    const layers = xml.querySelectorAll('Layer');
-    for (const layer of layers.values()) {
-      const layerTitle = layer.querySelector('Title')?.textContent;
-      const layerName = layer.querySelector('Name')?.textContent;
-      if (!layerName) {
-        continue;
-      }
-
-      const format = layer.querySelector('LegendURL > Format')?.textContent;
-      if (!format) {
-        continue;
-      }
-
-      const defaultTimestamp =
-        layer.querySelector('Dimension')?.getAttribute('default') ?? null;
-
-      const timestamps =
-        layer.querySelector('Dimension')?.textContent?.split(',') || [];
-
-      configs.push({
-        type: LayerType.Wmts,
-        id: makeId(`${layerName}`),
-        label: layerTitle ?? null,
-        source: WmtsLayerSource.WMS,
-        opacity: 1,
-        canUpdateOpacity: true,
-        isVisible: true,
-        geocatId: null,
-        downloadUrl: null,
-        maxLevel: null,
-        infoBox: null,
-        format,
-        credit: layerName.split('.')[1],
-        times: this.makeTimes(defaultTimestamp, timestamps),
-        customProperties: {},
-        ogcSource: null,
-      });
-    }
-    return configs;
-  }
-
-  private async fetchWmtsCapabilities(): Promise<WmtsLayer[]> {
+  private async fetchWmtsCapabilities(
+    service: string,
+    links: WmtsCapabilitiesLinks,
+  ): Promise<WmtsLayer[]> {
     const xml = await this.fetchCapabilitiesXml({
-      host: 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml',
+      host: links.wmts,
       params: {
         lang: i18next.language,
       },
@@ -128,61 +128,7 @@ export class WmtsService extends BaseService {
     if (xml === null) {
       return [];
     }
-    return this.parseWmtsCapabilities(xml);
-  }
-
-  private parseWmtsCapabilities(xml: Document): WmtsLayer[] {
-    const configs: WmtsLayer[] = [];
-    const layers = xml.querySelectorAll('Layer');
-    const owsNamespace = 'http://www.opengis.net/ows/1.1';
-    for (const layer of layers.values()) {
-      const identifiers = layer.getElementsByTagNameNS(
-        owsNamespace,
-        'Identifier',
-      );
-      const titles = layer.getElementsByTagNameNS(owsNamespace, 'Title');
-      for (const identifier of Array.from(identifiers)) {
-        // check for ch. to exclude Time identifier
-        if (!identifier?.textContent?.includes('ch.')) {
-          continue;
-        }
-
-        const layerName = identifier.textContent;
-        const defaultTimestamp =
-          layer.querySelector('Dimension > Default')?.textContent ?? null;
-        const format = layer.querySelector('Format')?.textContent;
-        const tileMatrixSet = layer
-          .querySelector('TileMatrixSet')
-          ?.textContent?.split('_');
-        if (!format) {
-          continue;
-        }
-
-        const timestamps = Array.from(
-          layer.querySelectorAll('Dimension > Value'),
-        ).map((time) => time.textContent!);
-
-        configs.push({
-          type: LayerType.Wmts,
-          id: makeId(`${layerName}`),
-          source: WmtsLayerSource.WMTS,
-          label: titles?.[0]?.textContent ?? layerName,
-          opacity: 1,
-          canUpdateOpacity: true,
-          isVisible: true,
-          geocatId: null,
-          downloadUrl: null,
-          maxLevel: tileMatrixSet == null ? null : Number(tileMatrixSet[1]),
-          infoBox: null,
-          format,
-          credit: layerName.split('.')[1],
-          times: this.makeTimes(defaultTimestamp, timestamps),
-          customProperties: {},
-          ogcSource: null,
-        });
-      }
-    }
-    return configs;
+    return parseWmtsCapabilities(xml, service);
   }
 
   private async fetchCapabilitiesXml(options: {
@@ -190,7 +136,10 @@ export class WmtsService extends BaseService {
     params: Record<string, string>;
   }): Promise<Document | null> {
     const params = new URLSearchParams(options.params);
-    const url = `${options.host}?${params}`;
+    const hasQuery = options.host.includes('?');
+    const url = hasQuery
+      ? `${options.host}&${params}`
+      : `${options.host}?${params}`;
     const res = await fetch(url);
     if (!res.ok) {
       console.error(`Failed to fetch capabilities from "${options.host}"`);
@@ -199,24 +148,5 @@ export class WmtsService extends BaseService {
 
     const parser = new DOMParser();
     return parser.parseFromString(await res.text(), 'text/xml');
-  }
-
-  private makeTimes(
-    current: string | null,
-    all: string[] | null,
-  ): WmtsLayerTimes | null {
-    const isDefaultCurrent = current === null || current === 'current';
-    const isDefaultAll =
-      all === null ||
-      all.length === 0 ||
-      (all.length === 1 && all[0] === 'current');
-    if (isDefaultAll && isDefaultCurrent) {
-      return null;
-    }
-    const currentValue = current ?? all?.[0] ?? 'current';
-    return {
-      current: currentValue,
-      all: all ?? [currentValue],
-    };
   }
 }

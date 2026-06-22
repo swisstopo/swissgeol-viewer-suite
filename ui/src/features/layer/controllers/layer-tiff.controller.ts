@@ -182,6 +182,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
       // as we create a custom provider that doesn't rely on them.
       id: makeId(this.layer.id),
       source: WmtsLayerSource.WMTS,
+      serviceUrl: null,
       format: '',
       credit: '',
       maxLevel: null,

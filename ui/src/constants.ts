@@ -206,6 +206,27 @@ export const LEXIC_API_BY_PAGE_HOST = {
   'viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
 };
 
+export interface WmtsCapabilitiesLinks {
+  wms: string;
+  wmts: string;
+}
+
+export const DEFAULT_WMTS_SERVICE = 'maps.geo.admin';
+
+export const WMTS_CAPABILITIES_BY_SERVICE: Record<
+  string,
+  WmtsCapabilitiesLinks
+> = {
+  [DEFAULT_WMTS_SERVICE]: {
+    wms: 'https://wms.geo.admin.ch/',
+    wmts: 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml',
+  },
+  lexic: {
+    wms: 'https://dev-ogcservices.swissgeol.ch/geoserver/swisstopo/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities',
+    wmts: 'https://dev-ogcservices.swissgeol.ch/geoserver/gwc/service/wmts?service=WMTS&acceptVersions=1.1.1&request=GetCapabilities',
+  },
+};
+
 export const DEFAULT_UPLOADED_KML_COLOR = Color.fromCssColorString('#0056A4');
 export const DEFAULT_UPLOADED_GEOJSON_COLOR =
   Color.fromCssColorString('#0056A4');
