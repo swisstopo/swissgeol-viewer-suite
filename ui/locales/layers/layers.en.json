@@ -195,11 +195,11 @@
     "top_uma": "Top Upper Malm",
     "top_umm": "Top Lower Marine Molasse",
     "top_usm": "Top Lower Freshwater Molasse",
-    "rocklab_mont-terri_tunnel": "Mont-Terri Rock Lab - Tunnel",
-    "rocklab_mont-terri_galleries": "Mont-Terri Rock Lab - Galleries",
-    "rocklab_mont-terri_main-fault": "Mont-Terri Rock Lab - Main Fault",
-    "rocklab_mont-terri_geol-contacts": "Mont-Terri Rock Lab - Geol. Contacts",
-    "rocklab_mont-terri_geol-units": "Mont-Terri Rock Lab - Geol. Units",
+    "rocklab_mont-terri_tunnel": "Mont Terri Rock Lab - Tunnel",
+    "rocklab_mont-terri_galleries": "Mont Terri Rock Lab - Galleries",
+    "rocklab_mont-terri_main-fault": "Mont Terri Rock Lab - Main Fault",
+    "rocklab_mont-terri_geol-contacts": "Mont Terri Rock Lab - Geol. Contacts",
+    "rocklab_mont-terri_geol-units": "Mont Terri Rock Lab - Geol. Units",
     "tunnel_railway": "Railway tunnel",
     "tunnel_road": "Road tunnel",
     "tunnel_water": "Underground water tunnel",
@@ -278,7 +278,7 @@
     "thematic_maps": "Thematic maps",
     "uncon_rocks_bedrock": "Unconsolidated rocks and bedrock",
     "underground_space": "Underground space",
-    "mont-terri-rocklab-layers": "Mont-Terri Rock Lab"
+    "mont-terri-rocklab-layers": "Mont Terri Rock Lab"
   },
   "properties": {
     "d_ANZAHL_S": "Number of tracks",
@@ -630,32 +630,32 @@
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/WestPenninic_WP/WP3D_Legend.pdf"
       },
       "rocklab_mont-terri_tunnel": {
-        "title": "Mont-Terri Rock Laboratory - Tunnel",
-        "description": "3D model of the tunnel of the Mont-Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
+        "title": "Mont Terri Rock Laboratory - Tunnel",
+        "description": "3D model of the tunnel of the Mont Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_galleries": {
-        "title": "Mont-Terri Rock Laboratory - Galleries",
-        "description": "3D model of the galleries of the Mont-Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay). ",
+        "title": "Mont Terri Rock Laboratory - Galleries",
+        "description": "3D model of the galleries of the Mont Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay). ",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_main-fault": {
-        "title": "Mont-Terri Rock Laboratory - Main Fault",
-        "description": "3D model of the main fault of the Mont-Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
+        "title": "Mont Terri Rock Laboratory - Main Fault",
+        "description": "3D model of the main fault of the Mont Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_geol-contacts": {
-        "title": "Mont-Terri Rock Laboratory - Geol. Contacts",
-        "description": "3D model of the geological contacts of the Mont-Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
+        "title": "Mont Terri Rock Laboratory - Geol. Contacts",
+        "description": "3D model of the geological contacts of the Mont Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_geol-units": {
-        "title": "Mont-Terri Rock Laboratory - Geol. Units",
-        "description": "3D model of the geological units of the Mont-Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
+        "title": "Mont Terri Rock Laboratory - Geol. Units",
+        "description": "3D model of the geological units of the Mont Terri Rock Laboratory. The Mont Terri Project is an international research project for the hydrogeological, geochemical and geotechnical characterisation of a clay formation (Opalinus Clay).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       }
