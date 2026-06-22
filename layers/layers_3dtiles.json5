@@ -68,6 +68,17 @@
         env: ['local', 'dev'],
       },
     },
+    {
+      type: 'Tiles3d',
+      id: 'ga25Profiles_test-02',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4872440,
+      },
+      access: {
+        env: ['local', 'dev'],
+      },
+    },
     // Topic Boreholes
     // Boreholes 2021 - Public
     {
@@ -1254,7 +1265,7 @@
       id: 'sa3d_SAM_profiles_01',
       source: {
         type: 'CesiumIon',
-        asset_id: 4670818,
+        asset_id: 4953326,
       },
       //download_url: 'https://download.swissgeol.ch/XXX',
       //geocat_id: '',
@@ -1272,7 +1283,7 @@
               url: 'description_url_sa3d_SAM_profiles_01',
             },
           },
-          { key: 'dataDate', value: '28.04.2026' },
+          { key: 'dataDate', value: '15.06.2026' },
         ],
       },
     },
@@ -1283,7 +1294,7 @@
       opacity: 0.18,
       source: {
         type: 'CesiumIon',
-        asset_id: 4662997,
+        asset_id: 4953280,
       },
       //download_url: 'https://download.swissgeol.ch/XXX',
       //geocat_id: '',
@@ -1301,7 +1312,7 @@
               url: 'description_url_sa3d_SAM_profiles_01',
             },
           },
-          { key: 'dataDate', value: '28.04.2026' },
+          { key: 'dataDate', value: '15.06.2026' },
         ],
       },
     },
@@ -1311,7 +1322,7 @@
       id: 'sa3d_SAM_thrust_faults_01',
       source: {
         type: 'CesiumIon',
-        asset_id: 4662998,
+        asset_id: 4953385,
       },
       //download_url: 'https://download.swissgeol.ch/XXX',
       //geocat_id: '',
@@ -1329,10 +1340,98 @@
               url: 'description_url_sa3d_SAM_profiles_01',
             },
           },
-          { key: 'dataDate', value: '28.04.2026' },
+          { key: 'dataDate', value: '15.06.2026' },
         ],
       },
     },
+    // =================================================================
+    // WP - Profiles
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_WP_profiles_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4952911,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description_sa3d_SAM_profiles_01',
+            value: {
+              key: 'description_value_sa3d_WP_profiles_01',
+              url: 'description_url_sa3d_WP_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '15.06.2026' },
+        ],
+      },
+    },
+
+    // WP - Faults
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_WP_faults_01',
+      opacity: 0.5,
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4952896,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description_sa3d_SAM_profiles_01',
+            value: {
+              key: 'description_value_sa3d_WP_profiles_01',
+              url: 'description_url_sa3d_WP_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '15.06.2026' },
+        ],
+      },
+    },
+    // WP - Horizons
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_WP_horizons_01',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4952907,
+      },
+      //download_url: 'https://download.swissgeol.ch/XXX',
+      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description_sa3d_SAM_profiles_01',
+            value: {
+              key: 'description_value_sa3d_WP_profiles_01',
+              url: 'description_url_sa3d_WP_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '15.06.2026' },
+        ],
+      },
+    },
+
     // =================================================================
     // City of Berne
     {
@@ -1346,12 +1445,101 @@
       geocat_id: '372c25ac-fb8a-44ee-8f81-6427939f6353',
     },
     // Mont-Terri Rock lab
+    // Full Tunnel
     {
       type: 'Tiles3d',
-      id: 'rocklab_mont-terri',
+      id: 'rocklab_mont-terri_tunnel',
       source: {
         type: 'CesiumIon',
         asset_id: 4841426,
+      },
+      //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: {
+              key: 'contact_value_rocklab_mont-terri',
+              url: 'contact_url_rocklab_mont-terri',
+            },
+          },
+        ],
+      },
+    },
+    // Galleries
+    {
+      type: 'Tiles3d',
+      id: 'rocklab_mont-terri_galleries',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4912617,
+      },
+      //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: {
+              key: 'contact_value_rocklab_mont-terri',
+              url: 'contact_url_rocklab_mont-terri',
+            },
+          },
+        ],
+      },
+    },
+    // Main Fault
+    {
+      type: 'Tiles3d',
+      id: 'rocklab_mont-terri_main-fault',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4912616,
+      },
+      //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: {
+              key: 'contact_value_rocklab_mont-terri',
+              url: 'contact_url_rocklab_mont-terri',
+            },
+          },
+        ],
+      },
+    },
+    // Geol Contacts
+    {
+      type: 'Tiles3d',
+      id: 'rocklab_mont-terri_geol-contacts',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4912586,
+      },
+      //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: {
+              key: 'contact_value_rocklab_mont-terri',
+              url: 'contact_url_rocklab_mont-terri',
+            },
+          },
+        ],
+      },
+    },
+    // Geol Units
+    {
+      type: 'Tiles3d',
+      id: 'rocklab_mont-terri_geol-units',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4912614,
       },
       //geocat_id: '752146b4-7fd4-4621-8cf8-fdb19f5335a5',
       info_box: {
