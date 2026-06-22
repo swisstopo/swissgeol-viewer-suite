@@ -316,7 +316,7 @@ export class WmtsService extends BaseService {
       ['VERSION', '1.0.0'],
       ['LAYER', options.layerName],
       ['STYLE', options.style],
-      ['TILEMATRIXSET', options.tileMatrixSet ?? '3857'],
+      ['TILEMATRIXSET', options.tileMatrixSet ?? 'EPSG:3857'],
       ['TILEMATRIX', '{TileMatrix}'],
       ['TILEROW', '{TileRow}'],
       ['TILECOL', '{TileCol}'],
