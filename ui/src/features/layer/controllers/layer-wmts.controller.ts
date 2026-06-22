@@ -8,7 +8,9 @@ import {
   WebMapServiceImageryProvider,
 } from 'cesium';
 import {
+  DEFAULT_WMTS_SERVICE,
   SWITZERLAND_RECTANGLE,
+  WMTS_CAPABILITIES_BY_SERVICE,
   WEB_MERCATOR_TILING_SCHEME,
 } from 'src/constants';
 import i18next from 'i18next';
@@ -164,43 +166,84 @@ export class WmtsLayerController extends BaseLayerController<WmtsLayer> {
   }
 
   private makeProviderForWms(): WmtsImageryProvider {
+    const resolvedService = this.layer.service ?? DEFAULT_WMTS_SERVICE;
+    const links =
+      WMTS_CAPABILITIES_BY_SERVICE[resolvedService] ??
+      WMTS_CAPABILITIES_BY_SERVICE[DEFAULT_WMTS_SERVICE];
+    const isDefaultGeoAdmin = links?.wms === 'https://wms.geo.admin.ch/';
+
+    const credit = this.layer.credit ?? String(this.layer.id);
+
     return new WebMapServiceImageryProvider({
-      url: this.layer.serviceUrl ?? 'https://wms{s}.geo.admin.ch?version=1.3.0',
+      url:
+        this.layer.serviceUrl ??
+        (isDefaultGeoAdmin
+          ? 'https://wms{s}.geo.admin.ch?version=1.3.0'
+          : (links?.wms ?? 'https://wms.geo.admin.ch/')),
       crs: 'EPSG:4326',
       parameters: {
         FORMAT: this.layer.format,
         TRANSPARENT: true,
         LANG: i18next.language,
       },
-      subdomains: '0123',
+      subdomains: isDefaultGeoAdmin ? '0123' : undefined,
       tilingScheme: WEB_MERCATOR_TILING_SCHEME,
       layers: String(this.layer.id),
       maximumLevel: this.layer.maxLevel ?? undefined,
       rectangle: SWITZERLAND_RECTANGLE,
-      credit: new Credit(this.layer.credit),
+      credit: new Credit(credit),
     });
   }
 
   private makeProviderForWmts(): WmtsImageryProvider {
+    const resolvedService = this.layer.service ?? DEFAULT_WMTS_SERVICE;
+    const links =
+      WMTS_CAPABILITIES_BY_SERVICE[resolvedService] ??
+      WMTS_CAPABILITIES_BY_SERVICE[DEFAULT_WMTS_SERVICE];
     const url =
-      this.layer.serviceUrl === null
-        ? 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}'
-        : `${this.layer.serviceUrl
+      this.layer.serviceUrl ??
+      (links?.wmts
+        ? `${links.wmts
             .split('?')[0]
             .replace(
               /\/$/,
               '',
-            )}/rest/{layer}/polygon/EPSG:900913/EPSG:900913:{z}/{y}/{x}?format=image/png`;
+            )}/rest/{layer}/default/3857/{TileMatrix}/{TileRow}/{TileCol}.{format}`
+        : 'https://wmts.geo.admin.ch/1.0.0/{layer}/default/{timestamp}/3857/{z}/{x}/{y}.{format}');
+
+    const tileMatrixSet = this.layer.customProperties.tileMatrixSet ?? '3857';
+    const style = this.layer.customProperties.wmtsStyle ?? 'default';
+    const tileMatrixTag = (
+      _: unknown,
+      __: number,
+      ___: number,
+      level: number,
+    ) =>
+      tileMatrixSet.includes(':') ? `${tileMatrixSet}:${level}` : String(level);
+
+    const credit = this.layer.credit ?? String(this.layer.id);
 
     return new UrlTemplateImageryProvider({
       url,
       maximumLevel: this.layer.maxLevel ?? undefined,
       rectangle: SWITZERLAND_RECTANGLE,
-      credit: new Credit(this.layer.credit),
+      credit: new Credit(credit),
       customTags: {
+        x: (_, x) => String(x),
+        y: (_, __, y) => String(y),
+        z: (_, __, ___, level) => String(level),
+        TileCol: (_, x) => String(x),
+        TileRow: (_, __, y) => String(y),
+        TileMatrix: tileMatrixTag,
         layer: () => this.layer.id,
+        Layer: () => this.layer.id,
         format: () => this.layer.format.split('/')[1],
+        Format: () => this.layer.format,
         timestamp: () => this.layer.times?.current ?? 'current',
+        Time: () => this.layer.times?.current ?? 'current',
+        style: () => style,
+        Style: () => style,
+        TileMatrixSet: () => tileMatrixSet,
       },
     });
   }
