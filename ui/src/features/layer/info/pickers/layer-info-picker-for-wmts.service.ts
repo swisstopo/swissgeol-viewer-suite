@@ -463,7 +463,15 @@ class ExternalWmtsInfoClient {
         return value.description ? `Symbol(${value.description})` : 'Symbol';
       }
 
-      return `${value}`;
+      if (typeof value === 'bigint') {
+        return value.toString();
+      }
+
+      if (typeof value === 'function') {
+        return '[Function]';
+      }
+
+      return '[Unsupported value]';
     }
   }
 
