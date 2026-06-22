@@ -455,7 +455,15 @@ class ExternalWmtsInfoClient {
     try {
       return JSON.stringify(value);
     } catch {
-      return String(value);
+      if (typeof value === 'object') {
+        return '[Unserializable object]';
+      }
+
+      if (typeof value === 'symbol') {
+        return value.description ? `Symbol(${value.description})` : 'Symbol';
+      }
+
+      return `${value}`;
     }
   }
 

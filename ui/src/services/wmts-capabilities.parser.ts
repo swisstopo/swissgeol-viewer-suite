@@ -78,7 +78,7 @@ export function parseWmtsCapabilities(
 
     const timestamps = Array.from(
       layer.querySelectorAll('Dimension > Value'),
-    ).map((time) => time.textContent!);
+    ).map((time) => time.textContent);
 
     const tileTemplate = resolveWmtsTileTemplate({
       layer,
