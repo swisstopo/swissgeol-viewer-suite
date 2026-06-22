@@ -1,5 +1,9 @@
 import { LayerInfoAttribute } from 'src/features/layer/info/layer-info.model';
 import { WmtsLayer, WmtsLayerSource } from 'src/features/layer';
+import {
+  DEFAULT_WMTS_SERVICE,
+  WMTS_CAPABILITIES_BY_SERVICE,
+} from 'src/constants';
 
 const DEFAULT_GEO_ADMIN_API_URL = 'https://api3.geo.admin.ch';
 const FEATURE_INFO_WIDTH = 101;
@@ -34,7 +38,10 @@ interface ServiceFeatureInfoResponse {
   features?: ServiceFeatureInfoFeature[];
 }
 
-type WmtsLayerForInfo = Pick<WmtsLayer, 'id' | 'serviceUrl' | 'source'>;
+type WmtsLayerForInfo = Pick<
+  WmtsLayer,
+  'id' | 'serviceUrl' | 'source' | 'service'
+>;
 
 /**
  * Facade used by the WMTS picker.
@@ -357,15 +364,8 @@ class ExternalWmtsInfoClient {
     geom2056: [number, number],
     lang: string,
   ): string | null {
-    const { serviceUrl } = this.layer;
-    if (serviceUrl === null) {
-      return null;
-    }
-
-    let base: URL;
-    try {
-      base = new URL(serviceUrl);
-    } catch {
+    const base = this.resolveExternalWmsBaseUrl();
+    if (base === null) {
       return null;
     }
 
@@ -398,6 +398,42 @@ class ExternalWmtsInfoClient {
     base.searchParams.set('LANG', lang);
 
     return base.toString();
+  }
+
+  private resolveExternalWmsBaseUrl(): URL | null {
+    const serviceName = this.layer.service ?? DEFAULT_WMTS_SERVICE;
+    const mappedService =
+      WMTS_CAPABILITIES_BY_SERVICE[serviceName] ??
+      WMTS_CAPABILITIES_BY_SERVICE[DEFAULT_WMTS_SERVICE];
+
+    if (mappedService?.wms != null) {
+      try {
+        const fromMap = new URL(mappedService.wms);
+        fromMap.search = '';
+        fromMap.hash = '';
+        return fromMap;
+      } catch {
+        // fall through to serviceUrl-based fallback
+      }
+    }
+
+    const { serviceUrl } = this.layer;
+    if (serviceUrl === null) {
+      return null;
+    }
+    try {
+      const fallback = new URL(serviceUrl);
+      fallback.pathname = fallback.pathname
+        .replace(/\/gwc\/service\/wmts\/rest\/.*$/i, '/wms')
+        .replace(/\/gwc\/service\/wmts\/?$/i, '/wms')
+        .replace(/\/service\/wmts\/?$/i, '/wms')
+        .replace(/\/wmts\/?$/i, '/wms');
+      fallback.search = '';
+      fallback.hash = '';
+      return fallback;
+    } catch {
+      return null;
+    }
   }
 
   private normalizeAttributeValue(value: unknown): LayerInfoAttribute['value'] {
