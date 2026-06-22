@@ -506,7 +506,7 @@
       "description_value_sa3d_SAM_profiles_01": "SubalpineMolasse3D_Interim_Report_M1_M2",
       "download_01": "Download (.movz)",
       "download_02": "Download (.ts)",
-      "download_03":"Download (.shp)",
+      "download_03": "Download (.shp)",
       "download_gocad_url_j3d_faults": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Faults_GOCAD_20260318.zip",
       "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_GOCAD_20260318.zip",
       "download_gocad_value": "Download (.ts)",
