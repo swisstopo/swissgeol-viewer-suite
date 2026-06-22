@@ -294,6 +294,9 @@ export class LayerService extends BaseService {
       let count = 0;
       for (const node of group.children) {
         const inserted = insertGroupChild(node, group.id);
+        if (inserted === null) {
+          continue;
+        }
         nodes.push(inserted);
         switch (inserted.type) {
           case TreeNodeType.Group:
@@ -318,11 +321,15 @@ export class LayerService extends BaseService {
     const insertGroupChild = (
       node: LayerGroupConfig | Id<Layer>,
       groupId: Id<LayerGroup>,
-    ): TreeNode => {
+    ): TreeNode | null => {
       if (typeof node === 'object') {
         insertGroup(node, groupId);
         return { type: TreeNodeType.Group, id: node.id };
       } else {
+        // skip layers that were filtered out (e.g. unavailable WMS/WMTS)
+        if (!this.layers.has(node)) {
+          return null;
+        }
         registerGroupForLayer(node, groupId);
         return { type: TreeNodeType.Layer, id: node };
       }

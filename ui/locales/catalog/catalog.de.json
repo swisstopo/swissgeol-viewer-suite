@@ -56,5 +56,6 @@
     "title": "{{ layer }} - Bänder",
     "open": "Bänder anzeigen",
     "legend": "Legende"
-  }
+  },
+  "layers_unavailable": "Einige Layer sind nicht verfügbar ({{sources}}). {{count}} Layer wurden im Katalog ausgeblendet."
 }

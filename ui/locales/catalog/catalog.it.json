@@ -56,5 +56,6 @@
     "title": "{{ layer }} - Bande",
     "open": "Visualizzare le bande",
     "legend": "Legenda"
-  }
+  },
+  "layers_unavailable": "Alcuni layer non sono disponibili ({{sources}}). {{count}} layer sono stati nascosti dal catalogo."
 }
