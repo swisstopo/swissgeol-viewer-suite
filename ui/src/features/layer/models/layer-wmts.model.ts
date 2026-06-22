@@ -33,7 +33,7 @@ export interface WmtsLayer extends BaseLayer {
    * For WMS sources, this is the service base URL.
    * For WMTS sources, this is the capabilities document URL.
    */
-  serviceUrl: string | null; // TODO remove
+  serviceUrl: string | null;
 
   /**
    * The zoom level (zoomed in) from which on no higher resolution tiles will be fetched.
