@@ -30,12 +30,14 @@
         // 02 - Lexic augmented layers
         {
           id: 'lexic_augmented_layers',
-          env: ['local', 'dev'],
           children: [
             'swisstopo:gc_bedrock',
             'swisstopo:gc_unco_deposits',
             'swisstopo:tecto_units_augm',
           ],
+          access: {
+            env: ['local', 'dev'],
+          },
         },
 
         // 02 - Thematic_maps
