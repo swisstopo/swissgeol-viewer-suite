@@ -90,11 +90,9 @@ export class WmtsService extends BaseService {
             this.fetchWmsCapabilities(service, links),
             this.fetchWmtsCapabilities(service, links),
           ]);
-          this._failedSources = [
-      ...(wms.hasFailed ? ['wms.geo.admin.ch'] : []),
-      ...(wmts.hasFailed ? ['wmts.geo.admin.ch'] : []),
-    ];
-    const layers = new Map<Id<WmtsLayer>, WmtsLayer>();
+          this._failedSources =
+            wms.hasFailed || wmts.hasFailed ? [service] : [];
+          const layers = new Map<Id<WmtsLayer>, WmtsLayer>();
           for (const layer of [...wms.layers, ...wmts.layers]) {
             layers.set(layer.id, layer);
           }
