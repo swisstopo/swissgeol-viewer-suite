@@ -1,14 +1,28 @@
 # Changelog
 
-## [v1.12.0]
+## [v1.13.0]
 
 ### Added
 
-- Missing it, fr and de translations.
+- Missing it, fr and de translations added.
+- Compass added into 3D-scene.
+- OGC-API test case scrip added.
+- lexic-API backend connection integrated.
+- swissAPLS3D - WP data integrated for privileged users.
+- Data of the Mont Terri Rock Lab integrated.
 
 ### Changed
 
+- Show always tooltips in infobox.
+- Fix order of infobox entries.
+- Make integration of abitrary WMS/WMTS in the backend possible.
+- swissAPLS3D - SAM data updated for privileged users.
+- swisJURA3D - Documentation and download data updated.
+
 ### Fixed
+
+- Correct doenload links for swissBEDROCK (2D/3D)
+- Handle not available WMS/WMTS.
 
 ## [v1.12.0]
 
