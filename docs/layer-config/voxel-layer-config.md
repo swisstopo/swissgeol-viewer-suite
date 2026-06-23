@@ -1,8 +1,11 @@
 # Voxel Layer Config
+
 The following is an overview of the properties that are available to the `Voxel` layer type.
 In addition to these properties, the [shared properties](./shared-layer-config.md) are also available.
 Voxel layers are layers that display data in the voxel 3dtiles format.
+
 > For the `source` field, see [`LayerSource`](./layer-source-config.md).
+
 ```json5
 {
   // The layer's type, defining it as a Voxel layer.
@@ -10,7 +13,7 @@ Voxel layers are layers that display data in the voxel 3dtiles format.
   // @type 'Voxel'
   // @required
   type: 'Voxel',
-  
+
   // @type LayerSource
   // @required
   source: {},
@@ -22,7 +25,7 @@ Voxel layers are layers that display data in the voxel 3dtiles format.
   // @type string
   // @required
   data_key: 'the-data-key',
-  
+
   // @required
   values: {
     // The value which signifies that a datapoint is absent.
@@ -40,7 +43,7 @@ Voxel layers are layers that display data in the voxel 3dtiles format.
     //
     // @type integer
     // @required
-    undefined: 2, 
+    undefined: 2,
   },
 
   /// The layer's value mappings.
@@ -53,12 +56,15 @@ Voxel layers are layers that display data in the voxel 3dtiles format.
 ```
 
 ## The `VoxelLayerMapping` type
+
 The mappings of a Voxel layer define how the layer's data can be displayed and filtered.
 There exist two types of mappings: item mappings and range mappings.
 
 ### Item Mappings
+
 An item mapping represents a discrete set of values.
 It can be used when the layer contains a known set of values, where each value has a specific meaning.
+
 ```json5
 {
   // The key of the property that contains the data points.
@@ -76,25 +82,30 @@ It can be used when the layer contains a known set of values, where each value h
   items: [
     // A single item is represented as an array with two elements.
     // The first element is the item's value, the second its label and color.
-    [1, {
-      // The translation key providing the display name for the item.
-      //
-      // @type string
-      // @required
-      label: 'the-label-translation-key',
+    [
+      1,
+      {
+        // The translation key providing the display name for the item.
+        //
+        // @type string
+        // @required
+        label: 'the-label-translation-key',
 
-      /// The color in which this value is displayed.
-      //
-      // @type string
-      // @required
-      color: 'rgb(1, 2, 3)',
-    }],
+        /// The color in which this value is displayed.
+        //
+        // @type string
+        // @required
+        color: 'rgb(1, 2, 3)',
+      },
+    ],
   ],
 }
 ```
 
 ### Range Mappings
+
 A range mapping defines a range of values with a fixed upper and lower bound.
+
 ```json5
 {
   // The key of the property that contains the data points.
@@ -117,23 +128,21 @@ A range mapping defines a range of values with a fixed upper and lower bound.
   //
   // @type string[]
   // @required
-  colors: [
-    'rgb(1, 2, 3)',
-    'rgb(2, 3, 1)',
-    'rgb(3, 1, 2)',
-  ],
+  colors: ['rgb(1, 2, 3)', 'rgb(2, 3, 1)', 'rgb(3, 1, 2)'],
 }
 ```
 
 ## Simple Configuration Example
+
 A simple Voxel layer configuration:
+
 ```json5
 {
   type: 'Voxel',
   id: 'my-layer-id',
   source: {
     type: 'Url',
-    url: 'https://my-voxel.ch/source'
+    url: 'https://my-voxel.ch/source',
   },
   values: {
     no_data: -99999,
@@ -151,7 +160,7 @@ A simple Voxel layer configuration:
     {
       key: 'logk',
       range: [0, 10],
-      colors: ['rgb(1, 1, 1)', 'rgb(2, 2, 2)', 'rgb(3, 3, 3)']
+      colors: ['rgb(1, 1, 1)', 'rgb(2, 2, 2)', 'rgb(3, 3, 3)'],
     },
   ],
   download_url: 'https://my-download-url.com',
@@ -160,10 +169,12 @@ A simple Voxel layer configuration:
 ```
 
 ## Reusing `mappings`
+
 The values used within the `mappings` are are often the same across multiple layers.
 To not have to repeat the same configuration multiple times,
 the mappings can be defined at the top-level of the `layertree.json`,
 and then be referenced by name in your `mappings` array.
+
 ```json5
 // layertree.json5
 {
@@ -172,28 +183,29 @@ and then be referenced by name in your `mappings` array.
     my_shared_mapping: {
       key: 'logk',
       range: [0, 10],
-      colors: ['rgb(1, 1, 1)', 'rgb(2, 2, 2)', 'rgb(3, 3, 3)']
-    }
+      colors: ['rgb(1, 1, 1)', 'rgb(2, 2, 2)', 'rgb(3, 3, 3)'],
+    },
   },
-  
+
   layers: [
     {
       type: 'Voxel',
       id: 'my-first-layer',
       mappings: ['my_shared_mapping'], // Reference the shared element by its key.
-      
+
       // Other properties...
     },
     {
       type: 'Voxel',
       id: 'my-second-layer',
       mappings: ['my_shared_mapping'], // Reference the shared element by its key.
-      
+
       // Other properties...
     },
   ],
 }
 ```
+
 > The top-level `voxel_mappings` is available to the file itself, as well as any files included by it.
 > Files that include another file with `voxel_mappings` do not inherit these values.
 > In other words, `voxel_mappings` works top-down -

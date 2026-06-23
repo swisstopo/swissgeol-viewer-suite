@@ -5,11 +5,11 @@ on:
 
   # Run this workflow every night
   schedule:
-    - cron:  '0 10 * * *'
+    - cron: '0 10 * * *'
 
 jobs:
   fetch-earthquakes:
-    name: "fetch earthquakes"
+    name: 'fetch earthquakes'
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

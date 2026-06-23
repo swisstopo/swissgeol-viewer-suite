@@ -7,7 +7,7 @@
       source: {
         type: 'S3',
         bucket: 'ngm-protected-prod',
-        key: 'tiles/bh_private_20210201_00/tileset.json'
+        key: 'tiles/bh_private_20210201_00/tileset.json',
       },
       access: {
         groups: [
@@ -22,9 +22,7 @@
   groups: [
     {
       id: 'grp_1802_label',
-      children: [
-        'boreholes_private'
-      ]
-    }
-  ]
+      children: ['boreholes_private'],
+    },
+  ],
 }

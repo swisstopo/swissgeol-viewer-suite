@@ -1,9 +1,14 @@
 {
-    "javascript.preferences.quoteStyle": "single",
-    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
-    "sonarlint.connectedMode.project": {
-        "connectionId": "swisstopo",
-        "projectKey": "swisstopo_swissgeol-viewer-app"
-    },
-    "makefile.configureOnOpen": false
+  "javascript.preferences.quoteStyle": "single",
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "swisstopo",
+    "projectKey": "swisstopo_swissgeol-viewer-app"
+  },
+  "makefile.configureOnOpen": false
 }

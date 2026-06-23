@@ -1,0 +1,5 @@
+### GET job status
+GET https://ogc-api.gst-viewer.swissgeol.ch/jobs/019daee6-a24c-7853-a7ef-7b6d29a55151?t=json
+
+
+###

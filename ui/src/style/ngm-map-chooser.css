@@ -38,6 +38,7 @@
   border-radius: 104px;
   height: 52px;
   margin: auto 12px;
+  position: relative;
 
   display: flex;
   align-items: center;

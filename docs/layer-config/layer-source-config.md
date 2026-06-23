@@ -29,7 +29,7 @@ The `CesiumIon` source links to a fully customizable, static HTTP url.
   //
   // @type string
   // @required
-  url: 'https://example.com'
+  url: 'https://example.com',
 }
 ```
 
@@ -49,13 +49,14 @@ The `S3` source links to an S3 object, identified by its bucket and the key with
   //
   // @type string
   // @required
-  key: 'the-key'
+  key: 'the-key',
 }
 ```
 
 ## `Ogc` source
 
 The `Ogc` source links to an OGC API collection.
+
 > Currently, The `Ogc` source is only supported on 3D tiles.
 
 ```json5
@@ -112,9 +113,9 @@ Used for accessing 3D tile collections from the GST service.
   ogc_source: {
     ogcType: 'gst',
     id: 13327,
-    style_id: 5
+    style_id: 5,
     // optional
-  }
+  },
 }
 ```
 
@@ -127,12 +128,12 @@ Used for accessing STAC collections.
   type: 'Ogc',
   ogc_source: {
     ogcType: 'stac',
-    collection: 'ch.swisstopo.swissbuildings3d_2'
+    collection: 'ch.swisstopo.swissbuildings3d_2',
   },
   display_source: {
     type: 'Url',
-    url: 'https://example.com/tileset.json'
-  }
+    url: 'https://example.com/tileset.json',
+  },
 }
 ```
 
@@ -144,9 +145,8 @@ Reserved for future use. Not yet implemented.
 {
   type: 'Ogc',
   ogc_source: {
-    ogcType: 'fdsn'
+    ogcType: 'fdsn',
     // or 'wms'
-  }
+  },
 }
 ```
-

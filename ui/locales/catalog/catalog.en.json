@@ -56,5 +56,6 @@
     "title": "{{ layer }} - Bands",
     "open": "Show bands",
     "legend": "Legend"
-  }
+  },
+  "layers_unavailable": "Some layers are unavailable ({{sources}}). {{count}} layers were hidden from the catalog."
 }

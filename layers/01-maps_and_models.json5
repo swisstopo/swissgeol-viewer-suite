@@ -1,9 +1,5 @@
 {
-  include:[
-    'consolidated_rocks',
-    'special/swissBEDROCK',
-    'special/voxels',
-  ],
+  include: ['consolidated_rocks', 'special/swissBEDROCK', 'special/voxels'],
   layers: [
     // Layer - GeoCover - Vector Datasets - WMTS
     {
@@ -14,8 +10,8 @@
       geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
       info_box: { source: 'api3.geo.admin.ch' },
       access: {
-        env: ['local']
-      }
+        env: ['local'],
+      },
     },
 
     // Layer - Geological Atlas GA25 - WMTS
@@ -25,7 +21,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '258814a5-8fcf-47df-b0c6-160602b0078c',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
 
     // Layer - Lithology 500 - WMTS
@@ -35,7 +31,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '435522fb-599e-41c0-a7c0-49d922ea6acf',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
 
     // Layer - Geological profiles GA25 - WMTS
@@ -45,7 +41,7 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '345d02a3-9628-46d7-9e57-e0ab1d9faf8a',
-      info_box: { source: 'api3.geo.admin.ch' }
+      info_box: { source: 'api3.geo.admin.ch' },
     },
 
     // Layer - Cross sections GeoMol
@@ -85,8 +81,8 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '1964cc81-5298-460f-9228-41120315bea8',
-      info_box: { source: 'api3.geo.admin.ch' }
-    }
+      info_box: { source: 'api3.geo.admin.ch' },
+    },
   ],
 
   groups: [
@@ -94,7 +90,6 @@
     {
       id: 'maps_and_models',
       children: [
-
         // Topic - Geological maps
         {
           id: 'grp_1787_label',
@@ -102,8 +97,8 @@
             'ch.swisstopo.geologie-geocover',
             'ch.swisstopo.geologie-geologischer_atlas',
             'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
-            'ch.swisstopo.swissalti3d-reliefschattierung'
-          ]
+            'ch.swisstopo.swissalti3d-reliefschattierung',
+          ],
         },
 
         // Topic - Cross-sections
@@ -113,7 +108,7 @@
             'ch.swisstopo.geologie-geologischer_atlas_profile',
             'cross_section_geomol',
             'cross_section_geoquat',
-          ]
+          ],
         },
 
         // Topic - 3D models
@@ -126,7 +121,7 @@
               children: [
                 'voxel_aaretal_lithology',
                 'voxel_aaretal_conductivity',
-              ]
+              ],
             },
 
             // Top bedrock
@@ -135,14 +130,14 @@
               children: [
                 'ch.swisstopo.swissbedrock-geotiff',
                 'ch.swisstopo.swissbedrock-geotiff-with-terrain',
-              ]
+              ],
             },
 
             // Consolidated rocks
             { id: 'lyr_consolidated_rocks_label' },
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     },
-  ]
+  ],
 }

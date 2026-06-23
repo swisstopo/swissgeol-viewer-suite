@@ -7,15 +7,13 @@
       opacity: 0.7,
       geocat_id: '22287cd6-b75b-4caf-9413-aa3f196548b2',
       info_box: { source: 'api3.geo.admin.ch' },
-    }
+    },
   ],
   groups: [
     // Topic - Background data
     {
       id: 'grp_1890_label',
-      children: [
-        'ch.swisstopo.zeitreihen'
-      ]
-    }
-  ]
+      children: ['ch.swisstopo.zeitreihen'],
+    },
+  ],
 }

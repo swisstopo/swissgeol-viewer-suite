@@ -1,7 +1,6 @@
 {
   "accept": "Accettare",
   "cancel": "Cancellare",
-
   "menu_layers": "Dati Visualizzati",
   "menu_tools": "Strumenti",
   "menu_share": "Condividi",
@@ -422,5 +421,6 @@
   "lyr_ch_swisstopo_swissimage_product_label": "SWISSIMAGE Viaggio nel tempo",
   "lyr_ch_swisstopo_swissalti3d_reliefschattierung_monodirektional_label": "swissALTI3D rilievo monodirezionale",
   "lyr_ch_swisstopo_swissalti3d_reliefschattierung_label": "swissALTI3D rilievo multidirezionale",
-  "lyr_ch_swisstopo_swissbathy3d_reliefschattierung_label": "swissBATHY3D Ombreggiature del rilievo"
+  "lyr_ch_swisstopo_swissbathy3d_reliefschattierung_label": "swissBATHY3D Ombreggiature del rilievo",
+  "lyr_3d_local_models_label": "Modelli 3D locali"
 }

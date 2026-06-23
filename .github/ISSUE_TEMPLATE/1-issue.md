@@ -1,9 +1,9 @@
 ---
 name: Issue
 about: Beschreibe eine neue Aufgabe
-title: ""
-labels: ""
-assignees: ""
+title: ''
+labels: ''
+assignees: ''
 ---
 
 **Beschreibung**

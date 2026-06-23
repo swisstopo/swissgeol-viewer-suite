@@ -1,30 +1,30 @@
-name: "Create Docker Image"
-description: "Builds a docker image and tags it"
+name: 'Create Docker Image'
+description: 'Builds a docker image and tags it'
 inputs:
   IMAGE_NAME:
-    description: "The image name"
+    description: 'The image name'
     required: true
   VERSION:
-    description: "The version of the image"
+    description: 'The version of the image'
     required: true
   TAG:
-    description: "The tag of the image, in addition to the version"
+    description: 'The tag of the image, in addition to the version'
     required: true
   OTHER_TAGS:
-    description: "Any additional tags, passed directly to docker/metadata-action"
+    description: 'Any additional tags, passed directly to docker/metadata-action'
   DOCKERFILE:
-    description: "The path to the Dockerfile"
+    description: 'The path to the Dockerfile'
     required: true
   GITHUB_TOKEN:
-    description: "The github token"
+    description: 'The github token'
     required: true
   CONTEXT:
-    description: "The build context"
-    default: "./"
+    description: 'The build context'
+    default: './'
     required: false
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Checkout repository
       uses: actions/checkout@v4

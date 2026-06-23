@@ -2,7 +2,7 @@ import { BaseService } from 'src/services/base.service';
 import { clientConfigContext } from 'src/context';
 import { ClientConfig } from 'src/api/client-config';
 import { User } from 'src/features/session/user.model';
-import { COGNITO_VARIABLES } from 'src/constants';
+import { getCognitoVariables } from 'src/constants';
 import { Role } from '@swissgeol/ui-core';
 import {
   BehaviorSubject,
@@ -24,6 +24,7 @@ const STORAGE_USER_KEY = 'swissgeol-viewer/Session.user';
 const STORAGE_TOKEN_KEY = 'swissgeol-viewer/Session.accessToken';
 
 export class SessionService extends BaseService {
+  private cognitoVariables = getCognitoVariables(globalThis.location.host);
   private clientConfig!: ClientConfig;
 
   private readonly sessionSubject = new BehaviorSubject<Session | null>(null);
@@ -122,14 +123,14 @@ export class SessionService extends BaseService {
 
   signIn(): void {
     const url =
-      `https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize?` +
+      `https://ngm-${this.cognitoVariables.env}.auth.eu-west-1.amazoncognito.com/oauth2/authorize?` +
       'response_type=token' +
-      `&client_id=${COGNITO_VARIABLES.clientId}` +
+      `&client_id=${this.cognitoVariables.clientId}` +
       `&redirect_uri=${location.origin}${location.pathname}` +
       '&scope=openid+profile' +
       `&state=${this.state}`;
 
-    window.location.assign(url);
+    globalThis.location.assign(url);
   }
 
   signOut(): void {
@@ -155,11 +156,11 @@ export class SessionService extends BaseService {
 
   private async initializeFromUrl(): Promise<void> {
     // https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
-    if (!window.location.hash.startsWith('#')) {
+    if (!globalThis.location.hash.startsWith('#')) {
       return;
     }
 
-    const response = window.location.hash.substring(1);
+    const response = globalThis.location.hash.substring(1);
     const params = new URLSearchParams(response);
 
     if (params.has('error')) {
@@ -179,6 +180,14 @@ export class SessionService extends BaseService {
     const payload = atob(accessToken.split('.')[1]);
     const claims: CognitoUser = JSON.parse(payload);
     const token = params.get('id_token') ?? '';
+
+    // Remove tokens from the URL to avoid exposing them in the address bar and browser history.
+    globalThis.history.replaceState(
+      null,
+      '',
+      `${globalThis.location.pathname}${globalThis.location.search}`,
+    );
+
     const [user, cognitoIdentityCredentials] = await Promise.all([
       this.fetchUser(claims, accessToken),
       this.fetchCognito(token),
@@ -233,7 +242,7 @@ export class SessionService extends BaseService {
     accessToken: string,
   ): Promise<User> {
     const res = await fetch(
-      `https://ngm-${COGNITO_VARIABLES.env}.auth.eu-west-1.amazoncognito.com/oauth2/userInfo`,
+      `https://ngm-${this.cognitoVariables.env}.auth.eu-west-1.amazoncognito.com/oauth2/userInfo`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       },

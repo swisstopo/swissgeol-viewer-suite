@@ -2,173 +2,172 @@
   layers: [
     // GeoMol Temperature Model
     {
-      type: "Voxel",
-      id: "voxel_geomol_temp_c",
+      type: 'Voxel',
+      id: 'voxel_geomol_temp_c',
       source: {
-        type: "CesiumIon",
-        asset_id: 4454599
+        type: 'CesiumIon',
+        asset_id: 4454599,
       },
-      data_key: "Temp_C",
-      mappings:['geomol_temp_c'],
+      data_key: 'Temp_C',
+      mappings: ['geomol_temp_c'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2"
+      geocat_id: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
     },
 
     // Aaretal - Modelling Units
     {
-      type: "Voxel",
-      id: "voxel_aaretal_modelling_units",
+      type: 'Voxel',
+      id: 'voxel_aaretal_modelling_units',
       source: {
-        type: "CesiumIon",
-        asset_id: 4352636
+        type: 'CesiumIon',
+        asset_id: 4352636,
       },
-      data_key: "Index",
-      mappings: ['conductivity','aaretal_lithology'],
-      values: {
-        no_data: -99999,
-        undefined: -9999,
-      },
-      geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502"
-    },
-    // Aaretal - Hydraulic Conductivity
-    {
-      type: "Voxel",
-      id: "voxel_aaretal_conductivity",
-      source: {
-        type: "CesiumIon",
-        asset_id: 4352636
-      },
-      data_key: "logk",
+      data_key: 'Index',
       mappings: ['conductivity', 'aaretal_lithology'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "b1a36f66-638a-4cfb-88d3-b0df6c7a7502",
+      geocat_id: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
+    },
+    // Aaretal - Hydraulic Conductivity
+    {
+      type: 'Voxel',
+      id: 'voxel_aaretal_conductivity',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4352636,
+      },
+      data_key: 'logk',
+      mappings: ['conductivity', 'aaretal_lithology'],
+      values: {
+        no_data: -99999,
+        undefined: -9999,
+      },
+      geocat_id: 'b1a36f66-638a-4cfb-88d3-b0df6c7a7502',
     },
     // Birr - Modelling Units
     {
-      type: "Voxel",
-      id: "voxel_birr_modelling_units",
+      type: 'Voxel',
+      id: 'voxel_birr_modelling_units',
       source: {
-        type: "CesiumIon",
-        asset_id: 4365028
+        type: 'CesiumIon',
+        asset_id: 4365028,
       },
-      data_key: "Index",
+      data_key: 'Index',
       mappings: ['conductivity', 'birr_lithology'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "f56c9c6c-ff59-463d-ba66-477fd2d92f39",
+      geocat_id: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
     },
     // Birr - Hydraulic Conductivity
     {
-      type: "Voxel",
-      id: "voxel_birr_conductivity",
+      type: 'Voxel',
+      id: 'voxel_birr_conductivity',
       source: {
-        type: "CesiumIon",
-        asset_id: 4365028
+        type: 'CesiumIon',
+        asset_id: 4365028,
       },
-      data_key: "logk",
+      data_key: 'logk',
       mappings: ['conductivity', 'birr_lithology'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "f56c9c6c-ff59-463d-ba66-477fd2d92f39",
+      geocat_id: 'f56c9c6c-ff59-463d-ba66-477fd2d92f39',
     },
     // Genf - Modelling Units
     {
-      type: "Voxel",
-      id: "voxel_genf_modelling_units",
+      type: 'Voxel',
+      id: 'voxel_genf_modelling_units',
       source: {
-        type: "CesiumIon",
-        asset_id: 4365430
+        type: 'CesiumIon',
+        asset_id: 4365430,
       },
-      data_key: "Index",
+      data_key: 'Index',
       mappings: ['conductivity', 'genf_lithology'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "4a4a530f-6a2a-423d-834e-2831d70fde20",
+      geocat_id: '4a4a530f-6a2a-423d-834e-2831d70fde20',
     },
     // Genf - Hydraulic Conductivity
     {
-      type: "Voxel",
-      id: "voxel_genf_conductivity",
+      type: 'Voxel',
+      id: 'voxel_genf_conductivity',
       source: {
-        type: "CesiumIon",
-        asset_id: 4365430
+        type: 'CesiumIon',
+        asset_id: 4365430,
       },
-      data_key: "logk",
+      data_key: 'logk',
       mappings: ['conductivity', 'genf_lithology'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "4a4a530f-6a2a-423d-834e-2831d70fde20",
+      geocat_id: '4a4a530f-6a2a-423d-834e-2831d70fde20',
     },
     // Visp - Modelling Units
     {
-      type: "Voxel",
-      id: "voxel_visp_modelling_units",
+      type: 'Voxel',
+      id: 'voxel_visp_modelling_units',
       source: {
-        type: "CesiumIon",
-        asset_id: 4368915
+        type: 'CesiumIon',
+        asset_id: 4368915,
       },
-      data_key: "Index",
+      data_key: 'Index',
       mappings: ['conductivity', 'visp_lithology'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "f7847c2c-bd3a-4dda-99c7-d50453b24c3d",
+      geocat_id: 'f7847c2c-bd3a-4dda-99c7-d50453b24c3d',
     },
     // Visp - Hydraulic Conductivity
     {
-      type: "Voxel",
-      id: "voxel_visp_conductivity",
+      type: 'Voxel',
+      id: 'voxel_visp_conductivity',
       source: {
-        type: "CesiumIon",
-        asset_id: 4368915
+        type: 'CesiumIon',
+        asset_id: 4368915,
       },
-      data_key: "logk",
+      data_key: 'logk',
       mappings: ['conductivity', 'visp_lithology'],
       values: {
         no_data: -99999,
         undefined: 0,
       },
-      geocat_id: "f7847c2c-bd3a-4dda-99c7-d50453b24c3d",
+      geocat_id: 'f7847c2c-bd3a-4dda-99c7-d50453b24c3d',
     },
     // SG Rheintal - Conductivity
     {
-      type: "Voxel",
-      id: "voxel_sgrheintal_conductivity",
+      type: 'Voxel',
+      id: 'voxel_sgrheintal_conductivity',
       source: {
-        type: "CesiumIon",
-        asset_id: 4369008
+        type: 'CesiumIon',
+        asset_id: 4369008,
       },
-      data_key: "Klasse",
+      data_key: 'Klasse',
       mappings: ['sg_rheintal_conductivity'],
       values: {
         no_data: -99999,
         undefined: -9999,
       },
-      geocat_id: "",
-    }
-
+      geocat_id: '',
+    },
   ],
 
-  voxel_mappings:{
+  voxel_mappings: {
     // GeoMol Tamp_C Mapping
     geomol_temp_c: {
       key: 'Temp_C',
-      range:[10, 300],
+      range: [10, 300],
       colors: [
         'rgb(10, 0, 121)',
         'rgb(40, 0, 150)',
@@ -202,7 +201,7 @@
         'rgb(255, 215, 215)',
         'rgb(255, 235, 235)',
         'rgb(255, 255, 255)',
-      ]
+      ],
     },
     // Aaretal Mapping
     aaretal_lithology: {
@@ -228,7 +227,7 @@
         [20, { label: 'aaretal_lithology_20', color: 'rgb(0, 88, 133)' }],
         [21, { label: 'aaretal_lithology_21', color: 'rgb(255, 255, 0)' }],
         [22, { label: 'aaretal_lithology_22', color: 'rgb(0, 68, 102)' }],
-        [23, { label: 'aaretal_lithology_23', color: 'rgb(0, 102, 9)' }]
+        [23, { label: 'aaretal_lithology_23', color: 'rgb(0, 102, 9)' }],
       ],
     },
     // Birr Mapping
@@ -298,35 +297,35 @@
         [7, { label: 'birr_lithology_7', color: 'rgb(123, 147, 49)' }],
         [65, { label: 'birr_lithology_65', color: 'rgb(255, 255, 255)' }],
         [66, { label: 'birr_lithology_66', color: 'rgb(255, 255, 255)' }],
-        [67, { label: 'birr_lithology_67', color: 'rgb(255, 255, 255)' }]
+        [67, { label: 'birr_lithology_67', color: 'rgb(255, 255, 255)' }],
       ],
     },
     // Genf Mapping
     genf_lithology: {
       key: 'Index',
       items: [
-        [ 3000, { label: 'genf_lithology_3000', color: 'rgb(55, 169, 0)' }],
-        [ 4000, { label: 'genf_lithology_4000', color: 'rgb(55, 169, 0)' }],
-        [ 5000, { label: 'genf_lithology_5000', color: 'rgb(115, 223, 254)' }],
-        [ 6000, { label: 'genf_lithology_6000', color: 'rgb(167, 111, 0)' }],
-        [ 7000, { label: 'genf_lithology_7000', color: 'rgb(0, 94, 230)' }],
-        [ 8000, { label: 'genf_lithology_8000', color: 'rgb(253, 169, 0)' }],
-        [ 9000, { label: 'genf_lithology_9000', color: 'rgb(254, 190, 232)' }],
-        [ 10000, { label: 'genf_lithology_10000', color: 'rgb(150, 120, 255)' }],
-        [ 11000, { label: 'genf_lithology_11000', color: 'rgb(255, 255, 0)' }],
-        [ 12000, { label: 'genf_lithology_12000', color: 'rgb(168, 168, 0)' }]
+        [3000, { label: 'genf_lithology_3000', color: 'rgb(55, 169, 0)' }],
+        [4000, { label: 'genf_lithology_4000', color: 'rgb(55, 169, 0)' }],
+        [5000, { label: 'genf_lithology_5000', color: 'rgb(115, 223, 254)' }],
+        [6000, { label: 'genf_lithology_6000', color: 'rgb(167, 111, 0)' }],
+        [7000, { label: 'genf_lithology_7000', color: 'rgb(0, 94, 230)' }],
+        [8000, { label: 'genf_lithology_8000', color: 'rgb(253, 169, 0)' }],
+        [9000, { label: 'genf_lithology_9000', color: 'rgb(254, 190, 232)' }],
+        [10000, { label: 'genf_lithology_10000', color: 'rgb(150, 120, 255)' }],
+        [11000, { label: 'genf_lithology_11000', color: 'rgb(255, 255, 0)' }],
+        [12000, { label: 'genf_lithology_12000', color: 'rgb(168, 168, 0)' }],
       ],
     },
     // SG-Rheintal Mapping
     sg_rheintal_conductivity: {
       key: 'Klasse',
       items: [
-        [1, { label:  'vox_filter_klasse_1', color:  'rgb(0, 0, 255)'}],
-        [2, { label:  'vox_filter_klasse_2', color:  'rgb(30, 144, 255)'}],
-        [3, { label:  'vox_filter_klasse_3', color:  'rgb(173, 216, 230)',}],
-        [4, { label:  'vox_filter_klasse_4', color:  'rgb(144, 238, 144)',}],
-        [5, { label:  'vox_filter_klasse_5', color:  'rgb(255, 165, 0)',}],
-        [6, { label:  'vox_filter_klasse_6', color:  'rgb(255, 255, 0)',}]
+        [1, { label: 'vox_filter_klasse_1', color: 'rgb(0, 0, 255)' }],
+        [2, { label: 'vox_filter_klasse_2', color: 'rgb(30, 144, 255)' }],
+        [3, { label: 'vox_filter_klasse_3', color: 'rgb(173, 216, 230)' }],
+        [4, { label: 'vox_filter_klasse_4', color: 'rgb(144, 238, 144)' }],
+        [5, { label: 'vox_filter_klasse_5', color: 'rgb(255, 165, 0)' }],
+        [6, { label: 'vox_filter_klasse_6', color: 'rgb(255, 255, 0)' }],
       ],
     },
 
@@ -355,7 +354,7 @@
         [2, { label: 'visp_lithology_2', color: 'rgb(73, 219, 0)' }],
         [3, { label: 'visp_lithology_3', color: 'rgb(53, 160, 0)' }],
         [4, { label: 'visp_lithology_4', color: 'rgb(34, 102, 0)' }],
-        [6, { label: 'visp_lithology_6', color: 'rgb(199, 207, 175)' }]
+        [6, { label: 'visp_lithology_6', color: 'rgb(199, 207, 175)' }],
       ],
     },
 
@@ -363,7 +362,7 @@
     conductivity: {
       key: 'logk',
       range: [-9, -1],
-      colors: ['rgb(0, 102, 255)', 'rgb(255, 204, 0)', 'rgb(204, 0, 0)']
+      colors: ['rgb(0, 102, 255)', 'rgb(255, 204, 0)', 'rgb(204, 0, 0)'],
     },
-  }
+  },
 }

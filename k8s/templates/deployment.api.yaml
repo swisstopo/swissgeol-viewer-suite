@@ -80,7 +80,8 @@ spec:
           # GST
           - name: GST_URL
             value: "{{ .Values.gst_url }}"
-        
+
+
         resources:
           limits:
             cpu: '1'

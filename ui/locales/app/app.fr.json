@@ -1,7 +1,6 @@
 {
   "accept": "Accepter",
   "cancel": "Annuler",
-
   "app_close_btn_label": "Fermer",
   "by": "de",
   "cam_configuration_header": "Configuration de la caméra",
@@ -417,5 +416,6 @@
   "lyr_ch_swisstopo_swissimage_product_label": "SWISSIMAGE Voyage dans le temps",
   "lyr_ch_swisstopo_swissalti3d_reliefschattierung_monodirektional_label": "swissALTI3D relief monodirectionnel",
   "lyr_ch_swisstopo_swissalti3d_reliefschattierung_label": "swissALTI3D relief multidirectionnel",
-  "lyr_ch_swisstopo_swissbathy3d_reliefschattierung_label": "swissBATHY3D Ombrage du relief"
+  "lyr_ch_swisstopo_swissbathy3d_reliefschattierung_label": "swissBATHY3D Ombrage du relief",
+  "lyr_3d_local_models_label": "Modèles 3D locaux"
 }

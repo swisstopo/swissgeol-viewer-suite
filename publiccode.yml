@@ -51,7 +51,7 @@ maintenance:
   contacts:
     - name: Nils Oesterling
       email: nils.oesterling@swisstopo.ch
-      phone: "0584690524"
+      phone: '0584690524'
 localisation:
   localisationReady: false
   availableLanguages:

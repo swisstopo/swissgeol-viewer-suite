@@ -90,12 +90,6 @@ export const SWISSTOPO_IT_HIGHLIGHT_COLOR = Color.fromCssColorString(
 );
 export const OBJECT_ZOOMTO_RADIUS = 500;
 
-const hostname = document.location.hostname;
-export const PROJECT_ASSET_URL =
-  hostname === 'localhost'
-    ? 'http://localhost:9000/ngmpub-project-files-local/assets/saved/'
-    : `https://project-files.${hostname}/assets/saved/`;
-
 // Size in MB. DefaultBodyLimit should be updated on backend after this value update
 export const PROJECT_ASSET_MAX_SIZE = 2;
 
@@ -204,6 +198,35 @@ export const TITILER_BY_PAGE_HOST = {
   'viewer.swissgeol.ch': 'https://api.swissgeol.ch/titiler',
 };
 
+export const LEXIC_API_BY_PAGE_HOST = {
+  'localhost:8000': 'https://dev-webmap-api.swissgeol.ch',
+  'dev-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'int-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+};
+
+export interface WmtsCapabilitiesLinks {
+  wms: string;
+  wmts: string;
+}
+
+export const DEFAULT_WMTS_SERVICE = 'maps.geo.admin';
+
+export const WMTS_CAPABILITIES_BY_SERVICE: Record<
+  string,
+  WmtsCapabilitiesLinks
+> = {
+  [DEFAULT_WMTS_SERVICE]: {
+    wms: 'https://wms.geo.admin.ch/',
+    wmts: 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml',
+  },
+  lexic: {
+    wms: 'https://dev-ogcservices.swissgeol.ch/geoserver/swisstopo/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities',
+    wmts: 'https://dev-ogcservices.swissgeol.ch/geoserver/gwc/service/wmts?service=WMTS&acceptVersions=1.1.1&request=GetCapabilities',
+  },
+};
+
 export const DEFAULT_UPLOADED_KML_COLOR = Color.fromCssColorString('#0056A4');
 export const DEFAULT_UPLOADED_GEOJSON_COLOR =
   Color.fromCssColorString('#0056A4');
@@ -240,6 +263,6 @@ const COGNITO_ENV_BY_PAGE_HOST = {
   'viewer.swissgeol.ch': 'prod',
 };
 
-export const COGNITO_VARIABLES =
-  _COGNITO_VARIABLES[COGNITO_ENV_BY_PAGE_HOST[window.location.host] ?? 'dev'] ??
+export const getCognitoVariables = (host: string) =>
+  _COGNITO_VARIABLES[COGNITO_ENV_BY_PAGE_HOST[host] ?? 'dev'] ??
   _COGNITO_VARIABLES['dev'];

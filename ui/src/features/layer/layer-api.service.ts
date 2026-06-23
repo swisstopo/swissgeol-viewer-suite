@@ -9,7 +9,6 @@ import {
   GeoJsonLayer,
   InfoBox,
   InfoBoxCustom,
-  InformationValue,
   KmlLayer,
   Layer,
   LayerGroup,
@@ -30,11 +29,14 @@ import {
   VoxelLayerMappingType,
   VoxelRangeMapping,
   WmtsLayer,
+  WmtsLayerSource,
 } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
 import { firstValueFrom } from 'rxjs';
 import { WmtsService } from 'src/services/wmts.service';
 import { run } from 'src/utils/fn.utils';
+import { showSnackbarError } from 'src/notifications';
+import i18next from 'i18next';
 
 export class LayerApiService extends BaseService {
   private sessionService!: SessionService;
@@ -79,14 +81,29 @@ export class LayerApiService extends BaseService {
     const json: LayersConfigJson = await response.json();
     const config: LayersConfig = { ...json, layers: [] };
     await firstValueFrom(this.wmtsService.ready$);
+
+    let skippedCount = 0;
     for (let i = 0; i < json.layers.length; i++) {
       const layer = this.mapConfigToLayer(
         new DynamicObject(json.layers[i], `layers.${i}`),
       );
       if (layer !== null) {
         config.layers.push(layer);
+      } else {
+        skippedCount++;
       }
     }
+
+    if (this.wmtsService.failedSources.length > 0) {
+      const sources = this.wmtsService.failedSources.join(', ');
+      showSnackbarError(
+        i18next.t('catalog:layers_unavailable', {
+          sources,
+          count: skippedCount,
+        }),
+      );
+    }
+
     return config;
   }
 
@@ -110,7 +127,7 @@ export class LayerApiService extends BaseService {
           if (legendUrl !== null) {
             result.legendUrl = legendUrl;
           }
-          const information: Record<string, InformationValue> | null =
+          const information: InfoBoxCustom['information'] | null =
             infoBoxValue.takeNullable('information');
           if (information !== null) {
             result.information = information;
@@ -144,6 +161,10 @@ export class LayerApiService extends BaseService {
         return {
           ...specifics,
           ...base,
+          customProperties: {
+            ...(specifics as WmtsLayer).customProperties,
+            ...base.customProperties,
+          },
           id: base.id as Id<WmtsLayer>,
           type,
         } satisfies WmtsLayer;
@@ -201,20 +222,29 @@ export class LayerApiService extends BaseService {
     config: DynamicObject,
   ): Specific<WmtsLayer> | null => {
     const id: Id<WmtsLayer> = config.get('id');
-    const def = this.wmtsService.layer(id);
+    const service = config.takeNullable<string>('service');
+    const def = this.wmtsService.layer(id, service);
     if (def === null) {
       console.error(
-        `Layer not found in WMS/WMTS (layer will be ignored): ${id}`,
+        `Layer not found in WMS/WMTS for service "${service ?? 'default'}" (layer will be ignored): ${id}`,
       );
+      config.takeEverything();
       return null;
     }
+
+    const source = config.takeNullable('source') as WmtsLayerSource | null;
+    const maxLevel = config.takeNullable<number>('maxLevel');
+    const ogcSource =
+      config
+        .takeNullableObject('ogcSource')
+        ?.apply(this.mapConfigToOgcSource) ?? null;
+
     return {
       ...def,
-      maxLevel: config.takeNullable('maxLevel'),
-      ogcSource:
-        config
-          .takeNullableObject('ogcSource')
-          ?.apply(this.mapConfigToOgcSource) ?? null,
+      source: source ?? def.source,
+      service: service ?? def.service ?? null,
+      maxLevel,
+      ogcSource,
     };
   };
 

@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: "publish"
+  group: 'publish'
 
 # Run all publish workflow in sequence to ensure consistent version numbers.
 permissions: write-all
 
 jobs:
   enforce-main:
-    name: "enforce main"
+    name: 'enforce main'
     runs-on: ubuntu-latest
     steps:
       - name: Fail if not on main
@@ -33,7 +33,7 @@ jobs:
         determineNextRcVersionBySourceBranch,
         stringifyVersion,
         } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/version.utils.mjs`);
-        
+
         const releasableVersion = await findLatestReleasableVersion();
         if (releasableVersion === null) {
         throw new Error('No releasable version found');
@@ -41,7 +41,7 @@ jobs:
         return stringifyVersion({ ...releasableVersion, preRelease: null });
 
   create-release:
-    name: "create release"
+    name: 'create release'
     needs:
       - publish
     runs-on: ubuntu-latest
@@ -64,15 +64,14 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "${{ needs.publish.outputs.version }}"
-          name: "swissgeol Viewer v${{ needs.publish.outputs.version }}"
+          tag_name: '${{ needs.publish.outputs.version }}'
+          name: 'swissgeol Viewer v${{ needs.publish.outputs.version }}'
           body: ${{ steps.extract-changelog.outputs.content }}
           token: ${{ secrets.GITHUB_TOKEN }}
           generate_release_notes: false
 
-
   cleanup:
-    name: "cleanup"
+    name: 'cleanup'
     needs:
       - publish
     runs-on: ubuntu-latest

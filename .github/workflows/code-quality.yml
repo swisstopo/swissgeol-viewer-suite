@@ -4,17 +4,17 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
-      - "**"
-      - "!main"
+      - '**'
+      - '!main'
 env:
-  NODE_VERSION: "22.5.1"
+  NODE_VERSION: '22.5.1'
   SQLX_OFFLINE: true
-  SQLX_VERSION: "0.8.2"
+  SQLX_VERSION: '0.8.2'
   PGHOST: localhost # Overrides the default value in .env
 
 jobs:
   dependency-review:
-    name: "Dependency Review"
+    name: 'Dependency Review'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -32,9 +32,25 @@ jobs:
           # There are no fixes for it yet.
           allow-ghsas: GHSA-qg5g-gv98-5ffh
 
+  format-check:
+    name: 'Format Check'
+    runs-on: ubuntu-latest
+    needs:
+      - dependency-review
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install root dependencies
+        run: npm ci
+      - name: Check formatting
+        run: npm run format:check
 
   install-ui:
-    name: "Install UI"
+    name: 'Install UI'
     runs-on: ubuntu-latest
     needs:
       - dependency-review
@@ -74,9 +90,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: cd ui && npm ci
 
-
   check-ui:
-    name: "Check UI"
+    name: 'Check UI'
     runs-on: ubuntu-latest
     needs:
       - install-ui
@@ -95,9 +110,8 @@ jobs:
       - name: Run check
         run: cd ui && npm run check
 
-
   lint-ui:
-    name: "Lint UI"
+    name: 'Lint UI'
     runs-on: ubuntu-latest
     needs:
       - check-ui
@@ -118,9 +132,8 @@ jobs:
           cd ui
           npm run lint
 
-
   build-ui:
-    name: "Build UI"
+    name: 'Build UI'
     runs-on: ubuntu-latest
     needs:
       - lint-ui
@@ -142,7 +155,7 @@ jobs:
           npm run build
 
   install-api:
-    name: "Install API"
+    name: 'Install API'
     runs-on: ubuntu-latest
     needs:
       - dependency-review
@@ -193,9 +206,8 @@ jobs:
           echo "fn main() {}" > src/main.rs
           cargo build --all-targets --locked --quiet
 
-
   check-api:
-    name: "Check API"
+    name: 'Check API'
     runs-on: ubuntu-latest
     needs:
       - install-api
@@ -224,9 +236,8 @@ jobs:
           cd api
           cargo check --frozen --quiet
 
-
   lint-api:
-    name: "Lint API"
+    name: 'Lint API'
     runs-on: ubuntu-latest
     needs:
       - check-api
@@ -259,14 +270,13 @@ jobs:
       - name: Run clippy
         env:
           # Treat warnings as errors
-          RUSTFLAGS: "-D warnings"
+          RUSTFLAGS: '-D warnings'
         run: |
           cd api
           cargo clippy --frozen --quiet
 
-
   test-api:
-    name: "Test API"
+    name: 'Test API'
     runs-on: ubuntu-latest
     needs:
       - check-api
@@ -320,7 +330,7 @@ jobs:
           docker compose down
 
   build-api:
-    name: "Build API"
+    name: 'Build API'
     runs-on: ubuntu-latest
     needs:
       - test-api
@@ -354,7 +364,7 @@ jobs:
           cargo build
 
   validate-layers:
-    name: "Validate Layers"
+    name: 'Validate Layers'
     runs-on: ubuntu-latest
     needs:
       - build-api
@@ -482,7 +492,7 @@ jobs:
               --record \
               --key ${{ secrets.CYPRESS_RECORD_KEY }}
           install: false
-          wait-on: "http://localhost:8000"
+          wait-on: 'http://localhost:8000'
           wait-on-timeout: 120
           working-directory: ./ui
       - name: Read application logs on failure
@@ -504,7 +514,7 @@ jobs:
           docker compose down
 
   check-changelog:
-    name: "Check CHANGELOG"
+    name: 'Check CHANGELOG'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -531,7 +541,7 @@ jobs:
           fi
 
   prefer-single-commit:
-    name: "Prefer Single Commit"
+    name: 'Prefer Single Commit'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

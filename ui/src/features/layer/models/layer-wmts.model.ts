@@ -21,6 +21,21 @@ export interface WmtsLayer extends BaseLayer {
   source: WmtsLayerSource;
 
   /**
+   * Optional service key used to resolve the WMS/WMTS capabilities endpoint.
+   * If omitted, the default maps.geo.admin service is used.
+   */
+  service?: string | null;
+
+  /**
+   * The URL of the WMS/WMTS service used to render this layer.
+   *
+   * If absent, the default swisstopo service URL for the configured source is used.
+   * For WMS sources, this is the service base URL.
+   * For WMTS sources, this is the capabilities document URL.
+   */
+  serviceUrl: string | null;
+
+  /**
    * The zoom level (zoomed in) from which on no higher resolution tiles will be fetched.
    * Instead, this level's tiles will be scaled up to fit higher zoom levels.
    */
