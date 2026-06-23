@@ -1493,6 +1493,7 @@
     {
       type: 'Tiles3d',
       id: 'rocklab_mont-terri_main-fault',
+      opacity: 0.2,
       source: {
         type: 'CesiumIon',
         asset_id: 4912616,
@@ -1515,6 +1516,7 @@
     {
       type: 'Tiles3d',
       id: 'rocklab_mont-terri_geol-contacts',
+      opacity: 0.2,
       source: {
         type: 'CesiumIon',
         asset_id: 4912586,
@@ -1537,6 +1539,7 @@
     {
       type: 'Tiles3d',
       id: 'rocklab_mont-terri_geol-units',
+      opacity: 0.2,
       source: {
         type: 'CesiumIon',
         asset_id: 4912614,
