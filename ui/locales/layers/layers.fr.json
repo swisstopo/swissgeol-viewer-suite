@@ -196,11 +196,11 @@
     "top_uma": "Toit du Malm supérieur",
     "top_umm": "Toit de la Molasse marine inférieure",
     "top_usm": "Toit de la Molasse d'eau douce inférieure",
-    "rocklab_mont-terri_tunnel": "TLaboratoire de roches de Mont-Terri - Tunnel",
-    "rocklab_mont-terri_galleries": "Laboratoire de roches de Mont-Terri - Galeries ",
-    "rocklab_mont-terri_main-fault": "Laboratoire de roches de Mont-Terri - Failles principales",
-    "rocklab_mont-terri_geol-contacts": "Laboratoire de roches de Mont-Terri - Contacts géologiques",
-    "rocklab_mont-terri_geol-units": "Laboratoire de la roche de Mont-Terri - Unités géologiques",
+    "rocklab_mont-terri_tunnel": "Laboratoire de roches de Mont Terri - Tunnel",
+    "rocklab_mont-terri_galleries": "Laboratoire de roches de Mont Terri - Galeries ",
+    "rocklab_mont-terri_main-fault": "Laboratoire de roches de Mont Terri - Failles principales",
+    "rocklab_mont-terri_geol-contacts": "Laboratoire de roches de Mont Terri - Contacts géologiques",
+    "rocklab_mont-terri_geol-units": "Laboratoire de la roche de Mont Terri - Unités géologiques",
     "tunnel_railway": "Tunnel ferroviaire",
     "tunnel_road": "Tunnel routier",
     "tunnel_water": "Tunnel hydraulique souterrain",
@@ -287,7 +287,7 @@
     "thematic_maps": "Cartes thématiques",
     "uncon_rocks_bedrock": "Roches non consolidées et socle rocheux",
     "underground_space": "Espace souterrain",
-    "mont-terri-rocklab-layers": "Mont-Terri Rock Lab"
+    "mont-terri-rocklab-layers": "Laboratoire de roches de Mont Terri"
   },
   "properties": {
     "ch.swisstopo.swissbedrock-geotiff": {
@@ -635,31 +635,31 @@
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
       },
       "rocklab_mont-terri_tunnel": {
-        "title": "Laboratoire souterrain Mont-Terri - Tunnel",
-        "description": "Modèle 3D du tunnel du laboratoire souterrain du Mont-Terri. Le projet Mont-Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
+        "title": "Laboratoire souterrain Mont Terri - Tunnel",
+        "description": "Modèle 3D du tunnel du laboratoire souterrain du Mont Terri. Le projet Mont Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_galleries": {
-        "title": "Laboratoire souterrain Mont-Terri - Galeries",
-        "description": "Modèle 3D des galeries du laboratoire souterrain du Mont-Terri. Le projet Mont-Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
+        "title": "Laboratoire souterrain Mont Terri - Galeries",
+        "description": "Modèle 3D des galeries du laboratoire souterrain du Mont Terri. Le projet Mont Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_main-fault": {
-        "title": "Laboratoire souterrain Mont-Terri - Faille principale",
-        "description": "Modèle 3D de la faille principale du laboratoire souterrain du Mont-Terri. Le projet Mont-Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
+        "title": "Laboratoire souterrain Mont Terri - Faille principale",
+        "description": "Modèle 3D de la faille principale du laboratoire souterrain du Mont Terri. Le projet Mont Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_geol-contacts": {
-        "title": "Laboratoire souterrain Mont-Terri - Contact géologique",
-        "description": "Modèle 3D des contacts géologiques du laboratoire souterrain du Mont-Terri. Le projet Mont Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
+        "title": "Laboratoire souterrain Mont Terri - Contact géologique",
+        "description": "Modèle 3D des contacts géologiques du laboratoire souterrain du Mont Terri. Le projet Mont Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_geol-units": {
-        "title": "Laboratoire souterrain Mont-Terri - Unités géologique",
+        "title": "Laboratoire souterrain Mont Terri - Unités géologique",
         "description": "Modèle 3D des unités géologiques du laboratoire souterrain du Mont Terri. Le projet Mont Terri est un projet de recherche international visant à caractériser, sur les plans hydrogéologique, géochimique et géotechnique, une formation argileuse (argile d’Opalinus).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"

@@ -192,11 +192,11 @@
     "top_uma": "Tetto Malm superiore",
     "top_umm": "Tetto della Molassa marina inferiore",
     "top_usm": "Tetto della Molassa d'acqua dolce inferiore",
-    "rocklab_mont-terri_tunnel": "Laboratorio sotterreneo Mont-Terri",
-    "rocklab_mont-terri_galleries": "Laboratorio sotterreneo Mont-Terri - Gallerie",
-    "rocklab_mont-terri_main-fault": "Laboratorio sotterreneo Mont-Terri - Guasto principale",
-    "rocklab_mont-terri_geol-contacts": "Laboratorio sotterreneo Mont-Terri - Contatti geologici",
-    "rocklab_mont-terri_geol-units": "Laboratorio sotterreneo Mont-Terri - Unità geologiche",
+    "rocklab_mont-terri_tunnel": "Laboratorio sotterreneo Mont Terri - Tunnel",
+    "rocklab_mont-terri_galleries": "Laboratorio sotterreneo Mont Terri - Gallerie",
+    "rocklab_mont-terri_main-fault": "Laboratorio sotterreneo Mont Terri - Guasto principale",
+    "rocklab_mont-terri_geol-contacts": "Laboratorio sotterreneo Mont Terri - Contatti geologici",
+    "rocklab_mont-terri_geol-units": "Laboratorio sotterreneo Mont Terri - Unità geologiche",
     "tunnel_railway": "Galleria ferroviaria",
     "tunnel_road": "Galleria stradale",
     "tunnel_water": "Galleria idrica sotterranea",
@@ -283,7 +283,7 @@
     "thematic_maps": "Carte tematiche",
     "uncon_rocks_bedrock": "Rocce sciolte e substrato roccioso",
     "underground_space": "Spazio sotterraneo",
-    "mont-terri-rocklab-layers": "Mont-Terri Rock Lab"
+    "mont-terri-rocklab-layers": "Laboratorio sotterreneo Mont Terri"
   },
   "properties": {
     "ch.swisstopo.swissbedrock-geotiff": {
@@ -631,31 +631,31 @@
         "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
       },
       "rocklab_mont-terri_tunnel": {
-        "title": "Laboratorio sotterreneo Mont-Terri",
-        "description": "Modello 3D della galleria del Laboratorio sotterraneo di Mont-Terri. Il Progetto Mont-Terri è un progetto di ricerca internazionale finalizzato alla caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (argilla Opalinus).",
+        "title": "Laboratorio sotterreneo Mont Terri",
+        "description": "Modello 3D della galleria del Laboratorio sotterraneo di Mont Terri. Il Progetto Mont Terri è un progetto di ricerca internazionale finalizzato alla caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (argilla Opalinus).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_galleries": {
-        "title": "Mont-Terri Rock Laboratory",
-        "description": "Modello 3D delle gallerie del Laboratorio sotterraneo di Mont-Terri. Il Progetto Mont-Terri è un progetto di ricerca internazionale finalizzato alla caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (argilla opalina).",
+        "title": "Mont Terri Rock Laboratory",
+        "description": "Modello 3D delle gallerie del Laboratorio sotterraneo di Mont Terri. Il Progetto Mont Terri è un progetto di ricerca internazionale finalizzato alla caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (argilla opalina).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_main-fault": {
-        "title": "Mont-Terri Rock Laboratory",
-        "description": "Modello 3D della faglia principale del Laboratorio geologico di Mont-Terri. Il Progetto Mont-Terri è un progetto di ricerca internazionale finalizzato alla caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (argilla opalina).",
+        "title": "Mont Terri Rock Laboratory",
+        "description": "Modello 3D della faglia principale del Laboratorio geologico di Mont Terri. Il Progetto Mont Terri è un progetto di ricerca internazionale finalizzato alla caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (argilla opalina).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_geol-contacts": {
-        "title": "Mont-Terri Rock Laboratory",
-        "description": "Modello 3D dei contatti geologici del Laboratorio geologico di Mont-Terri. Il Progetto Mont Terri è un progetto di ricerca internazionale finalizzato alla caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (Opalinus Clay).",
+        "title": "Mont Terri Rock Laboratory",
+        "description": "Modello 3D dei contatti geologici del Laboratorio geologico di Mont Terri. Il Progetto Mont Terri è un progetto di ricerca internazionale finalizzato alla caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (Opalinus Clay).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
       },
       "rocklab_mont-terri_geol-units": {
-        "title": "Mont-Terri Rock Laboratory",
+        "title": "Mont Terri Rock Laboratory",
         "description": "Modello 3D delle unità geologiche del Laboratorio di Roccia di Mont Terri. Il Progetto Mont Terri è un progetto di ricerca internazionale finalizzato alla caratterizzazione idrogeologica, geochimica e geotecnica di una formazione argillosa (Opalinus Clay).",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Mont-Terri_Rock_Lab/Mont-Terri-Logo.jpeg",
         "legend_link_url": "https://www.mont-terri.ch/"
