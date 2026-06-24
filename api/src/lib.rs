@@ -78,22 +78,6 @@ pub async fn app(pool: PgPool) -> Router {
         .route("/api/client-config", get(handlers::get_client_config))
         .route("/api/layers", get(handlers::get_layer_config))
         .route("/api/health_check", get(handlers::health_check))
-//         .route(
-//             "/api/projects",
-//             get(handlers::list_projects).post(handlers::create_project),
-//         )
-//         .route("/api/projects/duplicate", post(handlers::duplicate_project))
-//         .route(
-//             "/api/projects/:id",
-//             get(handlers::get_project)
-//                 .put(handlers::update_project)
-//                 .delete(handlers::delete_project),
-//         )
-//         .route(
-//             "/api/projects/:id/geometries",
-//             put(handlers::update_project_geometries),
-//         )
-//         .route("/api/projects/upload_asset", post(handlers::upload_asset))
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
