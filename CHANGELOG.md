@@ -1,5 +1,17 @@
 # Changelog
 
+## [v1.14.0]
+
+### Added
+
+
+### Changed
+
+- api/projects/* deactivated.
+
+### Fixed
+
+
 ## [v1.13.0]
 
 ### Added
