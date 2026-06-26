@@ -6,5 +6,10 @@
     "Share": "Teilen",
     "Projects": "Projekte",
     "Settings": "Einstellungen"
+  },
+  "lexic": {
+    "datasetLabel": "Angezeigter Datensatz",
+    "layerPlaceholder": "Datensatz auswählen",
+    "loadingLayers": "Datensätze werden geladen..."
   }
 }

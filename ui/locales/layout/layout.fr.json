@@ -6,5 +6,10 @@
     "Share": "Partager",
     "Projects": "Projets",
     "Settings": "Paramètres"
+  },
+  "lexic": {
+    "datasetLabel": "Jeu de données affiché",
+    "layerPlaceholder": "Sélectionner un jeu de données",
+    "loadingLayers": "Chargement des jeux de données..."
   }
 }

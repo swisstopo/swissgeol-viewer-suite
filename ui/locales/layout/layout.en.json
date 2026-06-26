@@ -6,5 +6,10 @@
     "Share": "Share",
     "Projects": "Projects",
     "Settings": "Settings"
+  },
+  "lexic": {
+    "datasetLabel": "Displayed dataset",
+    "layerPlaceholder": "Select dataset",
+    "loadingLayers": "Loading datasets..."
   }
 }
