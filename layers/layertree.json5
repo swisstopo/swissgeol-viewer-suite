@@ -381,6 +381,15 @@
                 'seismic_2d_2023_23SIG_A_102',
               ],
             },
+            {
+              id: '2d_survey_24GES',
+              children: [
+                'seismic_2d_24_GES_01',
+                'seismic_2d_24_GES_02',
+                'seismic_2d_24_GES_03',
+                'seismic_2d_24_GES_04',
+              ],
+            },
           ],
         },
         {
