@@ -21,6 +21,9 @@ export class LayoutSidebar extends CoreElement {
   accessor countOfLayers = 0;
 
   @state()
+  accessor countOfLexicLayers = 0;
+
+  @state()
   accessor countOfGeometries = 0;
 
   @consume({ context: LayerService.context() })
@@ -115,6 +118,11 @@ export class LayoutSidebar extends CoreElement {
         panel: SidebarPanel.Layers,
         icon: 'layer',
         counter: this.countOfLayers,
+      })}
+      ${this.renderItem({
+        panel: SidebarPanel.Lexic,
+        icon: 'lexic',
+        counter: this.countOfLexicLayers, // TODO
       })}
       ${this.renderItem({
         panel: SidebarPanel.Tools,
