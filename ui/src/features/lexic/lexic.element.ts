@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
+import { applyTypography } from 'src/styles/theme';
 import {
   getLayerLabel,
   Layer,
@@ -105,23 +106,28 @@ export class Lexic extends CoreElement {
   readonly render = () => html`
     <section>
       <div class="section-header">
-        ${i18next.t('layout:lexic.datasetLabel')}
-      </div>
-      <div class="select-wrapper">
-        <select
-          .value=${this.selectedLayerId}
-          @change=${this.handleLayerSelection}
+        <span class="section-header-label"
+          >${i18next.t('layout:lexic.datasetLabel')}</span
         >
-          <option value="">
-            ${this.isLoadingLayers
-              ? i18next.t('layout:lexic.loadingLayers')
-              : i18next.t('layout:lexic.layerPlaceholder')}
-          </option>
-          ${this.layerOptions.map(
-            (layer) => html`<option value="${layer.id}">${layer.name}</option>`,
-          )}
-        </select>
-        <ngm-core-icon icon="dropdown"></ngm-core-icon>
+      </div>
+      <div class="select-container">
+        <div class="select-wrapper">
+          <select
+            .value=${this.selectedLayerId}
+            @change=${this.handleLayerSelection}
+          >
+            <option value="">
+              ${this.isLoadingLayers
+                ? i18next.t('layout:lexic.loadingLayers')
+                : i18next.t('layout:lexic.layerPlaceholder')}
+            </option>
+            ${this.layerOptions.map(
+              (layer) =>
+                html`<option value="${layer.id}">${layer.name}</option>`,
+            )}
+          </select>
+          <ngm-core-icon icon="dropdown"></ngm-core-icon>
+        </div>
       </div>
     </section>
   `;
@@ -142,11 +148,25 @@ export class Lexic extends CoreElement {
     }
 
     .section-header {
+      ${applyTypography('body-2-bold')};
+      display: flex;
+      align-items: center;
+      min-height: 44px;
       background-color: var(--color-bg--blue);
       color: var(--color-text--emphasis-medium);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 8px 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-border--default);
+    }
+
+    .section-header-label {
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+
+    .select-container {
+      padding: 24px 16px;
+      background-color: var(--color-bg--white);
     }
 
     .select-wrapper {
@@ -164,17 +184,21 @@ export class Lexic extends CoreElement {
       border: 0;
       outline: 0;
       background: transparent;
-      color: var(--color-text--emphasis-high);
+      color: var(--color-primary);
       font: inherit;
       appearance: none;
       cursor: pointer;
+    }
+
+    option {
+      color: var(--color-primary);
     }
 
     .select-wrapper > ngm-core-icon {
       position: absolute;
       right: 12px;
       pointer-events: none;
-      color: var(--color-text--emphasis-medium);
+      color: var(--color-primary);
     }
   `;
 }
