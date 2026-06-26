@@ -59,6 +59,12 @@ export class LayoutSidebar extends CoreElement {
             ? import('src/features/catalog/catalog.module')
             : null;
         break;
+      case SidebarPanel.Lexic:
+        this.promise =
+          customElements.get('ngm-lexic') === undefined
+            ? import('src/features/lexic/lexic.module')
+            : null;
+        break;
       default:
         this.promise = null;
     }
@@ -185,6 +191,8 @@ export class LayoutSidebar extends CoreElement {
       switch (this.activePanel) {
         case SidebarPanel.Layers:
           return html`<ngm-catalog></ngm-catalog>`;
+        case SidebarPanel.Lexic:
+          return html`<ngm-lexic></ngm-lexic>`;
         case SidebarPanel.Share:
           return html`<ngm-share-link></ngm-share-link>`;
         case SidebarPanel.Settings:
@@ -192,6 +200,8 @@ export class LayoutSidebar extends CoreElement {
         case SidebarPanel.Projects:
         case SidebarPanel.Tools:
         case null:
+          return undefined;
+        default:
           return undefined;
       }
     };
