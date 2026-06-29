@@ -12,6 +12,8 @@ import {
   WmtsLayer,
 } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
+import { LexicApiService } from './lexic-api.service';
+import { LexicLanguage, LexicLayerFiltersResponse } from './lexic-api.model';
 
 type LexicLayerOption = {
   id: string;
@@ -23,6 +25,9 @@ export class Lexic extends CoreElement {
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
 
+  @consume({ context: LexicApiService.context() })
+  accessor lexicApiService!: LexicApiService;
+
   @state()
   accessor layerOptions: LexicLayerOption[] = [];
 
@@ -32,14 +37,28 @@ export class Lexic extends CoreElement {
   @state()
   accessor isLoadingLayers = false;
 
+  @state()
+  accessor isLoadingFilters = false;
+
+  @state()
+  accessor selectedLayerFilters: LexicLayerFiltersResponse | null = null;
+
+  private filtersRequestVersion = 0;
+
   connectedCallback(): void {
     super.connectedCallback();
 
     this.register(
       this.layerService.activeLayerIds$.subscribe((ids) => {
         const activeLexicLayerId = ids.find((id) => this.isLexicWmtsLayer(id));
-        this.selectedLayerId =
+        const nextSelectedLayerId =
           activeLexicLayerId != null ? String(activeLexicLayerId) : '';
+        if (this.selectedLayerId === nextSelectedLayerId) {
+          return;
+        }
+
+        this.selectedLayerId = nextSelectedLayerId;
+        void this.loadSupportedFiltersForSelectedLayer();
       }),
     );
 
@@ -48,13 +67,33 @@ export class Lexic extends CoreElement {
 
   willChangeLanguage(_language: void): void {
     void this.loadLayerOptions();
+    void this.loadSupportedFiltersForSelectedLayer();
   }
 
   private readonly handleLayerSelection = (event: Event) => {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedLayerId = selectElement.value;
     this.applySelectionToViewer();
+    void this.loadSupportedFiltersForSelectedLayer();
   };
+
+  private getLexicLanguage(): LexicLanguage {
+    const language = i18next.resolvedLanguage ?? i18next.language;
+
+    if (language.startsWith('de')) {
+      return 'de';
+    }
+
+    if (language.startsWith('fr')) {
+      return 'fr';
+    }
+
+    if (language.startsWith('it')) {
+      return 'it';
+    }
+
+    return 'en';
+  }
 
   private readonly isLexicWmtsLayer = (id: Id<Layer>): boolean => {
     const layer = this.layerService.layerOrNull(id);
@@ -74,6 +113,43 @@ export class Lexic extends CoreElement {
 
     if (selectedLayerId != null) {
       this.layerService.activate(selectedLayerId);
+    }
+  }
+
+  private async loadSupportedFiltersForSelectedLayer(): Promise<void> {
+    const layerId = this.selectedLayerId;
+    const requestVersion = ++this.filtersRequestVersion;
+
+    if (layerId === '') {
+      this.selectedLayerFilters = null;
+      this.isLoadingFilters = false;
+      return;
+    }
+
+    this.isLoadingFilters = true;
+    try {
+      const filters = await this.lexicApiService.getLayerFilters(
+        layerId,
+        this.getLexicLanguage(),
+      );
+
+      if (
+        this.filtersRequestVersion === requestVersion &&
+        this.selectedLayerId === layerId
+      ) {
+        this.selectedLayerFilters = filters;
+      }
+    } catch {
+      if (
+        this.filtersRequestVersion === requestVersion &&
+        this.selectedLayerId === layerId
+      ) {
+        this.selectedLayerFilters = null;
+      }
+    } finally {
+      if (this.filtersRequestVersion === requestVersion) {
+        this.isLoadingFilters = false;
+      }
     }
   }
 
