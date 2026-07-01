@@ -186,6 +186,7 @@ pub async fn health_check(Extension(pool): Extension<PgPool>) -> (StatusCode, St
 }
 
 #[debug_handler]
+#[allow(dead_code)]
 pub async fn create_project(
     Extension(pool): Extension<PgPool>,
     Extension(client): Extension<Client>,
@@ -256,6 +257,7 @@ pub async fn get_project(
 }
 
 #[axum_macros::debug_handler]
+#[allow(dead_code)]
 pub async fn update_project(
     Path(id): Path<Uuid>,
     Extension(pool): Extension<PgPool>,
