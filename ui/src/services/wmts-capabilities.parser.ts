@@ -144,10 +144,7 @@ function resolveWmtsGetTileBaseUrl(xml: Document): string | null {
   return getHref(get);
 }
 
-function resolveWmtsStyle(
-  layer: Element,
-  layerName: string,
-): string {
+function resolveWmtsStyle(layer: Element, layerName: string): string {
   const styles = Array.from(layer.getElementsByTagNameNS('*', 'Style'));
   const identifiers = styles
     .map((style) => ({
