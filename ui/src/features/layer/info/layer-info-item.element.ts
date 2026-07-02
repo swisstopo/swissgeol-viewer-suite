@@ -114,11 +114,31 @@ export class LayerInfoItem extends CoreElement {
     }));
   }
 
+  private hasLexicService(layer: Layer): boolean {
+    return 'service' in layer && layer.service === 'lexic';
+  }
+
+  private normalizeAttributeValue(
+    value: LayerInfoValue | LayerInfoUrl,
+  ): LayerInfoValue | LayerInfoUrl {
+    return typeof value === 'string' &&
+      (value.startsWith('https://') || value.startsWith('http://'))
+      ? { url: value }
+      : value;
+  }
+
+  private isLinkedAttribute(attribute: LayerInfoAttribute): boolean {
+    return isLayerInfoUrl(this.normalizeAttributeValue(attribute.value));
+  }
+
   readonly render = () => {
     const attributes = [
       ...this.info.attributes,
       ...this.makeCustomAttributes(),
     ];
+    const visibleAttributes = this.hasLexicService(this.layer)
+      ? attributes.filter((attribute) => this.isLinkedAttribute(attribute))
+      : attributes;
     return html`
       <label class="toggle">
         <input type="checkbox" />
@@ -133,7 +153,7 @@ export class LayerInfoItem extends CoreElement {
         <div class="attributes">
           <ul class="attribute-names">
             ${repeat(
-              attributes,
+              visibleAttributes,
               (it) => it.key,
               (it) => {
                 const translatedKey = translate(it.key);
@@ -146,15 +166,10 @@ export class LayerInfoItem extends CoreElement {
           <div class="divider" @mousedown="${this.startResizing}"></div>
           <ul class="attribute-values">
             ${repeat(
-              attributes,
+              visibleAttributes,
               (it) => it.key,
               (it) => {
-                const value: LayerInfoValue | LayerInfoUrl =
-                  typeof it.value === 'string' &&
-                  (it.value.startsWith('https://') ||
-                    it.value.startsWith('http://'))
-                    ? { url: it.value }
-                    : it.value;
+                const value = this.normalizeAttributeValue(it.value);
                 if (isLayerInfoUrl(value)) {
                   return html`
                     <li>
