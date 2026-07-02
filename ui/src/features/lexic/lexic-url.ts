@@ -64,3 +64,10 @@ export function getLexicHref(termUrl: string, language: string): string {
   url.searchParams.set('lang', language);
   return url.toString();
 }
+
+/**
+ * Checks if a string value is a Lexic term URL.
+ */
+export function isLexicTermUrl(value: string): boolean {
+  return parseLexicTermUrl(value) !== null;
+}
