@@ -1,3 +1,5 @@
+import { LexicLanguage } from 'src/features/lexic/lexic-api.model';
+
 const LEXIC_HOSTS = new Set([
   'dev-lexic.swissgeol.ch',
   'int-lexic.swissgeol.ch',
@@ -70,4 +72,18 @@ export function getLexicHref(termUrl: string, language: string): string {
  */
 export function isLexicTermUrl(value: string): boolean {
   return parseLexicTermUrl(value) !== null;
+}
+
+export function toLexicLanguage(language: string): LexicLanguage {
+  const normalized = language.split('-')[0];
+
+  switch (normalized) {
+    case 'en':
+    case 'de':
+    case 'fr':
+    case 'it':
+      return normalized;
+    default:
+      return 'en';
+  }
 }
