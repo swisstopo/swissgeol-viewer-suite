@@ -199,11 +199,11 @@ export const TITILER_BY_PAGE_HOST = {
 };
 
 export const LEXIC_API_BY_PAGE_HOST = {
-  'localhost:8000': 'https://dev-webmap-api.swissgeol.ch',
-  'dev-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
-  'int-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
-  'swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
-  'viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch',
+  'localhost:8000': 'https://dev-webmap-api.swissgeol.ch/v1',
+  'dev-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch/v1',
+  'int-viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch/v1',
+  'swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch/v1',
+  'viewer.swissgeol.ch': 'https://dev-webmap-api.swissgeol.ch/v1',
 };
 
 export interface WmtsCapabilitiesLinks {
