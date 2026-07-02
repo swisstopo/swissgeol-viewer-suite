@@ -15,7 +15,6 @@ export class LexicVocabularyService extends BaseService {
   >();
   private lexicApi: LexicApiService | null = null;
 
-  // TODO probably safe to remove
   constructor() {
     super();
   }
@@ -73,27 +72,5 @@ export class LexicVocabularyService extends BaseService {
       });
     this.pending.set(cacheKey, request);
     return request;
-  }
-
-  // TODO remove
-  debugCacheSnapshot(): Array<{
-    key: string;
-    termsCount: number;
-    firstTerms: Array<{ term?: string; label?: string }>;
-  }> {
-    return Array.from(this.cache.entries()).map(([key, response]) => ({
-      key,
-      termsCount: response.terms?.length ?? 0,
-      firstTerms:
-        response.terms?.slice(0, 5).map((term) => ({
-          term: term.term,
-          label: term.label,
-        })) ?? [],
-    }));
-  }
-
-  // TODO Remove
-  debugPendingKeys(): string[] {
-    return Array.from(this.pending.keys());
   }
 }
