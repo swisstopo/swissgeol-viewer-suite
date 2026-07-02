@@ -17,11 +17,20 @@ export interface ParsedLexicTermUrl {
   normalizedTermUrl: string;
 }
 
+export const LEXIC_VOCABULARY_IDS = [
+  'chronostratigraphy',
+  'tectonic-units',
+  'lithostratigraphy',
+  'lithology',
+] as const;
+
+export type LexicVocabularyId = (typeof LEXIC_VOCABULARY_IDS)[number];
+
 /**
  * Mapping from the first path segment of a Lexic URL to the vocabulary id
  * used by the API.
  */
-const VOCABULARY_PATH_MAP: Record<string, string> = {
+const VOCABULARY_PATH_MAP: Record<string, LexicVocabularyId> = {
   Chronostratigraphy: 'chronostratigraphy',
   TectonicUnits: 'tectonic-units',
   Lithostratigraphy: 'lithostratigraphy',

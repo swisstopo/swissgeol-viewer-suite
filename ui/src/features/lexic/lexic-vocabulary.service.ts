@@ -1,7 +1,11 @@
 import { BaseService } from 'src/services/base.service';
 import { LexicApiService } from './lexic-api.service';
 import { LexicLanguage, LexicVocabularyTermsResponse } from './lexic-api.model';
-import { parseLexicTermUrl, toLexicLanguage } from './lexic-url';
+import {
+  LEXIC_VOCABULARY_IDS,
+  parseLexicTermUrl,
+  toLexicLanguage,
+} from './lexic-url';
 
 /**
  * Service that resolves translated labels for Lexic term URLs.
@@ -72,5 +76,15 @@ export class LexicVocabularyService extends BaseService {
       });
     this.pending.set(cacheKey, request);
     return request;
+  }
+
+  async preloadVocabularies(language: string): Promise<void> {
+    const lexicLanguage = toLexicLanguage(language);
+
+    await Promise.allSettled(
+      LEXIC_VOCABULARY_IDS.map((vocabularyId) =>
+        this.fetchVocabulary(vocabularyId, lexicLanguage),
+      ),
+    );
   }
 }
