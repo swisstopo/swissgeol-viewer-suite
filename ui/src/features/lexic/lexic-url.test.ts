@@ -215,9 +215,9 @@ describe('isLexicTermUrl', () => {
   });
 
   it('returns false for unsupported vocabulary paths', () => {
-    expect(
-      isLexicTermUrl('https://dev-lexic.swissgeol.ch/Unknown/Term'),
-    ).toBe(false);
+    expect(isLexicTermUrl('https://dev-lexic.swissgeol.ch/Unknown/Term')).toBe(
+      false,
+    );
   });
 });
 
@@ -254,4 +254,3 @@ describe('toLexicLanguage', () => {
     expect(toLexicLanguage('')).toBe('en');
   });
 });
-
