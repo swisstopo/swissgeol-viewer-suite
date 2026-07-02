@@ -8,7 +8,7 @@
     "Settings": "Einstellungen"
   },
   "lexic": {
-    "datasetLabel": "Angezeigter Datensatz",
+    "datasetLabel": "Datensatz",
     "layerPlaceholder": "Datensatz auswählen",
     "loadingLayers": "Datensätze werden geladen..."
   }

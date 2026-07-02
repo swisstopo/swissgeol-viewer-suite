@@ -8,7 +8,7 @@
     "Settings": "Paramètres"
   },
   "lexic": {
-    "datasetLabel": "Jeu de données affiché",
+    "datasetLabel": "Jeu de données",
     "layerPlaceholder": "Sélectionner un jeu de données",
     "loadingLayers": "Chargement des jeux de données..."
   }

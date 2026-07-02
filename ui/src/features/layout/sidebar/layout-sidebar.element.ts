@@ -11,6 +11,7 @@ import ToolboxStore from 'src/store/toolbox';
 import 'src/toolbox/ngm-toolbox';
 import 'src/elements/dashboard/ngm-dashboard';
 import 'src/elements/ngm-share-link';
+import { LexicFilterService } from 'src/features/lexic';
 
 @customElement('ngm-layout-sidebar')
 export class LayoutSidebar extends CoreElement {
@@ -26,8 +27,14 @@ export class LayoutSidebar extends CoreElement {
   @state()
   accessor countOfGeometries = 0;
 
+  @state()
+  accessor isLexicOpen = false;
+
   @consume({ context: LayerService.context() })
   accessor layerService!: LayerService;
+
+  @consume({ context: LexicFilterService.context() })
+  accessor filterService!: LexicFilterService;
 
   private promise: Promise<unknown> | null = null;
 
@@ -46,6 +53,15 @@ export class LayoutSidebar extends CoreElement {
         this.countOfGeometries = geometries.length;
       }),
     );
+
+    this.register(
+      this.filterService.isOpen$.subscribe((isOpen) => {
+        this.isLexicOpen = isOpen;
+        if (isOpen) {
+          this.ensureLexicModuleLoaded();
+        }
+      }),
+    );
   }
 
   private readonly handlePanelActivation = (
@@ -59,16 +75,20 @@ export class LayoutSidebar extends CoreElement {
             ? import('src/features/catalog/catalog.module')
             : null;
         break;
-      case SidebarPanel.Lexic:
-        this.promise =
-          customElements.get('ngm-lexic') === undefined
-            ? import('src/features/lexic/lexic.module')
-            : null;
-        break;
       default:
         this.promise = null;
     }
   };
+
+  private readonly handleLexicToggle = () => {
+    this.filterService.toggle();
+  };
+
+  private ensureLexicModuleLoaded(): void {
+    if (customElements.get('ngm-lexic-filter-panel') === undefined) {
+      void import('src/features/lexic/lexic.module');
+    }
+  }
 
   private readonly handlePanelDeactivation = (
     event: CustomEvent<{ panel: SidebarPanel }>,
@@ -116,6 +136,9 @@ export class LayoutSidebar extends CoreElement {
       </ngm-navigation-panel-header>
       ${this.renderPanel()}
     </ngm-navigation-panel>
+    ${this.isLexicOpen
+      ? html`<ngm-lexic-filter-panel></ngm-lexic-filter-panel>`
+      : ''}
   `;
 
   private readonly renderItems = () => html`
@@ -125,11 +148,17 @@ export class LayoutSidebar extends CoreElement {
         icon: 'layer',
         counter: this.countOfLayers,
       })}
-      ${this.renderItem({
-        panel: SidebarPanel.Lexic,
-        icon: 'lexic',
-        counter: this.countOfLexicLayers, // TODO
-      })}
+      <li>
+        <ngm-layout-sidebar-item
+          .panel="${SidebarPanel.Lexic}"
+          data-cy="Lexic"
+          icon="lexic"
+          .counter="${this.countOfLexicLayers}"
+          ?active="${this.isLexicOpen}"
+          @activate="${this.handleLexicToggle}"
+          @deactivate="${this.handleLexicToggle}"
+        ></ngm-layout-sidebar-item>
+      </li>
       ${this.renderItem({
         panel: SidebarPanel.Tools,
         icon: 'tools',
@@ -191,8 +220,6 @@ export class LayoutSidebar extends CoreElement {
       switch (this.activePanel) {
         case SidebarPanel.Layers:
           return html`<ngm-catalog></ngm-catalog>`;
-        case SidebarPanel.Lexic:
-          return html`<ngm-lexic></ngm-lexic>`;
         case SidebarPanel.Share:
           return html`<ngm-share-link></ngm-share-link>`;
         case SidebarPanel.Settings:

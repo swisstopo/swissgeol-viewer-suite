@@ -8,7 +8,7 @@
     "Settings": "Impostazioni"
   },
   "lexic": {
-    "datasetLabel": "Dataset visualizzato",
+    "datasetLabel": "Set di dati",
     "layerPlaceholder": "Seleziona dataset",
     "loadingLayers": "Caricamento dataset..."
   }
