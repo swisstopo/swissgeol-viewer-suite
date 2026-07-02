@@ -1,11 +1,11 @@
 import { consume } from '@lit/context';
-import i18next from 'i18next';
 import { css, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { applyTypography } from 'src/styles/theme';
 import { LexicFilter, LexicLayerFiltersResponse } from './lexic-api.model';
 import { LexicFilterService } from './lexic-filter.service';
+import {Filter, FilterId} from "src/features/lexic/generated/lexic-schemas";
 
 // Fallback filters used when the API is unavailable (e.g. CORS in local dev).
 // FIXME: Remove once the lexic API is reliably reachable in all environments.
@@ -34,8 +34,8 @@ export class LexicFilterContainer extends CoreElement {
     const currentLayerId = this.layerFilters?.layerId;
     if (!this.hasInitialized || currentLayerId !== this.previousLayerId) {
       this.hasInitialized = true;
-      const firstId = this.filters[0]?.id;
-      this.expandedFilterIds = firstId != null ? new Set([firstId]) : new Set();
+      const firstId = this.filters[0]?.id as keyof FilterId;
+      this.expandedFilterIds = new Set(firstId ?? undefined);
       this.previousLayerId = currentLayerId;
     }
   }

@@ -26,8 +26,7 @@ import { WmtsService } from 'src/services/wmts.service';
 import { PickService } from 'src/services/pick.service';
 import { IonService } from 'src/services/ion.service';
 import { CesiumService } from 'src/services/cesium.service';
-import { LexicApiService } from 'src/features/lexic';
-import { LexicFilterService } from 'src/features/lexic';
+import { LexicApiService, LexicFilterService } from 'src/features/lexic';
 
 type AppContext = ContextProvider<Context<unknown, unknown>, LitElement>;
 export const registerAppContext = (
