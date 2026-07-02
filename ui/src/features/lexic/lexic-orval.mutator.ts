@@ -3,7 +3,7 @@ import {
   TIMEOUT_REQUEST_AFTER_MILLISECONDS,
 } from 'src/constants';
 
-const DEFAULT_BASE_URL = 'https://dev-webmap-api.swissgeol.ch';
+const DEFAULT_BASE_URL = 'https://dev-webmap-api.swissgeol.ch/v1';
 
 export async function lexicFetch<T>(
   requestUrl: string,
