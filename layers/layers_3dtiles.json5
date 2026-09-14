@@ -370,9 +370,6 @@
           style_id: 5,
         },
       },
-      access: {
-        env: ['local', 'dev'],
-      },
     },
     // Geoenergy
     {
