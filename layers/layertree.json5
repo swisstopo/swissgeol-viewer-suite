@@ -406,10 +406,6 @@
         {
           id: '3d_reflexionseismics',
           children: ['seismic_3d_E11'],
-          access: {
-            env: ['local', 'dev'],
-            // groups: ['ngm-dev-privileged']
-          },
         },
         'ch.swisstopo.geologie-gesteinsdichte',
         'ch.swisstopo.geologie-bodenunruhe',
