@@ -35,6 +35,7 @@ services:
       HOST_WHITELIST: 'localhost'
 
   titiler:
+    platform: linux/amd64
     image: swissgeol-viewer-app/titiler:local
     build:
       context: ./titiler
