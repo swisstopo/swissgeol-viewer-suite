@@ -34,7 +34,7 @@ jobs:
           AWS_ROLE="${!VAR_NAME}"
           echo "AWS_ROLE=$AWS_ROLE" >> $GITHUB_OUTPUT
       - name: 'Checkout repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: 'Deploy'
         uses: ./.github/actions/deploy-k8s-suite
         with:

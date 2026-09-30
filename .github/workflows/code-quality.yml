@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Review Dependencies
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           # Disable scorecard output for now, as the output may get too large otherwise,
           # causing the action to fail.
@@ -39,9 +39,9 @@ jobs:
       - dependency-review
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install root dependencies
@@ -56,30 +56,30 @@ jobs:
       - dependency-review
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Get npm cache directory
         id: npm-cache-dir
         run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
       - name: Cache npm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
           key: "${{ runner.os }}-npm-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
           restore-keys: |
             ${{ runner.os }}-npm-
       - name: Cache cypress
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /home/runner/.cache/Cypress
           key: "${{ runner.os }}-cypress-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
           restore-keys: |
             ${{ runner.os }}-cypress-
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
@@ -97,13 +97,13 @@ jobs:
       - install-ui
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Restore cached node modules
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
@@ -117,13 +117,13 @@ jobs:
       - check-ui
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Restore cached node modules
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
@@ -140,13 +140,13 @@ jobs:
       - lint-ui
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Restore cached node modules
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
@@ -160,13 +160,13 @@ jobs:
       - test-ui
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Restore cached node modules
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
@@ -182,32 +182,32 @@ jobs:
       - dependency-review
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@1.90
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
           restore-keys: |
             ${{ runner.os }}-cargo_registry-
       - name: Cache cargo index
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/git
           key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
           restore-keys: |
             ${{ runner.os }}-cargo_index-
       - name: Cache cargo build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./api/target
           key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
           restore-keys: |
             ${{ runner.os }}-cargo_build-
       - name: Cache sqlx binary
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/bin/sqlx
           key: "${{ runner.os }}-sqlx-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
@@ -234,21 +234,21 @@ jobs:
       - install-api
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@1.90
       - name: Restore cargo registry
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/registry
           key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo index
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/git
           key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo build
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./api/target
           key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('/api/Cargo.lock') }}"
@@ -264,23 +264,23 @@ jobs:
       - check-api
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@1.90
         with:
           components: clippy, rustfmt
       - name: Restore cargo registry
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/registry
           key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo index
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/git
           key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo build
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./api/target
           key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('/api/Cargo.lock') }}"
@@ -303,26 +303,26 @@ jobs:
       - check-api
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@1.90
       - name: Restore cargo registry
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/registry
           key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo index
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/git
           key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo build
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./api/target
           key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('/api/Cargo.lock') }}"
       - name: Restore sqlx binary
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/bin/sqlx
           key: "${{ runner.os }}-sqlx-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
@@ -358,24 +358,24 @@ jobs:
       - lint-api
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@1.90
         with:
           toolchain: ${{ env.RUST_VERSION }}
           components: clippy, rustfmt
       - name: Restore cargo registry
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/registry
           key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo index
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/git
           key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo build
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./api/target
           key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('/api/Cargo.lock') }}"
@@ -391,24 +391,24 @@ jobs:
       - build-api
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@1.90
         with:
           toolchain: ${{ env.RUST_VERSION }}
           components: clippy, rustfmt
       - name: Restore cargo registry
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/registry
           key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo index
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/git
           key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo build
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./api/target
           key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('/api/Cargo.lock') }}"
@@ -424,9 +424,9 @@ jobs:
       - build-ui
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install Rust toolchain
@@ -444,32 +444,32 @@ jobs:
             libgtk-3-0
 
       - name: Restore cargo registry
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/registry
           key: "${{ runner.os }}-cargo_registry-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo index
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/git
           key: "${{ runner.os }}-cargo_index-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cargo build
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./api/target
           key: "${{ runner.os }}-cargo_build-${{ env.RUST_VERSION }}-${{ hashFiles('/api/Cargo.lock') }}"
       - name: Restore sqlx binary
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cargo/bin/sqlx
           key: "${{ runner.os }}-sqlx-${{ env.RUST_VERSION }}-${{ hashFiles('./api/Cargo.lock') }}"
       - name: Restore cached cypress
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: /home/runner/.cache/Cypress
           key: "${{ runner.os }}-cypress-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
       - name: Restore cached node modules
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./ui/node_modules
           key: "${{ runner.os }}-node_modules-${{ env.NODE_VERSION }}-${{ hashFiles('./ui/package-lock.json') }}"
@@ -505,7 +505,7 @@ jobs:
           Xvfb :99 -screen 0 1920x1280x24 &
           echo "DISPLAY=:99" >> $GITHUB_ENV
       - name: Cypress run
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           command: |
             npm run cypress:run -- \
@@ -539,7 +539,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           # Fetch full history for comparison
           fetch-depth: 0
@@ -566,7 +566,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           # Fetch full history for comparison
           fetch-depth: 0
