@@ -7,11 +7,15 @@ import {
   dropdown,
   tooltip,
 } from 'src/features/core';
+import { CoreTooltip } from 'src/features/core/core-tooltip.element';
 import { LayerService } from 'src/features/layer/layer.service';
 import {
   AnyLayer,
+  BACKGROUND_LAYER,
   getLayerLabel,
+  is3dLayer,
   isBackgroundLayer,
+  isBasemapLockedLayer,
   isDefaultSliceSelection,
   Layer,
   LayerType,
@@ -20,7 +24,7 @@ import {
 import { css, html } from 'lit';
 import { Id } from 'src/models/id.model';
 import i18next from 'i18next';
-import { applyTransition, applyTypography } from 'src/styles/theme';
+import { applyTypography } from 'src/styles/theme';
 import { when } from 'lit/directives/when.js';
 import { SliderChangeEvent } from 'src/features/core/core-slider.element';
 import { throttle } from 'src/utils/fn.utils';
@@ -47,6 +51,9 @@ export class CatalogDisplayListItem extends CoreElement {
   @state()
   accessor canZoom = true;
 
+  @state()
+  accessor isBackgroundVisible = true;
+
   private windows!: WindowMapping;
   private canZoomPollIntervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -57,11 +64,69 @@ export class CatalogDisplayListItem extends CoreElement {
 
     this.register(
       this.layerService.layer$(this.layerId).subscribe((layer) => {
-        this.setAttribute('visible', `${layer.isVisible}`);
         this.layer = layer;
+        this.syncPresentation();
         this.updateCanZoom();
       }),
     );
+    this.register(
+      this.layerService.layer$(BACKGROUND_LAYER.id).subscribe((background) => {
+        this.isBackgroundVisible = background.isVisible;
+        this.syncPresentation();
+      }),
+    );
+  }
+
+  private get isSuppressedByBasemap(): boolean {
+    return (
+      this.layer != null &&
+      isBasemapLockedLayer(this.layer) &&
+      !this.isBackgroundVisible
+    );
+  }
+
+  private get isEffectivelyVisible(): boolean {
+    return (
+      this.layer != null && this.layer.isVisible && !this.isSuppressedByBasemap
+    );
+  }
+
+  private get isOpacityDisabled(): boolean {
+    return (
+      this.layer == null ||
+      this.isSuppressedByBasemap ||
+      !this.layer.isVisible ||
+      !this.layer.canUpdateOpacity
+    );
+  }
+
+  private get opacityTooltipKey(): string {
+    if (this.isSuppressedByBasemap) {
+      return 'catalog:display.requires_basemap';
+    }
+    if (this.layer != null && !this.layer.isVisible) {
+      return 'catalog:display.opacity_requires_visible';
+    }
+    return 'catalog:display.opacity';
+  }
+
+  /**
+   * Reflect stored visibility, unless the basemap is hiding a draped layer.
+   * That hide is temporary: the stored eye state comes back with the basemap.
+   */
+  private syncPresentation(): void {
+    if (this.layer == null) {
+      return;
+    }
+    if (this.isEffectivelyVisible) {
+      this.setAttribute('visible', '');
+    } else {
+      this.removeAttribute('visible');
+    }
+    if (this.isSuppressedByBasemap && this.isOpacityActive) {
+      this.isOpacityActive = false;
+      this.classList.remove('has-active-opacity');
+    }
   }
 
   disconnectedCallback() {
@@ -128,9 +193,32 @@ export class CatalogDisplayListItem extends CoreElement {
     } else {
       this.setAttribute('sortable', 'true');
     }
+    this.bindTooltip('.visibility-tip', '.visibility-control');
+    this.bindTooltip('.opacity-tip', '.opacity-control');
+  }
+
+  /**
+   * Point the tooltip at its control directly.
+   * Sibling lookup is unreliable for the eye: the drag handle is painted on
+   * top of it and steals the hover.
+   */
+  private bindTooltip(tipSelector: string, anchorSelector: string): void {
+    const tip = this.renderRoot.querySelector(tipSelector);
+    const anchor = this.renderRoot.querySelector(anchorSelector);
+    if (
+      !(tip instanceof CoreTooltip) ||
+      anchor == null ||
+      tip.target === anchor
+    ) {
+      return;
+    }
+    tip.target = anchor;
   }
 
   private readonly toggleVisibility = (): void => {
+    if (this.isSuppressedByBasemap) {
+      return;
+    }
     if (this.layer.isVisible) {
       this.isOpacityActive = false;
     }
@@ -140,6 +228,9 @@ export class CatalogDisplayListItem extends CoreElement {
   };
 
   private readonly toggleOpacityActive = (): void => {
+    if (this.isSuppressedByBasemap) {
+      return;
+    }
     this.isBackgroundActive = false;
     this.isOpacityActive = !this.isOpacityActive;
     this.classList.toggle('has-active-opacity', this.isOpacityActive);
@@ -275,47 +366,88 @@ export class CatalogDisplayListItem extends CoreElement {
       ${when(!isBackgroundLayer(this.layer), this.renderDragHandle)}
 
       <div class="main">
-        <ngm-core-button
-          transparent
-          variant="tertiary"
-          shape="icon"
-          data-cy="visibility"
-          @click="${this.toggleVisibility}"
+        <span
+          class="visibility-control ${classMap({
+            'disabled-control': this.isSuppressedByBasemap,
+          })}"
         >
-          <ngm-core-icon
-            icon="${this.layer.isVisible ? 'visible' : 'hidden'}"
-          ></ngm-core-icon>
-        </ngm-core-button>
+          <ngm-core-button
+            transparent
+            variant="tertiary"
+            shape="icon"
+            data-cy="visibility"
+            ?disabled="${this.isSuppressedByBasemap}"
+            @click="${this.toggleVisibility}"
+          >
+            <ngm-core-icon
+              icon="${this.isEffectivelyVisible ? 'visible' : 'hidden'}"
+            ></ngm-core-icon>
+          </ngm-core-button>
+          ${when(
+            this.isSuppressedByBasemap,
+            () => html`<span class="disabled-hit"></span>`,
+          )}
+        </span>
+        ${when(
+          this.isSuppressedByBasemap,
+          () => html`
+            <ngm-core-tooltip
+              class="visibility-tip"
+              .content="${i18next.t('catalog:display.requires_basemap')}"
+            ></ngm-core-tooltip>
+          `,
+        )}
 
-        <span class="title">${title}</span>
+        <div class="title-row">
+          <span class="title">${title}</span>
+          ${when(
+            is3dLayer(this.layer),
+            () => html`<ngm-core-chip class="dimension">3D</ngm-core-chip>`,
+          )}
+        </div>
         <div class="suffix">
           ${when(
             isBackgroundLayer(this.layer),
             () => html`
-              <span
-                class="label ${classMap({
-                  'is-active': this.isBackgroundActive,
-                })}"
-                role="button"
+              <ngm-core-button
+                transparent
+                variant="secondary"
+                shape="chip"
+                class="background-toggle"
+                ?active="${this.isBackgroundActive}"
                 data-cy="background"
                 @click="${this.toggleBackgroundActive}"
-                >${i18next.t('catalog:display.background')}</span
               >
+                ${i18next.t('catalog:display.background')}
+              </ngm-core-button>
             `,
           )}
-          <ngm-core-button
-            transparent
-            variant="secondary"
-            shape="chip"
-            class="opacity-toggle"
-            ?active="${this.isOpacityActive}"
-            ?disabled="${!this.layer.isVisible || !this.layer.canUpdateOpacity}"
-            data-cy="opacity"
-            @click="${this.toggleOpacityActive}"
+          <span
+            class="opacity-control ${classMap({
+              'disabled-control': this.isOpacityDisabled,
+            })}"
           >
-            ${Math.round(this.layer.opacity * 100)}%
-          </ngm-core-button>
-          ${tooltip(i18next.t('catalog:display.opacity'))}
+            <ngm-core-button
+              transparent
+              variant="secondary"
+              shape="chip"
+              class="opacity-toggle"
+              ?active="${this.isOpacityActive}"
+              ?disabled="${this.isOpacityDisabled}"
+              data-cy="opacity"
+              @click="${this.toggleOpacityActive}"
+            >
+              ${Math.round(this.layer.opacity * 100)}%
+            </ngm-core-button>
+            ${when(
+              this.isOpacityDisabled,
+              () => html`<span class="disabled-hit"></span>`,
+            )}
+          </span>
+          <ngm-core-tooltip
+            class="opacity-tip"
+            .content="${i18next.t(this.opacityTooltipKey)}"
+          ></ngm-core-tooltip>
           ${when(
             this.supportsSliceSelection,
             () => html`
@@ -551,45 +683,49 @@ export class CatalogDisplayListItem extends CoreElement {
       color: var(--color-primary);
     }
 
+    .visibility-control,
+    .opacity-control {
+      display: inline-flex;
+    }
+
+    .disabled-control {
+      position: relative;
+      z-index: 1;
+      cursor: not-allowed;
+    }
+
+    .disabled-control > ngm-core-button {
+      pointer-events: none;
+    }
+
+    .disabled-hit {
+      position: absolute;
+      inset: 0;
+      cursor: not-allowed;
+    }
+
     /* title */
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
 
     .title {
       ${applyTypography('body-2')};
-      flex-grow: 1;
+      flex: 0 1 auto;
+      min-width: 0;
 
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* label */
-    /* TODO this style is improvised, as the Figma interaction for this label has not yet been finalized. */
-
-    .label {
-      ${applyTypography('overline')};
-
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      height: 27px;
-      border-radius: 22px;
-      cursor: pointer;
-
-      color: var(--color-text--emphasis-high);
-      background-color: var(--color-bg--grey);
-
-      ${applyTransition('fade')};
-      transition-property: background-color;
-    }
-
-    .label:hover {
-      background-color: var(--color-green-disabled);
-    }
-
-    .label.is-active {
-      color: var(--color-text--emphasis-medium);
-      background-color: var(--color-secondary--active);
-      border-color: var(--color-secondary--active);
+    .title-row ngm-core-chip {
+      flex-shrink: 0;
     }
 
     /* opacity */

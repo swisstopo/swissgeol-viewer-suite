@@ -36,6 +36,13 @@ import {
 export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   private dataSource!: CustomDataSource;
   private terrainController!: Tiles3dLayerController | null;
+  private hasViewerDataSource = false;
+
+  /**
+   * Hides the data source (and custom terrain) while the basemap is off,
+   * without changing the stored layer visibility.
+   */
+  private suppressedByBasemap = false;
 
   get type(): LayerType.GeoJson {
     return LayerType.GeoJson;
@@ -58,16 +65,36 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     this.viewer.dataSources.raiseToTop(this.dataSource);
   }
 
+  override setSuppressedByBasemap(suppressed: boolean): void {
+    if (this.suppressedByBasemap === suppressed) {
+      return;
+    }
+    this.suppressedByBasemap = suppressed;
+    this.applyEffectiveVisibility();
+  }
+
+  private applyEffectiveVisibility(): void {
+    const isShown = this.layer.isVisible && !this.suppressedByBasemap;
+    if (this.hasViewerDataSource) {
+      this.dataSource.show = isShown;
+    }
+    const terrain = this.terrainController;
+    if (terrain == null) {
+      return;
+    }
+    if (terrain.tileset) {
+      terrain.tileset.show = isShown;
+    }
+    if (terrain.layer.isVisible !== isShown) {
+      void terrain.update({ ...terrain.layer, isVisible: isShown });
+    }
+  }
+
   protected reactToChanges(): void {
     this.watch(this.layer.source);
 
-    this.watch(this.layer.isVisible, (isVisible) => {
-      this.dataSource.show = isVisible;
-      if (this.terrainController) {
-        this.terrainController
-          .update({ ...this.terrainController.layer, isVisible })
-          .then();
-      }
+    this.watch(this.layer.isVisible, () => {
+      this.applyEffectiveVisibility();
     });
 
     this.watch(this.layer.opacity, (opacity) => {
@@ -98,6 +125,8 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     } else {
       this.dataSource.entities.removeAll();
     }
+    this.hasViewerDataSource = true;
+    this.applyEffectiveVisibility();
 
     const { dataSource } = this;
     dataSource.name = geoJsonDataSource.name;
@@ -115,9 +144,11 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     geoJsonDataSource.entities.resumeEvents();
 
     this.setLayerOpacity(this.layer.opacity);
+    this.applyEffectiveVisibility();
   }
 
   protected removeFromViewer(): void {
+    this.hasViewerDataSource = false;
     this.terrainController?.remove();
     this.viewer.dataSources.remove(this.dataSource, true);
   }
@@ -309,7 +340,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       type: LayerType.Tiles3d,
       id: makeId(this.layer.id),
       source: this.layer.terrain!,
-      isVisible: this.layer.isVisible,
+      isVisible: this.layer.isVisible && !this.suppressedByBasemap,
       /*
       We cannot use the same approach as we do with the TIFF layers, where we set isPartiallyTransparent to true and add the Source to the imagery layers,
       because GeoJson layers cannot be added to the tileset's imagery layers.

@@ -112,6 +112,64 @@ export enum LayerType {
 }
 
 /**
+ * TIFF and GeoJSON layers that bring their own terrain tileset.
+ * They are a 3D surface of their own, not a drape on the basemap globe.
+ */
+const hasOwnTerrain = (layer: AnyLayer): boolean =>
+  (layer.type === LayerType.Tiff || layer.type === LayerType.GeoJson) &&
+  layer.terrain !== null;
+
+/**
+ * Layers drawn as real 3D content. These keep a "3D" chip and stay
+ * available when the basemap is hidden.
+ *
+ * A TIFF or GeoJSON counts when it is draped on its own terrain tileset.
+ */
+export const is3dLayer = (layer: AnyLayer): boolean =>
+  layer.type === LayerType.Tiles3d ||
+  layer.type === LayerType.Voxel ||
+  layer.type === LayerType.Earthquakes ||
+  hasOwnTerrain(layer);
+
+/**
+ * Layers draped on the basemap globe. Their eye and opacity are locked while
+ * the basemap is hidden, and they reappear with their stored visibility afterwards.
+ *
+ * Unclamped KML, and TIFF or GeoJSON on their own terrain, stay unlocked.
+ */
+export const isBasemapLockedLayer = (layer: AnyLayer): boolean => {
+  switch (layer.type) {
+    case LayerType.Wmts:
+      return true;
+    case LayerType.Tiff:
+    case LayerType.GeoJson:
+      return layer.terrain === null;
+    case LayerType.Kml:
+      return layer.shouldClampToGround;
+    default:
+      return false;
+  }
+};
+
+/**
+ * Draped layers that stay in the scene when the globe is hidden, so the
+ * controller has to hide them without writing {@link BaseLayer.isVisible}.
+ *
+ * WMTS and TIFFs on the globe disappear with `globe.show`.
+ * TIFF and GeoJSON on their own terrain are 3D and are left alone.
+ */
+export const needsBasemapSuppression = (layer: AnyLayer): boolean => {
+  switch (layer.type) {
+    case LayerType.GeoJson:
+      return layer.terrain === null;
+    case LayerType.Kml:
+      return layer.shouldClampToGround;
+    default:
+      return false;
+  }
+};
+
+/**
  * Configuration for the layer's info box.
  *
  * Two modes are available:
