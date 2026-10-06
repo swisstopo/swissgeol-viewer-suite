@@ -879,8 +879,9 @@ export class LayerService extends BaseService {
   }
 
   /**
-   * Hide or show draped layers that own their own surface when the basemap
-   * visibility changes. Stored layer visibility is left untouched.
+   * Hide or show basemap-dependent data sources that are not hidden
+   * automatically with the globe, when the basemap visibility changes.
+   * Stored layer visibility is left untouched.
    */
   private syncBasemapSuppression(): void {
     const isSuppressed = !this._background.state$.value.isVisible;

@@ -228,7 +228,7 @@ export class CatalogDisplayListItem extends CoreElement {
   };
 
   private readonly toggleOpacityActive = (): void => {
-    if (this.isSuppressedByBasemap) {
+    if (this.isOpacityDisabled) {
       return;
     }
     this.isBackgroundActive = false;

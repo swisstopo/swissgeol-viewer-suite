@@ -40,12 +40,6 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
    */
   private terrainController!: Tiles3dLayerController | null;
 
-  /**
-   * Hides the custom terrain while the basemap is off, without changing
-   * the stored layer visibility. Globe-draped bands leave this `false`.
-   */
-  private suppressedByBasemap = false;
-
   get type(): LayerType.Tiff {
     return LayerType.Tiff;
   }
@@ -74,23 +68,12 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
     this.controller.moveToTop();
   }
 
-  override setSuppressedByBasemap(suppressed: boolean): void {
-    if (
-      this.layer.terrain === null ||
-      this.suppressedByBasemap === suppressed
-    ) {
-      return;
-    }
-    this.suppressedByBasemap = suppressed;
-    this.applyTerrainVisibility();
-  }
-
   private applyTerrainVisibility(): void {
     const terrain = this.terrainController;
     if (terrain == null) {
       return;
     }
-    const isShown = this.layer.isVisible && !this.suppressedByBasemap;
+    const isShown = this.layer.isVisible;
     if (terrain.tileset) {
       terrain.tileset.show = isShown;
     }
@@ -189,7 +172,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
       type: LayerType.Tiles3d,
       id: makeId(this.layer.id),
       source: this.layer.terrain!,
-      isVisible: this.layer.isVisible && !this.suppressedByBasemap,
+      isVisible: this.layer.isVisible,
       opacity: this.layer.opacity,
       canUpdateOpacity: true,
       downloadUrl: null,

@@ -73,6 +73,14 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     this.applyEffectiveVisibility();
   }
 
+  /**
+   * Updates the data source's visibility for normal visibility changes.
+   *
+   * `suppressedByBasemap` is only ever set via `needsBasemapSuppression`,
+   * which for GeoJSON layers requires `terrain === null` — so whenever this
+   * layer is suppressed, `terrainController` is guaranteed to be `null` and
+   * is left untouched here.
+   */
   private applyEffectiveVisibility(): void {
     const isShown = this.layer.isVisible && !this.suppressedByBasemap;
     if (this.hasViewerDataSource) {
@@ -83,10 +91,13 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       return;
     }
     if (terrain.tileset) {
-      terrain.tileset.show = isShown;
+      terrain.tileset.show = this.layer.isVisible;
     }
-    if (terrain.layer.isVisible !== isShown) {
-      void terrain.update({ ...terrain.layer, isVisible: isShown });
+    if (terrain.layer.isVisible !== this.layer.isVisible) {
+      void terrain.update({
+        ...terrain.layer,
+        isVisible: this.layer.isVisible,
+      });
     }
   }
 
@@ -340,7 +351,7 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
       type: LayerType.Tiles3d,
       id: makeId(this.layer.id),
       source: this.layer.terrain!,
-      isVisible: this.layer.isVisible && !this.suppressedByBasemap,
+      isVisible: this.layer.isVisible,
       /*
       We cannot use the same approach as we do with the TIFF layers, where we set isPartiallyTransparent to true and add the Source to the imagery layers,
       because GeoJson layers cannot be added to the tileset's imagery layers.
