@@ -20,6 +20,10 @@
       max_level: 18,
       opacity: 0.87,
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geocover',
+      },
     },
     // swissGEOCOVER2D - UNCONSOLIDATED
     {
@@ -28,6 +32,10 @@
       max_level: 18,
       opacity: 0.76,
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geocover',
+      },
     },
     // swissGEOCOVER2D - SURFACE
     {
