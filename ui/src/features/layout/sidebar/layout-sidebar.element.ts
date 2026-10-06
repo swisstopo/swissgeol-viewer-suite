@@ -80,6 +80,10 @@ export class LayoutSidebar extends CoreElement {
     }
   };
 
+  private readonly handleLexicToggle = () => {
+    this.filterService.toggle();
+  };
+
   private ensureLexicModuleLoaded(): void {
     if (customElements.get('ngm-lexic-filter-panel') === undefined) {
       void import('src/features/lexic/lexic.module');
