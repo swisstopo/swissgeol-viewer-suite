@@ -201,11 +201,11 @@ export const TITILER_BY_PAGE_HOST = {
 export const LEXIC_API_VERSION = 'v1';
 
 export const LEXIC_API_BY_PAGE_HOST = {
-  'localhost:8000': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
-  'dev-viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
-  'int-viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
-  'swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
-  'viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'localhost:8000': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'dev-viewer.swissgeol.ch': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'int-viewer.swissgeol.ch': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'swissgeol.ch': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'viewer.swissgeol.ch': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
 };
 
 /**
