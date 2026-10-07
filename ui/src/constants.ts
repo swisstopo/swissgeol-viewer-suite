@@ -239,7 +239,7 @@ export const WMTS_CAPABILITIES_BY_SERVICE: Record<
   },
   lexic: {
     wms: 'https://dev-ogcservices.swissgeol.ch/geoserver/swisstopo/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities',
-    wmts: 'https://dev-ogcservices.swissgeol.ch/geoserver/gwc/service/wmts?service=WMTS&acceptVersions=1.1.1&request=GetCapabilities',
+    wmts: 'https://ogcservices.swissgeol.ch/geoserver/gwc/service/wmts?service=WMTS&acceptVersions=1.0.0&request=GetCapabilities',
     serviceTimeoutMs: TIMEOUT_REQUEST_AFTER_MILLISECONDS,
   },
 };
