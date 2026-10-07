@@ -332,6 +332,18 @@ export abstract class BaseLayerController<T extends BaseLayer> {
   abstract moveToTop(): void;
 
   /**
+   * Temporarily hides a draped layer while the basemap is off.
+   *
+   * The layer's stored visibility is left unchanged, so turning the basemap
+   * back on restores whatever the user had set.
+   * Controllers that own a surface or a data source override this.
+   * Globe imagery is hidden by `globe.show` and keeps the default no-op.
+   */
+  setSuppressedByBasemap(_suppressed: boolean): void {
+    // No-op by default.
+  }
+
+  /**
    * Updates the layer's exaggeration.
    *
    * This is called whenever the Cesium scene's exaggeration changes.

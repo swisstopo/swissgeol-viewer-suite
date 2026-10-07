@@ -21,6 +21,13 @@ import { updateExaggerationForCartesianPositions } from 'src/cesiumutils';
 
 export class KmlLayerController extends BaseLayerController<KmlLayer> {
   private dataSource!: CustomDataSource;
+  private hasViewerDataSource = false;
+
+  /**
+   * Hides clamped KML while the basemap is off, without changing the stored
+   * layer visibility. Unclamped KML ignores this flag.
+   */
+  private suppressedByBasemap = false;
 
   private currentExaggeration = 1;
 
@@ -34,6 +41,26 @@ export class KmlLayerController extends BaseLayerController<KmlLayer> {
 
   moveToTop(): void {
     this.viewer.dataSources.raiseToTop(this.dataSource);
+  }
+
+  override setSuppressedByBasemap(suppressed: boolean): void {
+    if (
+      !this.layer.shouldClampToGround ||
+      this.suppressedByBasemap === suppressed
+    ) {
+      return;
+    }
+    this.suppressedByBasemap = suppressed;
+    this.applyEffectiveVisibility();
+  }
+
+  private applyEffectiveVisibility(): void {
+    if (!this.hasViewerDataSource) {
+      return;
+    }
+    this.dataSource.show =
+      this.layer.isVisible &&
+      !(this.suppressedByBasemap && this.layer.shouldClampToGround);
   }
 
   updateExaggeration(exaggeration: number): void {
@@ -83,8 +110,8 @@ export class KmlLayerController extends BaseLayerController<KmlLayer> {
   protected reactToChanges(): void {
     this.watch(this.layer.source);
 
-    this.watch(this.layer.isVisible, (isVisible) => {
-      this.dataSource.show = isVisible;
+    this.watch(this.layer.isVisible, () => {
+      this.applyEffectiveVisibility();
     });
   }
 
@@ -104,6 +131,8 @@ export class KmlLayerController extends BaseLayerController<KmlLayer> {
     } else {
       this.dataSource.entities.removeAll();
     }
+    this.hasViewerDataSource = true;
+    this.applyEffectiveVisibility();
     const { dataSource } = this;
     dataSource.name = kmlDataSource.name;
 
@@ -172,6 +201,7 @@ export class KmlLayerController extends BaseLayerController<KmlLayer> {
   }
 
   protected removeFromViewer(): void {
+    this.hasViewerDataSource = false;
     this.viewer.dataSources.remove(this.dataSource, true);
   }
 }

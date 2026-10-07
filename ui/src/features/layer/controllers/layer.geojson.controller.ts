@@ -36,6 +36,14 @@ import {
 export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   private dataSource!: CustomDataSource;
   private terrainController!: Tiles3dLayerController | null;
+  private hasViewerDataSource = false;
+
+  /**
+   * Hides the data source while the basemap is off, without changing the
+   * stored layer visibility. Only set for layers without their own terrain,
+   * so it never affects {@link terrainController}.
+   */
+  private suppressedByBasemap = false;
 
   get type(): LayerType.GeoJson {
     return LayerType.GeoJson;
@@ -58,16 +66,47 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     this.viewer.dataSources.raiseToTop(this.dataSource);
   }
 
+  override setSuppressedByBasemap(suppressed: boolean): void {
+    if (this.suppressedByBasemap === suppressed) {
+      return;
+    }
+    this.suppressedByBasemap = suppressed;
+    this.applyEffectiveVisibility();
+  }
+
+  /**
+   * Updates the data source's visibility for normal visibility changes.
+   *
+   * `suppressedByBasemap` is only ever set via `needsBasemapSuppression`,
+   * which for GeoJSON layers requires `terrain === null` — so whenever this
+   * layer is suppressed, `terrainController` is guaranteed to be `null` and
+   * is left untouched here.
+   */
+  private applyEffectiveVisibility(): void {
+    const isShown = this.layer.isVisible && !this.suppressedByBasemap;
+    if (this.hasViewerDataSource) {
+      this.dataSource.show = isShown;
+    }
+    const terrain = this.terrainController;
+    if (terrain == null) {
+      return;
+    }
+    if (terrain.tileset) {
+      terrain.tileset.show = this.layer.isVisible;
+    }
+    if (terrain.layer.isVisible !== this.layer.isVisible) {
+      void terrain.update({
+        ...terrain.layer,
+        isVisible: this.layer.isVisible,
+      });
+    }
+  }
+
   protected reactToChanges(): void {
     this.watch(this.layer.source);
 
-    this.watch(this.layer.isVisible, (isVisible) => {
-      this.dataSource.show = isVisible;
-      if (this.terrainController) {
-        this.terrainController
-          .update({ ...this.terrainController.layer, isVisible })
-          .then();
-      }
+    this.watch(this.layer.isVisible, () => {
+      this.applyEffectiveVisibility();
     });
 
     this.watch(this.layer.opacity, (opacity) => {
@@ -98,6 +137,8 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     } else {
       this.dataSource.entities.removeAll();
     }
+    this.hasViewerDataSource = true;
+    this.applyEffectiveVisibility();
 
     const { dataSource } = this;
     dataSource.name = geoJsonDataSource.name;
@@ -115,9 +156,11 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     geoJsonDataSource.entities.resumeEvents();
 
     this.setLayerOpacity(this.layer.opacity);
+    this.applyEffectiveVisibility();
   }
 
   protected removeFromViewer(): void {
+    this.hasViewerDataSource = false;
     this.terrainController?.remove();
     this.viewer.dataSources.remove(this.dataSource, true);
   }

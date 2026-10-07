@@ -68,6 +68,20 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
     this.controller.moveToTop();
   }
 
+  private applyTerrainVisibility(): void {
+    const terrain = this.terrainController;
+    if (terrain == null) {
+      return;
+    }
+    const isShown = this.layer.isVisible;
+    if (terrain.tileset) {
+      terrain.tileset.show = isShown;
+    }
+    if (terrain.layer.isVisible !== isShown) {
+      void terrain.update({ ...terrain.layer, isVisible: isShown });
+    }
+  }
+
   protected reactToChanges(): void {
     // Don't watch anything, as we handle changes in the child controllers.
   }
@@ -82,6 +96,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
   protected async addToViewer(): Promise<void> {
     this.terrainController = this.layer.terrain && this.makeTerrainController();
     await this.terrainController?.add();
+    this.applyTerrainVisibility();
 
     this.bandController ??= this.makeBandController();
     await this.bandController.add();
