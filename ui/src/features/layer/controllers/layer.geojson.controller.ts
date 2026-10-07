@@ -39,8 +39,9 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
   private hasViewerDataSource = false;
 
   /**
-   * Hides the data source (and custom terrain) while the basemap is off,
-   * without changing the stored layer visibility.
+   * Hides the data source while the basemap is off, without changing the
+   * stored layer visibility. Only set for layers without their own terrain,
+   * so it never affects {@link terrainController}.
    */
   private suppressedByBasemap = false;
 
