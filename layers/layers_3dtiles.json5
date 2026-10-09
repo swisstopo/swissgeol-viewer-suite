@@ -1,6 +1,28 @@
 {
   // Shared order of properties
   order_of_properties: {
+    bh_deep_wells_path: [
+      'cHSGBHCommonCanton',
+      'cHSGBHCommonRestriction',
+      'cHSGBHCommonReferenceElevation',
+      'cHSGBHCommonStatus',
+      'cHSGBHCommonLocationX',
+      'cHSGBHCommonLocationY',
+      'cHSGBHCommonElevationZ',
+      'cHSGBHCommonLithostratigraphyTopBedrock',
+      'cHSGBHCommonTopBedrockWeatheredMD',
+      'cHSGBHCommonTopBedrockFreshMD',
+      'cHSGBHCommonTotalDepthMD',
+      'cHSGBHCommonReferenceElevationType',
+      'cHSGBHCommonPurpose',
+      'cHSGBHCommonLinkboreholes',
+      'cHSGBHCommonCountry',
+      'cHSGBHCommonBoreholeType',
+      'cHSGBHCommonMunicipality',
+      'cHSGBHCommonLithologyTopBedrock',
+      'cHSGBHCommonChronostratigraphyTopBedrock',
+      'cHSGBHCommonTopBedrockIntersected',
+    ],
     geomol_consolidated_rocks: [
       'Name',
       'Horizon',
@@ -79,7 +101,25 @@
         env: ['local', 'dev'],
       },
     },
+    // =================================================================
     // Topic Boreholes
+    // Deep Wells - PATH
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_path',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6006720,
+      },
+      // access: {
+      //   env: ['local', 'dev'],
+      //   groups: ['ngm-dev-privileged'],
+      // },
+      order_of_properties: 'bh_deep_wells_path',
+      // download_url: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
+      // geocat_id: '3996dfad-69dd-418f-a4e6-5f32b96c760a',
+    },
+
     // Boreholes 2021 - Public
     {
       type: 'Tiles3d',

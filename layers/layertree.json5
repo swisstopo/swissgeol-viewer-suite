@@ -357,6 +357,7 @@
       id: 'boreholes',
       children: [
         'ch.swisstopo.geologie-bohrungen_tiefer_500',
+        'boreholes_deepwells_path',
         'boreholes_public',
         'boreholes_private',
       ],
