@@ -174,6 +174,8 @@
                           children: [
                             'sa3d_SAM_faults_01',
                             'sa3d_SAM_thrust_faults_01',
+                            'sa3d_SAM_thrust_faults_02',
+                            'sa3d_SAM_thrust_faults_03',
                           ],
                         },
                       ],

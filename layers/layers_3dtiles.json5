@@ -1304,7 +1304,7 @@
       },
     },
     // =================================================================
-    // SAM - Profiles
+    // SAM - All Profiles
     {
       type: 'Tiles3d',
       id: 'sa3d_SAM_profiles_01',
@@ -1312,8 +1312,6 @@
         type: 'CesiumIon',
         asset_id: 4953326,
       },
-      //download_url: 'https://download.swissgeol.ch/XXX',
-      //geocat_id: '',
       info_box: {
         source: 'custom',
         information: [
@@ -1332,7 +1330,7 @@
         ],
       },
     },
-    // SAM - Faults
+    // SAM - All Faults
     {
       type: 'Tiles3d',
       id: 'sa3d_SAM_faults_01',
@@ -1341,8 +1339,6 @@
         type: 'CesiumIon',
         asset_id: 4953280,
       },
-      //download_url: 'https://download.swissgeol.ch/XXX',
-      //geocat_id: '',
       info_box: {
         source: 'custom',
         information: [
@@ -1361,7 +1357,7 @@
         ],
       },
     },
-    // SAM - Thrust Faults
+    // SAM - Thrusts Inner Zone
     {
       type: 'Tiles3d',
       id: 'sa3d_SAM_thrust_faults_01',
@@ -1369,8 +1365,58 @@
         type: 'CesiumIon',
         asset_id: 4953385,
       },
-      //download_url: 'https://download.swissgeol.ch/XXX',
-      //geocat_id: '',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description_sa3d_SAM_profiles_01',
+            value: {
+              key: 'description_value_sa3d_SAM_profiles_01',
+              url: 'description_url_sa3d_SAM_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '15.06.2026' },
+        ],
+      },
+    },
+    // SAM - Main Thrust
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_SAM_thrust_faults_02',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4953385,
+      },
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description_sa3d_SAM_profiles_01',
+            value: {
+              key: 'description_value_sa3d_SAM_profiles_01',
+              url: 'description_url_sa3d_SAM_profiles_01',
+            },
+          },
+          { key: 'dataDate', value: '15.06.2026' },
+        ],
+      },
+    },
+    // SAM - Thrusts Outer Zone
+    {
+      type: 'Tiles3d',
+      id: 'sa3d_SAM_thrust_faults_03',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4953385,
+      },
       info_box: {
         source: 'custom',
         information: [
