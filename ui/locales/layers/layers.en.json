@@ -25,6 +25,7 @@
     "base_pc": "Base Permo-Carboniferous",
     "base_pc_vermutet": "Base Permo-Carboniferous supposed",
     "boreholes_deepwells_path": "Deep wells - Path",
+    "boreholes_deepwells_lithologies": "Deep wells - Lithologies",
     "boreholes_private": "Boreholes 2021 - private",
     "boreholes_public": "Boreholes 2021 - public",
     "ch.bafu.aquaprotect_050": "Areas of flooding Aquaprotect 50",
@@ -294,6 +295,23 @@
     "mont-terri-rocklab-layers": "Mont Terri Rock Lab"
   },
   "properties": {
+    "boreholes_deepwells_path": {
+      "name_1": "Well name",
+      "cHSGBHCommonTotalDepthMD": "Total depth [m]",
+      "cHSGBHCommonRestriction": "Restriction",
+      "cHSGBHCommonBoreholeType": "Type",
+      "cHSGBHCommonPurpose": "Purpose",
+      "cHSGBHCommonStatus": "Status",
+      "cHSGBHCommonLinkboreholes": "More information",
+      "cHSGBHCommonCanton": "Canton"
+    },
+    "boreholes_deepwells_lithologies": {
+      "name_1": "Well name",
+      "cHSGBHStratigraphyLithology": "Lithology uncon",
+      "cHSGBHStratigraphyLithologyCon": "Lithology",
+      "cHSGBHStratigraphyFromDepth": "Depth from [m]",
+      "cHSGBHStratigraphyToDepth": "Depth to [m]"
+    },
     "chrono_from_lexic": "Chronostratigraphy from",
     "chrono_to_lexic": "Chronostratigraphy to",
     "d_ANZAHL_S": "Number of tracks",
