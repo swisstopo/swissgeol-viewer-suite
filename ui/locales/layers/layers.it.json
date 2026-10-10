@@ -342,10 +342,18 @@
     "tecto_lexic": "Unità tettoniche",
     "version": "Versione",
     "Voxel": {
-      "cell_center": "",
+      "cell_center": "centro cella",
       "logk": "Conducibilità idraulica",
       "Index": "Unità di modellazione",
       "Klasse": "Permeabilità",
+      "vox_filter_filtering_on": "Filtraggio su: ",
+      "vox_filter_klasse_1": "molto grande",
+      "vox_filter_klasse_2": "grande",
+      "vox_filter_klasse_3": "moderatamente grande",
+      "vox_filter_klasse_4": "moderato",
+      "vox_filter_klasse_5": "basso",
+      "vox_filter_klasse_6": "molto basso",
+      "undefined": "non definito",
       "aaretal_lithology_3": "Sedimenti palustri, palude, canneto",
       "aaretal_lithology_4": "Alluvioni sub-recenti a recenti (ghiaia fluviale e torrentizia, sedimenti alluvionali, indifferenziati)",
       "aaretal_lithology_5": "Detrito di pendio / limo di pendio (indifferenziato)",
@@ -462,8 +470,7 @@
       "visp_lithology_2": "Depositi limnici 2",
       "visp_lithology_3": "Depositi limnici 4",
       "visp_lithology_4": "Depositi limnici 5",
-      "visp_lithology_6": "Materiale morenico",
-      "undefined": "non definito"
+      "visp_lithology_6": "Materiale morenico"
     },
     "Tiff": {
       "BEM": "Modello altimetrico del substrato roccioso",

@@ -346,10 +346,18 @@
     "tecto_lexic": "Unités tectoniques",
     "version": "Version",
     "Voxel": {
-      "cell_center": "",
+      "cell_center": "Centre de la cellule",
       "logk": "Conductivité hydraulique",
       "Index": "Unité de modélisation",
       "Klasse": "Perméabilité",
+      "vox_filter_filtering_on": "Filtre sur",
+      "vox_filter_klasse_1": "très grand",
+      "vox_filter_klasse_2": "grand",
+      "vox_filter_klasse_3": "moyennement grand",
+      "vox_filter_klasse_4": "modéré",
+      "vox_filter_klasse_5": "faible",
+      "vox_filter_klasse_6": "très faible",
+      "undefined": "non défini",
       "aaretal_lithology_3": "Sédiments palustres, marais, roseau",
       "aaretal_lithology_4": "Alluvions subrécentes à récentes (graviers de rivière et de ruisseau, sédiments d'inondation, indifférenciés)",
       "aaretal_lithology_5": "Éboulis / limon de pente (indifférencié)",
@@ -466,8 +474,7 @@
       "visp_lithology_2": "Dépôts limniques 2",
       "visp_lithology_3": "Dépôts limniques 4",
       "visp_lithology_4": "Dépôts limniques 5",
-      "visp_lithology_6": "Matériel morainique",
-      "undefined": "non défini"
+      "visp_lithology_6": "Matériel morainique"
     },
     "Tiff": {
       "BEM": "Modèle d'altitude du socle rocheux",
