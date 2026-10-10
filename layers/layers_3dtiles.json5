@@ -1,27 +1,35 @@
 {
   // Shared order of properties
   order_of_properties: {
-    bh_deep_wells_path: [
-      'cHSGBHCommonCanton',
+    boreholes_deepwells_path: [
+      'name_1',
+      'cHSGBHCommonTotalDepthMD',
       'cHSGBHCommonRestriction',
-      'cHSGBHCommonReferenceElevation',
+      'cHSGBHCommonBoreholeType',
+      'cHSGBHCommonPurpose',
       'cHSGBHCommonStatus',
+      'cHSGBHCommonLinkboreholes',
+      'cHSGBHCommonCanton',
+      'cHSGBHCommonReferenceElevation',
       'cHSGBHCommonLocationX',
       'cHSGBHCommonLocationY',
       'cHSGBHCommonElevationZ',
       'cHSGBHCommonLithostratigraphyTopBedrock',
       'cHSGBHCommonTopBedrockWeatheredMD',
       'cHSGBHCommonTopBedrockFreshMD',
-      'cHSGBHCommonTotalDepthMD',
       'cHSGBHCommonReferenceElevationType',
-      'cHSGBHCommonPurpose',
-      'cHSGBHCommonLinkboreholes',
       'cHSGBHCommonCountry',
-      'cHSGBHCommonBoreholeType',
       'cHSGBHCommonMunicipality',
       'cHSGBHCommonLithologyTopBedrock',
       'cHSGBHCommonChronostratigraphyTopBedrock',
       'cHSGBHCommonTopBedrockIntersected',
+    ],
+    boreholes_deepwells_lithologies: [
+      'name_1',
+      'cHSGBHStratigraphyLithology',
+      'cHSGBHStratigraphyLithologyCon',
+      'cHSGBHStratigraphyFromDepth',
+      'cHSGBHStratigraphyToDepth',
     ],
     geomol_consolidated_rocks: [
       'Name',
@@ -111,13 +119,17 @@
         type: 'CesiumIon',
         asset_id: 6006720,
       },
-      // access: {
-      //   env: ['local', 'dev'],
-      //   groups: ['ngm-dev-privileged'],
-      // },
-      order_of_properties: 'bh_deep_wells_path',
-      // download_url: 'https://download.swissgeol.ch/boreholes/bh_open_20210201_00.csv',
-      // geocat_id: '3996dfad-69dd-418f-a4e6-5f32b96c760a',
+      order_of_properties: 'boreholes_deepwells_path',
+    },
+    // Deep Wells - LITHOLOGIES
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_lithologies',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010742,
+      },
+      order_of_properties: 'boreholes_deepwells_lithologies',
     },
 
     // Boreholes 2021 - Public
