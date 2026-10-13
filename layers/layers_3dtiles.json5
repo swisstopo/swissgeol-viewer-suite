@@ -569,10 +569,48 @@
         ],
       },
     },
-    // Cross-section (profile)
+    // Cross-section (profile - every 5th)
     {
       type: 'Tiles3d',
       id: 'j3d_profiles',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 4436279,
+      },
+      //order_of_properties: '',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value',
+              url: 'download_movz_url_j3d_profiles',
+            },
+          },
+          {
+            key: 'download_03',
+            value: {
+              key: 'download_shp_value',
+              url: 'download_shp_url_j3d_profiles',
+            },
+          },
+          { key: 'dataDate', value: '18.03.2026' },
+        ],
+      },
+    },
+    // Cross-section (profile - all profiles)
+    {
+      type: 'Tiles3d',
+      id: 'j3d_profiles_all',
       source: {
         type: 'CesiumIon',
         asset_id: 4436279,
