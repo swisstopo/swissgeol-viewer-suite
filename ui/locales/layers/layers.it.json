@@ -135,6 +135,8 @@
     "earthquakes_mag_3": "Terremoti - magnitudo > 3",
     "earthquakes_recent": "Terremoti - ultimi 90 giorni",
     "ga25Profiles_test": "Profili GA25 TEST",
+    "ga25_profiles_lines": "Profili GA25 linee TEST",
+    "ga25_profiles_polygons": "Profili GA25 poligoni TEST",
     "geomol_cs": "swissGEOMOL3D-Sezioni",
     "geomol_faults": "swissGEOMOL3D-Zone di faglia",
     "geoquat_aaretal_cs": "Sezioni GeoQuat Aaretal",
