@@ -11,6 +11,8 @@ import {
   applyHexColorStyleIfAvailable,
   updateHexColorStyleOpacity,
   hasHexColorInTilesetMetadata,
+  getUnitKey,
+  setUnitHighlight,
 } from 'src/features/layer/utils/tiles3d-color-style';
 
 type Listener = (tile: unknown) => void;
@@ -158,6 +160,51 @@ describe('applyHexColorStyleIfAvailable', () => {
         getFeature: () => ({ hasProperty: () => false }),
       },
     });
+    expect(raw.style).toBeUndefined();
+  });
+});
+
+describe('unit highlight', () => {
+  const styled = () => {
+    const t = makeTileset(schemaWith('Hex_color'));
+    applyHexColorStyleIfAvailable(t.tileset, () => 0.5);
+    return t;
+  };
+
+  it('reads the unit of a feature only on styled tilesets', () => {
+    const feature = {
+      getProperty: (n: string) => (n === 'CS_ID' ? 'P1' : 123),
+    };
+    expect(getUnitKey(styled().tileset, feature)).toEqual({
+      profile: 'P1',
+      geolCode: 123,
+    });
+    expect(getUnitKey(makeTileset().tileset, feature)).toBeNull();
+    expect(
+      getUnitKey(styled().tileset, { getProperty: () => undefined }),
+    ).toBeNull();
+  });
+
+  it('highlights the unit by CS_ID and GeolCode and keeps the opacity', () => {
+    const { tileset, raw } = styled();
+    setUnitHighlight(tileset, { profile: "it's", geolCode: 7 }, '#B3FF30');
+    expect(styleColor(raw)).toBe(
+      "(${CS_ID} === 'it\\'s' && ${GeolCode} === 7) ? color('#B3FF30', 0.5) : color('${Hex_color}', 0.5)",
+    );
+    setUnitHighlight(tileset, null);
+    expect(styleColor(raw)).toBe("color('${Hex_color}', 0.5)");
+  });
+
+  it('keeps the highlight when the opacity changes', () => {
+    const { tileset, raw } = styled();
+    setUnitHighlight(tileset, { profile: 'a', geolCode: 1 }, '#fff');
+    updateHexColorStyleOpacity(tileset, 0.2);
+    expect(styleColor(raw)).toContain("color('#fff', 0.2)");
+  });
+
+  it('ignores tilesets that are not styled', () => {
+    const { tileset, raw } = makeTileset();
+    setUnitHighlight(tileset, { profile: 'a', geolCode: 1 });
     expect(raw.style).toBeUndefined();
   });
 });
