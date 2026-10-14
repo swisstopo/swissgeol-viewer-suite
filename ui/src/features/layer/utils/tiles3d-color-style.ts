@@ -1,4 +1,9 @@
-import { Cesium3DTile, Cesium3DTileset, Cesium3DTileStyle } from 'cesium';
+import {
+  BlendOption,
+  Cesium3DTile,
+  Cesium3DTileset,
+  Cesium3DTileStyle,
+} from 'cesium';
 
 export const HEX_COLOR_PROPERTY = 'Hex_color';
 
@@ -41,6 +46,12 @@ const makeHexColorStyle = ({
   });
 };
 
+// Fully opaque vector tiles must not be drawn in the translucent pass, or they blend with what lies behind them.
+const updateBlendOption = (tileset: Cesium3DTileset, opacity: number): void => {
+  tileset.vectorBlendOption =
+    opacity >= 1 ? BlendOption.OPAQUE : BlendOption.TRANSLUCENT;
+};
+
 const applyHexColorStyle = (
   tileset: Cesium3DTileset,
   opacity: number,
@@ -52,6 +63,7 @@ const applyHexColorStyle = (
   };
   styleStates.set(tileset, state);
   tileset.style = makeHexColorStyle(state);
+  updateBlendOption(tileset, opacity);
 };
 
 /**
@@ -66,6 +78,7 @@ export const updateHexColorStyleOpacity = (
   if (state !== undefined) {
     state.opacity = opacity;
     tileset.style = makeHexColorStyle(state);
+    updateBlendOption(tileset, opacity);
   }
 };
 

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { Cesium3DTileset } from 'cesium';
 
 vi.mock('cesium', () => ({
+  BlendOption: { OPAQUE: 0, TRANSLUCENT: 1 },
   Cesium3DTileStyle: class {
     constructor(public readonly style: unknown) {}
   },
@@ -206,5 +207,17 @@ describe('unit highlight', () => {
     const { tileset, raw } = makeTileset();
     setUnitHighlight(tileset, { profile: 'a', geolCode: 1 });
     expect(raw.style).toBeUndefined();
+  });
+});
+
+describe('vector blend option', () => {
+  it('is opaque at full opacity and translucent below', () => {
+    const { tileset, raw } = makeTileset(schemaWith('Hex_color'));
+    applyHexColorStyleIfAvailable(tileset, () => 1);
+    expect(raw['vectorBlendOption']).toBe(0);
+    updateHexColorStyleOpacity(tileset, 0.9);
+    expect(raw['vectorBlendOption']).toBe(1);
+    updateHexColorStyleOpacity(tileset, 1);
+    expect(raw['vectorBlendOption']).toBe(0);
   });
 });
