@@ -105,7 +105,9 @@ export class KeyboardNavigationService extends BaseService {
   }
 
   private onKeyDown(event: KeyboardEvent): void {
-    if (!isTargetNavigable(event.target as HTMLElement)) {
+    // Inside shadow DOM, `event.target` is retargeted to the host element.
+    const target = (event.composedPath()[0] ?? event.target) as HTMLElement;
+    if (!isTargetNavigable(target)) {
       return;
     }
     if (event.ctrlKey || event.metaKey) {
