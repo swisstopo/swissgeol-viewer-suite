@@ -23,10 +23,17 @@ interface StyleState {
 
 const styleStates = new WeakMap<Cesium3DTileset, StyleState>();
 
-const toExpressionLiteral = (value: string | number): string =>
-  typeof value === 'number'
-    ? String(value)
-    : `'${value.replace(/\\/g, String.raw`\\`).replace(/'/g, String.raw`\'`)}'`;
+const toExpressionLiteral = (value: string | number): string => {
+  if (typeof value === 'number') {
+    return String(value);
+  }
+  const escapedBackslash = String.raw`\\`;
+  const escapedQuote = String.raw`\'`;
+  const escaped = value
+    .replace(/\\/g, escapedBackslash)
+    .replace(/'/g, escapedQuote);
+  return `'${escaped}'`;
+};
 
 // Vector tiles ignore custom shaders, so the layer opacity has to be part of the style.
 const makeHexColorStyle = ({
