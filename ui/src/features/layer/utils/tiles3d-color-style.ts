@@ -26,7 +26,7 @@ const styleStates = new WeakMap<Cesium3DTileset, StyleState>();
 const toExpressionLiteral = (value: string | number): string =>
   typeof value === 'number'
     ? String(value)
-    : `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+    : `'${value.replace(/\\/g, String.raw`\\`).replace(/'/g, String.raw`\'`)}'`;
 
 // Vector tiles ignore custom shaders, so the layer opacity has to be part of the style.
 const makeHexColorStyle = ({
