@@ -23,6 +23,10 @@ import {
   OBJECT_HIGHLIGHT_COLOR,
   OBJECT_ZOOMTO_RADIUS,
 } from 'src/constants';
+import {
+  getUnitKey,
+  setUnitHighlight,
+} from 'src/features/layer/utils/tiles3d-color-style';
 import NavToolsStore from 'src/store/navTools';
 import { TemplateResult } from 'lit';
 import {
@@ -41,6 +45,66 @@ const PROPERTIES_TO_EXCLUDE = new Set([
   'oname',
   'style_transparency',
 ]);
+
+// Internal attributes of vector tiles colored by `Hex_color`.
+const VECTOR_PROPERTIES_TO_EXCLUDE = new Set([
+  '_id',
+  'R',
+  'G',
+  'B',
+  'Hex_color',
+  'Category',
+  'Q__count',
+]);
+
+/**
+ * `Cesium3DTileVectorFeature` is returned for vector 3D Tiles (`VectorGltf3DTileContent`).
+ * It is not exported in Cesium's typings and does not extend `Cesium3DTileFeature`,
+ * but offers the same property and color API. It is detected via its unique
+ * `addPrimitiveByCollection` method, as class names do not survive minification.
+ */
+type VectorTileFeature = Pick<
+  Cesium3DTileFeature,
+  'color' | 'getPropertyIds' | 'getProperty' | 'tileset'
+>;
+
+const isVectorTileFeature = (feature: unknown): feature is VectorTileFeature =>
+  typeof feature === 'object' &&
+  feature !== null &&
+  typeof (feature as VectorTileFeature & Record<string, unknown>)
+    .addPrimitiveByCollection === 'function';
+
+/**
+ * Several infos can hold the same feature (every picker drills the same window position),
+ * so the original color is remembered once per feature and restored by the last one to release it.
+ */
+const highlightedVectorFeatures = new WeakMap<
+  VectorTileFeature,
+  { originalColor: Color; count: number }
+>();
+
+const highlightVectorFeature = (feature: VectorTileFeature): void => {
+  const entry = highlightedVectorFeatures.get(feature);
+  if (entry !== undefined) {
+    entry.count++;
+    return;
+  }
+  const originalColor = Color.clone(feature.color);
+  highlightedVectorFeatures.set(feature, { originalColor, count: 1 });
+  feature.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(originalColor.alpha);
+};
+
+const unhighlightVectorFeature = (feature: VectorTileFeature): void => {
+  const entry = highlightedVectorFeatures.get(feature);
+  if (entry === undefined) {
+    return;
+  }
+  entry.count--;
+  if (entry.count <= 0) {
+    feature.color = entry.originalColor;
+    highlightedVectorFeatures.delete(feature);
+  }
+};
 
 export abstract class LayerInfoDrillPicker<
   T extends Layer,
@@ -63,7 +127,10 @@ export abstract class LayerInfoDrillPicker<
     if (feature === null) {
       return [];
     }
-    if (feature instanceof Cesium3DTileFeature) {
+    if (
+      feature instanceof Cesium3DTileFeature ||
+      isVectorTileFeature(feature)
+    ) {
       return this.pickFeature(pick, feature);
     }
 
@@ -95,7 +162,7 @@ export abstract class LayerInfoDrillPicker<
 
   private pickFeature(
     pick: LayerPickData,
-    feature: Cesium3DTileFeature,
+    feature: Cesium3DTileFeature | VectorTileFeature,
   ): LayerInfo[] {
     const attributes = extractFeatureAttributes(
       feature,
@@ -196,13 +263,16 @@ class LayerInfoForFeature implements LayerInfo {
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
 
-  private readonly feature: Cesium3DTileFeature | Cesium3DTileset;
+  private readonly feature:
+    Cesium3DTileFeature | VectorTileFeature | Cesium3DTileset;
   private readonly position: Cartesian3;
+  private isVectorHighlighted = false;
+  private highlightedUnitTileset: Cesium3DTileset | null = null;
 
   constructor(
     private readonly viewer: Viewer,
     data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
-      feature: Cesium3DTileFeature | Cesium3DTileset;
+      feature: Cesium3DTileFeature | VectorTileFeature | Cesium3DTileset;
       layerId: Id<Layer>;
       position: Cartesian3;
     },
@@ -213,7 +283,22 @@ class LayerInfoForFeature implements LayerInfo {
     this.title = data.title;
     this.attributes = data.attributes;
 
-    if (this.feature instanceof Cesium3DTileFeature) {
+    if (isVectorTileFeature(this.feature)) {
+      // Vector features are colored by their `Hex_color` style, so it has to be restored.
+      // All pieces of a geological unit are highlighted together, if the layer provides the unit's properties.
+      const unit = getUnitKey(this.feature.tileset, this.feature);
+      if (unit !== null) {
+        this.highlightedUnitTileset = this.feature.tileset;
+        setUnitHighlight(
+          this.highlightedUnitTileset,
+          unit,
+          OBJECT_HIGHLIGHT_COLOR.toCssHexString(),
+        );
+      } else {
+        highlightVectorFeature(this.feature);
+        this.isVectorHighlighted = true;
+      }
+    } else if (this.feature instanceof Cesium3DTileFeature) {
       this.feature.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(
         this.feature.color.alpha,
       );
@@ -248,7 +333,16 @@ class LayerInfoForFeature implements LayerInfo {
   }
 
   destroy() {
-    if (this.feature instanceof Cesium3DTileFeature) {
+    if (isVectorTileFeature(this.feature)) {
+      if (this.highlightedUnitTileset !== null) {
+        setUnitHighlight(this.highlightedUnitTileset, null);
+        this.highlightedUnitTileset = null;
+      }
+      if (this.isVectorHighlighted) {
+        unhighlightVectorFeature(this.feature);
+        this.isVectorHighlighted = false;
+      }
+    } else if (this.feature instanceof Cesium3DTileFeature) {
       this.feature.color = Color.WHITE;
     } else {
       this.feature.customShader!.setUniform('u_isHighlighted', false);
@@ -327,7 +421,7 @@ class LayerInfoForEntity implements LayerInfo {
 }
 
 const extractFeatureAttributes = (
-  feature: Cesium3DTileFeature,
+  feature: Cesium3DTileFeature | VectorTileFeature,
   layer: Layer,
   orderOfProperties: string[],
 ): LayerInfoAttribute[] => {
@@ -336,7 +430,11 @@ const extractFeatureAttributes = (
     feature.getPropertyIds(),
     orderOfProperties,
   );
+  const isVector = isVectorTileFeature(feature);
   for (const propertyName of propertyNames) {
+    if (isVector && VECTOR_PROPERTIES_TO_EXCLUDE.has(propertyName)) {
+      continue;
+    }
     const value = feature.getProperty(propertyName);
     if (typeof value === 'number' || !!value) {
       attributes.push({

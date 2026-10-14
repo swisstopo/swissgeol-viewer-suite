@@ -2,20 +2,56 @@ import { Cesium3DTile, Cesium3DTileset, Cesium3DTileStyle } from 'cesium';
 
 export const HEX_COLOR_PROPERTY = 'Hex_color';
 
-// Vector tiles ignore custom shaders, so the layer opacity has to be part of the style.
-const makeHexColorStyle = (opacity: number): Cesium3DTileStyle =>
-  new Cesium3DTileStyle({
-    color: `color('\${${HEX_COLOR_PROPERTY}}', ${opacity})`,
-  });
+export const UNIT_PROPERTIES = { profile: 'CS_ID', geolCode: 'GeolCode' };
 
-const styledTilesets = new WeakSet<Cesium3DTileset>();
+/** Identifies all pieces of one geological unit on one profile. */
+export interface UnitKey {
+  profile: string | number;
+  geolCode: string | number;
+}
+
+interface StyleState {
+  opacity: number;
+  highlight: UnitKey | null;
+  highlightColor: string;
+}
+
+const styleStates = new WeakMap<Cesium3DTileset, StyleState>();
+
+const toExpressionLiteral = (value: string | number): string =>
+  typeof value === 'number'
+    ? String(value)
+    : `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+
+// Vector tiles ignore custom shaders, so the layer opacity has to be part of the style.
+const makeHexColorStyle = ({
+  opacity,
+  highlight,
+  highlightColor,
+}: StyleState): Cesium3DTileStyle => {
+  const base = `color('\${${HEX_COLOR_PROPERTY}}', ${opacity})`;
+  if (highlight === null) {
+    return new Cesium3DTileStyle({ color: base });
+  }
+  const isInUnit =
+    `\${${UNIT_PROPERTIES.profile}} === ${toExpressionLiteral(highlight.profile)}` +
+    ` && \${${UNIT_PROPERTIES.geolCode}} === ${toExpressionLiteral(highlight.geolCode)}`;
+  return new Cesium3DTileStyle({
+    color: `(${isInUnit}) ? color('${highlightColor}', ${opacity}) : ${base}`,
+  });
+};
 
 const applyHexColorStyle = (
   tileset: Cesium3DTileset,
   opacity: number,
 ): void => {
-  tileset.style = makeHexColorStyle(opacity);
-  styledTilesets.add(tileset);
+  const state: StyleState = {
+    opacity,
+    highlight: null,
+    highlightColor: '#ffffff',
+  };
+  styleStates.set(tileset, state);
+  tileset.style = makeHexColorStyle(state);
 };
 
 /**
@@ -26,9 +62,47 @@ export const updateHexColorStyleOpacity = (
   tileset: Cesium3DTileset,
   opacity: number,
 ): void => {
-  if (styledTilesets.has(tileset)) {
-    tileset.style = makeHexColorStyle(opacity);
+  const state = styleStates.get(tileset);
+  if (state !== undefined) {
+    state.opacity = opacity;
+    tileset.style = makeHexColorStyle(state);
   }
+};
+
+/**
+ * Reads the unit of a feature of a tileset colored by `Hex_color`.
+ * Returns `null` if the tileset is not styled or the feature lacks `CS_ID` or `GeolCode`.
+ */
+export const getUnitKey = (
+  tileset: Cesium3DTileset,
+  feature: { getProperty(name: string): unknown },
+): UnitKey | null => {
+  if (!styleStates.has(tileset)) {
+    return null;
+  }
+  const profile = feature.getProperty(UNIT_PROPERTIES.profile);
+  const geolCode = feature.getProperty(UNIT_PROPERTIES.geolCode);
+  const isValid = (it: unknown): it is string | number =>
+    typeof it === 'string' || typeof it === 'number';
+  return isValid(profile) && isValid(geolCode) ? { profile, geolCode } : null;
+};
+
+/**
+ * Highlights all features of the given unit (or removes the highlight if `unit` is `null`).
+ * Does nothing for tilesets that are not colored by `Hex_color`.
+ */
+export const setUnitHighlight = (
+  tileset: Cesium3DTileset,
+  unit: UnitKey | null,
+  highlightColor = '#ffffff',
+): void => {
+  const state = styleStates.get(tileset);
+  if (state === undefined) {
+    return;
+  }
+  state.highlight = unit;
+  state.highlightColor = highlightColor;
+  tileset.style = makeHexColorStyle(state);
 };
 
 interface SchemaLike {
