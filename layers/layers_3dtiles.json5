@@ -42,6 +42,15 @@
       'cHSGBHSectionFromDepth',
       'cHSGBHSectionToDepth',
     ],
+    boreholes_deepwells_casing: [
+      'name_1',
+      'cHSGBHCasingKind',
+      'cHSGBHCasingMaterial',
+      'cHSGBHCasingInnerDiameter',
+      'cHSGBHCasingOuterDiameter',
+      'cHSGBHCasingFromDepth',
+      'cHSGBHCasingToDepth',
+    ],
     boreholes_deepwells_waterin: [
       'name_1',
       'cHSGBHObservationFromDepth',
@@ -176,6 +185,16 @@
         asset_id: 6010745,
       },
       order_of_properties: 'boreholes_deepwells_sections', // << TODO: Change to chronostratigraphy order of properties
+    },
+    // Deep Wells - CASING
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_casing',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010746,
+      },
+      order_of_properties: 'boreholes_deepwells_casing', // << TODO: Change to chronostratigraphy order of properties
     },
     // Deep Wells - WATER-INGRESS
     {

@@ -29,6 +29,7 @@
     "boreholes_deepwells_lithostrati": "Deep wells - Lithostratigraphy",
     "boreholes_deepwells_chronostrati": "Deep wells - Chronostratigraphy",
     "boreholes_deepwells_sections": "Deep wells - Sections",
+    "boreholes_deepwells_casing": "Deep wells - Casing",
     "boreholes_deepwells_waterin": "Deep wells - Water ingress",
     "boreholes_private": "Boreholes 2021 - private",
     "boreholes_public": "Boreholes 2021 - public",
@@ -338,6 +339,15 @@
       "cHSGBHSectionDrillingEndDate": "End date",
       "cHSGBHSectionFromDepth": "Depth from [m]",
       "cHSGBHSectionToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_casing": {
+      "name_1": "Well name",
+      "cHSGBHCasingKind": "Casing kind",
+      "cHSGBHCasingMaterial": "Casing material",
+      "cHSGBHCasingInnerDiameter": "Casing inner diameter",
+      "cHSGBHCasingOuterDiameter": "Casing outer diameter",
+      "cHSGBHCasingFromDepth": "Depth from [m]",
+      "cHSGBHCasingToDepth": "Depth to [m]"
     },
     "boreholes_deepwells_waterin": {
       "name_1": "Well name",
