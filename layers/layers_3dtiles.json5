@@ -58,6 +58,12 @@
       'cHSGBHBackfillFromDepth',
       'cHSGBHBackfillToDepth',
     ],
+    boreholes_deepwells_instrumentation: [
+      'name_1',
+      'cHSGBHInstrumentationKind',
+      'cHSGBHInstrumentationFromDepth',
+      'cHSGBHInstrumentationToDepth',
+    ],
     boreholes_deepwells_waterin: [
       'name_1',
       'cHSGBHObservationFromDepth',
@@ -212,6 +218,16 @@
         asset_id: 6010747,
       },
       order_of_properties: 'boreholes_deepwells_backfill',
+    },
+    // Deep Wells - INSTRUMENTATION
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_instrumentation',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010748,
+      },
+      order_of_properties: 'boreholes_deepwells_instrumentation',
     },
     // Deep Wells - WATER-INGRESS
     {
