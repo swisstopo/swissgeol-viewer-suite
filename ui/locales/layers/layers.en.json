@@ -33,6 +33,7 @@
     "boreholes_deepwells_backfill": "Deep wells - Backfill",
     "boreholes_deepwells_instrumentation": "Deep wells - Instrumentation",
     "boreholes_deepwells_waterin": "Deep wells - Water ingress",
+    "boreholes_deepwells_hydrotest": "Deep wells - Hydrotest",
     "boreholes_private": "Boreholes 2021 - private",
     "boreholes_public": "Boreholes 2021 - public",
     "ch.bafu.aquaprotect_050": "Areas of flooding Aquaprotect 50",
@@ -365,6 +366,11 @@
       "cHSGBHInstrumentationToDepth": "Depth to [m]"
     },
     "boreholes_deepwells_waterin": {
+      "name_1": "Well name",
+      "cHSGBHObservationFromDepth": "Depth from [m]",
+      "cHSGBHObservationToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_hydrotest": {
       "name_1": "Well name",
       "cHSGBHObservationFromDepth": "Depth from [m]",
       "cHSGBHObservationToDepth": "Depth to [m]"

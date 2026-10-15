@@ -369,6 +369,7 @@
             'boreholes_deepwells_backfill',
             'boreholes_deepwells_instrumentation',
             'boreholes_deepwells_waterin',
+            'boreholes_deepwells_hydrotest',
           ],
         },
         'boreholes_public',

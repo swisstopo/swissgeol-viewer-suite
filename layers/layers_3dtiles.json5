@@ -237,7 +237,17 @@
         type: 'CesiumIon',
         asset_id: 6010751,
       },
-      order_of_properties: 'boreholes_deepwells_sections', // << TODO: Change to chronostratigraphy order of properties
+      order_of_properties: 'boreholes_deepwells_waterin',
+    },
+    // Deep Wells - HYDROTEST
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_hydrotest',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010752,
+      },
+      order_of_properties: 'boreholes_deepwells_waterin', // << TODO: Change to hydrotest order of properties
     },
     // Boreholes 2021 - Public
     {
