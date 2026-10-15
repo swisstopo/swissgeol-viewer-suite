@@ -131,7 +131,26 @@
       },
       order_of_properties: 'boreholes_deepwells_lithologies',
     },
-
+    // Deep Wells - LITHOSTRATIGRAPHY
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_lithostrati',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010743,
+      },
+      order_of_properties: 'boreholes_deepwells_lithologies', // << TODO: Change to lithostratigraphy order of properties
+    },
+    // Deep Wells - CHRONOSTRATIGRAPHY
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_chronostrati',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010744,
+      },
+      order_of_properties: 'boreholes_deepwells_lithologies', // << TODO: Change to chronostratigraphy order of properties
+    },
     // Boreholes 2021 - Public
     {
       type: 'Tiles3d',

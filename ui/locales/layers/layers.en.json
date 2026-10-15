@@ -26,6 +26,8 @@
     "base_pc_vermutet": "Base Permo-Carboniferous supposed",
     "boreholes_deepwells_path": "Deep wells - Path",
     "boreholes_deepwells_lithologies": "Deep wells - Lithologies",
+    "boreholes_deepwells_lithostrati": "Deep wells - Lithostratigraphy",
+    "boreholes_deepwells_chronostrati": "Deep wells - Chronostratigraphy",
     "boreholes_private": "Boreholes 2021 - private",
     "boreholes_public": "Boreholes 2021 - public",
     "ch.bafu.aquaprotect_050": "Areas of flooding Aquaprotect 50",
@@ -61,7 +63,7 @@
     "ch.nagra.aeromagnetische-karte_1500": "Aeromagnetic Aargau 1500 m 100",
     "ch.swisstopo.geoidmodell-ch1903": "Geoid in CH1903",
     "ch.swisstopo.geologie-bodenunruhe": "Anthrop. seismic noise CH",
-    "ch.swisstopo.geologie-bohrungen_tiefer_500": "Deep wells",
+    "ch.swisstopo.geologie-bohrungen_tiefer_500": "Deep wells - Overview",
     "ch.swisstopo.geologie-dosisleistung-terrestrisch": "Terrestrial Radiation",
     "ch.swisstopo.geologie-eiszeit-lgm": "Last glacial maximum (vector) 500",
     "ch.swisstopo.geologie-eiszeit-lgm-raster": "Last glacial maximum (map) 500",
@@ -238,6 +240,7 @@
     "aar3d_pre_variscan_rocks": "Pre-Variscan rocks",
     "background_data": "Background data",
     "boreholes": "Borehole data",
+    "boreholes_deepwells": "Deep wells",
     "construct_raw_material": "Construction raw materials",
     "cross-sections": "Cross-sections",
     "earth_gravity_field": "Earth's gravity field",
@@ -309,6 +312,18 @@
       "name_1": "Well name",
       "cHSGBHStratigraphyLithology": "Lithology uncon",
       "cHSGBHStratigraphyLithologyCon": "Lithology",
+      "cHSGBHStratigraphyFromDepth": "Depth from [m]",
+      "cHSGBHStratigraphyToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_lithostrati": {
+      "name_1": "Well name",
+      "cHSGBHStratigraphyLithostratigraphy": "Lithostratigraphy",
+      "cHSGBHStratigraphyFromDepth": "Depth from [m]",
+      "cHSGBHStratigraphyToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_chronostrati": {
+      "name_1": "Well name",
+      "cHSGBHStratigraphyChronostratigraphy": "Chronostratigraphy",
       "cHSGBHStratigraphyFromDepth": "Depth from [m]",
       "cHSGBHStratigraphyToDepth": "Depth to [m]"
     },
