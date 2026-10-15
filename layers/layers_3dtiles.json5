@@ -372,6 +372,7 @@
       },
     },
     // Geoenergy
+    // TEMP ISO 60
     {
       type: 'Tiles3d',
       id: 'temp_iso_60',
@@ -380,6 +381,30 @@
         asset_id: 251755,
       },
       geocat_id: '6edca35d-0f08-43b9-9faf-4c7b207888a1',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value',
+              url: 'download_movz_url_temp_iso_60',
+            },
+          },
+          {
+            key: 'download_02',
+            value: {
+              key: 'download_gocad_value',
+              url: 'download_gocad_url_temp_iso_60',
+            },
+          },
+          { key: 'dataDate', value: '03.03.2020' },
+        ],
+      },
     },
     {
       type: 'Tiles3d',
