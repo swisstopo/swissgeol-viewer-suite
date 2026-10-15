@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import { html, nothing, svg } from 'lit';
+import { html, svg } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { consume } from '@lit/context';
 import { CoreElement } from 'src/features/core';
@@ -148,25 +148,21 @@ export class AppSettings extends CoreElement {
       <span class="ngm-navigation-style-actions">
         ${[...NAVIGATION_ACTIONS]
           .sort((a, b) => profile[a] - profile[b])
-          .map((action) =>
-            action === getActionOf(profile, MouseButton.MIDDLE)
-              ? html`${this.renderAction(
-                  isZoomOnWheel
-                    ? html`${this.renderActionIcon(action)}${this.renderWheelIcon(
-                        wheelColor,
-                      )}`
-                    : this.renderActionIcon(action),
-                  action,
-                )}${
-                  isZoomOnWheel
-                    ? nothing
-                    : this.renderAction(
-                        this.renderWheelIcon(wheelColor),
-                        'zoom',
-                      )
-                }`
-              : this.renderAction(this.renderActionIcon(action), action),
-          )}
+          .map((action) => {
+            if (action !== getActionOf(profile, MouseButton.MIDDLE)) {
+              return this.renderAction(this.renderActionIcon(action), action);
+            }
+            if (isZoomOnWheel) {
+              const icons = html`${this.renderActionIcon(
+                action,
+              )}${this.renderWheelIcon(wheelColor)}`;
+              return this.renderAction(icons, action);
+            }
+            return html`${this.renderAction(
+              this.renderActionIcon(action),
+              action,
+            )}${this.renderAction(this.renderWheelIcon(wheelColor), 'zoom')}`;
+          })}
       </span>
     </div>`;
   }
