@@ -32,6 +32,8 @@
     "boreholes_deepwells_casing": "Deep wells - Casing",
     "boreholes_deepwells_backfill": "Deep wells - Backfill",
     "boreholes_deepwells_instrumentation": "Deep wells - Instrumentation",
+    "boreholes_deepwells_fieldmeasure",
+    "boreholes_deepwells_groundwater": "Deep wells - Groundwater level",
     "boreholes_deepwells_waterin": "Deep wells - Water ingress",
     "boreholes_deepwells_hydrotest": "Deep wells - Hydrotest",
     "boreholes_private": "Boreholes 2021 - private",

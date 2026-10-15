@@ -229,6 +229,26 @@
       },
       order_of_properties: 'boreholes_deepwells_instrumentation',
     },
+    // Deep Wells - FIELDMEASUREMENTS
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_fieldmeasure',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010749,
+      },
+      order_of_properties: 'boreholes_deepwells_waterin', // << TODO: Change
+    },
+    // Deep Wells - GROUNDWATER LEVEL
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_groundwater',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010750,
+      },
+      order_of_properties: 'boreholes_deepwells_waterin', // << TODO: Change
+    },
     // Deep Wells - WATER-INGRESS
     {
       type: 'Tiles3d',
