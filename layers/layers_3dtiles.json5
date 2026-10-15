@@ -28,8 +28,24 @@
       'name_1',
       'cHSGBHStratigraphyLithology',
       'cHSGBHStratigraphyLithologyCon',
+      'cHSGBHStratigraphy',
       'cHSGBHStratigraphyFromDepth',
       'cHSGBHStratigraphyToDepth',
+    ],
+    boreholes_deepwells_sections: [
+      'name_1',
+      'cHSGBHSectionDrillingMethod',
+      'cHSGBHSectionDrillingDiameter',
+      'cHSGBHSectionDrillingMudType',
+      'cHSGBHSectionDrillingStartDate',
+      'cHSGBHSectionDrillingEndDate',
+      'cHSGBHSectionFromDepth',
+      'cHSGBHSectionToDepth',
+    ],
+    boreholes_deepwells_waterin: [
+      'name_1',
+      'cHSGBHObservationFromDepth',
+      'cHSGBHObservationToDepth',
     ],
     geomol_consolidated_rocks: [
       'Name',
@@ -150,6 +166,26 @@
         asset_id: 6010744,
       },
       order_of_properties: 'boreholes_deepwells_lithologies', // << TODO: Change to chronostratigraphy order of properties
+    },
+    // Deep Wells - SECTIONS
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_sections',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010745,
+      },
+      order_of_properties: 'boreholes_deepwells_sections', // << TODO: Change to chronostratigraphy order of properties
+    },
+    // Deep Wells - WATER-INGRESS
+    {
+      type: 'Tiles3d',
+      id: 'boreholes_deepwells_waterin',
+      source: {
+        type: 'CesiumIon',
+        asset_id: 6010751,
+      },
+      order_of_properties: 'boreholes_deepwells_sections', // << TODO: Change to chronostratigraphy order of properties
     },
     // Boreholes 2021 - Public
     {

@@ -364,6 +364,8 @@
             'boreholes_deepwells_lithologies',
             'boreholes_deepwells_lithostrati',
             'boreholes_deepwells_chronostrati',
+            'boreholes_deepwells_sections',
+            'boreholes_deepwells_waterin',
           ],
         },
         'boreholes_public',
