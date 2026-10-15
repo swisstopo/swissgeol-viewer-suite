@@ -366,6 +366,7 @@
             'boreholes_deepwells_chronostrati',
             'boreholes_deepwells_sections',
             'boreholes_deepwells_casing',
+            'boreholes_deepwells_backfill',
             'boreholes_deepwells_waterin',
           ],
         },

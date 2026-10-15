@@ -30,6 +30,7 @@
     "boreholes_deepwells_chronostrati": "Deep wells - Chronostratigraphy",
     "boreholes_deepwells_sections": "Deep wells - Sections",
     "boreholes_deepwells_casing": "Deep wells - Casing",
+    "boreholes_deepwells_backfill": "Deep wells - Backfill",
     "boreholes_deepwells_waterin": "Deep wells - Water ingress",
     "boreholes_private": "Boreholes 2021 - private",
     "boreholes_public": "Boreholes 2021 - public",
@@ -348,6 +349,13 @@
       "cHSGBHCasingOuterDiameter": "Casing outer diameter",
       "cHSGBHCasingFromDepth": "Depth from [m]",
       "cHSGBHCasingToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_backfill": {
+      "name_1": "Well name",
+      "cHSGBHBackfillKind": "Backfill kind",
+      "cHSGBHBackfillMaterial": "Backfill material",
+      "cHSGBHBackfillFromDepth": "Depth from [m]",
+      "cHSGBHBackfillToDepth": "Depth to [m]"
     },
     "boreholes_deepwells_waterin": {
       "name_1": "Well name",
