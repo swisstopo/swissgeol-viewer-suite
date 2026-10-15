@@ -10,6 +10,7 @@ import {
   ScreenSpaceZoomCameraController,
 } from 'cesium';
 import { handleScenePickingError } from 'src/services/pick.service';
+import { ZoomTargetCache } from 'src/features/controls/zoom-target-cache';
 
 const scratchCameraPosition = new Cartesian3();
 const scratchToTarget = new Cartesian3();
@@ -92,6 +93,10 @@ export interface ZoomDebugState {
   zoomVelocity: number;
   /** Factor the banked zoom velocity was rescaled by. */
   velocityScale: number;
+  /** Number of zoom targets picked so far, see {@link ZoomTargetCache}. */
+  targetPickCount: number;
+  /** Number of zoom targets reused so far, see {@link ZoomTargetCache}. */
+  targetReuseCount: number;
 }
 
 export interface ApproachLimitedZoomOptions
@@ -256,14 +261,18 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
     frameSeconds: DEFAULT_FRAME_SECONDS,
     zoomVelocity: 0,
     velocityScale: 1,
+    targetPickCount: 0,
+    targetReuseCount: 0,
   };
 
   private readonly zoomOrigin = new Cartesian2();
   private readonly pointerPosition = new Cartesian2();
+  private readonly targetCache = new ZoomTargetCache();
   private hasPointerPosition = false;
   private handler: ScreenSpaceEventHandler | undefined;
   private target: Cartesian3 | undefined;
   private lastFrameTime: number | undefined;
+  private frameSeconds = DEFAULT_FRAME_SECONDS;
 
   constructor(options: ApproachLimitedZoomOptions = {}) {
     super(options);
@@ -286,17 +295,24 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
     // (CesiumJS's own no-target fallback then applies) instead of aborting the
     // frame. `update()` (see below) is itself also wrapped, as a last-resort
     // safety net for anything not caught here.
+    //
+    // The geometry pick is only repeated when the previous target can no
+    // longer be reused, see `ZoomTargetCache`.
     this.pickWorldPosition = (
       scene: Scene,
       _windowPosition: Cartesian2,
       result: Cartesian3,
     ): Cartesian3 | undefined => {
       try {
-        const geometry = this.pickGeometryPosition(
+        const geometry = this.targetCache.resolve(
           scene,
           this.zoomOrigin,
           result,
+          this.pickGeometryPosition,
+          this.frameSeconds,
         );
+        this.debug.targetPickCount = this.targetCache.pickCount;
+        this.debug.targetReuseCount = this.targetCache.reuseCount;
         if (geometry !== undefined) {
           this.debug.targetSource = 'geometry';
           this.target = geometry;
@@ -309,6 +325,7 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
         return fallback;
       } catch (e) {
         handleScenePickingError(e);
+        this.targetCache.clear();
         this.debug.targetSource = 'none';
         this.target = undefined;
         return undefined;
@@ -347,6 +364,7 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
   disconnectedCallback(element: HTMLElement): void {
     this.destroyHandler();
     this.hasPointerPosition = false;
+    this.targetCache.clear();
     super.disconnectedCallback(element);
   }
 
@@ -394,6 +412,7 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
             MAXIMUM_FRAME_SECONDS,
           );
     this.lastFrameTime = now;
+    this.frameSeconds = frameSeconds;
 
     const debug = this.debug;
     debug.frameSeconds = frameSeconds;
