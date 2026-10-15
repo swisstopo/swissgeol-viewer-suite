@@ -5,20 +5,28 @@ import {
   Cartesian3,
   Controller,
   defined,
-  KeyboardEventModifier,
   Math as CesiumMath,
-  MouseButton,
   Scene,
   ScreenSpaceMapCameraController,
   ScreenSpaceTiltOrbitCameraController,
   Viewer,
 } from 'cesium';
-import { firstValueFrom } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import {
+  DragInput,
+  getNavigationBindings,
+  NavigationStyle,
+  readNavigationStyle,
+  writeNavigationStyle,
+} from 'src/features/controls/navigation-style.model';
+import { KeyboardNavigationService } from 'src/features/controls/keyboard-navigation.service';
 import { patchTiltNadirGimbalLock } from 'src/features/controls/patch-tilt-nadir-gimbal-lock';
 import { patchLegacyCameraController } from 'src/features/controls/patch-legacy-camera-controller';
 import { ApproachLimitedZoomCameraController } from 'src/features/controls/approach-limited-zoom.controller';
 import { handleScenePickingError } from 'src/services/pick.service';
 import { pickPositionWithRay } from 'src/cesiumutils';
+
+const BASE_ZOOM_DISTANCE_RATIO = 0.1;
 
 /**
  * Custom pick function that uses the depth buffer first (picks actual rendered
@@ -78,22 +86,21 @@ export class CameraControllerService extends BaseService {
 
   readonly panController = new ScreenSpaceMapCameraController();
 
-  readonly tiltController = new ScreenSpaceTiltOrbitCameraController({
-    dragInputs: [
-      { button: MouseButton.MIDDLE },
-      { button: MouseButton.LEFT, modifier: KeyboardEventModifier.CTRL },
-    ],
-  });
+  readonly tiltController = new ScreenSpaceTiltOrbitCameraController();
 
-  readonly zoomController = new ApproachLimitedZoomCameraController({
-    dragInputs: [{ button: MouseButton.RIGHT }],
-  });
+  readonly zoomController = new ApproachLimitedZoomCameraController();
+
+  private readonly navigationStyleSubject = new BehaviorSubject(
+    readNavigationStyle(),
+  );
 
   private isInputsEnabled = true;
   private readonly activeControllers: Set<Controller> = new Set();
 
   constructor() {
     super();
+
+    this.applyBindings(this.navigationStyle);
 
     this.tiltController.useDragPosition = true;
     this.tiltController.orbitMagnitude = -2.0;
@@ -105,7 +112,7 @@ export class CameraControllerService extends BaseService {
     // `0.1` puts a single notch at ~7% of the distance to the zoom target, which
     // matches the legacy monolithic controller (`zoomFactor * 7.5°/notch`) and is
     // noticeably calmer than Cesium's `0.4` default.
-    this.zoomController.zoomDistanceRatio = 0.1;
+    this.zoomController.zoomDistanceRatio = BASE_ZOOM_DISTANCE_RATIO;
 
     // Use depth-buffer-aware picking for correct underground behavior.
     this.tiltController.pickWorldPosition = pickWorldPositionWithDepthBuffer;
@@ -125,6 +132,13 @@ export class CameraControllerService extends BaseService {
     const cesiumService = await CesiumService.inject();
     const viewer = await firstValueFrom(cesiumService.viewer$);
     this.initialize(viewer);
+
+    // The wheel zoom follows the camera speed set via Shift + wheel.
+    const keyboardNavigationService = await KeyboardNavigationService.inject();
+    keyboardNavigationService.speedChange$.subscribe(() => {
+      this.zoomController.zoomDistanceRatio =
+        BASE_ZOOM_DISTANCE_RATIO * keyboardNavigationService.speedFactor;
+    });
   }
 
   private initialize(viewer: Viewer): void {
@@ -142,6 +156,60 @@ export class CameraControllerService extends BaseService {
     this.addController(this.panController);
     this.addController(this.tiltController);
     this.addController(this.zoomController);
+  }
+
+  get navigationStyle(): NavigationStyle {
+    return this.navigationStyleSubject.value;
+  }
+
+  /** The drag inputs that currently orbit the camera. */
+  get orbitInputs(): DragInput[] {
+    return getNavigationBindings(this.navigationStyle).tilt;
+  }
+
+  get navigationStyle$(): Observable<NavigationStyle> {
+    return this.navigationStyleSubject.asObservable();
+  }
+
+  /** Switches the mouse button mapping and persists the choice in a cookie. */
+  setNavigationStyle(style: NavigationStyle): void {
+    if (style === this.navigationStyle) {
+      return;
+    }
+    writeNavigationStyle(style);
+    this.applyBindings(style);
+    this.navigationStyleSubject.next(style);
+  }
+
+  private applyBindings(style: NavigationStyle): void {
+    const bindings = getNavigationBindings(style);
+    const targets: [
+      (
+        | ScreenSpaceMapCameraController
+        | ScreenSpaceTiltOrbitCameraController
+        | ApproachLimitedZoomCameraController
+      ),
+      typeof bindings.pan,
+    ][] = [
+      [this.panController, bindings.pan],
+      [this.tiltController, bindings.tilt],
+      [this.zoomController, bindings.zoom],
+    ];
+    for (const [controller, dragInputs] of targets) {
+      // Cesium registers `dragInputs` only when a controller is connected, so
+      // an attached controller has to be re-attached to pick up the change.
+      const isAttached =
+        this.viewer !== undefined &&
+        this.isInputsEnabled &&
+        this.activeControllers.has(controller);
+      if (isAttached) {
+        this.viewer.removeController(controller);
+      }
+      controller.dragInputs = dragInputs.map((input) => ({ ...input }));
+      if (isAttached) {
+        this.viewer.addController(controller);
+      }
+    }
   }
 
   get enableInputs(): boolean {
