@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { KeyboardEventModifier, MouseButton } from 'cesium';
 import {
   getNavigationBindings,
+  readNavigationStyle,
+  writeNavigationStyle,
   NavigationStyle,
   ORBIT_MODIFIER,
 } from 'src/features/controls/navigation-style.model';
@@ -28,4 +30,45 @@ describe('getNavigationBindings', () => {
       });
     },
   );
+});
+
+const stubCookies = (initial: string, protocol = 'https:') => {
+  const document = { cookie: initial };
+  vi.stubGlobal('document', document);
+  vi.stubGlobal('location', { protocol });
+  return document;
+};
+
+describe('navigation style cookie', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('defaults to ESRI without a cookie', () => {
+    stubCookies('');
+    expect(readNavigationStyle()).toBe(NavigationStyle.Esri);
+  });
+
+  it('reads a stored style among other cookies', () => {
+    stubCookies('a=1; swissgeol_navigation_style=modelling; b=2');
+    expect(readNavigationStyle()).toBe(NavigationStyle.Modelling);
+  });
+
+  it('falls back to ESRI for unknown values', () => {
+    stubCookies('swissgeol_navigation_style=bogus');
+    expect(readNavigationStyle()).toBe(NavigationStyle.Esri);
+  });
+
+  it('writes a secure cookie on https', () => {
+    const doc = stubCookies('');
+    writeNavigationStyle(NavigationStyle.RightOrbit);
+    expect(doc.cookie).toContain('swissgeol_navigation_style=rightOrbit');
+    expect(doc.cookie).toContain('; Secure');
+  });
+
+  it('omits Secure on http', () => {
+    const doc = stubCookies('', 'http:');
+    writeNavigationStyle(NavigationStyle.Modelling);
+    expect(doc.cookie).not.toContain('Secure');
+  });
 });
