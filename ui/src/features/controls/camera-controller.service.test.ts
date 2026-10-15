@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Cartesian2, Cartesian3, Ray, Scene } from 'cesium';
-import { pickWorldPositionWithDepthBuffer } from 'src/features/controls/camera-controller.service';
+import {
+  anchorPickToDrag,
+  pickWorldPositionWithDepthBuffer,
+} from 'src/features/controls/camera-controller.service';
 
 const TERRAIN = new Cartesian3(1, 2, 3);
 const ELLIPSOID = new Cartesian3(9, 9, 9);
@@ -105,5 +108,69 @@ describe('pickWorldPositionWithDepthBuffer', () => {
     expect(pick(scene)).toEqual(ELLIPSOID);
     expect(globeRayPick).not.toHaveBeenCalled();
     expect(pickEllipsoid).toHaveBeenCalledOnce();
+  });
+});
+
+describe('anchorPickToDrag', () => {
+  const scene = {} as Scene;
+
+  const createPick = (...positions: Array<Cartesian3 | undefined>) => {
+    let i = 0;
+    return vi.fn(
+      (_scene: Scene, _windowPosition: Cartesian2, result: Cartesian3) => {
+        const position = positions[Math.min(i++, positions.length - 1)];
+        return position === undefined
+          ? undefined
+          : Cartesian3.clone(position, result);
+      },
+    );
+  };
+
+  const pickAt = (anchored: ReturnType<typeof anchorPickToDrag>, x: number) =>
+    anchored.pickWorldPosition(scene, new Cartesian2(x, 0), new Cartesian3());
+
+  it('picks once per drag and returns the anchor afterwards', () => {
+    const pick = createPick(GEOMETRY, TERRAIN);
+    const anchored = anchorPickToDrag(pick);
+
+    expect(pickAt(anchored, 10)).toEqual(GEOMETRY);
+    expect(pickAt(anchored, 20)).toEqual(GEOMETRY);
+    expect(pickAt(anchored, 30)).toEqual(GEOMETRY);
+    expect(pick).toHaveBeenCalledOnce();
+  });
+
+  it('picks again after a reset', () => {
+    const pick = createPick(GEOMETRY, TERRAIN);
+    const anchored = anchorPickToDrag(pick);
+
+    pickAt(anchored, 10);
+    anchored.reset();
+
+    expect(pickAt(anchored, 20)).toEqual(TERRAIN);
+    expect(pickAt(anchored, 30)).toEqual(TERRAIN);
+    expect(pick).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not anchor a miss', () => {
+    const pick = createPick(undefined, TERRAIN);
+    const anchored = anchorPickToDrag(pick);
+
+    expect(pickAt(anchored, 10)).toBeUndefined();
+    expect(pickAt(anchored, 20)).toEqual(TERRAIN);
+    expect(pickAt(anchored, 30)).toEqual(TERRAIN);
+    expect(pick).toHaveBeenCalledTimes(2);
+  });
+
+  it('writes into the given result without sharing the anchor', () => {
+    const anchored = anchorPickToDrag(createPick(GEOMETRY));
+    const result = new Cartesian3();
+
+    expect(anchored.pickWorldPosition(scene, new Cartesian2(), result)).toBe(
+      result,
+    );
+
+    // The controller may modify the returned position.
+    result.x = 1000;
+    expect(pickAt(anchored, 10)).toEqual(GEOMETRY);
   });
 });
