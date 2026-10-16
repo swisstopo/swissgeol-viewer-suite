@@ -328,6 +328,9 @@
     "source": "Source",
     "tecto_lexic": "Tectonic Units",
     "version": "Version",
+    "temp_c": "Temperature (°C)",
+    "name": "Name",
+    "depth_blg": "Depth below ground (m)",
     "Voxel": {
       "cell_center": "Cell Center",
       "logk": "Hydraulic Conductivity",
