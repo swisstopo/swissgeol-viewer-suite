@@ -436,6 +436,13 @@
               url: 'download_gocad_url_temp_iso_100',
             },
           },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
+            },
+          },
           { key: 'dataDate', value: '03.03.2020' },
         ],
       },
@@ -468,6 +475,13 @@
             value: {
               key: 'download_gocad_value',
               url: 'download_gocad_url_temp_iso_150',
+            },
+          },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
             },
           },
           { key: 'dataDate', value: '03.03.2020' },
@@ -504,6 +518,13 @@
               url: 'download_gocad_url_temp_tomm',
             },
           },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
+            },
+          },
           { key: 'dataDate', value: '03.03.2020' },
         ],
       },
@@ -536,6 +557,13 @@
             value: {
               key: 'download_gocad_value',
               url: 'download_gocad_url_temp_tuma',
+            },
+          },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
             },
           },
           { key: 'dataDate', value: '03.03.2020' },
@@ -572,6 +600,13 @@
               url: 'download_gocad_url_temp_tums',
             },
           },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
+            },
+          },
           { key: 'dataDate', value: '03.03.2020' },
         ],
       },
@@ -604,6 +639,13 @@
             value: {
               key: 'download_gocad_value',
               url: 'download_gocad_url_temp_depth_500',
+            },
+          },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
             },
           },
           { key: 'dataDate', value: '03.03.2020' },
@@ -640,6 +682,13 @@
               url: 'download_gocad_url_temp_depth_1000',
             },
           },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
+            },
+          },
           { key: 'dataDate', value: '03.03.2020' },
         ],
       },
@@ -672,6 +721,13 @@
             value: {
               key: 'download_gocad_value',
               url: 'download_gocad_url_temp_depth_1500',
+            },
+          },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
             },
           },
           { key: 'dataDate', value: '03.03.2020' },
@@ -708,6 +764,13 @@
               url: 'download_gocad_url_temp_depth_2000',
             },
           },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
+            },
+          },
           { key: 'dataDate', value: '03.03.2020' },
         ],
       },
@@ -742,6 +805,13 @@
               url: 'download_gocad_url_temp_depth_3000',
             },
           },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
+            },
+          },
           { key: 'dataDate', value: '03.03.2020' },
         ],
       },
@@ -774,6 +844,13 @@
             value: {
               key: 'download_gocad_value',
               url: 'download_gocad_url_temp_depth_4000',
+            },
+          },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_100',
             },
           },
           { key: 'dataDate', value: '03.03.2020' },
