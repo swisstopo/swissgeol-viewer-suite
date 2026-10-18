@@ -323,6 +323,7 @@
     "version": "Version",
     "Voxel": {
       "cell_center": "Zellzentrum",
+      "Temp_C": "Temperatur (°C)",
       "logk": "Hydraulische Leitfähigkeit",
       "Index": "Modelliereinheit",
       "Klasse": "Durchlässigkeit",
