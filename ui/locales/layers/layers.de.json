@@ -321,6 +321,7 @@
     "source": "Quelle",
     "tecto_lexic": "Tektonische Einheiten",
     "version": "Version",
+    "depth_bgl": "Tiefe unterhalb Erdoberfläche (m)",
     "Voxel": {
       "cell_center": "Zellzentrum",
       "logk": "Hydraulische Leitfähigkeit",

@@ -341,6 +341,7 @@
     "source": "Fonte",
     "tecto_lexic": "Unità tettoniche",
     "version": "Versione",
+    "depth_bgl": "Profondità sotto il suolo (m)",
     "Voxel": {
       "cell_center": "",
       "logk": "Conducibilità idraulica",
