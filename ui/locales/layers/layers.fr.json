@@ -347,6 +347,7 @@
     "version": "Version",
     "Voxel": {
       "cell_center": "",
+      "Temp_C": "Température (°C)",
       "logk": "Conductivité hydraulique",
       "Index": "Unité de modélisation",
       "Klasse": "Perméabilité",
