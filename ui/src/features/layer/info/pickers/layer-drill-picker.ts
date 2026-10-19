@@ -26,6 +26,7 @@ import {
 import {
   getUnitKey,
   setUnitHighlight,
+  UnitKey,
 } from 'src/features/layer/utils/tiles3d-color-style';
 import NavToolsStore from 'src/store/navTools';
 import { TemplateResult } from 'lit';
@@ -104,6 +105,41 @@ const unhighlightVectorFeature = (feature: VectorTileFeature): void => {
     feature.color = entry.originalColor;
     highlightedVectorFeatures.delete(feature);
   }
+};
+
+const sameUnit = (left: UnitKey, right: UnitKey): boolean =>
+  left.profile === right.profile && left.geolCode === right.geolCode;
+
+/**
+ * Several infos can highlight the same unit (every picker drills the same window position).
+ * The tileset keeps a single highlight, so it stays until the last owner releases it.
+ */
+const highlightedUnits = new WeakMap<
+  Cesium3DTileset,
+  { unit: UnitKey; count: number }
+>();
+
+const highlightUnit = (tileset: Cesium3DTileset, unit: UnitKey): void => {
+  const entry = highlightedUnits.get(tileset);
+  if (entry !== undefined && sameUnit(entry.unit, unit)) {
+    entry.count++;
+    return;
+  }
+  highlightedUnits.set(tileset, { unit, count: 1 });
+  setUnitHighlight(tileset, unit, OBJECT_HIGHLIGHT_COLOR.toCssHexString());
+};
+
+const unhighlightUnit = (tileset: Cesium3DTileset, unit: UnitKey): void => {
+  const entry = highlightedUnits.get(tileset);
+  if (entry === undefined || !sameUnit(entry.unit, unit)) {
+    return;
+  }
+  entry.count--;
+  if (entry.count > 0) {
+    return;
+  }
+  highlightedUnits.delete(tileset);
+  setUnitHighlight(tileset, null);
 };
 
 export abstract class LayerInfoDrillPicker<
@@ -267,7 +303,8 @@ class LayerInfoForFeature implements LayerInfo {
     Cesium3DTileFeature | VectorTileFeature | Cesium3DTileset;
   private readonly position: Cartesian3;
   private isVectorHighlighted = false;
-  private highlightedUnitTileset: Cesium3DTileset | null = null;
+  private highlightedUnit: { tileset: Cesium3DTileset; unit: UnitKey } | null =
+    null;
 
   constructor(
     private readonly viewer: Viewer,
@@ -288,12 +325,8 @@ class LayerInfoForFeature implements LayerInfo {
       // All pieces of a geological unit are highlighted together, if the layer provides the unit's properties.
       const unit = getUnitKey(this.feature.tileset, this.feature);
       if (unit !== null) {
-        this.highlightedUnitTileset = this.feature.tileset;
-        setUnitHighlight(
-          this.highlightedUnitTileset,
-          unit,
-          OBJECT_HIGHLIGHT_COLOR.toCssHexString(),
-        );
+        this.highlightedUnit = { tileset: this.feature.tileset, unit };
+        highlightUnit(this.feature.tileset, unit);
       } else {
         highlightVectorFeature(this.feature);
         this.isVectorHighlighted = true;
@@ -334,9 +367,12 @@ class LayerInfoForFeature implements LayerInfo {
 
   destroy() {
     if (isVectorTileFeature(this.feature)) {
-      if (this.highlightedUnitTileset !== null) {
-        setUnitHighlight(this.highlightedUnitTileset, null);
-        this.highlightedUnitTileset = null;
+      if (this.highlightedUnit !== null) {
+        unhighlightUnit(
+          this.highlightedUnit.tileset,
+          this.highlightedUnit.unit,
+        );
+        this.highlightedUnit = null;
       }
       if (this.isVectorHighlighted) {
         unhighlightVectorFeature(this.feature);
