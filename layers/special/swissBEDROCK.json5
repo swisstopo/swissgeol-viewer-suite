@@ -17,7 +17,7 @@
       //      },
       source: {
         type: 'Url',
-        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+        url: 'https://download.swissgeol.ch/swissbedrock/release_02/Mosaic_Release2_reducedPerimeter.tif',
       },
       opacity: 0.5,
       // INFOBOX
@@ -136,7 +136,7 @@
       id: 'ch.swisstopo.swissbedrock-geotiff-with-terrain',
       source: {
         type: 'Url',
-        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+        url: 'https://download.swissgeol.ch/swissbedrock/release_02/Mosaic_Release2_reducedPerimeter.tif',
       },
       terrain: {
         type: 'CesiumIon',
