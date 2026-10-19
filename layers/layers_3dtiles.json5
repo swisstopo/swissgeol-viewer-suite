@@ -402,6 +402,13 @@
               url: 'download_gocad_url_temp_iso_60',
             },
           },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_60',
+            },
+          },
           { key: 'dataDate', value: '03.03.2020' },
         ],
       },

@@ -556,6 +556,9 @@
       "download_stac_url_swissbedrock": "https://www.swisstopo.admin.ch/en/3d-swissbedrock-en",
       "download_GIS": "Download GIS",
       "download_GIS_value": "Download GIS",
+      "download_movz_url_voxel_geomol_temp_c": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_VoxelPoints_MOVZ_20200303.zip",
+      "download_gocad_url_voxel_geomol_temp_c": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_VoxelPoints_GOCAD_20200303.zip",
+      "download_gis_url_voxel_geomol_temp_c": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperaturmodell_eingangsdaten",
       "download_movz_url_temp_iso_60": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Isotherm_60C_MOVZ_20200303.zip",
       "download_gocad_url_temp_iso_60": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Isotherm_60C_GOCAD_20200303.zip",
       "download_gis_url_temp_iso_60": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Isotherm_60C_SHP_20200303.zip",
@@ -739,6 +742,12 @@
         "description": "swissBEDROCK3D is a comprehensive dataset that provides detailed information on Switzerland’s bedrock surface. In addition to the bedrock elevation model (BEM), it includes information on the thickness of unconsolidated deposits (TMUD), details on uncertainty, authors and changes compared to previous versions. The dataset is structured as a multi-band raster dataset (10 x 10 meter raster cell size) with 11 information bands per cell. The model can be viewed as a 3D surface as swissBEDROCK3D or draped on the topography as swissBEDROCK2D. It supports versioning for transparency and traceability and is maintained through automated updates within defined areas using new borehole and mapping information or replacements with third-party contributions. A release notes file is provided detailing the origin and characteristics of the various model components. More information on the methodological overview and workflow can be found in the model description.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.pdf"
+      },
+     "voxel_geomol_temp_c": {
+        "title": "Temperature model - data - Subsurface temperature model of the Swiss Plateau - input data and limit of the model (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the location of the input data as well as the limit of the GeoMol15 temperature model (FE-method; Geowatt AG, 2015). The input data locations include both the wells and a constraint point. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperature_Model_Data.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperature_Model_Data.png"
       },
       "temp_iso_60": {
         "title": "Elevation 60 °C isotherm - Subsurface temperature model of the Swiss Plateau - elevation of the 60 °C isotherm (Federal Office of Topography swisstopo)",
