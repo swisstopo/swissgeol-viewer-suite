@@ -140,33 +140,8 @@
         type: 'CesiumIon',
         asset_id: 5837552,
       },
-      access: {
-        env: ['local', 'dev'],
-      },
     },
-    // TODO: temporary test layers with Hex_color styling, see issue #2067, check whether to keep
-    {
-      type: 'Tiles3d',
-      id: 'ga25_profiles_lines',
-      source: {
-        type: 'CesiumIon',
-        asset_id: 5836090,
-      },
-      access: {
-        env: ['local', 'dev'],
-      },
-    },
-    {
-      type: 'Tiles3d',
-      id: 'ga25_profiles_polygons',
-      source: {
-        type: 'CesiumIon',
-        asset_id: 5837552,
-      },
-      access: {
-        env: ['local', 'dev'],
-      },
-    },
+
     // Topic Boreholes
     // Deep Wells - PATH
     {
