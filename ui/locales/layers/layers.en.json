@@ -148,6 +148,8 @@
     "earthquakes_recent": "Earthquakes - last 90 days",
     "ga25Profiles_test": "GA25 profiles TEST",
     "ga25Profiles_test-02": "GA25 profiles TEST 2026-06-02",
+    "ga25_profiles_lines": "GA25 profiles lines TEST",
+    "ga25_profiles_polygons": "GA25 profiles polygons TEST",
     "geomol_cs": "swissGEOMOL3D-Profiles",
     "geomol_faults": "swissGEOMOL3D-Fault zones",
     "geoquat_aaretal_cs": "swissGEOQUAT3D-Profiles Aaretal",
