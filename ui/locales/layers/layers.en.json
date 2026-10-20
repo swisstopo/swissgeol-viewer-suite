@@ -554,6 +554,19 @@
       "download_stac_swissbedrock": "Download",
       "download_stac_value_swissbedrock": "Download",
       "download_stac_url_swissbedrock": "https://www.swisstopo.admin.ch/en/3d-swissbedrock-en",
+      "download_obj": "Download (.obj)",
+      "download_obj_value": "Download (.obj)",
+      "download_obj_url_top_omm": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TOMM_OBJ.zip",
+      "download_obj_url_top_usm": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUSM_OBJ.zip",
+      "download_obj_url_top_umm": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMM_OBJ.zip",
+      "download_obj_url_base_cen": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BCen_OBJ.zip",
+      "download_obj_url_top_cret": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCret_OBJ.zip",
+      "download_obj_url_top_uma": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMa_OBJ.zip",
+      "download_obj_url_top_lma": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLMa_OBJ.zip",
+      "download_obj_url_top_do": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TDo_OBJ.zip",
+      "download_obj_url_top_li": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLi_OBJ.zip",
+      "download_obj_url_top_keu": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TKeu_OBJ.zip",
+      "download_obj_url_top_mus": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TMus_OBJ.zip",
       "dataDate": "Data status",
       "contact_url_rocklab_mont-terri": "https://www.mont-terri.ch/en/contact",
       "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contact",
@@ -705,6 +718,72 @@
         "description": "swissBEDROCK3D is a comprehensive dataset that provides detailed information on Switzerland’s bedrock surface. In addition to the bedrock elevation model (BEM), it includes information on the thickness of unconsolidated deposits (TMUD), details on uncertainty, authors and changes compared to previous versions. The dataset is structured as a multi-band raster dataset (10 x 10 meter raster cell size) with 11 information bands per cell. The model can be viewed as a 3D surface as swissBEDROCK3D or draped on the topography as swissBEDROCK2D. It supports versioning for transparency and traceability and is maintained through automated updates within defined areas using new borehole and mapping information or replacements with third-party contributions. A release notes file is provided detailing the origin and characteristics of the various model components. More information on the methodological overview and workflow can be found in the model description.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.pdf"
+      },
+      "top_omm": {
+        "title": "TOMM",
+        "description": "TOMM",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "top_usm": {
+        "title": "TUSM",
+        "description": "TUSM",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "top_umm": {
+        "title": "TUMM",
+        "description": "TUMM",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "base_cen": {
+        "title": "BCEN",
+        "description": "BCEN",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "top_cret": {
+        "title": "TCRET",
+        "description": "TCRET",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "top_uma": {
+        "title": "TUMA",
+        "description": "TUMA",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "top_lma": {
+        "title": "TLMA",
+        "description": "TLMA",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "top_do": {
+        "title": "TDO",
+        "description": "TDO",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "top_li": {
+        "title": "TLI",
+        "description": "TLI",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "top_keu": {
+        "title": "TKEU",
+        "description": "TKEU",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
+      },
+      "top_mus": {
+        "title": "TMUS",
+        "description": "TMUS",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/placeholder/placeholder_image.pdf"
       }
     }
   }
