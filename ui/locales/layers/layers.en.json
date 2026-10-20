@@ -24,6 +24,18 @@
     "base_mes": "Base Mesozoic",
     "base_pc": "Base Permo-Carboniferous",
     "base_pc_vermutet": "Base Permo-Carboniferous supposed",
+    "boreholes_deepwells_path": "Deep wells - Path",
+    "boreholes_deepwells_lithologies": "Deep wells - Lithologies",
+    "boreholes_deepwells_lithostrati": "Deep wells - Lithostratigraphy",
+    "boreholes_deepwells_chronostrati": "Deep wells - Chronostratigraphy",
+    "boreholes_deepwells_sections": "Deep wells - Sections",
+    "boreholes_deepwells_casing": "Deep wells - Casing",
+    "boreholes_deepwells_backfill": "Deep wells - Backfill",
+    "boreholes_deepwells_instrumentation": "Deep wells - Instrumentation",
+    "boreholes_deepwells_fieldmeasure": "Deep wells - Fieldmeasurements",
+    "boreholes_deepwells_groundwater": "Deep wells - Groundwater levels",
+    "boreholes_deepwells_waterin": "Deep wells - Water ingress",
+    "boreholes_deepwells_hydrotest": "Deep wells - Hydrotest",
     "boreholes_private": "Boreholes 2021 - private",
     "boreholes_public": "Boreholes 2021 - public",
     "ch.bafu.aquaprotect_050": "Areas of flooding Aquaprotect 50",
@@ -59,7 +71,7 @@
     "ch.nagra.aeromagnetische-karte_1500": "Aeromagnetic Aargau 1500 m 100",
     "ch.swisstopo.geoidmodell-ch1903": "Geoid in CH1903",
     "ch.swisstopo.geologie-bodenunruhe": "Anthrop. seismic noise CH",
-    "ch.swisstopo.geologie-bohrungen_tiefer_500": "Deep wells",
+    "ch.swisstopo.geologie-bohrungen_tiefer_500": "Deep wells - Overview",
     "ch.swisstopo.geologie-dosisleistung-terrestrisch": "Terrestrial Radiation",
     "ch.swisstopo.geologie-eiszeit-lgm": "Last glacial maximum (vector) 500",
     "ch.swisstopo.geologie-eiszeit-lgm-raster": "Last glacial maximum (map) 500",
@@ -134,10 +146,8 @@
     "ch.swisstopo.zeitreihen": "Journey through time - Maps",
     "earthquakes_mag_3": "Earthquakes - Magnitude > 3",
     "earthquakes_recent": "Earthquakes - last 90 days",
-    "ga25Profiles_test": "GA25 profiles TEST",
-    "ga25Profiles_test-02": "GA25 profiles TEST 2026-06-02",
-    "ga25_profiles_lines": "GA25 profiles lines TEST",
-    "ga25_profiles_polygons": "GA25 profiles polygons TEST",
+    "ga25_profiles_lines": "GA25 profiles lines",
+    "ga25_profiles_polygons": "GA25 profiles polygons",
     "geomol_cs": "swissGEOMOL3D-Profiles",
     "geomol_faults": "swissGEOMOL3D-Fault zones",
     "geoquat_aaretal_cs": "swissGEOQUAT3D-Profiles Aaretal",
@@ -238,6 +248,7 @@
     "aar3d_pre_variscan_rocks": "Pre-Variscan rocks",
     "background_data": "Background data",
     "boreholes": "Borehole data",
+    "boreholes_deepwells": "Deep wells",
     "construct_raw_material": "Construction raw materials",
     "cross-sections": "Cross-sections",
     "earth_gravity_field": "Earth's gravity field",
@@ -295,6 +306,77 @@
     "mont-terri-rocklab-layers": "Mont Terri Rock Lab"
   },
   "properties": {
+    "boreholes_deepwells_path": {
+      "name_1": "Well name",
+      "cHSGBHCommonTotalDepthMD": "Total depth [m]",
+      "cHSGBHCommonRestriction": "Restriction",
+      "cHSGBHCommonBoreholeType": "Type",
+      "cHSGBHCommonPurpose": "Purpose",
+      "cHSGBHCommonStatus": "Status",
+      "cHSGBHCommonLinkboreholes": "More information",
+      "cHSGBHCommonCanton": "Canton"
+    },
+    "boreholes_deepwells_lithologies": {
+      "name_1": "Well name",
+      "cHSGBHStratigraphyLithology": "Lithology uncon",
+      "cHSGBHStratigraphyLithologyCon": "Lithology",
+      "cHSGBHStratigraphyFromDepth": "Depth from [m]",
+      "cHSGBHStratigraphyToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_lithostrati": {
+      "name_1": "Well name",
+      "cHSGBHStratigraphyLithostratigraphy": "Lithostratigraphy",
+      "cHSGBHStratigraphyFromDepth": "Depth from [m]",
+      "cHSGBHStratigraphyToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_chronostrati": {
+      "name_1": "Well name",
+      "cHSGBHStratigraphyChronostratigraphy": "Chronostratigraphy",
+      "cHSGBHStratigraphyFromDepth": "Depth from [m]",
+      "cHSGBHStratigraphyToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_sections": {
+      "name_1": "Well name",
+      "cHSGBHSectionDrillingMethod": "Drilling method",
+      "cHSGBHSectionDrillingDiameter": "Drilling diameter",
+      "cHSGBHSectionDrillingMudType": "Mud type",
+      "cHSGBHSectionDrillingStartDate": "Start date",
+      "cHSGBHSectionDrillingEndDate": "End date",
+      "cHSGBHSectionFromDepth": "Depth from [m]",
+      "cHSGBHSectionToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_casing": {
+      "name_1": "Well name",
+      "cHSGBHCasingKind": "Casing kind",
+      "cHSGBHCasingMaterial": "Casing material",
+      "cHSGBHCasingInnerDiameter": "Casing inner diameter",
+      "cHSGBHCasingOuterDiameter": "Casing outer diameter",
+      "cHSGBHCasingFromDepth": "Depth from [m]",
+      "cHSGBHCasingToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_backfill": {
+      "name_1": "Well name",
+      "cHSGBHBackfillKind": "Backfill kind",
+      "cHSGBHBackfillMaterial": "Backfill material",
+      "cHSGBHBackfillFromDepth": "Depth from [m]",
+      "cHSGBHBackfillToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_instrumentation": {
+      "name_1": "Well name",
+      "cHSGBHInstrumentationKind": "Instrumentation kind",
+      "cHSGBHInstrumentationFromDepth": "Depth from [m]",
+      "cHSGBHInstrumentationToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_waterin": {
+      "name_1": "Well name",
+      "cHSGBHObservationFromDepth": "Depth from [m]",
+      "cHSGBHObservationToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_hydrotest": {
+      "name_1": "Well name",
+      "cHSGBHObservationFromDepth": "Depth from [m]",
+      "cHSGBHObservationToDepth": "Depth to [m]"
+    },
     "chrono_from_lexic": "Chronostratigraphy from",
     "chrono_to_lexic": "Chronostratigraphy to",
     "d_ANZAHL_S": "Number of tracks",
