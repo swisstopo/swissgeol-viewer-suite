@@ -332,6 +332,7 @@
     "version": "Version",
     "Voxel": {
       "cell_center": "Cell Center",
+      "Temp_C": "Temperature (°C)",
       "logk": "Hydraulic Conductivity",
       "Index": "Modelling Unit",
       "Klasse": "Permeability",
