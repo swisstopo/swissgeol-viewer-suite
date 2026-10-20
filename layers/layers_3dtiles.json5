@@ -675,7 +675,7 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
+              key: 'download_movz_value_geomol',
               url: 'download_movz_url_j3d_horizon',
             },
           },
@@ -686,7 +686,7 @@
               url: 'download_obj_url_top_omm',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -722,7 +722,7 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
+              key: 'download_movz_value_geomol',
               url: 'download_movz_url_j3d_horizon',
             },
           },
@@ -733,7 +733,7 @@
               url: 'download_obj_url_top_usm',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -769,18 +769,18 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
-              url: 'download_movz_url_j3d_horizon',
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_umm',
             },
           },
           {
             key: 'download_obj',
             value: {
               key: 'download_obj_value',
-              url: 'download_obj_url_top_usm',
+              url: 'download_obj_url_top_umm',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -816,8 +816,8 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
-              url: 'download_movz_url_j3d_horizon',
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_base_cen',
             },
           },
           {
@@ -827,7 +827,7 @@
               url: 'download_obj_url_base_cen',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -863,8 +863,8 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
-              url: 'download_movz_url_j3d_horizon',
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_cret',
             },
           },
           {
@@ -874,7 +874,7 @@
               url: 'download_obj_url_top_cret',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -910,8 +910,8 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
-              url: 'download_movz_url_j3d_horizon',
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_uma',
             },
           },
           {
@@ -921,7 +921,7 @@
               url: 'download_obj_url_top_uma',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -957,8 +957,8 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
-              url: 'download_movz_url_j3d_horizon',
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_lma',
             },
           },
           {
@@ -968,7 +968,7 @@
               url: 'download_obj_url_top_lma',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -1004,8 +1004,8 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
-              url: 'download_movz_url_j3d_horizon',
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_do',
             },
           },
           {
@@ -1015,7 +1015,7 @@
               url: 'download_obj_url_top_do',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -1051,8 +1051,8 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
-              url: 'download_movz_url_j3d_horizon',
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_li',
             },
           },
           {
@@ -1062,7 +1062,7 @@
               url: 'download_obj_url_top_li',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -1098,7 +1098,7 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
+              key: 'download_movz_value_geomol',
               url: 'download_movz_url_top_keu',
             },
           },
@@ -1106,10 +1106,10 @@
             key: 'download_obj',
             value: {
               key: 'download_obj_value',
-              url: 'download_obj_url_top_mus',
+              url: 'download_obj_url_top_keu',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -1145,8 +1145,8 @@
           {
             key: 'download_01',
             value: {
-              key: 'download_movz_value',
-              url: 'download_movz_url_j3d_horizon',
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_mus',
             },
           },
           {
@@ -1156,7 +1156,7 @@
               url: 'download_obj_url_top_mus',
             },
           },
-          { key: 'dataDate', value: '18.03.2026' },
+          { key: 'dataDate', value: '18.01.2022' },
         ],
       },
     },
@@ -1176,8 +1176,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BMes_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BMes_OBJ.zip',
       geocat_id: 'ec67a58d-531e-4dae-98da-85c49525b4d2',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_base_mes',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_base_mes',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     //TCarb
     {
@@ -1195,8 +1223,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCarb_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCarb_OBJ.zip',
       geocat_id: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_carb',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_carb',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     //BPC
     {
@@ -1214,8 +1270,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_OBJ.zip',
       geocat_id: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_base_pc',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_base_pc',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     //BPC
     {
@@ -1233,8 +1317,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_vermutet_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_vermutet_OBJ.zip',
       geocat_id: '0f1acc23-bdfc-40bf-94b7-7be10f0f78ed',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_base_pc_vermutet',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_base_pc_vermutet',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // Faults
     {
@@ -1244,8 +1356,36 @@
         type: 'CesiumIon',
         asset_id: 267872,
       },
-      download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
       geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_geomol_faults',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_geomol_faults',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // Aar3D - Aaremassive - Horizons
     // Plutonic rocks
