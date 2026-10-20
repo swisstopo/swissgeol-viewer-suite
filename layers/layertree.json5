@@ -83,10 +83,8 @@
           id: 'cross-sections',
           children: [
             'ch.swisstopo.geologie-geologischer_atlas_profile',
-            'ga25Profiles_test',
-            'ga25Profiles_test-02',
-            'ga25_profiles_lines', // TODO: temporary test layers with Hex_color styling, see issue #2067, check whether to keep
-            'ga25_profiles_polygons', // TODO: temporary test layers with Hex_color styling, see issue #2067, check whether to keep
+            'ga25_profiles_lines',
+            'ga25_profiles_polygons',
             'geomol_cs',
             'j3d_profiles',
             'aar3d_aaremassive_cs',
