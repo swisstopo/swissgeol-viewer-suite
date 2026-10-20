@@ -20,7 +20,7 @@ const LITHOSTRAT_FILTER_ID = WmsRequestFiltersFilterId['f-lithostrat-term'];
 
 function makeWmsResponse(body: string) {
   return {
-    url: 'https://dev-webmap-api.swissgeol.ch/v1/wms',
+    url: 'https://webmap-api.swissgeol.ch/v1/wms',
     body,
     mimeType: 'image/png',
     note: '',
