@@ -819,8 +819,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TOMM_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TOMM_OBJ.zip',
       geocat_id: 'ea190c99-635c-4cf8-9e17-0bcfa938fbdf',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_j3d_horizon',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_omm',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     //TUSM
     {
@@ -838,8 +866,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUSM_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUSM_OBJ.zip',
       geocat_id: '2d7a0729-dd29-40fa-ad4f-b09f94b7fb00',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_j3d_horizon',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_usm',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // TUMM
     {
@@ -857,8 +913,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMM_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMM_OBJ.zip',
       geocat_id: 'fedb8d24-a000-4b78-9e6e-fb90305ad3ea',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_umm',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_umm',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // BCen
     {
@@ -876,8 +960,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BCen_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BCen_OBJ.zip',
       geocat_id: '0e780e6c-18e2-4014-ad16-b35124706580',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_base_cen',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_base_cen',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // TCret
     {
@@ -895,8 +1007,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCret_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCret_OBJ.zip',
       geocat_id: '09334747-14e7-40d6-881b-00e552b71f61',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_cret',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_cret',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // TUMa
     {
@@ -914,8 +1054,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMa_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMa_OBJ.zip',
       geocat_id: '2378cab1-4673-4837-b12e-a35aefab389a',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_uma',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_uma',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // TLMa
     {
@@ -933,8 +1101,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLMa_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLMa_OBJ.zip',
       geocat_id: 'af51f4eb-1430-4e4e-a679-3c0eefb4a6b3',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_lma',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_lma',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // TDo
     {
@@ -952,8 +1148,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TDo_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TDo_OBJ.zip',
       geocat_id: '0dea083d-23b0-4c5b-b82d-1cd7bda3d583',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_do',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_do',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // TLi
     {
@@ -971,8 +1195,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLi_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLi_OBJ.zip',
       geocat_id: '793a40d6-ab83-4e1e-80d7-d7c49bf00f3c',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_li',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_li',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // TKeu
     {
@@ -990,8 +1242,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TKeu_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TKeu_OBJ.zip',
       geocat_id: 'e2344c21-2139-4494-8679-36fe30d034f9',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_keu',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_keu',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     //TMus
     {
@@ -1009,8 +1289,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TMus_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TMus_OBJ.zip',
       geocat_id: 'dae3dd91-a04c-46c5-aa49-de6235c0478a',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_mus',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_mus',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     //BMes
     {
@@ -1028,8 +1336,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BMes_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BMes_OBJ.zip',
       geocat_id: 'ec67a58d-531e-4dae-98da-85c49525b4d2',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_base_mes',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_base_mes',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     //TCarb
     {
@@ -1047,8 +1383,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCarb_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCarb_OBJ.zip',
       geocat_id: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_top_carb',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_top_carb',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     //BPC
     {
@@ -1066,8 +1430,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_OBJ.zip',
       geocat_id: 'faa96a07-1877-4fa6-b2aa-536761d7c012',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_base_pc',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_base_pc',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     //BPC
     {
@@ -1085,8 +1477,36 @@
         },
       },
       order_of_properties: 'geomol_consolidated_rocks',
-      download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_vermutet_OBJ.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_vermutet_OBJ.zip',
       geocat_id: '0f1acc23-bdfc-40bf-94b7-7be10f0f78ed',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_base_pc_vermutet',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_base_pc_vermutet',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // Faults
     {
@@ -1096,8 +1516,36 @@
         type: 'CesiumIon',
         asset_id: 267872,
       },
-      download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
+      // download_url: 'https://download.swissgeol.ch/geomol/GeoMol-Faults.zip',
       geocat_id: 'f5661c1b-49e5-41e9-baf1-dee4811eb907',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'description',
+            value: { key: 'description_value', url: 'description_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value_geomol',
+              url: 'download_movz_url_geomol_faults',
+            },
+          },
+          {
+            key: 'download_obj',
+            value: {
+              key: 'download_obj_value',
+              url: 'download_obj_url_geomol_faults',
+            },
+          },
+          { key: 'dataDate', value: '18.01.2022' },
+        ],
+      },
     },
     // Aar3D - Aaremassive - Horizons
     // Plutonic rocks
