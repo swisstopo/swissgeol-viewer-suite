@@ -19,7 +19,7 @@ runs:
   steps:
     - name: 'Load secrets'
       id: load-secrets
-      uses: hashicorp/vault-action@v3
+      uses: hashicorp/vault-action@v4
       with:
         url: https://swisstopo-vault-public-vault-d680830d.382257a9.z1.hashicorp.cloud:8200
         method: jwt

@@ -7,6 +7,8 @@
   "display": {
     "background": "Sfondo",
     "opacity": "Opacità",
+    "requires_basemap": "La mappa di sfondo deve essere attivata per visualizzare questo layer.",
+    "opacity_requires_visible": "Il layer deve essere visibile per modificare l'opacità.",
     "info_box": "Info",
     "legend": "Leggenda",
     "download": "Scaricare / Scala",

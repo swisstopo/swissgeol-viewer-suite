@@ -2,9 +2,10 @@ import { consume } from '@lit/context';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CoreElement } from 'src/features/core';
 import { LayerService } from 'src/features/layer/layer.service';
-import { getLayerLabel, Layer } from 'src/features/layer';
+import { getLayerLabel, is3dLayer, Layer } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
 import { css, html } from 'lit';
+import { when } from 'lit/directives/when.js';
 
 @customElement('ngm-catalog-tree-layer')
 export class CatalogTreeLayer extends CoreElement {
@@ -64,6 +65,10 @@ export class CatalogTreeLayer extends CoreElement {
       @update="${this.toggle}"
     ></ngm-core-checkbox>
     <label>${this.label}</label>
+    ${when(
+      this.layer !== undefined && is3dLayer(this.layer),
+      () => html`<ngm-core-chip>3D</ngm-core-chip>`,
+    )}
   `;
 
   static readonly styles = css`
@@ -72,6 +77,7 @@ export class CatalogTreeLayer extends CoreElement {
       gap: 10px;
       align-items: center;
       height: 30px;
+      min-width: 0;
       cursor: pointer;
     }
 
@@ -85,10 +91,16 @@ export class CatalogTreeLayer extends CoreElement {
     }
 
     label {
+      flex: 0 1 auto;
+      min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       cursor: pointer;
+    }
+
+    ngm-core-chip {
+      flex-shrink: 0;
     }
   `;
 }

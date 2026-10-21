@@ -7,6 +7,8 @@
   "display": {
     "background": "Hintergrund",
     "opacity": "Deckkraft",
+    "requires_basemap": "Die Hintergrundkarte muss aktiviert sein, um diesen Layer anzuzeigen.",
+    "opacity_requires_visible": "Der Layer muss sichtbar sein, um die Deckkraft zu ändern.",
     "info_box": "Info",
     "legend": "Legende",
     "download": "Herunterladen / Legende",

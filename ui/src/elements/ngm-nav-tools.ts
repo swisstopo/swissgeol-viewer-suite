@@ -13,7 +13,9 @@ import {
   Entity,
   Event,
   JulianDate,
+  KeyboardEventModifier,
   Matrix4,
+  MouseButton,
   PolylineCollection,
 } from 'cesium';
 import type { Interactable } from '@interactjs/types';
@@ -38,14 +40,19 @@ import {
   ButtonGesture,
   ButtonGestureEvent,
   filterByButtonGesture,
-  filterByModifier,
   GestureControlsService,
-  GestureModifier,
+  getKeyboardModifiers,
   MoveGestureEvent,
 } from 'src/features/controls/gestures/gesture-controls.service';
 import { CoreElement } from 'src/features/core';
 import { debounceTime, Subscription } from 'rxjs';
 import { CesiumService } from 'src/services/cesium.service';
+
+const getHeldKeyboardModifiers = (evt: KeyboardEvent) => [
+  ...(evt.ctrlKey ? [KeyboardEventModifier.CTRL] : []),
+  ...(evt.shiftKey ? [KeyboardEventModifier.SHIFT] : []),
+  ...(evt.altKey ? [KeyboardEventModifier.ALT] : []),
+];
 
 const AXIS_WIDTH = 5;
 const AXIS_LENGTH = 120;
@@ -190,55 +197,66 @@ export class NgmNavTools extends CoreElement {
       allowFrom: '.ngm-drag-area',
     });
 
-    // Create the rotate/tilt indicator.
-    this.register(
-      this.gestureControlsService.leftMouseButton$
-        .pipe(
-          filterByModifier(GestureModifier.Control),
-          filterByButtonGesture(ButtonGesture.Down),
-        )
-        .subscribe(this.createTiltIndicator),
-    );
-    this.register(
-      this.gestureControlsService.middleMouseButton$
-        .pipe(filterByButtonGesture(ButtonGesture.Down))
-        .subscribe(this.createTiltIndicator),
-    );
+    this.registerOrbitIndicator();
+  }
 
-    // Remove the indicator when the middle mouse button is released.
-    this.register(
-      this.gestureControlsService.middleMouseButton$
-        .pipe(filterByButtonGesture(ButtonGesture.Up))
-        .subscribe(() => {
-          this.toggleAxis(undefined);
+  /**
+   * Shows the rotation center while an orbit gesture is active.
+   * Which gestures orbit depends on the selected navigation style.
+   */
+  private registerOrbitIndicator(): void {
+    const activeButtons = new Map<MouseButton, ButtonGestureEvent>();
+
+    const update = (heldModifiers: KeyboardEventModifier[]) => {
+      for (const [button, event] of activeButtons) {
+        if (this.isOrbitGesture(button, heldModifiers)) {
+          this.createTiltIndicator(event);
+          return;
+        }
+      }
+      this.toggleAxis(undefined);
+    };
+
+    for (const button of [
+      MouseButton.LEFT,
+      MouseButton.MIDDLE,
+      MouseButton.RIGHT,
+    ]) {
+      this.register(
+        this.gestureControlsService.mouseButton$(button).subscribe((event) => {
+          if (event.gesture === ButtonGesture.Down) {
+            activeButtons.set(button, event);
+          } else {
+            activeButtons.delete(button);
+          }
+          update(getKeyboardModifiers(event.modifiers));
         }),
-    );
+      );
+    }
 
-    // Trigger the indicator when control is clicked after the mouse button.
-    let activeLeftClick: ButtonGestureEvent | null = null;
-    this.register(
-      this.gestureControlsService.leftMouseButton$.subscribe((event) => {
-        activeLeftClick = event;
-      }),
-    );
-    const enableAxisHandler = (evt: KeyboardEvent) => {
-      if (evt.key === 'Control' && activeLeftClick !== null) {
-        this.createTiltIndicator(activeLeftClick);
-        activeLeftClick = null;
+    // The modifier may be pressed or released while a button is held.
+    const handleKey = (evt: KeyboardEvent) => {
+      if (['Control', 'Shift', 'Alt'].includes(evt.key)) {
+        update(getHeldKeyboardModifiers(evt));
       }
     };
-    document.addEventListener('keydown', enableAxisHandler);
-    this.register(() =>
-      document.removeEventListener('keydown', enableAxisHandler),
-    );
+    document.addEventListener('keydown', handleKey);
+    document.addEventListener('keyup', handleKey);
+    this.register(() => {
+      document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('keyup', handleKey);
+    });
+  }
 
-    // Remove the indicator when control is released.
-    const disableAxisHandler = (evt: KeyboardEvent) => {
-      if (evt.key === 'Control') this.toggleAxis(undefined);
-    };
-    document.addEventListener('keyup', disableAxisHandler);
-    this.register(() =>
-      document.removeEventListener('keyup', disableAxisHandler),
+  private isOrbitGesture(
+    button: MouseButton,
+    heldModifiers: KeyboardEventModifier[],
+  ): boolean {
+    return this.cameraControllerService.orbitInputs.some(
+      (input) =>
+        input.button === button &&
+        heldModifiers.length === (input.modifier === undefined ? 0 : 1) &&
+        (input.modifier === undefined || heldModifiers[0] === input.modifier),
     );
   }
 

@@ -7,6 +7,8 @@
   "display": {
     "background": "Background",
     "opacity": "Opacity",
+    "requires_basemap": "The background map must be enabled to show this layer.",
+    "opacity_requires_visible": "The layer must be visible to change its opacity.",
     "info_box": "Info",
     "legend": "Legend",
     "download": "Download / Legend",

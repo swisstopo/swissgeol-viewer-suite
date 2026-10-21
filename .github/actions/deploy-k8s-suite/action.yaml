@@ -15,11 +15,11 @@ runs:
   using: 'composite'
   steps:
     - name: 'Setup kubectl'
-      uses: azure/setup-kubectl@v4
+      uses: azure/setup-kubectl@v5
     - name: 'Install helm'
-      uses: azure/setup-helm@v4
+      uses: azure/setup-helm@v5
     - name: 'Configure AWS credentials from AWS account'
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@v6
       with:
         role-to-assume: ${{ inputs.AWS_ROLE }}
         aws-region: ${{ inputs.AWS_REGION }}

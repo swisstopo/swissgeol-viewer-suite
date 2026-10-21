@@ -7,6 +7,8 @@
   "display": {
     "background": "Fond",
     "opacity": "Opacité",
+    "requires_basemap": "La carte de fond doit être activée pour afficher cette couche.",
+    "opacity_requires_visible": "La couche doit être visible pour modifier l'opacité.",
     "info_box": "Info",
     "legend": "Légende",
     "download": "Télécharger / Légende",

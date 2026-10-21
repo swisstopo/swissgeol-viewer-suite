@@ -80,6 +80,10 @@ export class LayoutSidebar extends CoreElement {
     }
   };
 
+  private readonly handleLexicToggle = () => {
+    this.filterService.toggle();
+  };
+
   private ensureLexicModuleLoaded(): void {
     if (customElements.get('ngm-lexic-filter-panel') === undefined) {
       void import('src/features/lexic/lexic.module');
@@ -146,6 +150,17 @@ export class LayoutSidebar extends CoreElement {
         icon: 'layer',
         counter: this.countOfLayers,
       })}
+      <li>
+        <ngm-layout-sidebar-item
+          .panel="${SidebarPanel.Lexic}"
+          data-cy="Lexic"
+          icon="lexic"
+          .counter="${this.countOfLexicLayers}"
+          ?active="${this.isLexicOpen}"
+          @activate="${this.handleLexicToggle}"
+          @deactivate="${this.handleLexicToggle}"
+        ></ngm-layout-sidebar-item>
+      </li>
       ${this.renderItem({
         panel: SidebarPanel.Tools,
         icon: 'tools',

@@ -32,6 +32,7 @@ import {
   Layer,
   LayerGroup,
   LayerType,
+  needsBasemapSuppression,
   WmtsLayer,
 } from 'src/features/layer';
 import { WmtsService } from 'src/services/wmts.service';
@@ -673,6 +674,7 @@ export class LayerService extends BaseService {
 
     // Create a controller for the layer and add it to the viewer.
     entry.controller = this.makeController(value);
+    this.applyBasemapSuppression(entry.controller, value);
     entry.controller.add().then(
       () => {
         this.viewer.scene.requestRender();
@@ -824,6 +826,10 @@ export class LayerService extends BaseService {
       throw new Error(`Unknown layer: ${id}`);
     }
 
+    const wasBackgroundVisible = isBackgroundLayerId(id)
+      ? entry.state$.value.isVisible
+      : null;
+
     const patch =
       typeof data === 'function' ? data(entry.state$.value as T) : data;
 
@@ -863,6 +869,43 @@ export class LayerService extends BaseService {
 
     // Publish the new state.
     (entry.state$ as BehaviorSubject<AnyLayer>).next(updatedLayer);
+
+    if (
+      wasBackgroundVisible !== null &&
+      wasBackgroundVisible !== updatedLayer.isVisible
+    ) {
+      this.syncBasemapSuppression();
+    }
+  }
+
+  /**
+   * Hide or show basemap-dependent data sources that are not hidden
+   * automatically with the globe, when the basemap visibility changes.
+   * Stored layer visibility is left untouched.
+   */
+  private syncBasemapSuppression(): void {
+    const isSuppressed = !this._background.state$.value.isVisible;
+    for (const id of this._activeLayerIds$.value) {
+      const entry = this.layers.get(id);
+      if (
+        entry?.controller == null ||
+        !needsBasemapSuppression(entry.state$.value)
+      ) {
+        continue;
+      }
+      entry.controller.setSuppressedByBasemap(isSuppressed);
+    }
+    this.viewer.scene.requestRender();
+  }
+
+  private applyBasemapSuppression(
+    controller: BaseLayerController<Layer>,
+    layer: Layer,
+  ): void {
+    if (!needsBasemapSuppression(layer)) {
+      return;
+    }
+    controller.setSuppressedByBasemap(!this._background.state$.value.isVisible);
   }
 
   /**
