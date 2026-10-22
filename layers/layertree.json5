@@ -40,9 +40,6 @@
         // 02 - Lexic augmented layers
         {
           id: 'lexic_augmented_layers',
-          access: {
-            env: ['local', 'dev'],
-          },
           children: [
             'swisstopo:gc_bedrock',
             'swisstopo:gc_unco_deposits',
