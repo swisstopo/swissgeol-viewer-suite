@@ -16,6 +16,10 @@ import {
   UniformType,
 } from 'cesium';
 import { OBJECT_HIGHLIGHT_NORMALIZED_RGB } from 'src/constants';
+import {
+  applyHexColorStyleIfAvailable,
+  updateHexColorStyleOpacity,
+} from 'src/features/layer/utils/tiles3d-color-style';
 import { PickService, ScenePickingLock } from 'src/services/pick.service';
 import {
   AXIS_TO_DIRECTION,
@@ -448,6 +452,7 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       if (this._tileset === undefined) {
         return;
       }
+      updateHexColorStyleOpacity(this._tileset, opacity);
       if (opacity === 1 || previousOpacity === 1) {
         this._tileset.customShader = this.makeShader();
       } else {
@@ -599,6 +604,7 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
     tileset.imageBasedLighting = new ImageBasedLighting();
     tileset.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(1, 0);
     tileset.customShader = this.makeShader();
+    applyHexColorStyleIfAvailable(tileset, () => this.layer.opacity);
 
     const pickService = PickService.get();
     const scenePickingLock = pickService.acquireScenePickingLock();

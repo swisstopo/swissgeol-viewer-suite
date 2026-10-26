@@ -201,11 +201,11 @@ export const TITILER_BY_PAGE_HOST = {
 export const LEXIC_API_VERSION = 'v1';
 
 export const LEXIC_API_BY_PAGE_HOST = {
-  'localhost:8000': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
-  'dev-viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
-  'int-viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
-  'swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
-  'viewer.swissgeol.ch': `https://dev-webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'localhost:8000': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'dev-viewer.swissgeol.ch': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'int-viewer.swissgeol.ch': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'swissgeol.ch': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
+  'viewer.swissgeol.ch': `https://webmap-api.swissgeol.ch/${LEXIC_API_VERSION}`,
 };
 
 /**
@@ -238,8 +238,8 @@ export const WMTS_CAPABILITIES_BY_SERVICE: Record<
     wmts: 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml',
   },
   lexic: {
-    wms: 'https://dev-ogcservices.swissgeol.ch/geoserver/swisstopo/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities',
-    wmts: 'https://dev-ogcservices.swissgeol.ch/geoserver/gwc/service/wmts?service=WMTS&acceptVersions=1.1.1&request=GetCapabilities',
+    wms: 'https://ogcservices.swissgeol.ch/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities',
+    wmts: 'https://ogcservices.swissgeol.ch/geoserver/gwc/service/wmts?service=WMTS&acceptVersions=1.0.0&request=GetCapabilities',
     serviceTimeoutMs: TIMEOUT_REQUEST_AFTER_MILLISECONDS,
   },
 };
