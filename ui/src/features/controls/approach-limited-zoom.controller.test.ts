@@ -345,7 +345,7 @@ describe('ApproachLimitedZoomCameraController', () => {
       picksBefore = pick.mock.calls.length;
       run(controller, scene, { scrollDelta: 20 });
 
-      expect(pick.mock.calls.length).toBe(picksBefore + 1);
+      expect(pick.mock.calls).toHaveLength(picksBefore + 1);
     });
   });
 
