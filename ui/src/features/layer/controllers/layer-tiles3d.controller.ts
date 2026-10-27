@@ -599,6 +599,14 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       foveatedConeSize: 0.2,
       foveatedMinimumScreenSpaceErrorRelaxation: 3,
       foveatedTimeDelay: 0.2,
+
+      // The dynamic environment map is baked per tileset with dozens of
+      // compute commands spread over many frames. With many tilesets this
+      // keeps compute work in flight for a long time after loading, which
+      // exposed a CesiumJS bug that froze the render loop (see
+      // `patchTranslucentDepthPick`). Specular IBL is disabled anyway
+      // (`imageBasedLightingFactor` below), so it is mostly wasted work.
+      environmentMapOptions: { enabled: false },
     });
 
     tileset.imageBasedLighting = new ImageBasedLighting();

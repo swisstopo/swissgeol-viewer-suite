@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   Cartesian2,
   Cartesian3,
@@ -14,8 +14,16 @@ const CLIENT_HEIGHT = 900;
 /**
  * Minimal stand-in for the parts of `Scene`/`Camera` that
  * `ScreenSpaceZoomCameraController#update` touches.
+ *
+ * By default, the target never projects back onto the zoom origin, so the
+ * target is picked on every frame, see `ZoomTargetCache`.
  */
-const createScene = (position: Cartesian3) => {
+const createScene = (
+  position: Cartesian3,
+  {
+    projectTarget = (): Cartesian2 | undefined => undefined,
+  }: { projectTarget?: () => Cartesian2 | undefined } = {},
+) => {
   const camera = {
     position: Cartesian3.clone(position),
     direction: new Cartesian3(0, 0, -1),
@@ -29,11 +37,13 @@ const createScene = (position: Cartesian3) => {
         new Cartesian3(),
       );
     },
+    getPickRay: () => undefined,
   };
   return {
     canvas: { clientWidth: CLIENT_WIDTH, clientHeight: CLIENT_HEIGHT },
     camera,
     ellipsoid: Ellipsoid.WGS84,
+    cartesianToCanvasCoordinates: projectTarget,
   };
 };
 
@@ -284,6 +294,58 @@ describe('ApproachLimitedZoomCameraController', () => {
       run(controller, scene, { scrollDelta: 20, frameCount: 2 });
 
       expect(controller.debug.isZoomingIn).toBe(false);
+    });
+  });
+
+  describe('zoom target', () => {
+    it('reuses the target while it stays under the zoom origin', () => {
+      const scene = createScene(start, {
+        projectTarget: () =>
+          new Cartesian2(CLIENT_WIDTH / 2, CLIENT_HEIGHT / 2),
+      });
+      const controller = createController(target);
+      const pick = vi.spyOn(controller, 'pickGeometryPosition');
+
+      run(controller, scene, { scrollDelta: 20, frameCount: 5 });
+
+      expect(pick).toHaveBeenCalledOnce();
+      expect(controller.debug.targetPickCount).toBe(1);
+      expect(controller.debug.targetReuseCount).toBe(4);
+      expect(controller.debug.targetSource).toBe('geometry');
+      expect(controller.debug.target).toEqual(target);
+    });
+
+    it('picks the target again once it has left the zoom origin', () => {
+      const scene = createScene(start, {
+        projectTarget: () => new Cartesian2(0, 0),
+      });
+      const controller = createController(target);
+      const pick = vi.spyOn(controller, 'pickGeometryPosition');
+
+      run(controller, scene, { scrollDelta: 20, frameCount: 5 });
+
+      expect(pick).toHaveBeenCalledTimes(5);
+      expect(controller.debug.targetReuseCount).toBe(0);
+    });
+
+    it('picks the target again when zooming resumes after being idle', () => {
+      const scene = createScene(start, {
+        projectTarget: () =>
+          new Cartesian2(CLIENT_WIDTH / 2, CLIENT_HEIGHT / 2),
+      });
+      const controller = createController(target);
+      const pick = vi.spyOn(controller, 'pickGeometryPosition');
+
+      run(controller, scene, { scrollDelta: 20, frameCount: 3 });
+      let picksBefore: number;
+      do {
+        picksBefore = pick.mock.calls.length;
+        run(controller, scene, { frameCount: 60 });
+      } while (pick.mock.calls.length > picksBefore);
+      picksBefore = pick.mock.calls.length;
+      run(controller, scene, { scrollDelta: 20 });
+
+      expect(pick.mock.calls).toHaveLength(picksBefore + 1);
     });
   });
 
