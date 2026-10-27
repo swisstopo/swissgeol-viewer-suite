@@ -327,6 +327,26 @@ describe('ApproachLimitedZoomCameraController', () => {
       expect(pick).toHaveBeenCalledTimes(5);
       expect(controller.debug.targetReuseCount).toBe(0);
     });
+
+    it('picks the target again when zooming resumes after being idle', () => {
+      const scene = createScene(start, {
+        projectTarget: () =>
+          new Cartesian2(CLIENT_WIDTH / 2, CLIENT_HEIGHT / 2),
+      });
+      const controller = createController(target);
+      const pick = vi.spyOn(controller, 'pickGeometryPosition');
+
+      run(controller, scene, { scrollDelta: 20, frameCount: 3 });
+      let picksBefore: number;
+      do {
+        picksBefore = pick.mock.calls.length;
+        run(controller, scene, { frameCount: 60 });
+      } while (pick.mock.calls.length > picksBefore);
+      picksBefore = pick.mock.calls.length;
+      run(controller, scene, { scrollDelta: 20 });
+
+      expect(pick.mock.calls.length).toBe(picksBefore + 1);
+    });
   });
 
   // The zoom anchor. CesiumJS's own `_screenSpaceScrollPosition` cannot be used:

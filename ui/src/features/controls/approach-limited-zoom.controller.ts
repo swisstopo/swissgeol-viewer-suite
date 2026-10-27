@@ -284,18 +284,8 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
     // The `windowPosition` handed in by CesiumJS is unusable (see the class
     // doc), so the tracked pointer position is used instead.
     //
-    // This runs on every zoom frame and is invoked directly by CesiumJS
-    // (`ScreenSpaceZoomCameraController.update()`), with no try/catch of its
-    // own — the same call site whose unguarded `Scene.pickPosition()` failure
-    // used to freeze the whole UI (see `handleScenePickingError`). Both picks
-    // below (`pickGeometryPosition`, typically `pickWorldPositionWithDepthBuffer`,
-    // and the terrain-height lookup in `pickFallbackPosition`) can throw while
-    // tiles are still loading or the scene is mid-teardown, so the whole hook
-    // is wrapped defensively: any pick error degrades to "no target"
-    // (CesiumJS's own no-target fallback then applies) instead of aborting the
-    // frame. `update()` (see below) is itself also wrapped, as a last-resort
-    // safety net for anything not caught here.
-    //
+    // Any pick error degrades to "no target" instead of aborting the frame,
+    // see `handleScenePickingError`.
     // The geometry pick is only repeated when the previous target can no
     // longer be reused, see `ZoomTargetCache`.
     this.pickWorldPosition = (
@@ -374,18 +364,8 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
   }
 
   update(scene: Scene, time: JulianDate): void {
-    // Any uncaught exception here would be thrown from inside
-    // `ControllerHost.update()`, which CesiumJS's `CesiumWidget` render loop
-    // calls *before* the internal try/catch that raises `Scene#renderError`.
-    // Such an exception instead reaches the render loop's own outer
-    // try/catch, which permanently stops calling `requestAnimationFrame` —
-    // silently, since this app sets `showRenderLoopErrors: false` — freezing
-    // the map forever with no console output. See
-    // `reorthonormalizeCameraFrame` in `patch-tilt-nadir-gimbal-lock.ts` for
-    // the full mechanism (discovered via exactly this failure mode). Guard
-    // against it here too so any future/unknown throw becomes a single
-    // skipped frame plus a visible error instead of a silent, unrecoverable
-    // freeze.
+    // An uncaught exception would permanently stop the render loop, see
+    // `reorthonormalizeCameraFrame` in `patch-tilt-nadir-gimbal-lock.ts`.
     try {
       this.updateUnsafe(scene, time);
     } catch (e) {
@@ -438,6 +418,9 @@ export class ApproachLimitedZoomCameraController extends ScreenSpaceZoomCameraCo
 
     const target = this.target;
     if (target === undefined) {
+      // Nothing was resolved, so zooming and its glide are over; the cached
+      // target must not outlive them, as its age only advances while zooming.
+      this.targetCache.clear();
       return;
     }
     Cartesian3.clone(target, debug.target);
