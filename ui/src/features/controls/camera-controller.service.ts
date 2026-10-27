@@ -75,6 +75,66 @@ export function pickWorldPositionWithDepthBuffer(
   );
 }
 
+type PickWorldPosition = (
+  scene: Scene,
+  windowPosition: Cartesian2,
+  result: Cartesian3,
+) => Cartesian3 | undefined;
+
+/**
+ * A pick function that picks only once per drag, see {@link anchorPickToDrag}.
+ */
+export interface DragAnchoredPick {
+  readonly pickWorldPosition: PickWorldPosition;
+
+  /**
+   * Discards the anchor, so the next call picks again.
+   * Call this whenever a new drag may start.
+   */
+  reset(): void;
+}
+
+/**
+ * Wraps a pick function so that it picks only once per drag, and returns that
+ * anchor for the rest of the drag and the inertia that follows it.
+ *
+ * `ScreenSpaceMapCameraController` calls its pick function on every frame of a
+ * drag and of its inertia. Cesium's default pick is math-only and cheap, but
+ * {@link pickWorldPositionWithDepthBuffer} is not: every `Scene.pickPosition`
+ * re-renders depth and forces a synchronous GPU read-back.
+ *
+ * The anchor is just as accurate: the controller only uses the picked position
+ * for the pan scale (distance → metres per pixel) and the ellipsoid normal.
+ * Panning translates the camera parallel to its image plane, so the grabbed
+ * point keeps its depth, and with it the pan scale, for the whole drag.
+ * Keeping the anchor also keeps the pan speed steady when nearer geometry moves
+ * between the camera and the cursor, and matches the legacy controller, which
+ * picked once per drag.
+ *
+ * Misses are not anchored, so a drag that starts on the sky picks again on the
+ * next frame.
+ */
+export function anchorPickToDrag(pick: PickWorldPosition): DragAnchoredPick {
+  const anchor = new Cartesian3();
+  let hasAnchor = false;
+  return {
+    pickWorldPosition: (scene, windowPosition, result) => {
+      if (!hasAnchor) {
+        const position = pick(scene, windowPosition, result);
+        if (position === undefined) {
+          return undefined;
+        }
+        Cartesian3.clone(position, anchor);
+        hasAnchor = true;
+      }
+      return Cartesian3.clone(anchor, result);
+    },
+    reset: () => {
+      hasAnchor = false;
+    },
+  };
+}
+
 /**
  * Manages the new modular CesiumJS camera controllers (CesiumJS 1.144+).
  * Replaces the monolithic `ScreenSpaceCameraController` for mouse/touch input.
@@ -97,6 +157,10 @@ export class CameraControllerService extends BaseService {
   private isInputsEnabled = true;
   private readonly activeControllers: Set<Controller> = new Set();
 
+  private readonly panAnchor = anchorPickToDrag(
+    pickWorldPositionWithDepthBuffer,
+  );
+
   constructor() {
     super();
 
@@ -115,8 +179,9 @@ export class CameraControllerService extends BaseService {
     this.zoomController.zoomDistanceRatio = BASE_ZOOM_DISTANCE_RATIO;
 
     // Use depth-buffer-aware picking for correct underground behavior.
+    // Panning only picks once per drag, see `anchorPickToDrag`.
     this.tiltController.pickWorldPosition = pickWorldPositionWithDepthBuffer;
-    this.panController.pickWorldPosition = pickWorldPositionWithDepthBuffer;
+    this.panController.pickWorldPosition = this.panAnchor.pickWorldPosition;
     // The zoom controller resolves its own target from the tracked pointer
     // position, so it takes the pick function through a dedicated property.
     this.zoomController.pickGeometryPosition = pickWorldPositionWithDepthBuffer;
@@ -151,6 +216,15 @@ export class CameraControllerService extends BaseService {
     // TODO: A cesium PR is on its way. remove the patch as soon as it is merged
     const scene = viewer.scene;
     patchLegacyCameraController(scene);
+
+    // Every drag starts with a pointer press on the element the controllers
+    // listen on, so this makes the pan pick a new anchor for each drag.
+    // The capture phase ensures that no other listener can swallow the event.
+    viewer.cesiumWidget.container.addEventListener(
+      'pointerdown',
+      () => this.panAnchor.reset(),
+      { capture: true },
+    );
 
     // Add the new modular controllers
     this.addController(this.panController);

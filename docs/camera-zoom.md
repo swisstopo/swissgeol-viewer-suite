@@ -7,6 +7,7 @@ Related issue: [#2058](https://github.com/swisstopo/swissgeol-viewer-suite/issue
 ("Dynamische Zoom Geschwindigkeit abhängig von der Distanz zum Ziel").
 
 - Implementation: `ui/src/features/controls/approach-limited-zoom.controller.ts`
+- Target reuse: `ui/src/features/controls/zoom-target-cache.ts`
 - Wiring: `ui/src/features/controls/camera-controller.service.ts`
 - Debug HUD: `ui/src/features/controls/control-zoom-debug.element.ts`
 
@@ -265,6 +266,7 @@ rescaling silently stops and the step clamp alone remains in force.
 | 5   | Step decays to zero at the surface, so you only get underground by overshooting                   | Frames carrying **fresh zoom-in input** get at least `minimumApproachStep` (0.5 m), so descending below terrain stays possible — but controlled, and only while actively scrolling. The post-input glide never gets the floor, so a released wheel comes to rest.    |
 | 6   | `zoomDistanceRatio = 0.4` (≈29 % of distance per notch)                                           | `zoomDistanceRatio = 0.1` (≈7.3 % per notch), matching the legacy controller.                                                                                                                                                                                        |
 | 7   | Camera may land exactly on the target ⇒ `Cartesian3.normalize` throws `DeveloperError` next frame | A `targetSeparation` epsilon (0.1 mm) always keeps the camera off the singularity.                                                                                                                                                                                   |
+| 8   | Target picked on every frame of the zoom and its glide                                            | A picked target is **reused** for up to 0.1 s of frame time while it stays under the zoom origin and the terrain in front of it is unchanged. See [§Reusing the zoom target](#reusing-the-zoom-target).                                                              |
 
 ### Why not just configure it?
 
@@ -279,6 +281,43 @@ Note that `minimumZoomDistance` is actively unhelpful here: it is a _floor on th
 distance fed into the ratio_ (L362-366), so raising it makes the camera move
 **faster** near the target, not slower.
 
+### Reusing the zoom target
+
+CesiumJS resolves the zoom target on every frame of a zoom and of the glide that
+follows it. With the depth-buffer pick (row 2) that is expensive: every
+`Scene.pickPosition` re-renders depth and forces a synchronous GPU read-back,
+which can take longer than the rest of the frame while many 3D Tiles are loaded.
+
+Zooming moves the camera along the line towards the target. The target
+therefore stays under the zoom origin, and a new pick would return the same
+point. `ZoomTargetCache` reuses the previous target as long as all of the
+following hold:
+
+| Check                                                                                 | Guards against                                                                 |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| It has been reused for no more than **0.1 s of frame time**                           | Geometry that loads in front of the target in the meantime (see below).        |
+| It still projects onto the zoom origin, **within 0.5 px**                             | The pointer moving, or the camera being panned, tilted or flown elsewhere.     |
+| The terrain ray along the pointer hits the same point, **within 1 %** of its distance | Terrain refinement raising the surface in front of the target (§1.4).          |
+| The previous pick hit something                                                       | Misses are never cached; a ray into the sky is picked again on the next frame. |
+
+Frame time is the per-frame duration the approach rate is evaluated over, which
+is capped at 0.1 s. At the default `maximumApproachRate` of 3/s, the camera can
+therefore close at most 26 % of the distance to a stale target, whatever the
+frame rate is. At 60 FPS that is one pick every seven frames; at low frame
+rates, where each frame hits the cap, picks and reuses alternate. Counting
+wall-clock time instead would disable the cache exactly where picks hurt most:
+during heavy tile loading, a single frame takes longer than 0.1 s.
+
+The terrain check uses `pickPositionWithRay`, which intersects the rendered
+terrain on the CPU without touching the GPU. It is only used to detect changes,
+never as the target: under a translucent globe, the target may legitimately be
+an object below the terrain (§1.5).
+
+§1.4 and §1.5 still hold: every new pick goes through the full chain (depth
+buffer, terrain ray, ellipsoid), and the glide rescaling uses whichever target
+was resolved for the frame. The debug HUD shows how many targets were picked and
+reused.
+
 ### Order of operations per frame
 
 ```
@@ -289,7 +328,9 @@ update(scene, time)
   │    read before super.update() consumes it — fresh input vs. glide
   ├─ remember camera position
   ├─ super.update()                        ← Cesium moves the camera
-  │    └─ calls our pickWorldPosition       ← records target + targetSource
+  │    └─ calls our pickWorldPosition       ← reuses the previous target or
+  │                                           picks a new one, records target
+  │                                           + targetSource
   ├─ step = (newPosition − oldPosition) · directionToTarget
   ├─ clamp: min(step, maxStep) → max(…, 0.5 m if isZoomingIn) → separation
   │    maxStep = distance × min(1 − e^(−rate·dt), maximumApproachFraction)
@@ -308,23 +349,24 @@ ever visible.
 Enable the HUD with the `zoomDebug` URL flag (e.g. `?zoomDebug`) to get
 `<control-zoom-debug>` in the lower-left corner. It samples at 10 Hz and shows:
 
-| Field                    | Meaning                                                                                                                                   |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Picked object**        | What sits under the zoom origin: 3D Tile feature (with name and tileset), entity, primitive class, `Terrain (globe)`, or `nothing (sky)`. |
-| **Depth buffer**         | Whether `Scene.pickPosition` resolved the target, and whether globe translucency is why it could not (§1.5).                              |
-| **Target source**        | `depth buffer / terrain ray` (normal), `ray fallback (nothing hit)` (§1.3 branch avoided), or `none`.                                     |
-| **Zoom origin (px)**     | Screen position the zoom is aimed at — verifies zoom-to-cursor.                                                                           |
-| **Distance to target**   | The value that drives the step.                                                                                                           |
-| **Height above terrain** | For contrast: what a naive elevation-based implementation would have used.                                                                |
-| **Requested step**       | How far CesiumJS moved the camera this frame.                                                                                             |
-| **Applied step**         | How far it was allowed to keep.                                                                                                           |
-| **Max step**             | `distance × min(1 − e^(−rate·dt), maximumApproachFraction)`.                                                                              |
-| **Applied / distance**   | The step as a percentage — should stay ≤20 %.                                                                                             |
-| **Limit**                | Highlighted in yellow when a limit engaged: `maximumApproachFraction`, `minimumApproachStep` or `targetSeparation`.                       |
-| **Input this frame**     | `zooming in` (fresh input) vs. `glide` (damped tail).                                                                                     |
-| **Frame time**           | The `dt` the approach rate was evaluated over — watch this spike while terrain tiles stream in.                                           |
-| **Banked velocity**      | CesiumJS's residual zoom speed before rescaling. This is the value that used to outlive the geometry it was computed for (§1.4).          |
-| **Velocity rescaled to** | The fraction the banked velocity was cut to this frame. Highlighted whenever the glide is being discharged.                               |
+| Field                       | Meaning                                                                                                                                   |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Picked object**           | What sits under the zoom origin: 3D Tile feature (with name and tileset), entity, primitive class, `Terrain (globe)`, or `nothing (sky)`. |
+| **Depth buffer**            | Whether `Scene.pickPosition` resolved the target, and whether globe translucency is why it could not (§1.5).                              |
+| **Target source**           | `depth buffer / terrain ray` (normal), `ray fallback (nothing hit)` (§1.3 branch avoided), or `none`.                                     |
+| **Targets picked / reused** | How often the zoom target was picked and reused since the page loaded (§Reusing the zoom target).                                         |
+| **Zoom origin (px)**        | Screen position the zoom is aimed at — verifies zoom-to-cursor.                                                                           |
+| **Distance to target**      | The value that drives the step.                                                                                                           |
+| **Height above terrain**    | For contrast: what a naive elevation-based implementation would have used.                                                                |
+| **Requested step**          | How far CesiumJS moved the camera this frame.                                                                                             |
+| **Applied step**            | How far it was allowed to keep.                                                                                                           |
+| **Max step**                | `distance × min(1 − e^(−rate·dt), maximumApproachFraction)`.                                                                              |
+| **Applied / distance**      | The step as a percentage — should stay ≤20 %.                                                                                             |
+| **Limit**                   | Highlighted in yellow when a limit engaged: `maximumApproachFraction`, `minimumApproachStep` or `targetSeparation`.                       |
+| **Input this frame**        | `zooming in` (fresh input) vs. `glide` (damped tail).                                                                                     |
+| **Frame time**              | The `dt` the approach rate was evaluated over — watch this spike while terrain tiles stream in.                                           |
+| **Banked velocity**         | CesiumJS's residual zoom speed before rescaling. This is the value that used to outlive the geometry it was computed for (§1.4).          |
+| **Velocity rescaled to**    | The fraction the banked velocity was cut to this frame. Highlighted whenever the glide is being discharged.                               |
 
 The bottom block lists the live tuning values so they can be compared against
 the defaults documented above.
@@ -391,7 +433,10 @@ fixed and the rest of the subclass goes.
    alongside the existing `zoomDistanceRatio` and `pickWorldPosition`
    assignments.
 2. Delete `approach-limited-zoom.controller.ts` and
-   `approach-limited-zoom.controller.test.ts`.
+   `approach-limited-zoom.controller.test.ts`. `ZoomTargetCache` needs the
+   frame duration that the subclass computes; either keep a thin subclass that
+   provides it, or delete `zoom-target-cache.ts` and its test too and accept a
+   depth pick on every zoom frame again.
 3. Delete `control-zoom-debug.element.ts`, its import in `controls.module.ts`,
    the `showZoomDebug` state and `when()` block in `ngm-app.ts`, and
    `getZoomDebugParam()` in `permalink.ts`. The HUD only reports this
