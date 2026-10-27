@@ -1,7 +1,9 @@
 import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 
 Given(/^one layer is being displayed$/, () => {
-  cy.get('ngm-catalog-tree-layer[data-cy="ch.swisstopo.geologie-geocover"]')
+  cy.get(
+    'ngm-catalog-tree-layer[data-cy="ch.swisstopo.geologie-gletscherausdehnung"]',
+  )
     .shadow()
     .find('ngm-core-checkbox')
     .shadow()
@@ -59,11 +61,15 @@ Then(/^the the background of the chip will be highlighted$/, () => {
 });
 
 Then(/^a tooltip will be displayed$/, () => {
-  cy.get('@chip').then((chip$) => {
-    cy.get('ngm-core-tooltip-box')
-      .filter((_, el) => el['target'] === chip$[0])
-      .should('have.class', 'is-visible');
-  });
+  // The tooltip is anchored to the control wrapping the chip.
+  cy.get('@layer-item')
+    .shadow()
+    .find('.opacity-control')
+    .then((control$) => {
+      cy.get('ngm-core-tooltip-box')
+        .filter((_, el) => el['target'] === control$[0])
+        .should('have.class', 'is-visible');
+    });
 });
 
 When(/^the user hovers over the context menu$/, () => {

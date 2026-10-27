@@ -1,9 +1,11 @@
-import { describe, expect, it, vi } from 'vitest';
-import { Cartesian2, Cartesian3, Ray, Scene } from 'cesium';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { Cartesian2, Cartesian3, MouseButton, Ray, Scene } from 'cesium';
 import {
   anchorPickToDrag,
+  CameraControllerService,
   pickWorldPositionWithDepthBuffer,
 } from 'src/features/controls/camera-controller.service';
+import { NavigationStyle } from 'src/features/controls/navigation-style.model';
 
 const TERRAIN = new Cartesian3(1, 2, 3);
 const ELLIPSOID = new Cartesian3(9, 9, 9);
@@ -172,5 +174,73 @@ describe('anchorPickToDrag', () => {
     // The controller may modify the returned position.
     result.x = 1000;
     expect(pickAt(anchored, 10)).toEqual(GEOMETRY);
+  });
+});
+
+describe('CameraControllerService navigation style', () => {
+  const create = (cookie = '') => {
+    const doc = { cookie };
+    vi.stubGlobal('document', doc);
+    vi.stubGlobal('location', { protocol: 'http:' });
+    return { doc, service: new CameraControllerService() };
+  };
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('applies the stored style on construction', () => {
+    const { service } = create('swissgeol_navigation_style=modelling');
+    expect(service.navigationStyle).toBe(NavigationStyle.Modelling);
+    expect(service.panController.dragInputs).toEqual([
+      { button: MouseButton.RIGHT },
+    ]);
+    expect(service.zoomController.dragInputs).toEqual([
+      { button: MouseButton.MIDDLE },
+    ]);
+  });
+
+  it('switches bindings, persists and emits on change', () => {
+    const { service, doc } = create();
+    const emitted: NavigationStyle[] = [];
+    service.navigationStyle$.subscribe((s) => emitted.push(s));
+
+    service.setNavigationStyle(NavigationStyle.Modelling);
+    service.setNavigationStyle(NavigationStyle.Modelling);
+
+    expect(emitted).toEqual([NavigationStyle.Esri, NavigationStyle.Modelling]);
+    expect(doc.cookie).toContain('swissgeol_navigation_style=modelling');
+    expect(service.orbitInputs).toContainEqual({ button: MouseButton.LEFT });
+  });
+
+  it('re-attaches active controllers so new inputs take effect', () => {
+    const { service } = create();
+    const viewer = { addController: vi.fn(), removeController: vi.fn() };
+    (service as unknown as { viewer: unknown }).viewer = viewer;
+    service.addController(service.panController);
+    viewer.addController.mockClear();
+
+    service.setNavigationStyle(NavigationStyle.Modelling);
+
+    expect(viewer.removeController).toHaveBeenCalledWith(service.panController);
+    expect(viewer.addController).toHaveBeenCalledWith(service.panController);
+    expect(viewer.addController).not.toHaveBeenCalledWith(
+      service.zoomController,
+    );
+  });
+
+  it('does not attach controllers while inputs are disabled', () => {
+    const { service } = create();
+    const viewer = { addController: vi.fn(), removeController: vi.fn() };
+    (service as unknown as { viewer: unknown }).viewer = viewer;
+    service.addController(service.panController);
+    service.enableInputs = false;
+    viewer.addController.mockClear();
+    viewer.removeController.mockClear();
+
+    service.setNavigationStyle(NavigationStyle.RightOrbit);
+
+    expect(viewer.addController).not.toHaveBeenCalled();
+    expect(viewer.removeController).not.toHaveBeenCalled();
   });
 });

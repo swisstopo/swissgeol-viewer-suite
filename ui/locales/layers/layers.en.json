@@ -24,6 +24,18 @@
     "base_mes": "Base Mesozoic",
     "base_pc": "Base Permo-Carboniferous",
     "base_pc_vermutet": "Base Permo-Carboniferous supposed",
+    "boreholes_deepwells_path": "Deep wells - Path",
+    "boreholes_deepwells_lithologies": "Deep wells - Lithologies",
+    "boreholes_deepwells_lithostrati": "Deep wells - Lithostratigraphy",
+    "boreholes_deepwells_chronostrati": "Deep wells - Chronostratigraphy",
+    "boreholes_deepwells_sections": "Deep wells - Sections",
+    "boreholes_deepwells_casing": "Deep wells - Casing",
+    "boreholes_deepwells_backfill": "Deep wells - Backfill",
+    "boreholes_deepwells_instrumentation": "Deep wells - Instrumentation",
+    "boreholes_deepwells_fieldmeasure": "Deep wells - Fieldmeasurements",
+    "boreholes_deepwells_groundwater": "Deep wells - Groundwater levels",
+    "boreholes_deepwells_waterin": "Deep wells - Water ingress",
+    "boreholes_deepwells_hydrotest": "Deep wells - Hydrotest",
     "boreholes_private": "Boreholes 2021 - private",
     "boreholes_public": "Boreholes 2021 - public",
     "ch.bafu.aquaprotect_050": "Areas of flooding Aquaprotect 50",
@@ -59,7 +71,7 @@
     "ch.nagra.aeromagnetische-karte_1500": "Aeromagnetic Aargau 1500 m 100",
     "ch.swisstopo.geoidmodell-ch1903": "Geoid in CH1903",
     "ch.swisstopo.geologie-bodenunruhe": "Anthrop. seismic noise CH",
-    "ch.swisstopo.geologie-bohrungen_tiefer_500": "Deep wells",
+    "ch.swisstopo.geologie-bohrungen_tiefer_500": "Deep wells - Overview",
     "ch.swisstopo.geologie-dosisleistung-terrestrisch": "Terrestrial Radiation",
     "ch.swisstopo.geologie-eiszeit-lgm": "Last glacial maximum (vector) 500",
     "ch.swisstopo.geologie-eiszeit-lgm-raster": "Last glacial maximum (map) 500",
@@ -134,8 +146,8 @@
     "ch.swisstopo.zeitreihen": "Journey through time - Maps",
     "earthquakes_mag_3": "Earthquakes - Magnitude > 3",
     "earthquakes_recent": "Earthquakes - last 90 days",
-    "ga25Profiles_test": "GA25 profiles TEST",
-    "ga25Profiles_test-02": "GA25 profiles TEST 2026-06-02",
+    "ga25_profiles_lines": "GA25 profiles lines",
+    "ga25_profiles_polygons": "GA25 profiles polygons",
     "geomol_cs": "swissGEOMOL3D-Profiles",
     "geomol_faults": "swissGEOMOL3D-Fault zones",
     "geoquat_aaretal_cs": "swissGEOQUAT3D-Profiles Aaretal",
@@ -191,7 +203,7 @@
     "temp_iso_100": "Elevation 100° isotherm",
     "temp_iso_150": "Elevation 150° isotherm",
     "temp_iso_60": "Elevation 60° isotherm",
-    "temp_tomm": "Temperatures Top OMM",
+    "temp_tomm": "Temperatures Top Upper Marine Molasse",
     "temp_tuma": "Temperatures Top Upper Malm",
     "temp_tums": "Temperatures Top Muschelkalk",
     "top_carb": "Top Carboniferous",
@@ -236,6 +248,7 @@
     "aar3d_pre_variscan_rocks": "Pre-Variscan rocks",
     "background_data": "Background data",
     "boreholes": "Borehole data",
+    "boreholes_deepwells": "Deep wells",
     "construct_raw_material": "Construction raw materials",
     "cross-sections": "Cross-sections",
     "earth_gravity_field": "Earth's gravity field",
@@ -293,6 +306,77 @@
     "mont-terri-rocklab-layers": "Mont Terri Rock Lab"
   },
   "properties": {
+    "boreholes_deepwells_path": {
+      "name_1": "Well name",
+      "cHSGBHCommonTotalDepthMD": "Total depth [m]",
+      "cHSGBHCommonRestriction": "Restriction",
+      "cHSGBHCommonBoreholeType": "Type",
+      "cHSGBHCommonPurpose": "Purpose",
+      "cHSGBHCommonStatus": "Status",
+      "cHSGBHCommonLinkboreholes": "More information",
+      "cHSGBHCommonCanton": "Canton"
+    },
+    "boreholes_deepwells_lithologies": {
+      "name_1": "Well name",
+      "cHSGBHStratigraphyLithology": "Lithology uncon",
+      "cHSGBHStratigraphyLithologyCon": "Lithology",
+      "cHSGBHStratigraphyFromDepth": "Depth from [m]",
+      "cHSGBHStratigraphyToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_lithostrati": {
+      "name_1": "Well name",
+      "cHSGBHStratigraphyLithostratigraphy": "Lithostratigraphy",
+      "cHSGBHStratigraphyFromDepth": "Depth from [m]",
+      "cHSGBHStratigraphyToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_chronostrati": {
+      "name_1": "Well name",
+      "cHSGBHStratigraphyChronostratigraphy": "Chronostratigraphy",
+      "cHSGBHStratigraphyFromDepth": "Depth from [m]",
+      "cHSGBHStratigraphyToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_sections": {
+      "name_1": "Well name",
+      "cHSGBHSectionDrillingMethod": "Drilling method",
+      "cHSGBHSectionDrillingDiameter": "Drilling diameter",
+      "cHSGBHSectionDrillingMudType": "Mud type",
+      "cHSGBHSectionDrillingStartDate": "Start date",
+      "cHSGBHSectionDrillingEndDate": "End date",
+      "cHSGBHSectionFromDepth": "Depth from [m]",
+      "cHSGBHSectionToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_casing": {
+      "name_1": "Well name",
+      "cHSGBHCasingKind": "Casing kind",
+      "cHSGBHCasingMaterial": "Casing material",
+      "cHSGBHCasingInnerDiameter": "Casing inner diameter",
+      "cHSGBHCasingOuterDiameter": "Casing outer diameter",
+      "cHSGBHCasingFromDepth": "Depth from [m]",
+      "cHSGBHCasingToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_backfill": {
+      "name_1": "Well name",
+      "cHSGBHBackfillKind": "Backfill kind",
+      "cHSGBHBackfillMaterial": "Backfill material",
+      "cHSGBHBackfillFromDepth": "Depth from [m]",
+      "cHSGBHBackfillToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_instrumentation": {
+      "name_1": "Well name",
+      "cHSGBHInstrumentationKind": "Instrumentation kind",
+      "cHSGBHInstrumentationFromDepth": "Depth from [m]",
+      "cHSGBHInstrumentationToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_waterin": {
+      "name_1": "Well name",
+      "cHSGBHObservationFromDepth": "Depth from [m]",
+      "cHSGBHObservationToDepth": "Depth to [m]"
+    },
+    "boreholes_deepwells_hydrotest": {
+      "name_1": "Well name",
+      "cHSGBHObservationFromDepth": "Depth from [m]",
+      "cHSGBHObservationToDepth": "Depth to [m]"
+    },
     "chrono_from_lexic": "Chronostratigraphy from",
     "chrono_to_lexic": "Chronostratigraphy to",
     "d_ANZAHL_S": "Number of tracks",
@@ -328,8 +412,12 @@
     "source": "Source",
     "tecto_lexic": "Tectonic Units",
     "version": "Version",
+    "temp_c": "Temperature (°C)",
+    "name": "Name",
+    "depth_bgl": "Depth below ground (m)",
     "Voxel": {
       "cell_center": "Cell Center",
+      "Temp_C": "Temperature (°C)",
       "logk": "Hydraulic Conductivity",
       "Index": "Modelling Unit",
       "Klasse": "Permeability",
@@ -551,6 +639,82 @@
       "download_stac_swissbedrock": "Download",
       "download_stac_value_swissbedrock": "Download",
       "download_stac_url_swissbedrock": "https://www.swisstopo.admin.ch/en/3d-swissbedrock-en",
+      "download_obj": "Download (.obj)",
+      "download_obj_value": "Download (.obj)",
+      "download_obj_url_top_omm": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TOMM_OBJ.zip",
+      "download_obj_url_top_usm": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUSM_OBJ.zip",
+      "download_obj_url_top_umm": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMM_OBJ.zip",
+      "download_obj_url_base_cen": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BCen_OBJ.zip",
+      "download_obj_url_top_cret": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCret_OBJ.zip",
+      "download_obj_url_top_uma": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TUMa_OBJ.zip",
+      "download_obj_url_top_lma": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLMa_OBJ.zip",
+      "download_obj_url_top_do": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TDo_OBJ.zip",
+      "download_obj_url_top_li": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TLi_OBJ.zip",
+      "download_obj_url_top_keu": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TKeu_OBJ.zip",
+      "download_obj_url_top_mus": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TMus_OBJ.zip",
+      "download_obj_url_base_mes": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BMes_OBJ.zip",
+      "download_obj_url_top_carb": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_TCarb_OBJ.zip",
+      "download_obj_url_base_pc": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_OBJ.zip",
+      "download_obj_url_base_pc_vermutet": "https://download.swissgeol.ch/geomol/geomol_2021/GeoMol21_Horizons_BPC_vermutet_OBJ.zip",
+      "download_obj_url_geomol_faults": "https://download.swissgeol.ch/geomol/GeoMol-Faults.zip",
+      "download_movz_value_geomol": "-",
+      "download_movz_url_top_omm": "-",
+      "download_movz_url_top_usm": "-",
+      "download_movz_url_top_umm": "-",
+      "download_movz_url_base_cen": "-",
+      "download_movz_url_top_cret": "-",
+      "download_movz_url_top_uma": "-",
+      "download_movz_url_top_lma": "-",
+      "download_movz_url_top_do": "-",
+      "download_movz_url_top_li": "-",
+      "download_movz_url_top_keu": "-",
+      "download_movz_url_top_mus": "-",
+      "download_movz_url_base_mes": "-",
+      "download_movz_url_top_carb": "-",
+      "download_movz_url_base_pc": "-",
+      "download_movz_url_base_pc_vermutet": "-",
+      "download_movz_url_geomol_faults": "-",
+      "download_GIS": "Download GIS",
+      "download_GIS_value": "Download GIS",
+      "download_movz_url_voxel_geomol_temp_c": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_VoxelPoints_MOVZ_20200303.zip",
+      "download_gocad_url_voxel_geomol_temp_c": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_VoxelPoints_GOCAD_20200303.zip",
+      "download_gis_url_voxel_geomol_temp_c": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperaturmodell_eingangsdaten",
+      "download_movz_url_temp_iso_60": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Isotherm_60C_MOVZ_20200303.zip",
+      "download_gocad_url_temp_iso_60": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Isotherm_60C_GOCAD_20200303.zip",
+      "download_gis_url_temp_iso_60": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-isotherme_60",
+      "download_movz_url_temp_iso_100": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Isotherm_100C_MOVZ_20200303.zip",
+      "download_gocad_url_temp_iso_100": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Isotherm_100C_GOCAD_20200303.zip",
+      "download_gis_url_temp_iso_100": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-isotherme_100",
+      "download_movz_url_temp_iso_150": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Isotherm_150C_MOVZ_20200303.zip",
+      "download_gocad_url_temp_iso_150": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Isotherm_150C_GOCAD_20200303.zip",
+      "download_gis_url_temp_iso_150": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-isotherme_150",
+      "download_movz_url_temp_tomm": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Horizon_TOMM_TempC_MOVZ_20200303.zip",
+      "download_gocad_url_temp_tomm": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Horizon_TOMM_TempC_GOCAD_20200303.zip",
+      "download_gis_url_temp_tomm": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperatur_top_omm/data.zip",
+      "download_movz_url_temp_tuma": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Horizon_TUMA_TempC_MOVZ_20200303.zip",
+      "download_gocad_url_temp_tuma": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Horizon_TUMA_TempC_GOCAD_20200303.zip",
+      "download_gis_url_temp_tuma": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperatur_top_omalm",
+      "download_movz_url_temp_tums": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Horizon_TUMS_TempC_MOVZ_20200303.zip",
+      "download_gocad_url_temp_tums": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_Horizon_TUMS_TempC_GOCAD_20200303.zip",
+      "download_gis_url_temp_tums": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperatur_top_muschelkalk",
+      "download_movz_url_temp_depth_500": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_500m_MOVZ_20200303.zip",
+      "download_gocad_url_temp_depth_500": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_500m_GOCAD_20200303.zip",
+      "download_gis_url_temp_depth_500": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperaturverteilung_500",
+      "download_movz_url_temp_depth_1000": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_1000m_MOVZ_20200303.zip",
+      "download_gocad_url_temp_depth_1000": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_1000m_GOCAD_20200303.zip",
+      "download_gis_url_temp_depth_1000": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperaturverteilung_1000",
+      "download_movz_url_temp_depth_1500": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_1500m_MOVZ_20200303.zip",
+      "download_gocad_url_temp_depth_1500": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_1500m_GOCAD_20200303.zip",
+      "download_gis_url_temp_depth_1500": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperaturverteilung_1500",
+      "download_movz_url_temp_depth_2000": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_2000m_MOVZ_20200303.zip",
+      "download_gocad_url_temp_depth_2000": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_2000m_GOCAD_20200303.zip",
+      "download_gis_url_temp_depth_2000": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperaturverteilung_2000",
+      "download_movz_url_temp_depth_3000": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_3000m_MOVZ_20200303.zip",
+      "download_gocad_url_temp_depth_3000": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_3000m_GOCAD_20200303.zip",
+      "download_gis_url_temp_depth_3000": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperaturverteilung_3000",
+      "download_movz_url_temp_depth_4000": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_4000m_MOVZ_20200303.zip",
+      "download_gocad_url_temp_depth_4000": "https://download.swissgeol.ch/download-data/GMT15/GMT15_2020_DepthBelowGroundLevel_4000m_GOCAD_20200303.zip",
+      "download_gis_url_temp_depth_4000": "https://data.geo.admin.ch/ch.swisstopo.geologie-geomol-temperaturverteilung_4000",
       "dataDate": "Data status",
       "contact_url_rocklab_mont-terri": "https://www.mont-terri.ch/en/contact",
       "contact_value_rocklab_mont-terri": "https://www.mont-terri.ch/ > contact",
@@ -702,6 +866,180 @@
         "description": "swissBEDROCK3D is a comprehensive dataset that provides detailed information on Switzerland’s bedrock surface. In addition to the bedrock elevation model (BEM), it includes information on the thickness of unconsolidated deposits (TMUD), details on uncertainty, authors and changes compared to previous versions. The dataset is structured as a multi-band raster dataset (10 x 10 meter raster cell size) with 11 information bands per cell. The model can be viewed as a 3D surface as swissBEDROCK3D or draped on the topography as swissBEDROCK2D. It supports versioning for transparency and traceability and is maintained through automated updates within defined areas using new borehole and mapping information or replacements with third-party contributions. A release notes file is provided detailing the origin and characteristics of the various model components. More information on the methodological overview and workflow can be found in the model description.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/swissBEDROCK/Legend_infobox_swissgeol.pdf"
+      },
+      "top_omm": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Upper Marine Molasse (OMM) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Upper Marine Molasse lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_usm": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Upper Freshwater Molasse (USM) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Upper Freshwater Molasse lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_umm": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Lower Marine Molasse (UMM) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Lower Marine Molasse lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "base_cen": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Base Cenozoic (BCen) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Base Cenozoic lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_cret": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Cretaceous (TCret) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Cretaceous lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_uma": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Upper Malm (TUMa) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Upper Malm lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_lma": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Lower Malm (TLMa) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Lower Malm lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_do": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Dogger (TDo) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Dogger lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_li": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Lias (TLi) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Lias lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_keu": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Keuper (TKeu) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Keuper lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_mus": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Muschelkalk (TMus) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Muschelkalk lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "base_mes": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Base Mesozoic (TMes) (Federal Office of Topography swisstopo)",
+        "description": "his layer shows the elevation and geometry of the Base Mesozoic lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "top_carb": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Top Carboniferous (TCarb) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Top Carboniferous lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "base_pc": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Base Permo-Carboniferous (BPC) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Base Permo-Carboniferous lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "base_pc_vermutet": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin - elevation of the Base Permo-Carboniferous - supposed (BPC-supposed) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation and geometry of the Base Permo-Carboniferous - supposed lithostratigraphic horizon surface.swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "geomol_faults": {
+        "title": "swissGEOMOL3D - 3D geological model of the Swiss Molasse Basin -  Faults (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the geometry of the Faults in the Molasse basin. swissGEOMOL3D is a 3D geological structural model of the subsurface of the Swiss Plateau, extending from the terrain surface down to a depth of approximately 9'000 meters below mean sea level. It covers the region stretching from Lake Geneva in the southwest to Lake Constance in the northeast and is bounded in the southeast by the Alps and in the northwest by the Jura. The model provides a unified geological interpretation of the Swiss Molasse Basin and consists of 14 lithostratigraphic (seismic marker) horizon surfaces of Cenozoic, Mesozoic and Permocarboniferous age as well as around 550 fault zone surfaces. In addition, the model results are also published in the form of 23 dip profiles. Initially created by swisstopo in collaboration with five partners over a period of five years and first published in 2017, the model is now updated with new data on a regular basis. The model input data, in the shallow regions, is comprised primarily of shallow wells (less than 500 meters deep), geological maps and profiles; in the deep regions, this is comprised mainly of deep wells as well as 2D- und 3D-reflection seismic interpretations. Suitable local and regional geological models are also incorporated where relevant. The modelled horizon surfaces generally have a nominal resolution (mesh size) of 100x100 m and in tightly folded areas, a higher resolution of 50x50 m. Depending primarily on their geometrical complexity (and in some cases also their lateral extent), the fault zone surfaces have a nominal resolution of 50x50 m, 100x100 m or 200x200 m.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GeoMol/geomol_legend.png"
+      },
+      "voxel_geomol_temp_c": {
+        "title": "Temperature model - data - Subsurface temperature model of the Swiss Plateau - input data and limit of the model (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the location of the input data as well as the limit of the GeoMol15 temperature model (FE-method; Geowatt AG, 2015). The input data locations include both the wells and a constraint point. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperature_Model_Data.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperature_Model_Data.png"
+      },
+      "temp_iso_60": {
+        "title": "Elevation 60 °C isotherm - Subsurface temperature model of the Swiss Plateau - elevation of the 60 °C isotherm (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation of the 60 °C isotherm. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Elevation_Isotherm_60C.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Elevation_Isotherm_60C.png"
+      },
+      "temp_iso_100": {
+        "title": "Elevation 100 °C isotherm - Subsurface temperature model of the Swiss Plateau - elevation of the 100 °C isotherm (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation of the 100 °C isotherm. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Elevation_Isotherm_100C.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Elevation_Isotherm_100C.png"
+      },
+      "temp_iso_150": {
+        "title": "Elevation 150 °C isotherm - Subsurface temperature model of the Swiss Plateau - elevation of the 150 °C isotherm (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the elevation of the 150 °C isotherm. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Elevation_Isotherm_150C.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Elevation_Isotherm_150C.png"
+      },
+      "temp_tomm": {
+        "title": "Temperatures Top OMM - Subsurface temperature model of the Swiss Plateau - temperatures on the Top Upper Marine Molasse (OMM) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the temperatures on the Top Upper Marine Molasse (OMM). One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Top_OMM.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Top_OMM.png"
+      },
+      "temp_tuma": {
+        "title": "Temperatures Top UMA - Subsurface temperature model of the Swiss Plateau - temperatures on the Top Upper Malm (UMA) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the temperatures on the Top Upper Malm (UMA). One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Top_Upper_Malm.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Top_Upper_Malm.png"
+      },
+      "temp_tums": {
+        "title": "Temperatures Top UMS - Subsurface temperature model of the Swiss Plateau - temperatures on the Top Muschelkalk (UMS) (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the temperatures on the Top Muschelkalk (UMS). One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Top_Muschelkalk.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Top_Muschelkalk.png"
+      },
+      "temp_depth_500": {
+        "title": "Temperatures 500 m depth - Subsurface temperature model of the Swiss Plateau - temperature distribution at a depth of 500 m (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the temperature distribution at a depth of 500 m below ground level. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_500m.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_500m.png"
+      },
+      "temp_depth_1000": {
+        "title": "Temperatures 1000 m depth - Subsurface temperature model of the Swiss Plateau - temperature distribution at a depth of 1000 m (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the temperature distribution at a depth of 1000 m below ground level. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_1000m.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_1000m.png"
+      },
+      "temp_depth_1500": {
+        "title": "Temperatures 1500 m depth - Subsurface temperature model of the Swiss Plateau - temperature distribution at a depth of 1500 m (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the temperature distribution at a depth of 500 m below ground level. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_1500m.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_1500m.png"
+      },
+      "temp_depth_2000": {
+        "title": "Temperatures 2000 m depth - Subsurface temperature model of the Swiss Plateau - temperature distribution at a depth of 2000 m (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the temperature distribution at a depth of 2000 m below ground level. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_2000m.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_2000m.png"
+      },
+      "temp_depth_3000": {
+        "title": "Temperatures 3000 m depth - Subsurface temperature model of the Swiss Plateau - temperature distribution at a depth of 3000 m (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the temperature distribution at a depth of 3000 m below ground level. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_3000m.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_3000m.png"
+      },
+      "temp_depth_4000": {
+        "title": "Temperatures 4000 m depth - Subsurface temperature model of the Swiss Plateau - temperature distribution at a depth of 4000 m (Federal Office of Topography swisstopo)",
+        "description": "This layer shows the temperature distribution at a depth of 4000 m below ground level. One of the main parameters used in assessing the geothermal potential of the Swiss Molasse Basin is the subsurface distribution of temperature. The GeoMol15 Temperature Model represents the subsurface distribution of temperature within the Swiss Plateau, from ground elevation down to a depth of 9’000 m below mean sea level. The underlying volume model (voxel model) is composed of regular cells that are 1000x1000x100 m in size. This voxel model is derived from both interpreted ground elevation temperature data and an unpublished subsurface temperature model (FE-method; Geowatt AG, 2015). The latter is in turn based primarily on 31 vertical temperature profiles and the geological horizon surfaces from the Seismic Atlas of the Swiss Molasse Basin (2012). The FE temperature modelling method assumes conductive heat flow only and does not consider convective heat flow. A range of temperature layers representing various isotherms, temperatures on horizons or temperatures at depths below ground level have been derived from the voxel model. This layer should be used in conjunction with the other GeoMol15 temperature model layers. Selected GeoMol15 temperature model maps are also available for online viewing on map.geo.admin.ch under the topic Energy > Geothermal Energy.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_4000m.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/GMT15/Temperatures_Depth_4000m.png"
       }
     }
   }

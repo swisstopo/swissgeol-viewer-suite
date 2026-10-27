@@ -140,20 +140,6 @@ export function getTargetParam(): Cartesian3 | undefined {
   );
 }
 
-export function getCesiumToolbarParam(): boolean {
-  return getURLSearchParams().has('cesiumToolbar');
-}
-
-export function setCesiumToolbarParam(value: boolean) {
-  const params = getURLSearchParams();
-  if (value && !params.has('cesiumToolbar')) {
-    params.append('cesiumToolbar', '');
-  } else if (!value && params.has('cesiumToolbar')) {
-    params.delete('cesiumToolbar');
-  }
-  setURLSearchParams(params);
-}
-
 export function getZoomDebugParam(): boolean {
   return getURLSearchParams().has('zoomDebug');
 }

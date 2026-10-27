@@ -37,20 +37,16 @@
             'ch.swisstopo.geologie-geotechnik-gk500-genese',
           ],
         },
-        /* Temporarely switched off
         // 02 - Lexic augmented layers
         {
           id: 'lexic_augmented_layers',
-          access: {
-            env: ['local', 'dev'],
-          },
           children: [
             'swisstopo:gc_bedrock',
             'swisstopo:gc_unco_deposits',
             'swisstopo:tecto_units_augm',
           ],
         },
- */
+
         // 02 - Thematic_maps
         {
           id: 'thematic_maps',
@@ -83,8 +79,8 @@
           id: 'cross-sections',
           children: [
             'ch.swisstopo.geologie-geologischer_atlas_profile',
-            'ga25Profiles_test',
-            'ga25Profiles_test-02',
+            'ga25_profiles_lines',
+            'ga25_profiles_polygons',
             'geomol_cs',
             'j3d_profiles',
             'aar3d_aaremassive_cs',
@@ -138,8 +134,8 @@
                         'top_li',
                         'top_keu',
                         'top_mus',
-                        'top_carb',
                         'base_mes',
+                        'top_carb',
                         'base_pc',
                         'base_pc_vermutet',
                       ],
@@ -356,7 +352,24 @@
     {
       id: 'boreholes',
       children: [
-        'ch.swisstopo.geologie-bohrungen_tiefer_500',
+        {
+          id: 'boreholes_deepwells',
+          children: [
+            'ch.swisstopo.geologie-bohrungen_tiefer_500',
+            'boreholes_deepwells_path',
+            'boreholes_deepwells_lithologies',
+            'boreholes_deepwells_lithostrati',
+            'boreholes_deepwells_chronostrati',
+            'boreholes_deepwells_sections',
+            'boreholes_deepwells_casing',
+            'boreholes_deepwells_backfill',
+            'boreholes_deepwells_instrumentation',
+            'boreholes_deepwells_fieldmeasure',
+            'boreholes_deepwells_groundwater',
+            'boreholes_deepwells_waterin',
+            'boreholes_deepwells_hydrotest',
+          ],
+        },
         'boreholes_public',
         'boreholes_private',
       ],
