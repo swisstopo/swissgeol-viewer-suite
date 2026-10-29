@@ -20,6 +20,10 @@
       max_level: 18,
       opacity: 0.87,
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geocover',
+      },
     },
     // swissGEOCOVER2D - UNCONSOLIDATED
     {
@@ -28,6 +32,10 @@
       max_level: 18,
       opacity: 0.76,
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geocover',
+      },
     },
     // swissGEOCOVER2D - SURFACE
     {
@@ -36,6 +44,10 @@
       max_level: 18,
       opacity: 1,
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geocover',
+      },
     },
     // swissGEOCOVER2D - LINES
     {
@@ -44,6 +56,10 @@
       max_level: 18,
       opacity: 1,
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geocover',
+      },
     },
     // swissGEOCOVER2D - TECTO_LINES
     {
@@ -52,6 +68,10 @@
       max_level: 18,
       opacity: 1,
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geocover',
+      },
     },
     // swissGEOCOVER2D - POINTS
     {
@@ -60,7 +80,12 @@
       max_level: 18,
       opacity: 1,
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geocover',
+      },
     },
+    // Geol. Atlas GA25
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-geologischer_atlas',
@@ -68,6 +93,10 @@
       opacity: 0.7,
       geocat_id: '258814a5-8fcf-47df-b0c6-160602b0078c',
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geologischer_atlas',
+      },
     },
     {
       type: 'Wmts',
@@ -76,6 +105,10 @@
       opacity: 0.7,
       geocat_id: '435522fb-599e-41c0-a7c0-49d922ea6acf',
       info_box: { source: 'api3.geo.admin.ch' },
+      ogc_source: {
+        type: 'stac',
+        collection: 'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
+      },
     },
     {
       type: 'Wmts',

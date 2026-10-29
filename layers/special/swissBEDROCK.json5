@@ -1,23 +1,19 @@
 {
   layers: [
     {
-      // Layer Top Bedrock Geotiff
+      // Layer Top Bedrock Geotiff  (swissBEDROCK 2D)
       type: 'Tiff',
       id: 'ch.swisstopo.swissbedrock-geotiff',
-      //      source: {
-      //        type: 'Ogc',
-      //        ogc_source: {
-      //          type: 'stac',
-      //          collection: 'ch.swisstopo.geologie-swissbedrock',
-      //        },
-      //        display_source: {
-      //          type: 'Url',
-      //          url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif'
-      //        },
-      //      },
       source: {
-        type: 'Url',
-        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+        type: 'Ogc',
+        ogc_source: {
+          type: 'stac',
+          collection: 'ch.swisstopo.geologie-swissbedrock',
+        },
+        display_source: {
+          type: 'Url',
+          url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+        },
       },
       opacity: 0.5,
       // INFOBOX
@@ -131,12 +127,19 @@
       ],
     },
     {
-      // Layer Top Bedrock Geotiff with Terrain
+      // Layer Top Bedrock Geotiff with Terrain (swissBEDROCK 3D)
       type: 'Tiff',
       id: 'ch.swisstopo.swissbedrock-geotiff-with-terrain',
       source: {
-        type: 'Url',
-        url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+        type: 'Ogc',
+        ogc_source: {
+          type: 'stac',
+          collection: 'ch.swisstopo.geologie-swissbedrock',
+        },
+        display_source: {
+          type: 'Url',
+          url: 'https://download.swissgeol.ch/swissbedrock/release_01/swissBEDROCK_R1.tif',
+        },
       },
       terrain: {
         type: 'CesiumIon',
