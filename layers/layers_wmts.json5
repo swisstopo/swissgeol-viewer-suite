@@ -823,6 +823,7 @@
       geocat_id: 'b5a52b4-0f5f-4998-a9a8-dd9539f93809',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+    // swissALTI3D - Reliefschattierung_monodirektional
     {
       type: 'Wmts',
       id: 'ch.swisstopo.swissalti3d-reliefschattierung_monodirektional',
@@ -830,11 +831,8 @@
       opacity: 0.7,
       geocat_id: '376f86bd-c46c-4b89-8f36-717641706226',
       info_box: { source: 'api3.geo.admin.ch' },
-      //      ogc_source: {
-      //        type: 'stac',
-      //        collection: 'ch.swisstopo.swissalti3d',
-      //      }
     },
+    // swissALTI3D - Reliefschattierung
     {
       type: 'Wmts',
       id: 'ch.swisstopo.swissalti3d-reliefschattierung',
@@ -842,11 +840,8 @@
       opacity: 0.7,
       geocat_id: '1964cc81-5298-460f-9228-41120315bea8',
       info_box: { source: 'api3.geo.admin.ch' },
-      //      ogc_source: {
-      //        type: 'stac',
-      //        collection: 'ch.swisstopo.swissalti3d',
-      //      }
     },
+    // swissBATHY3D - Reliefschattierung
     {
       type: 'Wmts',
       id: 'ch.swisstopo.swissbathy3d-reliefschattierung',
