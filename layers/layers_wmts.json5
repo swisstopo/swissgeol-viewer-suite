@@ -1,18 +1,6 @@
 {
   layers: [
     // Geol maps
-    {
-      type: 'Wmts',
-      id: 'ch.swisstopo.geologie-geocover',
-      max_level: 18,
-      opacity: 0.7,
-      geocat_id: '2467ab13-e794-4c13-8c55-59fe276398c5',
-      info_box: { source: 'api3.geo.admin.ch' },
-      //      ogc_source: {
-      //        type: 'stac',
-      //        collection: 'ch.swisstopo.geologie-geocover',
-      //      }
-    },
     // swissGEOCOVER2D - BEDROCK
     {
       type: 'Wmts',
@@ -93,11 +81,8 @@
       opacity: 0.7,
       geocat_id: '258814a5-8fcf-47df-b0c6-160602b0078c',
       info_box: { source: 'api3.geo.admin.ch' },
-      ogc_source: {
-        type: 'stac',
-        collection: 'ch.swisstopo.geologie-geologischer_atlas',
-      },
     },
+    // Litho. Hauptgruppen
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
@@ -105,11 +90,8 @@
       opacity: 0.7,
       geocat_id: '435522fb-599e-41c0-a7c0-49d922ea6acf',
       info_box: { source: 'api3.geo.admin.ch' },
-      ogc_source: {
-        type: 'stac',
-        collection: 'ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen',
-      },
     },
+    // GK500 - Geologie
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-geologische_karte',
@@ -118,6 +100,7 @@
       geocat_id: 'ca917a71-dcc9-44b6-8804-823c694be516',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+    // GK500 - Tektonik
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-tektonische_karte',
@@ -126,6 +109,7 @@
       geocat_id: 'a4cdef47-505e-41ab-b6a7-ad5b92d80e41',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+    // GK500 - Gesteinsklassifizierung
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-geotechnik-gk500-gesteinsklassierung',
@@ -134,6 +118,7 @@
       geocat_id: 'f2c81b93-f0c5-4899-83a9-974ce36c48e6',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+    // GK500 - Genese
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-geotechnik-gk500-genese',
@@ -144,6 +129,7 @@
     },
 
     // Lexic augmented layers
+    // GeoCover - Bedrock - augmented
     {
       type: 'Wmts',
       id: 'swisstopo:gc_bedrock',
@@ -152,6 +138,7 @@
       max_level: 18,
       opacity: 0.7,
     },
+    // GeoCover - Unconsolidated deposits - augmented
     {
       type: 'Wmts',
       id: 'swisstopo:gc_unco_deposits',
@@ -160,6 +147,7 @@
       max_level: 18,
       opacity: 0.7,
     },
+    // GK500 - Tektonik - augmented
     {
       type: 'Wmts',
       id: 'swisstopo:tecto_units_augm',
@@ -170,6 +158,7 @@
     },
 
     // Thematic maps
+    // LGM - Raster
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-eiszeit-lgm-raster',
@@ -178,6 +167,7 @@
       geocat_id: 'f1455593-7571-48b0-8603-307ec59a6702',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+    // LGM - Vektor
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-eiszeit-lgm',
@@ -267,15 +257,6 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '345d02a3-9628-46d7-9e57-e0ab1d9faf8a',
-      info_box: { source: 'api3.geo.admin.ch' },
-    },
-    // 3D models
-    {
-      type: 'Wmts',
-      id: 'ch.swisstopo.geologie-geologische_3dmodelle',
-      max_level: 18,
-      opacity: 0.7,
-      geocat_id: '11836d3b-181e-4078-b83f-f55fc44b5776',
       info_box: { source: 'api3.geo.admin.ch' },
     },
     // Boreholes
@@ -457,14 +438,6 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: '1c050393-fe3a-41b1-a31e-3173f51181d8',
-      info_box: { source: 'api3.geo.admin.ch' },
-    },
-    {
-      type: 'Wmts',
-      id: 'ch.swisstopo.geologie-geophysik-geothermie',
-      max_level: 18,
-      opacity: 0.7,
-      geocat_id: '2d8174b2-8c4a-44ea-b470-cb3f216b90d1',
       info_box: { source: 'api3.geo.admin.ch' },
     },
     // Mineral resources
@@ -795,22 +768,6 @@
     // Geotourism
     {
       type: 'Wmts',
-      id: 'ch.swisstopo.geologie-geoevents_demnaechst',
-      max_level: 18,
-      opacity: 0.7,
-      geocat_id: '64508bcc-8a66-4d90-bb9a-bc83c931b0c6',
-      info_box: { source: 'api3.geo.admin.ch' },
-    },
-    {
-      type: 'Wmts',
-      id: 'ch.swisstopo.geologie-geoevents_anfrage',
-      max_level: 18,
-      opacity: 0.7,
-      geocat_id: '6f4fc3a9-8dc0-4cc2-b176-f804e5157dab',
-      info_box: { source: 'api3.geo.admin.ch' },
-    },
-    {
-      type: 'Wmts',
       id: 'ch.swisstopo.geologie-geosites',
       max_level: 18,
       opacity: 0.7,
@@ -839,23 +796,6 @@
       max_level: 18,
       opacity: 0.7,
       geocat_id: 'c4d2c1b0-b075-4d7b-be7c-54d26411cda3',
-      info_box: { source: 'api3.geo.admin.ch' },
-    },
-    // Underground space
-    {
-      type: 'Wmts',
-      id: 'ch.swisstopo.geologie-felslabore',
-      max_level: 18,
-      opacity: 0.7,
-      geocat_id: 'f995a522-62cb-4316-a762-f6a319985ed7',
-      info_box: { source: 'api3.geo.admin.ch' },
-    },
-    {
-      type: 'Wmts',
-      id: 'ch.bfe.sachplan-geologie-tiefenlager',
-      max_level: 18,
-      opacity: 0.7,
-      geocat_id: '7162f14b-4c16-4ec3-8ac6-b158136e65c7',
       info_box: { source: 'api3.geo.admin.ch' },
     },
     // Background
