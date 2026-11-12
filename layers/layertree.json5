@@ -378,10 +378,10 @@
     {
       id: 'geophysics',
       children: [
+        'ch.swisstopo.geologie-reflexionsseismik',
         {
           id: '2d_reflexionseismics',
           children: [
-            'ch.swisstopo.geologie-reflexionsseismik',
             {
               id: '2d_survey_EGEO21',
               children: ['seismic_2d_21_egeo_001', 'seismic_2d_21_egeo_002'],
