@@ -10,8 +10,14 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
   },
   resolve: {
-    alias: {
-      src: resolve(__dirname, './src'),
-    },
+    alias: [
+      // Fomantic components are jQuery-based UI scripts irrelevant to node unit
+      // tests and crash on load (no jQuery/window); stub them out.
+      {
+        find: /fomantic-ui-css\/.*\.js$/,
+        replacement: resolve(__dirname, './src/test/empty.ts'),
+      },
+      { find: 'src', replacement: resolve(__dirname, './src') },
+    ],
   },
 });
