@@ -41,6 +41,8 @@ interface ZoomDebugView {
   readonly pickedObject: string;
   readonly depthBuffer: string;
   readonly targetSource: ZoomTargetSource;
+  readonly targetPickCount: number;
+  readonly targetReuseCount: number;
   readonly origin: string;
   readonly distance: number;
   readonly height: number | null;
@@ -126,6 +128,8 @@ export class ControlZoomDebug extends CoreElement {
       pickedObject,
       depthBuffer,
       targetSource: debug.targetSource,
+      targetPickCount: debug.targetPickCount,
+      targetReuseCount: debug.targetReuseCount,
       origin: `${Math.round(origin.x)}, ${Math.round(origin.y)}`,
       distance: debug.distance,
       height:
@@ -159,6 +163,10 @@ export class ControlZoomDebug extends CoreElement {
         ${row('Picked object', view.pickedObject)}
         ${row('Depth buffer', view.depthBuffer)}
         ${row('Target source', TARGET_SOURCE_LABELS[view.targetSource])}
+        ${row(
+          'Targets picked / reused',
+          `${view.targetPickCount} / ${view.targetReuseCount}`,
+        )}
         ${row('Zoom origin (px)', view.origin)}
         ${row('Distance to target', formatMeters(view.distance))}
         ${row('Height above terrain', formatMeters(view.height))}

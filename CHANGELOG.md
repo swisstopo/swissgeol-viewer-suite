@@ -1,5 +1,30 @@
 # Changelog
 
+## [v1.16.0]
+
+### Added
+
+- Infobox for swissGEOMOL3D added (horizon surfaces and fault zones), with the GeoMol report and OBJ download links.
+- Deep wells integrated as 3D layers: path, lithologies, lithostratigraphy, chronostratigraphy, sections, casing, backfill, instrumentation, field measurements, groundwater levels, water ingress and hydrotests.
+- GA25 geological profiles (lines and polygons) added as coloured 3D tiles. Picked geological units are highlighted and their attributes are shown.
+- Mouse navigation profiles added in the settings (ESRI, 3D Modelling, 3D Modelling alternative). The chosen profile is remembered.
+- Keyboard navigation extended (arrow keys, Page Up/Down, sprint and speed change), with an on-screen camera speed indicator.
+- 3D layers are marked with a "3D" chip in the catalog and in the active layer list.
+
+### Changed
+
+- Lexic toolbox and augmented layers reactivated, using the production Lexic API and OGC services.
+- swissGEOMOL3D temperature voxel updated to the new asset and labelled as Temperature (°C).
+- Order of the swissGEOMOL3D Top Carboniferous and Base Mesozoic horizons adjusted.
+- Layers draped on the background map are locked while the basemap is hidden and restored with their previous visibility afterwards.
+
+### Fixed
+
+- Keyboard navigation no longer captures keystrokes while typing in input fields.
+- GeoMol infoboxes link to the GeoMol report.
+- TiTiler CORS headers and memory use fixed, so GeoTIFF layers stay available.
+- Highlight of a picked geological unit stays visible until its info is closed.
+
 ## [v1.15.0]
 
 ### Added

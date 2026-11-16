@@ -1,6 +1,7 @@
 import {
   Cartesian2,
   KeyboardEventModifier,
+  MouseButton,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   Viewer,
@@ -107,6 +108,17 @@ export class GestureControlsService extends BaseService {
     );
   }
 
+  mouseButton$(button: MouseButton): Observable<ButtonGestureEvent> {
+    switch (button) {
+      case MouseButton.LEFT:
+        return this.leftMouseButton$;
+      case MouseButton.MIDDLE:
+        return this.middleMouseButton$;
+      default:
+        return this.rightMouseButton$;
+    }
+  }
+
   get mouseMove$(): Observable<MoveGestureEvent> {
     return this.mouseMoveSubject.asObservable();
   }
@@ -210,3 +222,19 @@ export const filterByModifier = <E extends GestureEvent>(
 export const filterByButtonGesture = <E extends ButtonGestureEvent>(
   gesture: ButtonGesture,
 ): OperatorFunction<E, E> => filter((event) => event.gesture === gesture);
+
+const KEYBOARD_MODIFIERS: ReadonlyArray<
+  [GestureModifier, KeyboardEventModifier]
+> = [
+  [GestureModifier.Control, KeyboardEventModifier.CTRL],
+  [GestureModifier.Shift, KeyboardEventModifier.SHIFT],
+  [GestureModifier.Alt, KeyboardEventModifier.ALT],
+];
+
+/** The keyboard modifiers contained in a gesture's modifier set. */
+export const getKeyboardModifiers = (
+  modifiers: Set<GestureModifier>,
+): KeyboardEventModifier[] =>
+  KEYBOARD_MODIFIERS.filter(([gesture]) => modifiers.has(gesture)).map(
+    ([, keyboard]) => keyboard,
+  );

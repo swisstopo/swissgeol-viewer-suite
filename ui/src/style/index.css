@@ -199,6 +199,75 @@ ngm-app-boot {
   margin-bottom: 12px;
 }
 
+.ngm-navigation-settings {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 12px;
+}
+
+.ngm-navigation-style-options {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ngm-navigation-style {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.ngm-navigation-style-legend {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.ngm-navigation-style-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ngm-navigation-action {
+  display: grid;
+  grid-template-columns: 54px auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.ngm-navigation-action-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-settings .ngm-settings-title {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 24px 0 12px;
+}
+
+.ngm-keyboard-shortcuts kbd svg {
+  vertical-align: middle;
+}
+
+.ngm-keyboard-shortcuts td {
+  padding: 2px 8px 2px 0;
+}
+
+.ngm-keyboard-shortcuts kbd {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 1px 6px;
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 .ngm-lang-dropdown {
   display: flex;
   justify-content: space-between;

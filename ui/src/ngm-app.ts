@@ -5,7 +5,6 @@ import './elements/ngm-nav-tools';
 import './elements/ngm-cam-configuration';
 import './toolbox/ngm-topo-profile-modal';
 import './toolbox/ngm-geometry-info';
-import './cesium-toolbar';
 import './elements/ngm-project-popup';
 import './elements/ngm-coordinate-popup';
 import './elements/ngm-ion-modal';
@@ -30,7 +29,6 @@ import {
   getZoomDebugParam,
   getZoomToPosition,
   rewriteParams,
-  setCesiumToolbarParam,
   syncCamera,
   syncStoredView,
 } from './permalink';
@@ -38,7 +36,6 @@ import i18next from 'i18next';
 import Slicer from './slicer/Slicer';
 
 import { initAnalytics } from './analytics.js';
-import MainStore from './store/main';
 import ToolboxStore from './store/toolbox';
 import { classMap } from 'lit/directives/class-map.js';
 import { customElement, query, state } from 'lit/decorators.js';
@@ -57,6 +54,10 @@ import { LayerInfoService } from 'src/features/layer/info/layer-info.service';
 import { BaseService } from 'src/services/base.service';
 import { CesiumService } from 'src/services/cesium.service';
 import { LexicVocabularyService } from 'src/features/lexic';
+import {
+  NavigationStyle,
+  readNavigationStyle,
+} from 'src/features/controls/navigation-style.model';
 import { when } from 'lit/directives/when.js';
 import { until } from 'lit/directives/until.js';
 
@@ -136,9 +137,6 @@ export class NgmApp extends LitElementI18n {
   accessor showProjectSelector = false;
 
   @state()
-  accessor showCesiumToolbar = false;
-
-  @state()
   accessor showZoomDebug = getZoomDebugParam();
 
   @query('ngm-cam-configuration')
@@ -167,11 +165,6 @@ export class NgmApp extends LitElementI18n {
     window.addEventListener('resize', () => {
       const boundingRect = document.body.getBoundingClientRect();
       this.mobileView = boundingRect.width < 600 || boundingRect.height < 630;
-    });
-
-    MainStore.isDebugActive$.subscribe((isDebugActive) => {
-      this.showCesiumToolbar = isDebugActive;
-      setCesiumToolbarParam(isDebugActive);
     });
   }
 
@@ -290,7 +283,7 @@ export class NgmApp extends LitElementI18n {
     const cesiumContainer = this.querySelector('#cesium')!;
     const viewer = await setupViewer(cesiumContainer);
 
-    if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
+    if (!this.resolutionScaleRemoveCallback) {
       this.setResolutionScale(viewer);
     }
 
@@ -395,14 +388,6 @@ export class NgmApp extends LitElementI18n {
       }
     }
 
-    if (changedProperties.has('showCesiumToolbar')) {
-      if (!this.showCesiumToolbar && !this.resolutionScaleRemoveCallback) {
-        this.setResolutionScale();
-      } else if (this.showCesiumToolbar && this.resolutionScaleRemoveCallback) {
-        this.resolutionScaleRemoveCallback();
-        this.resolutionScaleRemoveCallback = undefined;
-      }
-    }
     super.updated(changedProperties);
   }
 
@@ -463,6 +448,9 @@ export class NgmApp extends LitElementI18n {
   }
 
   showNavigationHint() {
+    if (readNavigationStyle() !== NavigationStyle.Esri) {
+      return;
+    }
     const ctrlHandler = (evt) => {
       if (evt.key === 'Control') {
         (<HTMLElement | null>document.querySelector('.ngm-nav-hint'))?.click();
@@ -586,10 +574,7 @@ export class NgmApp extends LitElementI18n {
 
             <ngm-ogc-queue></ngm-ogc-queue>
           </div>
-          ${when(
-            this.showCesiumToolbar,
-            () => html`<cesium-toolbar></cesium-toolbar>`,
-          )}
+          <control-speed-indicator></control-speed-indicator>
           ${when(
             this.showZoomDebug,
             () => html`<control-zoom-debug></control-zoom-debug>`,

@@ -36,9 +36,7 @@ export const getBackgroundLayerItem = () =>
   getLayerList().shadow().find('ngm-catalog-display-list-item:last-child');
 
 export const getBackgroundButton = () =>
-  getBackgroundLayerItem()
-    .shadow()
-    .get('[data-cy="background"][role="button"]');
+  getBackgroundLayerItem().shadow().find('[data-cy="background"]');
 
 export const getBackgroundSelect = () =>
   getBackgroundLayerItem().shadow().find('ngm-background-layer-select');

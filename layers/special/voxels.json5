@@ -6,7 +6,7 @@
       id: 'voxel_geomol_temp_c',
       source: {
         type: 'CesiumIon',
-        asset_id: 4454599,
+        asset_id: 6045095,
       },
       data_key: 'Temp_C',
       mappings: ['geomol_temp_c'],
@@ -15,6 +15,37 @@
         undefined: -9999,
       },
       geocat_id: '63ed59b1-d9fb-4c6e-a629-550c8f6b9bf2',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value',
+              url: 'download_movz_url_voxel_geomol_temp_c',
+            },
+          },
+          {
+            key: 'download_02',
+            value: {
+              key: 'download_gocad_value',
+              url: 'download_gocad_url_voxel_geomol_temp_c',
+            },
+          },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_voxel_geomol_temp_c',
+            },
+          },
+          { key: 'dataDate', value: '03.03.2020' },
+        ],
+      },
     },
 
     // Aaretal - Modelling Units

@@ -26,5 +26,5 @@ Feature: Search
     And the results contain the "ch.swisstopo.geologie-geotechnik-gk500-lithologie_hauptgruppen" layer
 
   Scenario: Order of results
-    When the query "swiss" is entered
+    When the query "map" is entered
     Then the results contain all three item types in the correct order

@@ -512,7 +512,7 @@ export class LexicFilterService extends BaseService {
         ? globalThis.location.host
         : 'localhost:8000';
     const baseUrl =
-      LEXIC_API_BY_PAGE_HOST[host] ?? 'https://dev-webmap-api.swissgeol.ch/v1';
+      LEXIC_API_BY_PAGE_HOST[host] ?? 'https://webmap-api.swissgeol.ch/v1';
     return `${baseUrl}/wms`;
   }
 

@@ -14,7 +14,7 @@ import {
   UrlTemplateImageryProvider,
   WebMercatorTilingScheme,
 } from 'cesium';
-import { SWITZERLAND_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
+import { MAP_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
 import { Tiles3dLayerController } from 'src/features/layer/controllers/layer-tiles3d.controller';
 import { makeId } from 'src/models/id.model';
 import {
@@ -140,7 +140,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
             max: () => band.display!.bounds[1],
             nodata: () => band.display!.noData,
           },
-          rectangle: SWITZERLAND_RECTANGLE,
+          rectangle: MAP_RECTANGLE,
           tilingScheme: new WebMercatorTilingScheme(),
           enablePickFeatures: true,
           hasAlphaChannel: true,

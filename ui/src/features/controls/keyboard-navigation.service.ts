@@ -9,13 +9,15 @@ import {
   Transforms,
   Viewer,
 } from 'cesium';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable, Subject } from 'rxjs';
 import NavToolsStore from 'src/store/navTools';
 
-const MIN_CAMERA_SPEED = 0.0;
-const MAX_CAMERA_SPEED = 2000.0;
-const BASE_CAMERA_SPEED_STEP = 75.0;
 const DEFAULT_CAMERA_SPEED = 800.0;
+const MIN_CAMERA_SPEED = DEFAULT_CAMERA_SPEED * 0.25;
+const MAX_CAMERA_SPEED = 2000.0;
+// One step moves the speed by this fraction of the range between min and max.
+const SPEED_STEP_FRACTION = 0.05;
+const SPRINT_FACTOR = 3.0;
 
 interface MovementFlags {
   moveForward: boolean;
@@ -31,7 +33,8 @@ interface MovementFlags {
 }
 
 /**
- * Keyboard-based camera navigation using WASD/QE keys.
+ * Keyboard-based camera navigation using WASD/QE keys (plus arrow keys,
+ * PageUp/PageDown, C, comma/period for speed, Shift to sprint, Esc to stop).
  * Uses ENU (East-North-Up) frame for vertical movement so "up" always means
  * away from the globe surface regardless of camera orientation.
  *
@@ -41,6 +44,8 @@ export class KeyboardNavigationService extends BaseService {
   private scene!: Scene;
   private canvas: HTMLCanvasElement | undefined;
   private cameraSpeed = DEFAULT_CAMERA_SPEED;
+  private isSprinting = false;
+  private readonly speedChangeSubject = new Subject<number>();
   private unlistenPostRender: Event.RemoveCallback | null = null;
 
   private readonly flags: MovementFlags = {
@@ -81,6 +86,25 @@ export class KeyboardNavigationService extends BaseService {
 
   set speed(value: number) {
     this.cameraSpeed = clamp(value, MIN_CAMERA_SPEED, MAX_CAMERA_SPEED);
+    this.speedChangeSubject.next(this.cameraSpeed);
+  }
+
+  /** Emits the new speed whenever it is changed. */
+  get speedChange$(): Observable<number> {
+    return this.speedChangeSubject.asObservable();
+  }
+
+  /** The current speed relative to the default speed. */
+  get speedFactor(): number {
+    return this.cameraSpeed / DEFAULT_CAMERA_SPEED;
+  }
+
+  get minSpeed(): number {
+    return MIN_CAMERA_SPEED;
+  }
+
+  get maxSpeed(): number {
+    return MAX_CAMERA_SPEED;
   }
 
   private initialize(viewer: Viewer): void {
@@ -105,14 +129,34 @@ export class KeyboardNavigationService extends BaseService {
   }
 
   private onKeyDown(event: KeyboardEvent): void {
-    if (!isTargetNavigable(event.target as HTMLElement)) {
+    // Inside shadow DOM, `event.target` is retargeted to the host element.
+    const target = (event.composedPath()[0] ?? event.target) as HTMLElement;
+    if (!isTargetNavigable(target)) {
       return;
     }
     if (event.ctrlKey || event.metaKey) {
       return;
     }
 
-    const flag = getFlagForKey(event.key.toLowerCase());
+    this.isSprinting = event.shiftKey;
+
+    if (event.key === 'Escape') {
+      this.resetFlags();
+      return;
+    }
+
+    const key = event.key.toLowerCase();
+    if (key === ',' || key === '.') {
+      this.changeSpeed(key === '.' ? 1 : -1);
+      event.preventDefault();
+      return;
+    }
+
+    if (isArrowOrPageKey(key) && isTextualInput(event.target as HTMLElement)) {
+      return;
+    }
+
+    const flag = getFlagForKey(key);
     if (flag !== undefined) {
       this.flags[flag] = true;
       NavToolsStore.hideTargetPoint();
@@ -122,13 +166,21 @@ export class KeyboardNavigationService extends BaseService {
   }
 
   private onKeyUp(event: KeyboardEvent): void {
+    this.isSprinting = event.shiftKey;
     const flag = getFlagForKey(event.key.toLowerCase());
     if (flag !== undefined) {
       this.flags[flag] = false;
     }
   }
 
+  private changeSpeed(direction: number): void {
+    this.speed =
+      this.cameraSpeed +
+      direction * SPEED_STEP_FRACTION * (MAX_CAMERA_SPEED - MIN_CAMERA_SPEED);
+  }
+
   private resetFlags(): void {
+    this.isSprinting = false;
     for (const key of Object.keys(this.flags) as (keyof MovementFlags)[]) {
       this.flags[key] = false;
     }
@@ -144,11 +196,7 @@ export class KeyboardNavigationService extends BaseService {
     if (direction === 0) {
       return;
     }
-    this.cameraSpeed = clamp(
-      this.cameraSpeed - direction * wheelStep(this.cameraSpeed),
-      MIN_CAMERA_SPEED,
-      MAX_CAMERA_SPEED,
-    );
+    this.changeSpeed(-direction);
   }
 
   private hasActiveMovement(): boolean {
@@ -165,11 +213,12 @@ export class KeyboardNavigationService extends BaseService {
 
     // Lateral movement (AD): sqrt scaling for gentle curve at high altitude
     const lateralFactor = Math.max(Math.sqrt(height / 500), 1);
-    const lateralStep = (this.cameraSpeed / 80) * lateralFactor;
+    const speed = this.cameraSpeed * (this.isSprinting ? SPRINT_FACTOR : 1);
+    const lateralStep = (speed / 80) * lateralFactor;
 
     // Forward/backward (WS) and vertical (QE): linear scaling — faster far out, slower near surface
     const zoomFactor = Math.max(height / 500, 1);
-    const zoomStep = (this.cameraSpeed / 80) * zoomFactor;
+    const zoomStep = (speed / 80) * zoomFactor;
 
     // Compute ENU up/down vectors at current camera position
     const enuTransform = Transforms.eastNorthUpToFixedFrame(camera.positionWC);
@@ -253,25 +302,40 @@ function getFlagForKey(key: string): keyof MovementFlags | undefined {
     case 'q':
     case ' ':
     case '+':
+    case 'pageup':
       return 'moveUp';
     case 'e':
+    case 'c':
     case '-':
+    case 'pagedown':
       return 'moveDown';
     case 'a':
       return 'moveLeft';
     case 'd':
       return 'moveRight';
     case 'i':
+    case 'arrowup':
       return 'lookUp';
     case 'k':
+    case 'arrowdown':
       return 'lookDown';
     case 'j':
+    case 'arrowleft':
       return 'lookLeft';
     case 'l':
+    case 'arrowright':
       return 'lookRight';
     default:
       return undefined;
   }
+}
+
+function isArrowOrPageKey(key: string): boolean {
+  return key.startsWith('arrow') || key.startsWith('page');
+}
+
+function isTextualInput(target: HTMLElement): boolean {
+  return ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
 }
 
 function isTargetNavigable(target: HTMLElement): boolean {
@@ -285,12 +349,4 @@ function isTargetNavigable(target: HTMLElement): boolean {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
-}
-
-function wheelStep(currentSpeed: number, threshold = 50, power = 2): number {
-  return Math.max(
-    0.02,
-    BASE_CAMERA_SPEED_STEP *
-      (1 - Math.exp(-Math.pow(currentSpeed / threshold, power))),
-  );
 }

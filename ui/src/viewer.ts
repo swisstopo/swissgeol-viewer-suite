@@ -18,6 +18,7 @@ import {
   WebGLOptions,
 } from 'cesium';
 import { getExaggeration } from './permalink';
+import { patchTranslucentDepthPick } from 'src/cesium/patch-translucent-depth-pick';
 
 window['CESIUM_BASE_URL'] = './cesium';
 
@@ -187,6 +188,7 @@ export async function setupViewer(container: Element) {
 
   scene.useDepthPicking = true;
   scene.pickTranslucentDepth = true; // required to have accurate position when picking translucent objects
+  patchTranslucentDepthPick(scene);
   scene.backgroundColor = Color.TRANSPARENT;
   globe.baseColor = Color.TRANSPARENT;
   globe.depthTestAgainstTerrain = true;

@@ -44,6 +44,7 @@ services:
       - '8481:8000'
     environment:
       TITILER_API_DEBUG: '1'
+      TITILER_API_CORS_ORIGINS: 'http://localhost:8000'
     volumes:
       - ./titiler:/app:ro
     mem_limit: 2g
