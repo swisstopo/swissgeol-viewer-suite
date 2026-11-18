@@ -133,7 +133,12 @@ export class LayerTiffLegend extends CoreElement {
             `
       }
     </div>
-    <div class="range">
+    <div
+      class="range"
+      style="min-height: ${
+        this.display.isDiscrete ? Math.max(300, this.steps.length * 24) : 300
+      }px"
+    >
       <div class="gradient" style="background: ${this.gradientCss}"></div>
       ${this.steps.map(
         (step) => html`
@@ -152,10 +157,7 @@ export class LayerTiffLegend extends CoreElement {
     }
 
     :host {
-      position: absolute;
-      top: 0;
-      right: 0;
-      height: 100%;
+      align-self: stretch;
       width: 200px;
       padding: 16px;
 
@@ -180,7 +182,7 @@ export class LayerTiffLegend extends CoreElement {
 
     .range {
       position: relative;
-      height: 100%;
+      flex: 1;
       min-height: 300px;
       width: 100px;
     }
