@@ -143,20 +143,6 @@
     "j3d_horizon": "swissJURA3D-MA1-Top Ifenthal-Formation",
     "j3d_profiles": "swissJURA3D-Coupes",
     "local_model_city_berne": "Ville de Berne",
-    "sa3d_HL_faults_01": "HL - M1 Toutes les failles",
-    "sa3d_HL_horizons_crystl_basement": "HL - M1 Socle cristallin",
-    "sa3d_HL_horizons_mesozoic_sed": "HL - M1 Sédiments mésozoïques",
-    "sa3d_HL_horizons_nappe": "HL - M1 Nappes",
-    "sa3d_HL_profiles_01": "HL - M1 Tous les profils",
-    "sa3d_PR_faults_01": "PR - M1 Toutes les failles",
-    "sa3d_PR_horizon_01": "PR - M1 Tous les horizons",
-    "sa3d_PR_profiles_01": "PR - M1 Tous les profils",
-    "sa3d_SAM_faults_01": "SAM - All Faults",
-    "sa3d_SAM_profiles_01": "SAM - All Profiles",
-    "sa3d_SAM_thrust_faults_01": "SAM - Thrusts Inner Zone",
-    "sa3d_WP_profiles_01": "WP - M1 All Profiles",
-    "sa3d_WP_faults_01": "WP - M1 All Faults",
-    "sa3d_WP_horizons_01": "WP - M1 All Horizons",
     "seismic_2d_2023_23SIG_A_001": "23SIG_A_001",
     "seismic_2d_2023_23SIG_A_002": "23SIG_A_002",
     "seismic_2d_2023_23SIG_A_003": "23SIG_A_003",
@@ -276,18 +262,6 @@
     "natural hazards": "Dangers naturels",
     "permafrost": "Pergélisol",
     "region_3d_models": "Modèles 3D - régionaux",
-    "sa3d_Faults_HL": "Faults",
-    "sa3d_Faults_PR": "Faults",
-    "sa3d_Faults_SAM": "Faults",
-    "sa3d_HL": "Helvetic (HL)",
-    "sa3d_Horizons_HL": "Horizons",
-    "sa3d_Horizons_PR": "Horizons",
-    "sa3d_PR": "Prealps (PR)",
-    "sa3d_Profiles_HL": "Profiles",
-    "sa3d_Profiles_PR": "Profiles",
-    "sa3d_Profiles_SAM": "Profiles",
-    "sa3d_SAM": "Subalpine Molasse (SAM)",
-    "sa3d_aar-massif": "Massif de l'Aar",
     "sa3d_models": "Alpes",
     "sheet_divisions": "Découpages des feuilles",
     "temp_models": "Modèles de température",
@@ -552,15 +526,6 @@
       "download_gocad_value_j3d_horizon": "Download (.ts)",
       "download_gocad_url_j3d_horizon": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Horizon_GOCAD_20260318.zip",
       "dataDate": "État d'actualité",
-      "description_sa3d_HL_profiles_01": "Rapport du modèle (ENG)",
-      "description_value_sa3d_HL_profiles_01": "Helvetic3D_Interim_Report_M1",
-      "description_url_sa3d_HL_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/Helvetic3D_Interim_Report_M1.pdf",
-      "description_sa3d_PR_profiles_01": "Rapport du modèle (ENG)",
-      "description_value_sa3d_PR_profiles_01": "PR3D_Report_M1",
-      "description_url_sa3d_PR_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Prealps_PR/PR3D_Report_M1.pdf",
-      "description_sa3d_SAM_profiles_01": "SAM3D_Report_M3",
-      "description_value_sa3d_SAM_profiles_01": "SAM3D_Report_M3",
-      "description_url_sa3d_SAM_profiles_01": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SubAlpineMolasse3D_Interim_Report_M3.pdf",
       "download_movz_value": "Télécharger (.movz)",
       "download_movz_url_j3d_faults": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Faults_MOVZ_20260316.zip",
       "download_movz_url_j3d_profiles": "https://download.swissgeol.ch/download-data/swissJURA3D/MA1/swissJURA3D_MA1_Profiles_MOVZ_20260316.zip",
@@ -590,72 +555,6 @@
         "description": "Le modèle géologique swissJURA3D représente en trois dimensions le sous-sol du Jura suisse compris entre le nord-ouest du bassin molassique et la frontière nationale. Cette modélisation est réalisée dans le cadre du développement du Modèle Géologique National de la Suisse (NGM). swissJURA3D se compose de trois éléments centraux : un réseau dense de coupes géologiques (modèle en panneaux), des surfaces de failles modélisées ainsi qu'un horizon lithostratigraphique de référence modelisé (Top Formation d'Ifenthal). Les données sources les plus importantes sont les données vectorielles géométriquement harmonisées de swissGEOCOVER2D. En profondeur, le modèle se base sur des coupes géologiques, des données de forage et des données géophysiques, avec une densité spatiale variable. Une interprétation cinématique cohérente est donc essentielle pour construire un modèle géologique 3D consistant géométriquement et conceptuellement. Ce téléchargement comprend le premier secteur de modélisation. D'autres secteurs de modélisation suivront progressivement jusqu'en 2030. Une documentation complémentaire est disponible dans la description du modèle correspondante.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_FR_viewer.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_FR_viewer.pdf"
-      },
-      "sa3d_HL_profiles_01": {
-        "title": "Helvetic3D (HL) – Jalon 1 - modèle géologique 3D des Alpes suisses",
-        "description": "Le modèle géologique 3D HL est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique helvétique suisse, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.pdf"
-      },
-      "sa3d_HL_faults_01": {
-        "title": "Helvetic3D (HL) – Jalon 1 - modèle géologique 3D des Alpes suisses",
-        "description": "Le modèle géologique 3D HL est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique helvétique suisse, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.pdf"
-      },
-      "sa3d_HL_horizons_nappe": {
-        "title": "Helvetic3D (HL) – Jalon 1 - modèle géologique 3D des Alpes suisses",
-        "description": "Le modèle géologique 3D HL est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique helvétique suisse, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.pdf"
-      },
-      "sa3d_HL_horizons_mesozoic_sed": {
-        "title": "Helvetic3D (HL) – Jalon 1 - modèle géologique 3D des Alpes suisses",
-        "description": "Le modèle géologique 3D HL est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique helvétique suisse, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.pdf"
-      },
-      "sa3d_HL_horizons_crystl_basement": {
-        "title": "Helvetic3D (HL) – Jalon 1 - modèle géologique 3D des Alpes suisses",
-        "description": "Le modèle géologique 3D HL est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique helvétique suisse, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Helvetic_HL/HL3D_Legend.pdf"
-      },
-      "sa3d_PR_profiles_01": {
-        "title": "Préalpes 3D (PR) – Jalon 1 - modèle géologique 3D des Alpes suisses",
-        "description": "Le modèle géologique 3D PR est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique des Préalpes, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Prealps_PR/PR3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Prealps_PR/PR3D_Legend.pdf"
-      },
-      "sa3d_PR_faults_01": {
-        "title": "Préalpes 3D (PR) – Jalon 1 - modèle géologique 3D des Alpes suisses",
-        "description": "Le modèle géologique 3D PR est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique des Préalpes, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Prealps_PR/PR3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Prealps_PR/PR3D_Legend.pdf"
-      },
-      "sa3d_PR_horizon_01": {
-        "title": "Préalpes 3D (PR) – Jalon 1 - modèle géologique 3D des Alpes suisses",
-        "description": "Le modèle géologique 3D PR est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique des Préalpes, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Prealps_PR/PR3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Prealps_PR/PR3D_Legend.pdf"
-      },
-      "sa3d_SAM_profiles_01": {
-        "title": "Subalpine Molasse 3D (SAM) - 3D geological model of the Swiss Alps",
-        "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
-      },
-      "sa3d_SAM_faults_01": {
-        "title": "Subalpine Molasse 3D (SAM) - 3D geological model of the Swiss Alps",
-        "description": "The SAM 3D geological model is a harmonised representation of the principal lithostratigraphic and structural units of the Subalpine Molasse tectonic domain subsurface, developed within the swissALPS3D project as part of the National Geological Model (NGM) programme. The model includes reference profiles, fault surfaces, and lithostratigraphic horizons (geological boundaries). Its tectono-stratigraphic framework is based on the Tectonic Map of Switzerland (swisstopo, 2024). Surface data are harmonised from GeoCover vector data, GA25 maps, and published geological maps. In the subsurface, it integrates geological cross-sections, borehole data, and geophysical datasets of varying spatial density, combined through a consistent kinematic interpretation to ensure a coherent 3D geological model. Further details are provided in the associated model report and publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
-      },
-      "sa3d_SAM_thrust_faults_01": {
-        "title": "Molasse subalpine 3D (SAM) – Jalons 1 et 2 - modèle géologique 3D des Alpes suisses",
-        "description": "Le modèle géologique 3D SAM est une représentation harmonisée des principales unités lithostratigraphiques et structurales du sous-sol du domaine tectonique de la Molasse subalpine, développée dans le cadre du projet swissAlps3D au sein du programme National Geological Model (NGM). Le modèle comprend des profils de référence, des surfaces de faille et des horizons lithostratigraphiques (limites géologiques). Son cadre tectono-stratigraphique est basé sur la Carte tectonique de la Suisse (swisstopo, 2024). Les données de surface sont harmonisées à partir des données vectorielles GeoCover, des cartes GA25 et des cartes géologiques publiées. En profondeur, il intègre des coupes géologiques, des données de forage et des jeux de données géophysiques de densité spatiale variable, combinés par une interprétation cinématique cohérente afin de garantir un modèle géologique 3D cohérent. Des détails supplémentaires sont fournis dans le rapport du modèle associé et les publications.",
-        "legend_image_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.png",
-        "legend_link_url": "https://download.swissgeol.ch/docu-data/SwissAlps3D/Subalpine_Molasse_SAM/SAM3D_Legend.pdf"
       },
       "rocklab_mont-terri_tunnel": {
         "title": "Laboratoire souterrain Mont Terri - Tunnel",

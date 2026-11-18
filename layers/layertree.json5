@@ -269,6 +269,35 @@
                     },
                     // =================================================================
                     {
+                      // 05 - SA3D - LP
+                      id: 'sa3d_LP',
+                      access: {
+                        groups: [
+                          'viewer.swissgeol-dev-sa3d-privileged', // <=== Reactivate
+                          'viewer.swissgeol-int-sa3d-privileged',
+                          'viewer.swissgeol-prod-sa3d-privileged',
+                        ],
+                      },
+                      children: [
+                        // 06 - Profiles LP
+                        {
+                          id: 'sa3d_Profiles_LP',
+                          children: ['sa3d_LP_profiles_01'],
+                        },
+                        // 06 - Faults LP
+                        {
+                          id: 'sa3d_Faults_LP',
+                          children: ['sa3d_LP_faults_01'],
+                        },
+                        // 06 - Horizons LP
+                        {
+                          id: 'sa3d_Horizons_LP',
+                          children: ['sa3d_LP_horizons_01'],
+                        },
+                      ],
+                    },
+                    // =================================================================
+                    {
                       // 05 - Aar Massif
                       id: 'sa3d_aar-massif',
                       children: [
