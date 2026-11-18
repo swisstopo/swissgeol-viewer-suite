@@ -285,7 +285,7 @@
     Author: {
       bounds: [1, 7],
       color_map: 'swissBEDROCK_Author',
-      steps: ['swisstopo', 'BE', 'GE', 'GLAMOS', 'VD', 'ZG', '???'],
+      steps: ['swisstopo', 'BE', 'GE', 'GLAMOS', 'VD', 'ZG', 'SO'],
       is_discrete: true,
     },
     Uncertainty: {
