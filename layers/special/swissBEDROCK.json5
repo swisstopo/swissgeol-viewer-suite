@@ -12,7 +12,7 @@
         },
         display_source: {
           type: 'Url',
-          url: 'https://download.swissgeol.ch/swissbedrock/release_02/Mosaic_Release2_reducedPerimeter.tif',
+          url: 'https://download.swissgeol.ch/swissbedrock/release_02/swissBEDROCK_R2.cog.tif',
         },
       },
       opacity: 0.5,
@@ -138,7 +138,7 @@
         },
         display_source: {
           type: 'Url',
-          url: 'https://download.swissgeol.ch/swissbedrock/release_02/Mosaic_Release2_reducedPerimeter.tif',
+          url: 'https://download.swissgeol.ch/swissbedrock/release_02/swissBEDROCK_R2.cog.tif',
         },
       },
       terrain: {
