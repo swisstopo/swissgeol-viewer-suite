@@ -11,6 +11,6 @@
 # JetBrains IDE files
 .idea/
 
-# Local Docker volumes
+# Local Docker data and overrides
 /volumes/
-
+/docker-compose.override.yaml

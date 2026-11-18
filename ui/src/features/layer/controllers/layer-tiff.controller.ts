@@ -11,10 +11,12 @@ import {
 } from 'src/features/layer';
 import {
   Cesium3DTileset,
+  Rectangle,
+  Resource,
   UrlTemplateImageryProvider,
   WebMercatorTilingScheme,
 } from 'cesium';
-import { MAP_RECTANGLE, TITILER_BY_PAGE_HOST } from 'src/constants';
+import { TITILER_BY_PAGE_HOST } from 'src/constants';
 import { Tiles3dLayerController } from 'src/features/layer/controllers/layer-tiles3d.controller';
 import { makeId } from 'src/models/id.model';
 import {
@@ -110,6 +112,22 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
     // A getter for the current layer for use within the layer controller.
     // This allows the inner controller to access the most recent version of our model at any time.
     const getLayer = () => this.layer;
+    const rectanglesByUrl = new Map<string, Rectangle>();
+    const getRectangle = async (url: string): Promise<Rectangle> => {
+      const cached = rectanglesByUrl.get(url);
+      if (cached !== undefined) {
+        return cached;
+      }
+
+      const json: { bounds: [number, number, number, number] } =
+        await Resource.fetchJson({
+          url: `${TITILER_BY_PAGE_HOST[globalThis.location.host]}/cog/bounds`,
+          queryParameters: { url },
+        });
+      const rectangle = Rectangle.fromDegrees(...json.bounds);
+      rectanglesByUrl.set(url, rectangle);
+      return rectangle;
+    };
 
     // A subclass of `WmtsLayerController` that loads tiff data from TiTiler.
     class CustomWmtsController extends WmtsLayerController {
@@ -140,7 +158,7 @@ export class TiffLayerController extends BaseLayerController<TiffLayer> {
             max: () => band.display!.bounds[1],
             nodata: () => band.display!.noData,
           },
-          rectangle: MAP_RECTANGLE,
+          rectangle: await getRectangle(resource.url),
           tilingScheme: new WebMercatorTilingScheme(),
           enablePickFeatures: true,
           hasAlphaChannel: true,
