@@ -1142,7 +1142,7 @@
       id: 'j3d_profiles',
       source: {
         type: 'CesiumIon',
-        asset_id: 4436279,
+        asset_id: 6180866, // 4436279,
       },
       //order_of_properties: '',
       info_box: {
@@ -1180,7 +1180,7 @@
       id: 'j3d_profiles_all',
       source: {
         type: 'CesiumIon',
-        asset_id: 4436279,
+        asset_id: 6180879,
       },
       //order_of_properties: '',
       info_box: {

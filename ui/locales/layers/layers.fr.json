@@ -141,7 +141,8 @@
     "geoquat_aaretal_cs": "Coupes GeoQuat Aaretal",
     "j3d_faults": "swissJURA3D-MA1-Failles",
     "j3d_horizon": "swissJURA3D-MA1-Top Ifenthal-Formation",
-    "j3d_profiles": "swissJURA3D-Coupes",
+    "j3d_profiles": "swissJURA3D-Coupes (Sélection)",
+    "j3d_profiles_all": "swissJURA3D-Coupes",
     "local_model_city_berne": "Ville de Berne",
     "sa3d_HL_faults_01": "HL - M1 Toutes les failles",
     "sa3d_HL_horizons_crystl_basement": "HL - M1 Socle cristallin",
@@ -590,6 +591,12 @@
         "description": "Le modèle géologique swissJURA3D représente en trois dimensions le sous-sol du Jura suisse compris entre le nord-ouest du bassin molassique et la frontière nationale. Cette modélisation est réalisée dans le cadre du développement du Modèle Géologique National de la Suisse (NGM). swissJURA3D se compose de trois éléments centraux : un réseau dense de coupes géologiques (modèle en panneaux), des surfaces de failles modélisées ainsi qu'un horizon lithostratigraphique de référence modelisé (Top Formation d'Ifenthal). Les données sources les plus importantes sont les données vectorielles géométriquement harmonisées de swissGEOCOVER2D. En profondeur, le modèle se base sur des coupes géologiques, des données de forage et des données géophysiques, avec une densité spatiale variable. Une interprétation cinématique cohérente est donc essentielle pour construire un modèle géologique 3D consistant géométriquement et conceptuellement. Ce téléchargement comprend le premier secteur de modélisation. D'autres secteurs de modélisation suivront progressivement jusqu'en 2030. Une documentation complémentaire est disponible dans la description du modèle correspondante.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_FR_viewer.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_FR_viewer.pdf"
+      },
+      "j3d_profiles_all": {
+        "title": "Modèle géologique 3D du Jura suisse. swissJURA3D – Modèle du secteur 1 St-Cergue – Le Sentier",
+        "description": "Le modèle géologique swissJURA3D représente en trois dimensions le sous-sol du Jura suisse compris entre le nord-ouest du bassin molassique et la frontière nationale. Cette modélisation est réalisée dans le cadre du développement du Modèle Géologique National de la Suisse (NGM). swissJURA3D se compose de trois éléments centraux : un réseau dense de coupes géologiques (modèle en panneaux), des surfaces de failles modélisées ainsi qu'un horizon lithostratigraphique de référence modelisé (Top Formation d'Ifenthal). Les données sources les plus importantes sont les données vectorielles géométriquement harmonisées de swissGEOCOVER2D. En profondeur, le modèle se base sur des coupes géologiques, des données de forage et des données géophysiques, avec une densité spatiale variable. Une interprétation cinématique cohérente est donc essentielle pour construire un modèle géologique 3D consistant géométriquement et conceptuellement. Ce téléchargement comprend le premier secteur de modélisation. D'autres secteurs de modélisation suivront progressivement jusqu'en 2030. Une documentation complémentaire est disponible dans la description du modèle correspondante.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/MA1_Uebersichtskarte_und_Legende_FR_viewer-alle_Profile.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/MA1_Uebersichtskarte_und_Legende_FR_viewer-alle_Profile.pdf"
       },
       "sa3d_HL_profiles_01": {
         "title": "Helvetic3D (HL) – Jalon 1 - modèle géologique 3D des Alpes suisses",
