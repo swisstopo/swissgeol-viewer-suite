@@ -96,7 +96,9 @@ export class LayerTiffBands extends CoreElement {
     }
 
     :host {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 200px;
+      align-items: start;
       width: 420px;
     }
 
@@ -108,7 +110,7 @@ export class LayerTiffBands extends CoreElement {
       list-style: none;
       padding: 0;
       margin: 0;
-      width: calc(100% - 161px);
+      min-width: 0;
 
       ${applyTypography('body-2')};
       color: var(--color-primary);
@@ -125,7 +127,7 @@ export class LayerTiffBands extends CoreElement {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      width: 200px;
+      width: 180px;
     }
   `;
 }
