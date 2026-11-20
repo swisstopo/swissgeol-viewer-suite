@@ -151,6 +151,15 @@ export const isBasemapLockedLayer = (layer: AnyLayer): boolean => {
   }
 };
 
+/** Whether a layer is rendered, including suppression by the hidden basemap. */
+export const isLayerEffectivelyVisible = (
+  layer: AnyLayer,
+  isBackgroundVisible: boolean,
+): boolean =>
+  layer.isVisible &&
+  layer.opacity > 0 &&
+  (isBackgroundVisible || !isBasemapLockedLayer(layer));
+
 /**
  * Draped layers that stay in the scene when the globe is hidden, so the
  * controller has to hide them without writing {@link BaseLayer.isVisible}.

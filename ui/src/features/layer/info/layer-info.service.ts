@@ -8,20 +8,33 @@ import {
 } from 'cesium';
 import {
   BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
   filter,
   firstValueFrom,
+  map,
   Observable,
   take,
+  takeUntil,
 } from 'rxjs';
 import i18next from 'i18next';
 import { BaseService } from 'src/services/base.service';
-import { Layer, LayerType } from 'src/features/layer';
+import {
+  BACKGROUND_LAYER,
+  isLayerEffectivelyVisible,
+  Layer,
+  LayerType,
+} from 'src/features/layer';
 import {
   LayerInfoPicker,
   LayerPickData,
 } from 'src/features/layer/info/pickers/layer-info-picker';
 import { LayerInfoPickerForTiff } from 'src/features/layer/info/pickers/layer-info-picker-for-tiff';
 import { LayerInfo } from 'src/features/layer/info/layer-info.model';
+import {
+  getPrimaryInfo,
+  sortLayerInfos,
+} from 'src/features/layer/info/layer-info-results';
 import { LayerService as NewLayerService } from 'src/features/layer/layer.service';
 import { LayerInfoPickerForWmts } from 'src/features/layer/info/pickers/layer-info-picker-for-wmts';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
@@ -41,7 +54,22 @@ export class LayerInfoService extends BaseService {
 
   private readonly infosSubject = new BehaviorSubject<LayerInfo[]>([]);
 
-  private readonly pickers: LayerInfoPicker[] = [];
+  private readonly selectionSubject = new BehaviorSubject<LayerInfo | null>(
+    null,
+  );
+
+  private previewedInfo: LayerInfo | null = null;
+  private highlightedInfo: LayerInfo | null = null;
+
+  // A fresh token on each visibility transition invalidates older requests,
+  // including a hide/show cycle while a service request is still pending.
+  private readonly visiblePickers = new Map<LayerInfoPicker, symbol>();
+
+  // Includes results waiting for other pickers to finish so visibility changes
+  // can also dispose of results that have yet to reach the panel.
+  private readonly ownedInfos = new Set<LayerInfo>();
+
+  private pickRevision = 0;
 
   private viewer!: Viewer;
 
@@ -55,26 +83,24 @@ export class LayerInfoService extends BaseService {
     PickService.inject().then((pickService) => {
       this.pickService = pickService;
     });
-    NewLayerService.inject().then((layerService) => {
+    Promise.all([
+      NewLayerService.inject(),
+      CesiumService.inject().then((s) => firstValueFrom(s.viewer$)),
+    ]).then(([layerService, viewer]) => {
       this.layerService = layerService;
+      this.viewer = viewer;
       layerService.layerActivated$.subscribe(this.handleLayerActivated);
-    });
 
-    CesiumService.inject()
-      .then((s) => firstValueFrom(s.viewer$))
-      .then((viewer) => {
-        this.viewer = viewer;
-        const eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-        eventHandler.setInputAction(
-          async (event: ScreenSpaceEventHandler.PositionedEvent) => {
-            if (DrawStore.drawStateValue) {
-              return;
-            }
+      const eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
+      eventHandler.setInputAction(
+        (event: ScreenSpaceEventHandler.PositionedEvent) => {
+          if (!DrawStore.drawStateValue) {
             this.pick2d(event.position);
-          },
-          ScreenSpaceEventType.LEFT_CLICK,
-        );
-      });
+          }
+        },
+        ScreenSpaceEventType.LEFT_CLICK,
+      );
+    });
 
     i18next.on('languageChanged', this.handleLanguageChanged);
   }
@@ -83,8 +109,56 @@ export class LayerInfoService extends BaseService {
     return this.infosSubject.asObservable();
   }
 
+  get selection$(): Observable<LayerInfo | null> {
+    return this.selectionSubject.asObservable();
+  }
+
+  selectInfo(info: LayerInfo | null): void {
+    if (info === null || this.isAvailable(info)) {
+      this.setSelection(info);
+    }
+  }
+
+  previewInfo(info: LayerInfo): void {
+    if (this.isAvailable(info)) {
+      this.previewedInfo = info;
+      this.updateHighlight();
+    }
+  }
+
+  clearPreview(info: LayerInfo): void {
+    if (this.previewedInfo === info) {
+      this.previewedInfo = null;
+      this.updateHighlight();
+    }
+  }
+
+  private isAvailable(info: LayerInfo): boolean {
+    return this.ownedInfos.has(info) && this.infosSubject.value.includes(info);
+  }
+
+  private setSelection(info: LayerInfo | null): void {
+    if (this.selectionSubject.value !== info) {
+      this.selectionSubject.next(info);
+      this.updateHighlight();
+    }
+  }
+
+  private updateHighlight(): void {
+    const info = this.previewedInfo ?? this.selectionSubject.value;
+    if (this.highlightedInfo === info) {
+      return;
+    }
+
+    this.highlightedInfo?.deselect();
+    this.highlightedInfo = info;
+    info?.select();
+    this.viewer.scene.requestRender();
+  }
+
   private readonly handleLanguageChanged = (lang: string): void => {
     const infos = this.infosSubject.value;
+    const revision = this.pickRevision;
     if (infos.length === 0) {
       return;
     }
@@ -97,15 +171,25 @@ export class LayerInfoService extends BaseService {
       return;
     }
     Promise.all(refreshes).then(() => {
-      this.infosSubject.next([...infos]);
+      const currentInfos = this.infosSubject.value;
+      if (
+        revision === this.pickRevision &&
+        currentInfos.some((info) => infos.includes(info))
+      ) {
+        // A layer may have disappeared during the refresh. Publish the surviving
+        // results without restoring removed ones or suppressing their translations.
+        this.infosSubject.next([...currentInfos]);
+      }
     });
   };
 
   pick2d(position: Cartesian2): void {
     const cartesian = this.pickService.pick(position);
-    if (cartesian !== null) {
-      this.pick3d(position, cartesian);
+    if (cartesian === null) {
+      this.reset();
+      return;
     }
+    this.pick3d(position, cartesian);
   }
 
   pick3d(windowPosition: Cartesian2, globePosition: Cartesian3): void {
@@ -125,10 +209,45 @@ export class LayerInfoService extends BaseService {
   }
 
   reset(): void {
-    for (const info of this.infosSubject.value) {
+    this.pickRevision++;
+    this.nextPick = null;
+    this.destroyInfos([...this.ownedInfos]);
+    this.infosSubject.next([]);
+    this.viewer.canvas.style.cursor = 'default';
+    this.viewer.scene.requestRender();
+  }
+
+  private destroyInfos(infos: readonly LayerInfo[]): void {
+    const removedInfos = infos.filter((info) => this.ownedInfos.delete(info));
+    if (
+      this.previewedInfo !== null &&
+      removedInfos.includes(this.previewedInfo)
+    ) {
+      this.previewedInfo = null;
+    }
+    const selected = this.selectionSubject.value;
+    if (selected !== null && removedInfos.includes(selected)) {
+      this.setSelection(null);
+    }
+    this.updateHighlight();
+    for (const info of removedInfos) {
       info.destroy();
     }
-    this.infosSubject.next([]);
+  }
+
+  private removeInfosForLayer(layerId: Id<Layer>): void {
+    const wasSelected = this.selectionSubject.value?.layerId === layerId;
+    this.destroyInfos(
+      [...this.ownedInfos].filter((info) => info.layerId === layerId),
+    );
+    const infos = this.infosSubject.value;
+    const remaining = infos.filter((info) => info.layerId !== layerId);
+    if (remaining.length !== infos.length) {
+      if (wasSelected) {
+        this.setSelection(getPrimaryInfo(remaining));
+      }
+      this.infosSubject.next(remaining);
+    }
     this.viewer.scene.requestRender();
   }
 
@@ -156,32 +275,36 @@ export class LayerInfoService extends BaseService {
       return;
     }
 
-    this.pickers.push(picker);
-    this.layerService.layerDeactivated$
+    const deactivated$ = this.layerService.layerDeactivated$.pipe(
+      filter((id) => id === layerId),
+      take(1),
+    );
+    combineLatest([
+      this.layerService.layer$(layerId),
+      this.layerService.layer$(BACKGROUND_LAYER.id),
+    ])
       .pipe(
-        filter((id) => id === layerId),
-        take(1),
+        map(([layer, background]) =>
+          isLayerEffectivelyVisible(layer, background.isVisible),
+        ),
+        distinctUntilChanged(),
+        takeUntil(deactivated$),
       )
-      .subscribe(() => this.removePicker(picker));
+      .subscribe((isVisible) => {
+        if (isVisible) {
+          this.visiblePickers.set(picker, Symbol());
+        } else {
+          this.visiblePickers.delete(picker);
+          this.removeInfosForLayer(layerId);
+        }
+      });
+    deactivated$.subscribe(() => this.removePicker(picker));
   };
 
   private removePicker(picker: LayerInfoPicker): void {
-    const i = this.pickers.findIndex((it) => it === picker);
-    if (i < 0) {
-      return;
-    }
-    this.pickers.splice(i, 1);
-    const newInfos = this.infosSubject.value.reduce((infos, info) => {
-      if (info.layerId === picker.layerId) {
-        info.destroy();
-      } else {
-        infos.push(info);
-      }
-      return infos;
-    }, [] as LayerInfo[]);
-    this.infosSubject.next(newInfos);
+    this.visiblePickers.delete(picker);
+    this.removeInfosForLayer(picker.layerId);
     picker.destroy();
-    this.viewer.scene.requestRender();
   }
 
   private async handlePick(
@@ -200,32 +323,50 @@ export class LayerInfoService extends BaseService {
       ),
     };
 
+    const revision = ++this.pickRevision;
     this.viewer.canvas.style.cursor = 'progress';
+    this.destroyInfos([...this.ownedInfos]);
     await tick();
-    for (const info of this.infosSubject.value) {
-      info.destroy();
+    if (revision !== this.pickRevision) {
+      return;
     }
-    const infos: LayerInfo[] = [];
-    const picks = this.pickers.map(async (picker) => {
+    const picks = [...this.visiblePickers].map(async ([picker, token]) => {
       try {
         const pickedInfos = await picker.pick(data);
-        infos.push(...pickedInfos);
+        if (
+          revision !== this.pickRevision ||
+          this.nextPick !== null ||
+          this.visiblePickers.get(picker) !== token
+        ) {
+          for (const info of pickedInfos) {
+            info.destroy();
+          }
+          return [];
+        }
+        for (const info of pickedInfos) {
+          this.ownedInfos.add(info);
+        }
+        return pickedInfos;
       } catch (e) {
         console.error(`Picking on ${picker.layerId} failed`, e);
+        return [];
       }
     });
-    await Promise.all(picks);
-    if (this.nextPick === null) {
-      // If there is no next pick queued up, we can display the results.
-      this.infosSubject.next(infos);
-      this.viewer.canvas.style.cursor = 'default';
-      this.viewer.scene.requestRender();
+    const infos = (await Promise.all(picks)).flat();
+    if (revision === this.pickRevision && this.nextPick === null) {
+      // Visibility changes may have already destroyed some pending results.
+      const results = sortLayerInfos(
+        infos.filter((info) => this.ownedInfos.has(info)),
+        this.layerService.activeLayerIds,
+      );
+      this.setSelection(getPrimaryInfo(results));
+      this.infosSubject.next(results);
     } else {
-      // If there is already a new pick queued, we simply destroy our results.
-      // Without this, the results would be visibly for a short second and then be removed either way.
-      for (const info of infos) {
-        info.destroy();
-      }
+      this.destroyInfos(infos);
     }
+    if (this.nextPick === null) {
+      this.viewer.canvas.style.cursor = 'default';
+    }
+    this.viewer.scene.requestRender();
   }
 }

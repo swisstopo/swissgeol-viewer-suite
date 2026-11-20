@@ -1,4 +1,4 @@
-import { IonResource, Resource, Viewer } from 'cesium';
+import { Cesium3DTileset, Entity, IonResource, Resource, Viewer } from 'cesium';
 import {
   BaseLayer,
   LayerSource,
@@ -182,6 +182,11 @@ export abstract class BaseLayerController<T extends BaseLayer> {
   }
 
   abstract get type(): LayerType | 'Background';
+
+  /** Whether this controller owns the picked tileset or entity. */
+  ownsSceneObject(_object: Cesium3DTileset | Entity): boolean {
+    return false;
+  }
 
   add(): Promise<void> {
     if (this.isInitialized) {

@@ -478,7 +478,14 @@
   "geocat_url": "https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/{{id}}",
   "info_window": {
     "title": "Info",
-    "zoom_to_object": "Auf Objekt zoomen"
+    "zoom_to_object": "Auf Objekt zoomen",
+    "result_tabs": "Trefferarten",
+    "exact_tab": "Exakt",
+    "same_position_tab": "Gleiche Position",
+    "nearby_tab": "In der Nähe",
+    "feature": "Objekt {{index}}",
+    "feature_numbered": "{{label}} ({{index}})",
+    "distance": "{{distance}} m"
   },
   "info_box": {
     "labels": {

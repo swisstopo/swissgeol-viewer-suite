@@ -1,3 +1,4 @@
+import type { Entity } from 'cesium';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   BaseLayerController,
@@ -108,6 +109,10 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
       return axisTs;
     }
     return this._tileset !== undefined ? [this._tileset] : [];
+  }
+
+  override ownsSceneObject(object: Cesium3DTileset | Entity): boolean {
+    return this.tilesets.some((tileset) => tileset === object);
   }
 
   get supportsSliceSelection(): boolean {
