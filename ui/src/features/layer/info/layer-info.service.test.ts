@@ -1,0 +1,378 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { BehaviorSubject, concat, from, of, Subject } from 'rxjs';
+import { Cartesian2, Cartesian3, Viewer } from 'cesium';
+import i18next from 'i18next';
+import {
+  AnyLayer,
+  Layer,
+  LayerType,
+} from 'src/features/layer/models/layer.model';
+import { Id, makeId } from 'src/models/id.model';
+import { LayerInfo } from './layer-info.model';
+import { LayerInfoPicker, LayerPickData } from './pickers/layer-info-picker';
+
+const { inputAction, pickerClass } = vi.hoisted(() => ({
+  inputAction: vi.fn(),
+  pickerClass: () =>
+    class {
+      constructor(controller: { picker: LayerInfoPicker }) {
+        return controller.picker;
+      }
+    },
+}));
+
+vi.mock('cesium', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('cesium')>()),
+  ScreenSpaceEventHandler: class {
+    setInputAction = inputAction;
+  },
+}));
+vi.mock('src/features/layer', async () => ({
+  ...(await import('src/features/layer/models/layer.model')),
+  BACKGROUND_LAYER: { id: 'background' },
+}));
+vi.mock('src/features/layer/layer.service', () => ({
+  LayerService: { inject: vi.fn() },
+}));
+vi.mock('src/services/pick.service', () => ({
+  PickService: { inject: vi.fn() },
+}));
+vi.mock('src/services/cesium.service', () => ({
+  CesiumService: { inject: vi.fn() },
+}));
+vi.mock('./pickers/layer-info-picker-for-tiles3d', () => ({
+  LayerInfoPickerForTiles3d: pickerClass(),
+}));
+vi.mock('./pickers/layer-info-picker-for-geo-json', () => ({
+  LayerInfoPickerForGeoJson: pickerClass(),
+}));
+vi.mock('./pickers/layer-info-picker-for-earthquakes', () => ({
+  LayerInfoPickerForEarthquakes: pickerClass(),
+}));
+vi.mock('./pickers/layer-info-picker-for-voxels', () => ({
+  LayerInfoPickerForVoxels: pickerClass(),
+}));
+vi.mock('./pickers/layer-info-picker-for-wmts', () => ({
+  LayerInfoPickerForWmts: pickerClass(),
+}));
+vi.mock('./pickers/layer-info-picker-for-tiff', () => ({
+  LayerInfoPickerForTiff: pickerClass(),
+}));
+
+import { LayerService } from 'src/features/layer/layer.service';
+import { PickService } from 'src/services/pick.service';
+import { CesiumService } from 'src/services/cesium.service';
+import { LayerInfoService } from './layer-info.service';
+
+type LayerOptions = {
+  id: string;
+  type?: LayerType;
+  isVisible?: boolean;
+  opacity?: number;
+  terrain?: object | null;
+  active?: boolean;
+};
+const position = new Cartesian2(10, 20);
+const globePosition = Cartesian3.fromDegrees(8, 47);
+const deferred = <T>() => {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((r) => {
+    resolve = r;
+  });
+  return { promise, resolve };
+};
+const makeInfo = (id: string): LayerInfo => ({
+  layerId: makeId(id),
+  title: id,
+  attributes: [],
+  zoomToObject: vi.fn(),
+  activateHighlight: vi.fn(),
+  deactivateHighlight: vi.fn(),
+  destroy: vi.fn(),
+});
+
+const setup = async (options: LayerOptions[]) => {
+  const states = new Map(
+    options.map((option) => [
+      option.id,
+      new BehaviorSubject({
+        type: LayerType.Tiles3d,
+        isVisible: true,
+        opacity: 1,
+        terrain: null,
+        ...option,
+      } as unknown as Layer),
+    ]),
+  );
+  const background = new BehaviorSubject({ isVisible: true } as AnyLayer);
+  const activation = new Subject<Id<Layer>>();
+  const deactivation = new Subject<Id<Layer>>();
+  const pickers = new Map(
+    options.map(({ id }) => [
+      id,
+      {
+        layerId: makeId<Layer>(id),
+        pick: vi
+          .fn<(data: LayerPickData) => Promise<LayerInfo[]>>()
+          .mockResolvedValue([]),
+        destroy: vi.fn(),
+      },
+    ]),
+  );
+  const controllers = new Map(
+    options.map(({ id }) => [
+      id,
+      { type: states.get(id)!.value.type, picker: pickers.get(id) },
+    ]),
+  );
+  const layerService = {
+    layerActivated$: concat(
+      from(
+        options
+          .filter((o) => o.active !== false)
+          .map((o) => makeId<Layer>(o.id)),
+      ),
+      activation,
+    ),
+    layerDeactivated$: deactivation,
+    layer$: (id: Id<AnyLayer>) =>
+      id === 'background' ? background : states.get(String(id))!,
+    controller: (id: Id<Layer>) => controllers.get(String(id)),
+  };
+  const canvas = { style: { cursor: 'default' } };
+  const viewer = {
+    canvas,
+    scene: { camera: { positionWC: globePosition }, requestRender: vi.fn() },
+  } as unknown as Viewer;
+  vi.mocked(LayerService.inject).mockResolvedValue(
+    layerService as unknown as LayerService,
+  );
+  vi.mocked(CesiumService.inject).mockResolvedValue({
+    viewer$: of(viewer),
+  } as unknown as CesiumService);
+  vi.mocked(PickService.inject).mockResolvedValue({
+    pick: () => globePosition,
+  } as unknown as PickService);
+  const service = new LayerInfoService();
+  let infos: readonly LayerInfo[] = [];
+  service.infos$.subscribe((value) => {
+    infos = value;
+  });
+  await vi.waitFor(() => expect(inputAction).toHaveBeenCalled());
+  return {
+    service,
+    pickers,
+    background,
+    activation,
+    deactivation,
+    canvas,
+    get infos() {
+      return infos;
+    },
+    update: (id: string, patch: Partial<Layer>) => {
+      const state = states.get(id)!;
+      state.next({ ...state.value, ...patch } as Layer);
+    },
+    pick: () => service.pick3d(position, globePosition),
+    finish: () => vi.waitFor(() => expect(canvas.style.cursor).toBe('default')),
+  };
+};
+
+beforeEach(() => vi.clearAllMocks());
+afterEach(() => i18next.off('languageChanged'));
+
+describe('LayerInfoService', () => {
+  it('queries only active visible layers and keeps their individual feature results', async () => {
+    const f = await setup([
+      { id: 'visible' },
+      { id: 'hidden', isVisible: false },
+      { id: 'inactive', active: false },
+      { id: 'transparent', opacity: 0 },
+    ]);
+    const infos = [makeInfo('visible'), makeInfo('visible')];
+    infos[0].attributes = [{ key: 'Name', value: 'feature A' }];
+    infos[1].attributes = [{ key: 'Name', value: 'feature B' }];
+    f.pickers.get('visible')!.pick.mockResolvedValue(infos);
+    f.pick();
+    await f.finish();
+    expect(f.infos).toEqual(infos);
+    for (const id of ['hidden', 'inactive', 'transparent']) {
+      expect(f.pickers.get(id)!.pick).not.toHaveBeenCalled();
+    }
+  });
+
+  it.each([
+    LayerType.Tiles3d,
+    LayerType.GeoJson,
+    LayerType.Earthquakes,
+    LayerType.Voxel,
+    LayerType.Wmts,
+    LayerType.Tiff,
+  ])('removes %s info and highlights immediately when hidden', async (type) => {
+    const f = await setup([{ id: 'layer', type }]);
+    const info = makeInfo('layer');
+    f.pickers.get('layer')!.pick.mockResolvedValue([info]);
+    f.pick();
+    await f.finish();
+    expect(f.infos).toEqual([info]);
+    f.update('layer', { isVisible: false });
+    expect(f.infos).toEqual([]);
+    expect(info.destroy).toHaveBeenCalledTimes(1);
+  });
+
+  it('suppresses draped layers with the basemap off but preserves independent 3D layers', async () => {
+    const f = await setup([
+      { id: 'wmts', type: LayerType.Wmts },
+      { id: 'tiff', type: LayerType.Tiff },
+      { id: 'geojson', type: LayerType.GeoJson },
+      { id: '3d' },
+      { id: 'own-terrain', type: LayerType.GeoJson, terrain: {} },
+    ]);
+    const infos = [...f.pickers.keys()].map(makeInfo);
+    for (const info of infos) {
+      f.pickers.get(String(info.layerId))!.pick.mockResolvedValue([info]);
+    }
+    f.pick();
+    await f.finish();
+    f.background.next({ isVisible: false } as AnyLayer);
+    expect(f.infos.map((info) => info.layerId)).toEqual(['3d', 'own-terrain']);
+    for (const info of infos.slice(0, 3)) {
+      expect(info.destroy).toHaveBeenCalledTimes(1);
+    }
+    for (const picker of f.pickers.values()) {
+      picker.pick.mockClear();
+    }
+    f.pick();
+    await f.finish();
+    for (const id of ['wmts', 'tiff', 'geojson']) {
+      expect(f.pickers.get(id)!.pick).not.toHaveBeenCalled();
+    }
+  });
+
+  it.each(['hide', 'hide-show', 'remove', 'basemap', 'close'] as const)(
+    'discards a delayed response after %s',
+    async (change) => {
+      const f = await setup([{ id: 'layer', type: LayerType.Wmts }]);
+      const pending = deferred<LayerInfo[]>();
+      const picker = f.pickers.get('layer')!;
+      picker.pick.mockReturnValue(pending.promise);
+      f.pick();
+      await vi.waitFor(() => expect(picker.pick).toHaveBeenCalled());
+      if (change === 'hide' || change === 'hide-show') {
+        f.update('layer', { isVisible: false });
+      }
+      if (change === 'hide-show') {
+        f.update('layer', { isVisible: true });
+      }
+      if (change === 'remove') {
+        f.deactivation.next(makeId('layer'));
+      }
+      if (change === 'basemap') {
+        f.background.next({ isVisible: false } as AnyLayer);
+      }
+      if (change === 'close') {
+        f.service.reset();
+      }
+      const info = makeInfo('layer');
+      pending.resolve([info]);
+      await vi.waitFor(() => expect(info.destroy).toHaveBeenCalledTimes(1));
+      expect(f.infos).toEqual([]);
+      await f.finish();
+    },
+  );
+
+  it('clears highlights of completed results while another picker is still pending', async () => {
+    const f = await setup([
+      { id: 'fast' },
+      { id: 'slow', type: LayerType.Wmts },
+    ]);
+    const pending = deferred<LayerInfo[]>();
+    const fast = makeInfo('fast');
+    const slow = makeInfo('slow');
+    f.pickers.get('fast')!.pick.mockResolvedValue([fast]);
+    f.pickers.get('slow')!.pick.mockReturnValue(pending.promise);
+    f.pick();
+    await vi.waitFor(() =>
+      expect(f.pickers.get('slow')!.pick).toHaveBeenCalled(),
+    );
+    f.update('fast', { isVisible: false });
+    expect(fast.destroy).toHaveBeenCalledTimes(1);
+    pending.resolve([slow]);
+    await f.finish();
+    expect(f.infos).toEqual([slow]);
+    expect(fast.destroy).toHaveBeenCalledTimes(1);
+  });
+
+  it('replaces a pending click with the newest feature selection', async () => {
+    const f = await setup([{ id: 'layer' }]);
+    const pending = deferred<LayerInfo[]>();
+    const first = makeInfo('layer');
+    const second = makeInfo('layer');
+    second.attributes = [{ key: 'Name', value: 'new feature' }];
+    const picker = f.pickers.get('layer')!;
+    picker.pick
+      .mockReturnValueOnce(pending.promise)
+      .mockResolvedValueOnce([second]);
+    f.pick();
+    await vi.waitFor(() => expect(picker.pick).toHaveBeenCalledTimes(1));
+    f.pick();
+    pending.resolve([first]);
+    await vi.waitFor(() => expect(f.infos).toEqual([second]));
+    expect(first.destroy).toHaveBeenCalledTimes(1);
+    expect(second.destroy).not.toHaveBeenCalled();
+    await f.finish();
+  });
+
+  it('allows a fresh click after a hidden layer is shown again', async () => {
+    const f = await setup([{ id: 'layer' }]);
+    const first = makeInfo('layer');
+    const second = makeInfo('layer');
+    const picker = f.pickers.get('layer')!;
+    picker.pick.mockResolvedValueOnce([first]).mockResolvedValueOnce([second]);
+    f.pick();
+    await f.finish();
+    f.update('layer', { isVisible: false });
+    f.update('layer', { isVisible: true });
+    expect(f.infos).toEqual([]);
+    f.pick();
+    await f.finish();
+    expect(f.infos).toEqual([second]);
+    expect(first.destroy).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not resurrect removed info after a language refresh', async () => {
+    const f = await setup([{ id: 'layer', type: LayerType.Wmts }]);
+    const pending = deferred<void>();
+    const info = {
+      ...makeInfo('layer'),
+      refreshForLanguage: vi.fn(() => pending.promise),
+    };
+    f.pickers.get('layer')!.pick.mockResolvedValue([info]);
+    f.pick();
+    await f.finish();
+    i18next.emit('languageChanged', 'fr');
+    expect(info.refreshForLanguage).toHaveBeenCalled();
+    f.update('layer', { isVisible: false });
+    pending.resolve();
+    await pending.promise;
+    expect(f.infos).toEqual([]);
+    expect(info.destroy).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears a removed layer and ignores it on subsequent clicks', async () => {
+    const f = await setup([{ id: 'layer' }]);
+    const info = makeInfo('layer');
+    const picker = f.pickers.get('layer')!;
+    picker.pick.mockResolvedValue([info]);
+    f.pick();
+    await f.finish();
+    f.deactivation.next(makeId('layer'));
+    expect(f.infos).toEqual([]);
+    expect(info.destroy).toHaveBeenCalledTimes(1);
+    expect(picker.destroy).toHaveBeenCalledTimes(1);
+    picker.pick.mockClear();
+    f.pick();
+    await f.finish();
+    expect(picker.pick).not.toHaveBeenCalled();
+  });
+});

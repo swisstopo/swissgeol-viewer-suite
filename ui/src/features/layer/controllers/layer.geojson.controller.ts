@@ -57,6 +57,12 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
     return this.terrainController?.tileset ?? null;
   }
 
+  override ownsSceneObject(object: Cesium3DTileset | Entity): boolean {
+    return (
+      object instanceof Entity && this.dataSource?.entities.contains(object)
+    );
+  }
+
   zoomIntoView() {
     this.viewer.flyTo(this.dataSource).then();
   }

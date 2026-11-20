@@ -76,7 +76,7 @@ const isVectorTileFeature = (feature: unknown): feature is VectorTileFeature =>
     .addPrimitiveByCollection === 'function';
 
 /**
- * Several infos can hold the same feature (every picker drills the same window position),
+ * Several infos can hold the same feature,
  * so the original color is remembered once per feature and restored by the last one to release it.
  */
 const highlightedVectorFeatures = new WeakMap<
@@ -111,7 +111,7 @@ const sameUnit = (left: UnitKey, right: UnitKey): boolean =>
   left.profile === right.profile && left.geolCode === right.geolCode;
 
 /**
- * Several infos can highlight the same unit (every picker drills the same window position).
+ * Several infos can highlight the same geological unit.
  * The tileset keeps a single highlight, so it stays until the last owner releases it.
  */
 const highlightedUnits = new WeakMap<
@@ -159,6 +159,9 @@ export abstract class LayerInfoDrillPicker<
   }
 
   async pick(pick: LayerPickData): Promise<LayerInfo[]> {
+    if (!this.layer.isVisible || this.layer.opacity === 0) {
+      return [];
+    }
     const feature = this.pickByDrill(pick);
     if (feature === null) {
       return [];
@@ -167,13 +170,17 @@ export abstract class LayerInfoDrillPicker<
       feature instanceof Cesium3DTileFeature ||
       isVectorTileFeature(feature)
     ) {
-      return this.pickFeature(pick, feature);
+      return this.controller.ownsSceneObject(feature.tileset)
+        ? this.pickFeature(pick, feature)
+        : [];
     }
 
     const tileset = (feature as any).content?._tileset as
       Cesium3DTileset | undefined;
-    if (tileset !== undefined && 'metadata' in tileset) {
-      return this.pickFeatureForNewTileset(pick, tileset);
+    if (tileset !== undefined) {
+      return this.controller.ownsSceneObject(tileset) && 'metadata' in tileset
+        ? this.pickFeatureForNewTileset(pick, tileset)
+        : [];
     }
     if (
       typeof feature === 'object' &&
@@ -181,12 +188,10 @@ export abstract class LayerInfoDrillPicker<
       'id' in feature &&
       feature.id instanceof Entity
     ) {
-      return this.pickEntity(feature.id, feature.primitive as object);
+      return this.controller.ownsSceneObject(feature.id)
+        ? this.pickEntity(feature.id, feature.primitive as object)
+        : [];
     }
-    console.warn(
-      `Picked unsupported object on layer '${this.controller.layer.id}'. It will be ignored.`,
-      feature,
-    );
     return [];
   }
 
@@ -275,22 +280,14 @@ export abstract class LayerInfoDrillPicker<
     }
 
     const slicerDataSource = this.viewer.dataSources.getByName('slicer')[0];
-    if (slicerDataSource === undefined) {
-      return null;
-    }
-
-    const first = objects[0];
-    if (first.id == null || !slicerDataSource.entities.contains(first.id)) {
-      return first;
-    }
-
-    // Selects second object if first is entity related to slicing box and next is not related to slicing box.
-    const second = objects[1];
-    if (second?.id != null && !slicerDataSource.entities.contains(second.id)) {
-      return second;
-    }
-
-    return null;
+    // Keep the frontmost scene object. Filtering for each layer's first owned
+    // hit would select objects behind it. Only slicing helpers are skipped.
+    return (
+      objects.find(
+        (object) =>
+          object.id == null || !slicerDataSource?.entities.contains(object.id),
+      ) ?? null
+    );
   }
 }
 
@@ -302,7 +299,9 @@ class LayerInfoForFeature implements LayerInfo {
   private readonly feature:
     Cesium3DTileFeature | VectorTileFeature | Cesium3DTileset;
   private readonly position: Cartesian3;
+  private readonly tileset: Cesium3DTileset;
   private isVectorHighlighted = false;
+  private originalColor: Color | null = null;
   private highlightedUnit: { tileset: Cesium3DTileset; unit: UnitKey } | null =
     null;
 
@@ -315,6 +314,11 @@ class LayerInfoForFeature implements LayerInfo {
     },
   ) {
     this.feature = data.feature;
+    this.tileset =
+      data.feature instanceof Cesium3DTileFeature ||
+      isVectorTileFeature(data.feature)
+        ? data.feature.tileset
+        : data.feature;
     this.position = data.position;
     this.layerId = data.layerId;
     this.title = data.title;
@@ -332,6 +336,7 @@ class LayerInfoForFeature implements LayerInfo {
         this.isVectorHighlighted = true;
       }
     } else if (this.feature instanceof Cesium3DTileFeature) {
+      this.originalColor = Color.clone(this.feature.color);
       this.feature.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(
         this.feature.color.alpha,
       );
@@ -366,6 +371,10 @@ class LayerInfoForFeature implements LayerInfo {
   }
 
   destroy() {
+    // Layer removal destroys Cesium content before publishing deactivation.
+    if (this.tileset.isDestroyed()) {
+      return;
+    }
     if (isVectorTileFeature(this.feature)) {
       if (this.highlightedUnit !== null) {
         unhighlightUnit(
@@ -379,7 +388,7 @@ class LayerInfoForFeature implements LayerInfo {
         this.isVectorHighlighted = false;
       }
     } else if (this.feature instanceof Cesium3DTileFeature) {
-      this.feature.color = Color.WHITE;
+      this.feature.color = this.originalColor!;
     } else {
       this.feature.customShader!.setUniform('u_isHighlighted', false);
     }
@@ -499,8 +508,8 @@ const extractEntityAttributes = (
   )[0];
 
   if (
-    geomDataSource.entities.contains(entity) ||
-    noEditGeomDataSource.entities.contains(entity)
+    geomDataSource?.entities.contains(entity) ||
+    noEditGeomDataSource?.entities.contains(entity)
   ) {
     // If the entity is a drawing, then we simply show its id.
     return [{ key: 'geomId', value: entity.id }];

@@ -31,6 +31,12 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
   }
 
   async pick(pick: LayerPickData): Promise<LayerInfo[]> {
+    if (
+      !this.controller.layer.isVisible ||
+      this.controller.layer.opacity === 0
+    ) {
+      return [];
+    }
     const cell = this.viewer.scene.pickVoxel(pick.windowPosition);
     if (cell === undefined || cell.primitive !== this.controller.primitive) {
       return [];
@@ -145,6 +151,9 @@ class LayerInfoForVoxels implements LayerInfo {
   deactivateHighlight(): void {}
 
   destroy(): void {
+    if (this.cell.primitive.isDestroyed()) {
+      return;
+    }
     const { customShader } = this.cell.primitive;
     if (
       customShader.uniforms['u_selectedTile'].value !== this.cell.tileIndex ||

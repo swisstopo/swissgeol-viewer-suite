@@ -16,6 +16,7 @@ import {
   is3dLayer,
   isBackgroundLayer,
   isBasemapLockedLayer,
+  isLayerEffectivelyVisible,
   isDefaultSliceSelection,
   Layer,
   LayerType,
@@ -87,7 +88,8 @@ export class CatalogDisplayListItem extends CoreElement {
 
   private get isEffectivelyVisible(): boolean {
     return (
-      this.layer != null && this.layer.isVisible && !this.isSuppressedByBasemap
+      this.layer != null &&
+      isLayerEffectivelyVisible(this.layer, this.isBackgroundVisible)
     );
   }
 
