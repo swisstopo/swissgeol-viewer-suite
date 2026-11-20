@@ -30,8 +30,8 @@ export class LayerInfoItem extends CoreElement {
   @property({ type: Object })
   accessor info!: LayerInfo;
 
-  @property({ type: Boolean })
-  accessor isFirst!: boolean;
+  @property({ attribute: false })
+  accessor featureAttributes: readonly LayerInfoAttribute[] | undefined;
 
   @state()
   accessor layer!: Layer;
@@ -50,14 +50,6 @@ export class LayerInfoItem extends CoreElement {
       }),
     );
 
-    this.addEventListener('mouseenter', () => {
-      this.info.activateHighlight();
-    });
-
-    this.addEventListener('mouseleave', () => {
-      this.info.deactivateHighlight();
-    });
-
     document.addEventListener('mouseup', this.stopResizing);
     this.register(() =>
       document.removeEventListener('mouseup', this.stopResizing),
@@ -65,15 +57,6 @@ export class LayerInfoItem extends CoreElement {
 
     document.addEventListener('mousemove', this.drag);
     this.register(() => document.removeEventListener('mousemove', this.drag));
-  }
-
-  firstUpdated(): void {
-    if (this.isFirst) {
-      this.shadowRoot!.querySelector('input[type="checkbox"]')!.setAttribute(
-        'checked',
-        'checked',
-      );
-    }
   }
 
   private readonly zoomToObject = (): void => {
@@ -145,18 +128,13 @@ export class LayerInfoItem extends CoreElement {
 
   readonly render = () => {
     const attributes = [
-      ...this.info.attributes,
+      ...(this.featureAttributes ?? this.info.attributes),
       ...this.makeCustomAttributes(),
     ];
     const visibleAttributes = this.hasLexicService(this.layer)
       ? attributes.filter((attribute) => this.isLinkedAttribute(attribute))
       : attributes;
     return html`
-      <label class="toggle">
-        <input type="checkbox" />
-        ${i18next.t(this.info.title)}
-        <sgc-icon name="chevronDown"></sgc-icon>
-      </label>
       <div class="content">
         <sgc-button color="secondary" @click="${this.zoomToObject}">
           ${i18next.t('layers:info_window.zoom_to_object')}
@@ -226,30 +204,6 @@ export class LayerInfoItem extends CoreElement {
       gap: 12px;
     }
 
-    /* toggle */
-
-    .toggle {
-      cursor: pointer;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px;
-      gap: 12px;
-
-      background: var(--sgc-color-bg--grey);
-      border-radius: 4px;
-      color: var(--sgc-color-primary);
-    }
-
-    .toggle > input[type='checkbox'] {
-      display: none;
-    }
-
-    .toggle:has(input:checked) sgc-icon {
-      transform: rotate(180deg);
-    }
-
     /* content */
 
     .content {
@@ -257,10 +211,6 @@ export class LayerInfoItem extends CoreElement {
       flex-direction: column;
       gap: 12px;
       padding-inline: 12px;
-    }
-
-    .toggle:not(:has(input:checked)) + .content {
-      display: none;
     }
 
     /* attributes */

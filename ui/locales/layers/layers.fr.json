@@ -504,7 +504,14 @@
   "geocat_url": "https://www.geocat.ch/geonetwork/srv/fre/catalog.search#/metadata/{{id}}",
   "info_window": {
     "title": "Info",
-    "zoom_to_object": "Zoom sur l'objet"
+    "zoom_to_object": "Zoom sur l'objet",
+    "result_tabs": "Types de résultats",
+    "exact_tab": "Exact",
+    "same_position_tab": "Même position",
+    "nearby_tab": "À proximité",
+    "feature": "Objet {{index}}",
+    "feature_numbered": "{{label}} ({{index}})",
+    "distance": "{{distance}} m"
   },
   "info_box": {
     "labels": {
