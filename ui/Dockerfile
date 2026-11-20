@@ -15,7 +15,8 @@ RUN --mount=type=secret,id=github_token \
     npm install --ignore-scripts \
     && npm run build --omit=dev
 
-FROM nginx:alpine
+# Pinned to the current patched release (nginx.org/en/security_advisories.html)
+FROM nginx:1.31.9-alpine3.24
 
 WORKDIR /usr/share/nginx/html
 COPY --from=build /app/ui/dist/ /usr/share/nginx/html
