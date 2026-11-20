@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  CallbackProperty,
   Cartesian2,
   Cartesian3,
   Cartographic,
@@ -7,8 +8,10 @@ import {
   Cesium3DTileFeature,
   Cesium3DTileset,
   Color,
+  ColorMaterialProperty,
   CustomDataSource,
   Entity,
+  JulianDate,
   Viewer,
 } from 'cesium';
 import type { BaseLayerController } from 'src/features/layer/controllers/layer.controller';
@@ -114,7 +117,7 @@ const makeFeature = (
 
 describe('layer scene picking', () => {
   it.each([false, true])(
-    'preserves per-feature attributes and restores colors (vector=%s)',
+    'preserves feature attributes and highlights only the selected feature (vector=%s)',
     async (vector) => {
       const tileset = { isDestroyed: () => false } as Cesium3DTileset;
       const first = makeFeature(tileset, 'upper unit', vector);
@@ -129,14 +132,27 @@ describe('layer scene picking', () => {
       const picker = new LayerInfoPickerForTiles3d(controller, f.viewer);
       const [info] = await picker.pick(data());
       expect(info.layerId).toBe('geology');
+      expect(info.match).toBe('scene');
+      expect(info.featureLabel).toBe('upper unit');
       expect(info.attributes.map((a) => a.value)).toEqual(['upper unit']);
-      expect(first.color).not.toEqual(original);
-      expect(second.color).toEqual(original);
-      info.destroy();
       expect(first.color).toEqual(original);
+
       f.drillPick.mockReturnValue([second]);
       const [nextInfo] = await picker.pick(data());
       expect(nextInfo.attributes.map((a) => a.value)).toEqual(['lower unit']);
+      expect(second.color).toEqual(original);
+
+      info.select();
+      info.select();
+      expect(first.color).toEqual(Color.YELLOW.withAlpha(0.6));
+      expect(second.color).toEqual(original);
+
+      info.deselect();
+      nextInfo.select();
+      info.destroy();
+      expect(first.color).toEqual(original);
+      expect(second.color).toEqual(Color.YELLOW.withAlpha(0.6));
+
       nextInfo.destroy();
       expect(second.color).toEqual(original);
     },
@@ -197,9 +213,15 @@ describe('layer scene picking', () => {
     expect(setUniform).not.toHaveBeenCalled();
     const [info] = await owned.pick(data());
     expect(info.attributes.map((a) => a.value)).toEqual(['model metadata']);
-    expect(setUniform).toHaveBeenLastCalledWith('u_isHighlighted', true);
+    expect(setUniform).not.toHaveBeenCalled();
+    info.select();
+    info.select();
+    info.deselect();
     info.destroy();
-    expect(setUniform).toHaveBeenLastCalledWith('u_isHighlighted', false);
+    expect(setUniform.mock.calls).toEqual([
+      ['u_isHighlighted', true],
+      ['u_isHighlighted', false],
+    ]);
   });
 
   it('recognizes any owned tileset, including a non-first seismic axis', async () => {
@@ -284,6 +306,66 @@ describe('layer scene picking', () => {
     },
   );
 
+  it('restores the original dynamic material after deselecting an entity', async () => {
+    const early = JulianDate.fromIso8601('2026-01-01');
+    const late = JulianDate.fromIso8601('2026-02-01');
+    const original = new ColorMaterialProperty(
+      new CallbackProperty(
+        (time) =>
+          Color.RED.withAlpha(JulianDate.equals(time, early) ? 0.4 : 0.9),
+        false,
+      ),
+    );
+    const entity = new Entity({
+      properties: { EventLocationName: 'Bern' },
+      ellipsoid: { material: original },
+    });
+    const { viewer } = makeViewer([{ id: entity, primitive: {} }]);
+    const picker = new LayerInfoPickerForEarthquakes(
+      makeController<EarthquakesLayer>('quakes', LayerType.Earthquakes, [
+        entity,
+      ]),
+      viewer,
+    );
+
+    const [info] = await picker.pick(data());
+    expect(info.featureLabel).toBe('Bern');
+    expect(entity.ellipsoid!.material).toBe(original);
+    info.select();
+    expect(entity.ellipsoid!.material!.getValue(early).color).toEqual(
+      Color.YELLOW.withAlpha(0.4),
+    );
+    expect(entity.ellipsoid!.material!.getValue(late).color).toEqual(
+      Color.YELLOW.withAlpha(0.9),
+    );
+    info.deselect();
+    expect(entity.ellipsoid!.material).toBe(original);
+  });
+
+  it('highlights a selected GeoJSON billboard and restores its styling', async () => {
+    const icon = new Entity({
+      name: 'Brunnen',
+      properties: { category: 'Station' },
+      billboard: { color: Color.WHITE.withAlpha(0.7) },
+    });
+    const original = icon.billboard!.color;
+    const { viewer } = makeViewer([{ id: icon, primitive: {} }]);
+    const picker = new LayerInfoPickerForGeoJson(
+      makeController<GeoJsonLayer>('stations', LayerType.GeoJson, [icon]),
+      viewer,
+    );
+    const [info] = await picker.pick(data());
+
+    expect(info.featureLabel).toBe('Brunnen');
+    expect(icon.billboard!.color).toBe(original);
+    info.select();
+    expect(icon.billboard!.color!.getValue()).toEqual(
+      Color.YELLOW.withAlpha(0.7),
+    );
+    info.destroy();
+    expect(icon.billboard!.color).toBe(original);
+  });
+
   it.each([
     { isVisible: false, opacity: 1 },
     { isVisible: true, opacity: 0 },
@@ -315,9 +397,29 @@ describe('layer scene picking', () => {
       f.viewer,
     );
     const [info] = await picker.pick(data());
+    info.select();
     isDestroyed.mockReturnValue(true);
     const colorSetter = vi.spyOn(feature, 'color', 'set');
     expect(() => info.destroy()).not.toThrow();
+    expect(colorSetter).not.toHaveBeenCalled();
+  });
+
+  it('does not restore a feature color after its tile content unloads', async () => {
+    const tileset = { isDestroyed: () => false } as Cesium3DTileset;
+    const feature = makeFeature(tileset, 'unloaded feature', false);
+    const isDestroyed = vi.fn(() => false);
+    Object.defineProperty(feature, 'content', { value: { isDestroyed } });
+    const { viewer } = makeViewer([feature]);
+    const picker = new LayerInfoPickerForTiles3d(
+      makeController<Tiles3dLayer>('layer', LayerType.Tiles3d, [tileset]),
+      viewer,
+    );
+    const [info] = await picker.pick(data());
+    info.select();
+    isDestroyed.mockReturnValue(true);
+    const colorSetter = vi.spyOn(feature, 'color', 'set');
+    info.deselect();
+    info.select();
     expect(colorSetter).not.toHaveBeenCalled();
   });
 

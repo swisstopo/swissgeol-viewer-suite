@@ -63,6 +63,7 @@ import { LayerService } from 'src/features/layer/layer.service';
 import { PickService } from 'src/services/pick.service';
 import { CesiumService } from 'src/services/cesium.service';
 import { LayerInfoService } from './layer-info.service';
+import { splitLayerInfos } from './layer-info-results';
 
 type LayerOptions = {
   id: string;
@@ -81,13 +82,17 @@ const deferred = <T>() => {
   });
   return { promise, resolve };
 };
-const makeInfo = (id: string): LayerInfo => ({
+const makeInfo = (
+  id: string,
+  match: LayerInfo['match'] = 'direct',
+): LayerInfo => ({
+  match,
   layerId: makeId(id),
   title: id,
   attributes: [],
   zoomToObject: vi.fn(),
-  activateHighlight: vi.fn(),
-  deactivateHighlight: vi.fn(),
+  select: vi.fn(),
+  deselect: vi.fn(),
   destroy: vi.fn(),
 });
 
@@ -125,15 +130,14 @@ const setup = async (options: LayerOptions[]) => {
       { type: states.get(id)!.value.type, picker: pickers.get(id) },
     ]),
   );
+  let layerOrder = options
+    .filter((option) => option.active !== false)
+    .map((option) => makeId<Layer>(option.id));
   const layerService = {
-    layerActivated$: concat(
-      from(
-        options
-          .filter((o) => o.active !== false)
-          .map((o) => makeId<Layer>(o.id)),
-      ),
-      activation,
-    ),
+    get activeLayerIds() {
+      return layerOrder;
+    },
+    layerActivated$: concat(from(layerOrder), activation),
     layerDeactivated$: deactivation,
     layer$: (id: Id<AnyLayer>) =>
       id === 'background' ? background : states.get(String(id))!,
@@ -150,17 +154,25 @@ const setup = async (options: LayerOptions[]) => {
   vi.mocked(CesiumService.inject).mockResolvedValue({
     viewer$: of(viewer),
   } as unknown as CesiumService);
+  const pickPosition = vi
+    .fn<PickService['pick']>()
+    .mockReturnValue(globePosition);
   vi.mocked(PickService.inject).mockResolvedValue({
-    pick: () => globePosition,
+    pick: pickPosition,
   } as unknown as PickService);
   const service = new LayerInfoService();
   let infos: readonly LayerInfo[] = [];
   service.infos$.subscribe((value) => {
     infos = value;
   });
+  let selected: LayerInfo | null = null;
+  service.selection$.subscribe((value) => {
+    selected = value;
+  });
   await vi.waitFor(() => expect(inputAction).toHaveBeenCalled());
   return {
     service,
+    pickPosition,
     pickers,
     background,
     activation,
@@ -168,6 +180,12 @@ const setup = async (options: LayerOptions[]) => {
     canvas,
     get infos() {
       return infos;
+    },
+    get selected() {
+      return selected;
+    },
+    reorder: (...ids: string[]) => {
+      layerOrder = ids.map((id) => makeId<Layer>(id));
     },
     update: (id: string, patch: Partial<Layer>) => {
       const state = states.get(id)!;
@@ -182,6 +200,203 @@ beforeEach(() => vi.clearAllMocks());
 afterEach(() => i18next.off('languageChanged'));
 
 describe('LayerInfoService', () => {
+  it('selects a scene hit and separates the remaining direct and nearby features', async () => {
+    const f = await setup([
+      { id: 'geocover', type: LayerType.Wmts },
+      { id: 'bedrock', type: LayerType.Tiff },
+      { id: 'voxel', type: LayerType.Voxel },
+    ]);
+    const first = { ...makeInfo('geocover'), featureLabel: 'Niederterrasse' };
+    const second = { ...makeInfo('geocover'), featureLabel: 'Niederterrasse' };
+    const nearby = makeInfo('geocover', 'nearby');
+    const sample = makeInfo('bedrock');
+    const object = makeInfo('voxel', 'scene');
+    f.pickers.get('geocover')!.pick.mockResolvedValue([nearby, first, second]);
+    f.pickers.get('bedrock')!.pick.mockResolvedValue([sample]);
+    f.pickers.get('voxel')!.pick.mockResolvedValue([object]);
+    f.pick();
+    await f.finish();
+
+    expect(f.selected).toBe(object);
+    expect(object.select).toHaveBeenCalledTimes(1);
+    for (const secondary of [first, second, nearby, sample]) {
+      expect(secondary.select).not.toHaveBeenCalled();
+    }
+    expect(splitLayerInfos(f.infos)).toEqual({
+      exact: object,
+      samePosition: [first, second, sample],
+      nearby: [nearby],
+    });
+
+    f.service.selectInfo(second);
+    expect(f.selected).toBe(second);
+    expect(object.deselect).toHaveBeenCalledTimes(1);
+    expect(second.select).toHaveBeenCalledTimes(1);
+    f.service.selectInfo(nearby);
+    expect(f.selected).toBe(nearby);
+    expect(second.deselect).toHaveBeenCalledTimes(1);
+    expect(nearby.select).toHaveBeenCalledTimes(1);
+    f.service.selectInfo(nearby);
+    expect(nearby.select).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses the current displayed layer order for direct hits when no scene object is hit', async () => {
+    const f = await setup([
+      { id: 'nearby' },
+      { id: 'first-registered' },
+      { id: 'top-direct' },
+    ]);
+    const nearby = makeInfo('nearby', 'nearby');
+    const firstRegistered = makeInfo('first-registered');
+    const topDirect = makeInfo('top-direct');
+    f.pickers.get('nearby')!.pick.mockResolvedValue([nearby]);
+    f.pickers
+      .get('first-registered')!
+      .pick.mockResolvedValue([firstRegistered]);
+    f.pickers.get('top-direct')!.pick.mockResolvedValue([topDirect]);
+    f.reorder('nearby', 'top-direct', 'first-registered');
+
+    f.pick();
+    await f.finish();
+    expect(f.infos).toEqual([topDirect, firstRegistered, nearby]);
+    expect(f.selected).toBe(topDirect);
+    expect(nearby.select).not.toHaveBeenCalled();
+  });
+
+  it('offers nearby-only matches without automatically highlighting them', async () => {
+    const f = await setup([{ id: 'geocover', type: LayerType.Wmts }]);
+    const nearby = makeInfo('geocover', 'nearby');
+    f.pickers.get('geocover')!.pick.mockResolvedValue([nearby]);
+    f.pick();
+    await f.finish();
+
+    expect(f.selected).toBeNull();
+    expect(nearby.select).not.toHaveBeenCalled();
+    expect(splitLayerInfos(f.infos)).toEqual({
+      exact: null,
+      samePosition: [],
+      nearby: [nearby],
+    });
+    f.service.selectInfo(nearby);
+    expect(f.selected).toBe(nearby);
+    expect(nearby.select).toHaveBeenCalledTimes(1);
+    f.service.reset();
+    expect(f.selected).toBeNull();
+    expect(nearby.deselect).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears a selected hidden result and falls back to a remaining direct hit', async () => {
+    const f = await setup([{ id: 'map' }, { id: 'object' }, { id: 'nearby' }]);
+    const map = makeInfo('map');
+    const object = makeInfo('object', 'scene');
+    const nearby = makeInfo('nearby', 'nearby');
+    f.pickers.get('map')!.pick.mockResolvedValue([map]);
+    f.pickers.get('object')!.pick.mockResolvedValue([object]);
+    f.pickers.get('nearby')!.pick.mockResolvedValue([nearby]);
+    f.pick();
+    await f.finish();
+
+    f.update('object', { isVisible: false });
+    expect(f.selected).toBe(map);
+    expect(object.deselect).toHaveBeenCalledTimes(1);
+    expect(object.destroy).toHaveBeenCalledTimes(1);
+    f.service.selectInfo(object);
+    expect(f.selected).toBe(map);
+    f.update('map', { isVisible: false });
+    expect(map.deselect).toHaveBeenCalledTimes(1);
+    expect(f.selected).toBeNull();
+    expect(nearby.select).not.toHaveBeenCalled();
+  });
+
+  it('previews a hovered feature without changing selection and restores the selected highlight on leave', async () => {
+    const f = await setup([{ id: 'layer' }]);
+    const exact = makeInfo('layer', 'scene');
+    const same = makeInfo('layer');
+    const nearby = makeInfo('layer', 'nearby');
+    f.pickers.get('layer')!.pick.mockResolvedValue([exact, same, nearby]);
+    f.pick();
+    await f.finish();
+
+    f.service.previewInfo(same);
+    expect(f.selected).toBe(exact);
+    expect(exact.deselect).toHaveBeenCalledTimes(1);
+    expect(same.select).toHaveBeenCalledTimes(1);
+
+    f.service.previewInfo(nearby);
+    f.service.clearPreview(same);
+    expect(same.deselect).toHaveBeenCalledTimes(1);
+    expect(nearby.select).toHaveBeenCalledTimes(1);
+    expect(nearby.deselect).not.toHaveBeenCalled();
+
+    f.service.clearPreview(nearby);
+    expect(nearby.deselect).toHaveBeenCalledTimes(1);
+    expect(exact.select).toHaveBeenCalledTimes(2);
+    expect(f.selected).toBe(exact);
+  });
+
+  it('keeps a hovered result highlighted when its row is opened, until selection and preview are both cleared', async () => {
+    const f = await setup([{ id: 'layer' }]);
+    const exact = makeInfo('layer', 'scene');
+    const same = makeInfo('layer');
+    f.pickers.get('layer')!.pick.mockResolvedValue([exact, same]);
+    f.pick();
+    await f.finish();
+
+    f.service.previewInfo(same);
+    f.service.selectInfo(same);
+    f.service.clearPreview(same);
+    expect(same.select).toHaveBeenCalledTimes(1);
+    expect(same.deselect).not.toHaveBeenCalled();
+    f.service.selectInfo(null);
+    expect(same.deselect).toHaveBeenCalledTimes(1);
+    expect(f.selected).toBeNull();
+  });
+
+  it('clears a hidden previewed feature, restores the selection, and ignores stale previews', async () => {
+    const f = await setup([{ id: 'object' }, { id: 'nearby' }]);
+    const object = makeInfo('object', 'scene');
+    const nearby = makeInfo('nearby', 'nearby');
+    f.pickers.get('object')!.pick.mockResolvedValue([object]);
+    f.pickers.get('nearby')!.pick.mockResolvedValue([nearby]);
+    f.pick();
+    await f.finish();
+    f.service.previewInfo(nearby);
+
+    f.update('nearby', { isVisible: false });
+    expect(nearby.deselect).toHaveBeenCalledTimes(1);
+    expect(nearby.destroy).toHaveBeenCalledTimes(1);
+    expect(object.select).toHaveBeenCalledTimes(2);
+
+    f.service.previewInfo(nearby);
+    expect(nearby.select).toHaveBeenCalledTimes(1);
+    expect(object.deselect).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(['missed scene', 'no layer results'])(
+    'closes the current Info selection for %s',
+    async (miss) => {
+      const f = await setup([{ id: 'layer' }]);
+      const result = makeInfo('layer', 'scene');
+      const preview = makeInfo('layer', 'nearby');
+      const picker = f.pickers.get('layer')!;
+      picker.pick.mockResolvedValueOnce([result, preview]);
+      f.pick();
+      await f.finish();
+      f.service.previewInfo(preview);
+
+      if (miss === 'missed scene') {
+        f.pickPosition.mockReturnValue(null);
+      }
+      f.service.pick2d(position);
+      await f.finish();
+      expect(f.infos).toEqual([]);
+      expect(f.selected).toBeNull();
+      expect(preview.deselect).toHaveBeenCalledTimes(1);
+      expect(preview.destroy).toHaveBeenCalledTimes(1);
+      expect(result.select).toHaveBeenCalledTimes(1);
+    },
+  );
+
   it('queries only active visible layers and keeps their individual feature results', async () => {
     const f = await setup([
       { id: 'visible' },
@@ -218,6 +433,8 @@ describe('LayerInfoService', () => {
     f.update('layer', { isVisible: false });
     expect(f.infos).toEqual([]);
     expect(info.destroy).toHaveBeenCalledTimes(1);
+    expect(info.deselect).toHaveBeenCalledTimes(1);
+    expect(f.selected).toBeNull();
   });
 
   it('suppresses draped layers with the basemap off but preserves independent 3D layers', async () => {
@@ -228,7 +445,7 @@ describe('LayerInfoService', () => {
       { id: '3d' },
       { id: 'own-terrain', type: LayerType.GeoJson, terrain: {} },
     ]);
-    const infos = [...f.pickers.keys()].map(makeInfo);
+    const infos = [...f.pickers.keys()].map((id) => makeInfo(id));
     for (const info of infos) {
       f.pickers.get(String(info.layerId))!.pick.mockResolvedValue([info]);
     }
@@ -281,7 +498,7 @@ describe('LayerInfoService', () => {
     },
   );
 
-  it('clears highlights of completed results while another picker is still pending', async () => {
+  it('disposes of an unpublished result when its layer is hidden', async () => {
     const f = await setup([
       { id: 'fast' },
       { id: 'slow', type: LayerType.Wmts },
@@ -319,6 +536,8 @@ describe('LayerInfoService', () => {
     pending.resolve([first]);
     await vi.waitFor(() => expect(f.infos).toEqual([second]));
     expect(first.destroy).toHaveBeenCalledTimes(1);
+    expect(first.select).not.toHaveBeenCalled();
+    expect(second.select).toHaveBeenCalledTimes(1);
     expect(second.destroy).not.toHaveBeenCalled();
     await f.finish();
   });
@@ -339,6 +558,51 @@ describe('LayerInfoService', () => {
     expect(f.infos).toEqual([second]);
     expect(first.destroy).toHaveBeenCalledTimes(1);
   });
+
+  it.each(['hide', 'remove'] as const)(
+    'publishes translated attributes for surviving results after another layer is changed (%s)',
+    async (change) => {
+      const f = await setup([
+        { id: 'map', type: LayerType.Wmts },
+        { id: 'other' },
+      ]);
+      const pending = deferred<void>();
+      const translated: LayerInfo = {
+        ...makeInfo('map'),
+        attributes: [{ key: 'Name', value: 'Deutsch' }],
+        refreshForLanguage: vi.fn(async () => {
+          await pending.promise;
+          translated.attributes = [{ key: 'Name', value: 'Français' }];
+        }),
+      };
+      const other = makeInfo('other');
+      f.pickers.get('map')!.pick.mockResolvedValue([translated]);
+      f.pickers.get('other')!.pick.mockResolvedValue([other]);
+      f.pick();
+      await f.finish();
+
+      const publishedValues: unknown[] = [];
+      const subscription = f.service.infos$.subscribe((infos) => {
+        publishedValues.push(
+          infos.find((info) => info === translated)?.attributes[0]?.value,
+        );
+      });
+      try {
+        i18next.emit('languageChanged', 'fr');
+        if (change === 'hide') {
+          f.update('other', { isVisible: false });
+        } else {
+          f.deactivation.next(makeId('other'));
+        }
+        pending.resolve();
+        await vi.waitFor(() => expect(publishedValues.at(-1)).toBe('Français'));
+        expect(f.infos).toEqual([translated]);
+        expect(other.destroy).toHaveBeenCalledTimes(1);
+      } finally {
+        subscription.unsubscribe();
+      }
+    },
+  );
 
   it('does not resurrect removed info after a language refresh', async () => {
     const f = await setup([{ id: 'layer', type: LayerType.Wmts }]);

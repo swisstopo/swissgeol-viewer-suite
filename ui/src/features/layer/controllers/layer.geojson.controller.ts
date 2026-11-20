@@ -26,6 +26,7 @@ import {
   Cartesian3,
 } from 'cesium';
 import { DEFAULT_UPLOADED_GEOJSON_COLOR } from 'src/constants';
+import { HighlightColorMaterialProperty } from 'src/features/layer/utils/highlight-color-material-property';
 import { makeId } from 'src/models/id.model';
 import {
   GeoJsonFeatureCollection,
@@ -390,19 +391,19 @@ export class GeoJsonLayerController extends BaseLayerController<GeoJsonLayer> {
           ent.billboard.color = new ConstantProperty(color);
         }
       }
-      if (ent.polygon) {
-        const polygon = ent.polygon;
-        const base = polygon.material.getValue(now).color;
-        polygon.material = new ColorMaterialProperty(
-          Color.fromAlpha(base, opacity),
-        );
-      }
-      if (ent.polyline) {
-        const line = ent.polyline;
-        const base = line.material.getValue(now).color;
-        line.material = new ColorMaterialProperty(
-          Color.fromAlpha(base, opacity),
-        );
+      for (const geometry of [ent.polygon, ent.polyline]) {
+        if (geometry == null) {
+          continue;
+        }
+        const material = geometry.material;
+        if (material instanceof HighlightColorMaterialProperty) {
+          material.setOpacity(opacity);
+        } else {
+          const base = material.getValue(now).color;
+          geometry.material = new ColorMaterialProperty(
+            Color.fromAlpha(base, opacity),
+          );
+        }
       }
     }
   }

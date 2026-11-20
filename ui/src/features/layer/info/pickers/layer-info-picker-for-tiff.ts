@@ -5,8 +5,6 @@ import {
 import {
   Cartesian3,
   Cartographic,
-  Color,
-  ColorMaterialProperty,
   Ellipsoid,
   EllipsoidGeodesic,
   Entity,
@@ -32,7 +30,7 @@ import { TiffLayerController } from 'src/features/layer/controllers/layer-tiff.c
 import { Id } from 'src/models/id.model';
 import proj4 from 'proj4';
 
-const DEFAULT_COLOR = Color.fromBytes(120, 255, 52, Math.round(0.6 * 255));
+const TIFF_HIGHLIGHT_COLOR = OBJECT_HIGHLIGHT_COLOR.withAlpha(0.6);
 
 export class LayerInfoPickerForTiff implements LayerInfoPicker {
   private metadata!: TiffMetadata;
@@ -223,7 +221,7 @@ export class LayerInfoPickerForTiff implements LayerInfoPicker {
       position: data.coordinates,
       polygon: {
         hierarchy: new PolygonHierarchy(positions),
-        material: DEFAULT_COLOR,
+        material: TIFF_HIGHLIGHT_COLOR,
         heightReference: HeightReference.CLAMP_TO_GROUND,
         perPositionHeight: false,
       },
@@ -237,6 +235,9 @@ class LayerInfoForTiff implements LayerInfo {
   public readonly layerId: Id<TiffLayer>;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
+  public readonly match = 'direct';
+
+  private isSelected = false;
   private readonly entity: Entity;
 
   constructor(
@@ -250,7 +251,6 @@ class LayerInfoForTiff implements LayerInfo {
     this.layerId = data.layerId;
     this.title = data.title;
     this.attributes = data.attributes;
-    this.viewer.entities.add(this.entity);
   }
 
   zoomToObject(): void {
@@ -266,18 +266,26 @@ class LayerInfoForTiff implements LayerInfo {
     });
   }
 
-  activateHighlight(): void {
-    this.entity.polygon!.material = new ColorMaterialProperty(
-      OBJECT_HIGHLIGHT_COLOR,
-    );
+  select(): void {
+    if (this.isSelected || this.viewer.isDestroyed()) {
+      return;
+    }
+    this.viewer.entities.add(this.entity);
+    this.isSelected = true;
   }
 
-  deactivateHighlight(): void {
-    this.entity.polygon!.material = new ColorMaterialProperty(DEFAULT_COLOR);
+  deselect(): void {
+    if (!this.isSelected) {
+      return;
+    }
+    this.isSelected = false;
+    if (!this.viewer.isDestroyed()) {
+      this.viewer.entities.remove(this.entity);
+    }
   }
 
   destroy(): void {
-    this.viewer.entities.remove(this.entity);
+    this.deselect();
   }
 }
 

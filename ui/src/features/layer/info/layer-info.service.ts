@@ -31,6 +31,10 @@ import {
 } from 'src/features/layer/info/pickers/layer-info-picker';
 import { LayerInfoPickerForTiff } from 'src/features/layer/info/pickers/layer-info-picker-for-tiff';
 import { LayerInfo } from 'src/features/layer/info/layer-info.model';
+import {
+  getPrimaryInfo,
+  sortLayerInfos,
+} from 'src/features/layer/info/layer-info-results';
 import { LayerService as NewLayerService } from 'src/features/layer/layer.service';
 import { LayerInfoPickerForWmts } from 'src/features/layer/info/pickers/layer-info-picker-for-wmts';
 import { LayerInfoPickerForVoxels } from 'src/features/layer/info/pickers/layer-info-picker-for-voxels';
@@ -50,14 +54,19 @@ export class LayerInfoService extends BaseService {
 
   private readonly infosSubject = new BehaviorSubject<LayerInfo[]>([]);
 
-  private readonly pickers: LayerInfoPicker[] = [];
+  private readonly selectionSubject = new BehaviorSubject<LayerInfo | null>(
+    null,
+  );
+
+  private previewedInfo: LayerInfo | null = null;
+  private highlightedInfo: LayerInfo | null = null;
 
   // A fresh token on each visibility transition invalidates older requests,
   // including a hide/show cycle while a service request is still pending.
   private readonly visiblePickers = new Map<LayerInfoPicker, symbol>();
 
-  // Includes results awaiting other pickers, so their highlights are cleared
-  // immediately when their layer is hidden or removed.
+  // Includes results waiting for other pickers to finish so visibility changes
+  // can also dispose of results that have yet to reach the panel.
   private readonly ownedInfos = new Set<LayerInfo>();
 
   private pickRevision = 0;
@@ -100,6 +109,53 @@ export class LayerInfoService extends BaseService {
     return this.infosSubject.asObservable();
   }
 
+  get selection$(): Observable<LayerInfo | null> {
+    return this.selectionSubject.asObservable();
+  }
+
+  selectInfo(info: LayerInfo | null): void {
+    if (info === null || this.isAvailable(info)) {
+      this.setSelection(info);
+    }
+  }
+
+  previewInfo(info: LayerInfo): void {
+    if (this.isAvailable(info)) {
+      this.previewedInfo = info;
+      this.updateHighlight();
+    }
+  }
+
+  clearPreview(info: LayerInfo): void {
+    if (this.previewedInfo === info) {
+      this.previewedInfo = null;
+      this.updateHighlight();
+    }
+  }
+
+  private isAvailable(info: LayerInfo): boolean {
+    return this.ownedInfos.has(info) && this.infosSubject.value.includes(info);
+  }
+
+  private setSelection(info: LayerInfo | null): void {
+    if (this.selectionSubject.value !== info) {
+      this.selectionSubject.next(info);
+      this.updateHighlight();
+    }
+  }
+
+  private updateHighlight(): void {
+    const info = this.previewedInfo ?? this.selectionSubject.value;
+    if (this.highlightedInfo === info) {
+      return;
+    }
+
+    this.highlightedInfo?.deselect();
+    this.highlightedInfo = info;
+    info?.select();
+    this.viewer.scene.requestRender();
+  }
+
   private readonly handleLanguageChanged = (lang: string): void => {
     const infos = this.infosSubject.value;
     const revision = this.pickRevision;
@@ -115,17 +171,25 @@ export class LayerInfoService extends BaseService {
       return;
     }
     Promise.all(refreshes).then(() => {
-      if (revision === this.pickRevision && this.infosSubject.value === infos) {
-        this.infosSubject.next([...infos]);
+      const currentInfos = this.infosSubject.value;
+      if (
+        revision === this.pickRevision &&
+        currentInfos.some((info) => infos.includes(info))
+      ) {
+        // A layer may have disappeared during the refresh. Publish the surviving
+        // results without restoring removed ones or suppressing their translations.
+        this.infosSubject.next([...currentInfos]);
       }
     });
   };
 
   pick2d(position: Cartesian2): void {
     const cartesian = this.pickService.pick(position);
-    if (cartesian !== null) {
-      this.pick3d(position, cartesian);
+    if (cartesian === null) {
+      this.reset();
+      return;
     }
+    this.pick3d(position, cartesian);
   }
 
   pick3d(windowPosition: Cartesian2, globePosition: Cartesian3): void {
@@ -154,20 +218,34 @@ export class LayerInfoService extends BaseService {
   }
 
   private destroyInfos(infos: readonly LayerInfo[]): void {
-    for (const info of infos) {
-      if (this.ownedInfos.delete(info)) {
-        info.destroy();
-      }
+    const removedInfos = infos.filter((info) => this.ownedInfos.delete(info));
+    if (
+      this.previewedInfo !== null &&
+      removedInfos.includes(this.previewedInfo)
+    ) {
+      this.previewedInfo = null;
+    }
+    const selected = this.selectionSubject.value;
+    if (selected !== null && removedInfos.includes(selected)) {
+      this.setSelection(null);
+    }
+    this.updateHighlight();
+    for (const info of removedInfos) {
+      info.destroy();
     }
   }
 
   private removeInfosForLayer(layerId: Id<Layer>): void {
+    const wasSelected = this.selectionSubject.value?.layerId === layerId;
     this.destroyInfos(
       [...this.ownedInfos].filter((info) => info.layerId === layerId),
     );
     const infos = this.infosSubject.value;
     const remaining = infos.filter((info) => info.layerId !== layerId);
     if (remaining.length !== infos.length) {
+      if (wasSelected) {
+        this.setSelection(getPrimaryInfo(remaining));
+      }
       this.infosSubject.next(remaining);
     }
     this.viewer.scene.requestRender();
@@ -197,7 +275,6 @@ export class LayerInfoService extends BaseService {
       return;
     }
 
-    this.pickers.push(picker);
     const deactivated$ = this.layerService.layerDeactivated$.pipe(
       filter((id) => id === layerId),
       take(1),
@@ -225,11 +302,6 @@ export class LayerInfoService extends BaseService {
   };
 
   private removePicker(picker: LayerInfoPicker): void {
-    const i = this.pickers.indexOf(picker);
-    if (i < 0) {
-      return;
-    }
-    this.pickers.splice(i, 1);
     this.visiblePickers.delete(picker);
     this.removeInfosForLayer(picker.layerId);
     picker.destroy();
@@ -283,7 +355,12 @@ export class LayerInfoService extends BaseService {
     const infos = (await Promise.all(picks)).flat();
     if (revision === this.pickRevision && this.nextPick === null) {
       // Visibility changes may have already destroyed some pending results.
-      this.infosSubject.next(infos.filter((info) => this.ownedInfos.has(info)));
+      const results = sortLayerInfos(
+        infos.filter((info) => this.ownedInfos.has(info)),
+        this.layerService.activeLayerIds,
+      );
+      this.setSelection(getPrimaryInfo(results));
+      this.infosSubject.next(results);
     } else {
       this.destroyInfos(infos);
     }

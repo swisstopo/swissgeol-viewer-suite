@@ -5,6 +5,7 @@ import {
 import { LayerInfo, LayerInfoAttribute } from '../layer-info.model';
 import {
   BoundingSphere,
+  CallbackProperty,
   Cartesian3,
   Cesium3DTileFeature,
   Cesium3DTileset,
@@ -26,8 +27,8 @@ import {
 import {
   getUnitKey,
   setUnitHighlight,
-  UnitKey,
 } from 'src/features/layer/utils/tiles3d-color-style';
+import { HighlightColorMaterialProperty } from 'src/features/layer/utils/highlight-color-material-property';
 import NavToolsStore from 'src/store/navTools';
 import { TemplateResult } from 'lit';
 import {
@@ -74,73 +75,6 @@ const isVectorTileFeature = (feature: unknown): feature is VectorTileFeature =>
   feature !== null &&
   typeof (feature as VectorTileFeature & Record<string, unknown>)
     .addPrimitiveByCollection === 'function';
-
-/**
- * Several infos can hold the same feature,
- * so the original color is remembered once per feature and restored by the last one to release it.
- */
-const highlightedVectorFeatures = new WeakMap<
-  VectorTileFeature,
-  { originalColor: Color; count: number }
->();
-
-const highlightVectorFeature = (feature: VectorTileFeature): void => {
-  const entry = highlightedVectorFeatures.get(feature);
-  if (entry !== undefined) {
-    entry.count++;
-    return;
-  }
-  const originalColor = Color.clone(feature.color);
-  highlightedVectorFeatures.set(feature, { originalColor, count: 1 });
-  feature.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(originalColor.alpha);
-};
-
-const unhighlightVectorFeature = (feature: VectorTileFeature): void => {
-  const entry = highlightedVectorFeatures.get(feature);
-  if (entry === undefined) {
-    return;
-  }
-  entry.count--;
-  if (entry.count <= 0) {
-    feature.color = entry.originalColor;
-    highlightedVectorFeatures.delete(feature);
-  }
-};
-
-const sameUnit = (left: UnitKey, right: UnitKey): boolean =>
-  left.profile === right.profile && left.geolCode === right.geolCode;
-
-/**
- * Several infos can highlight the same geological unit.
- * The tileset keeps a single highlight, so it stays until the last owner releases it.
- */
-const highlightedUnits = new WeakMap<
-  Cesium3DTileset,
-  { unit: UnitKey; count: number }
->();
-
-const highlightUnit = (tileset: Cesium3DTileset, unit: UnitKey): void => {
-  const entry = highlightedUnits.get(tileset);
-  if (entry !== undefined && sameUnit(entry.unit, unit)) {
-    entry.count++;
-    return;
-  }
-  highlightedUnits.set(tileset, { unit, count: 1 });
-  setUnitHighlight(tileset, unit, OBJECT_HIGHLIGHT_COLOR.toCssHexString());
-};
-
-const unhighlightUnit = (tileset: Cesium3DTileset, unit: UnitKey): void => {
-  const entry = highlightedUnits.get(tileset);
-  if (entry === undefined || !sameUnit(entry.unit, unit)) {
-    return;
-  }
-  entry.count--;
-  if (entry.count > 0) {
-    return;
-  }
-  highlightedUnits.delete(tileset);
-  setUnitHighlight(tileset, null);
-};
 
 export abstract class LayerInfoDrillPicker<
   T extends Layer,
@@ -213,6 +147,7 @@ export abstract class LayerInfoDrillPicker<
     return [
       new LayerInfoForFeature(this.viewer, {
         feature,
+        featureLabel: findFeatureLabel((name) => feature.getProperty(name)),
         position: pick.globePosition.cartesian,
         attributes,
         layerId: this.controller.layer.id,
@@ -259,6 +194,11 @@ export abstract class LayerInfoDrillPicker<
     return [
       new LayerInfoForEntity(this.viewer, {
         entity,
+        featureLabel:
+          entity.name ||
+          findFeatureLabel((name) =>
+            entity.properties?.[name]?.getValue(JulianDate.now()),
+          ),
         attributes,
         layerId: this.layerId,
         title:
@@ -291,25 +231,49 @@ export abstract class LayerInfoDrillPicker<
   }
 }
 
+const findFeatureLabel = (
+  getValue: (name: string) => unknown,
+): string | undefined => {
+  for (const name of [
+    'name',
+    'Name',
+    'label',
+    'Label',
+    'EventLocationName',
+    'GeolCode',
+  ]) {
+    const value = getValue(name);
+    if (
+      typeof value === 'string' &&
+      value.trim() !== '' &&
+      value.trim() !== '-'
+    ) {
+      return value.trim();
+    }
+  }
+  return undefined;
+};
+
 class LayerInfoForFeature implements LayerInfo {
   public readonly layerId: Id<Layer>;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
+  public readonly featureLabel?: string;
+  public readonly match = 'scene';
 
   private readonly feature:
     Cesium3DTileFeature | VectorTileFeature | Cesium3DTileset;
   private readonly position: Cartesian3;
   private readonly tileset: Cesium3DTileset;
-  private isVectorHighlighted = false;
-  private originalColor: Color | null = null;
-  private highlightedUnit: { tileset: Cesium3DTileset; unit: UnitKey } | null =
-    null;
+  private clearHighlight: (() => void) | null = null;
 
   constructor(
     private readonly viewer: Viewer,
-    data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
+    data: Pick<
+      LayerInfo,
+      'layerId' | 'title' | 'attributes' | 'featureLabel'
+    > & {
       feature: Cesium3DTileFeature | VectorTileFeature | Cesium3DTileset;
-      layerId: Id<Layer>;
       position: Cartesian3;
     },
   ) {
@@ -323,26 +287,7 @@ class LayerInfoForFeature implements LayerInfo {
     this.layerId = data.layerId;
     this.title = data.title;
     this.attributes = data.attributes;
-
-    if (isVectorTileFeature(this.feature)) {
-      // Vector features are colored by their `Hex_color` style, so it has to be restored.
-      // All pieces of a geological unit are highlighted together, if the layer provides the unit's properties.
-      const unit = getUnitKey(this.feature.tileset, this.feature);
-      if (unit !== null) {
-        this.highlightedUnit = { tileset: this.feature.tileset, unit };
-        highlightUnit(this.feature.tileset, unit);
-      } else {
-        highlightVectorFeature(this.feature);
-        this.isVectorHighlighted = true;
-      }
-    } else if (this.feature instanceof Cesium3DTileFeature) {
-      this.originalColor = Color.clone(this.feature.color);
-      this.feature.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(
-        this.feature.color.alpha,
-      );
-    } else {
-      this.feature.customShader!.setUniform('u_isHighlighted', true);
-    }
+    this.featureLabel = data.featureLabel;
   }
 
   zoomToObject(): void {
@@ -362,36 +307,61 @@ class LayerInfoForFeature implements LayerInfo {
     });
   }
 
-  activateHighlight() {
-    // Highlights are not supported here.
-  }
-
-  deactivateHighlight() {
-    // Highlights are not supported here.
-  }
-
-  destroy() {
-    // Layer removal destroys Cesium content before publishing deactivation.
-    if (this.tileset.isDestroyed()) {
+  select(): void {
+    const { feature, tileset } = this;
+    if (this.clearHighlight !== null || tileset.isDestroyed()) {
       return;
     }
-    if (isVectorTileFeature(this.feature)) {
-      if (this.highlightedUnit !== null) {
-        unhighlightUnit(
-          this.highlightedUnit.tileset,
-          this.highlightedUnit.unit,
+    if (
+      feature instanceof Cesium3DTileFeature ||
+      isVectorTileFeature(feature)
+    ) {
+      // Cesium exposes content at runtime. Its tile may unload while the panel is open.
+      const { content } = feature as typeof feature & {
+        content?: { isDestroyed?: () => boolean };
+      };
+      if (content?.isDestroyed?.()) {
+        return;
+      }
+      const unit = isVectorTileFeature(feature)
+        ? getUnitKey(tileset, feature)
+        : null;
+      if (unit !== null) {
+        // Fragments of the picked geological unit share its highlight.
+        setUnitHighlight(
+          tileset,
+          unit,
+          OBJECT_HIGHLIGHT_COLOR.toCssHexString(),
         );
-        this.highlightedUnit = null;
+        this.clearHighlight = () => setUnitHighlight(tileset, null);
+      } else {
+        const originalColor = Color.clone(feature.color);
+        feature.color = OBJECT_HIGHLIGHT_COLOR.withAlpha(originalColor.alpha);
+        this.clearHighlight = () => {
+          if (!content?.isDestroyed?.()) {
+            feature.color = originalColor;
+          }
+        };
       }
-      if (this.isVectorHighlighted) {
-        unhighlightVectorFeature(this.feature);
-        this.isVectorHighlighted = false;
-      }
-    } else if (this.feature instanceof Cesium3DTileFeature) {
-      this.feature.color = this.originalColor!;
     } else {
-      this.feature.customShader!.setUniform('u_isHighlighted', false);
+      const { customShader } = feature;
+      customShader?.setUniform('u_isHighlighted', true);
+      this.clearHighlight = () =>
+        customShader?.setUniform('u_isHighlighted', false);
     }
+  }
+
+  deselect(): void {
+    const clear = this.clearHighlight;
+    this.clearHighlight = null;
+    // Layer removal destroys Cesium content before publishing deactivation.
+    if (clear !== null && !this.tileset.isDestroyed()) {
+      clear();
+    }
+  }
+
+  destroy(): void {
+    this.deselect();
   }
 }
 
@@ -399,35 +369,26 @@ class LayerInfoForEntity implements LayerInfo {
   public readonly layerId: Id<Layer>;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
+  public readonly featureLabel?: string;
+  public readonly match = 'scene';
 
   private readonly entity: Entity;
-  private readonly geometry: { material: ColorMaterialProperty } | null;
-
-  private readonly originalColor: Color;
+  private clearHighlight: (() => void) | null = null;
 
   constructor(
     private readonly viewer: Viewer,
-    data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
+    data: Pick<
+      LayerInfo,
+      'layerId' | 'title' | 'attributes' | 'featureLabel'
+    > & {
       entity: Entity;
-      layerId: Id<Layer>;
     },
   ) {
     this.entity = data.entity;
     this.layerId = data.layerId;
     this.title = data.title;
     this.attributes = data.attributes;
-
-    this.geometry = this.findGeometry();
-    if (this.geometry === null) {
-      this.originalColor = Color.TRANSPARENT;
-    } else {
-      this.originalColor = Color.clone(
-        this.geometry.material.getValue(JulianDate.now()).color,
-      );
-      this.geometry.material = new ColorMaterialProperty(
-        OBJECT_HIGHLIGHT_COLOR.withAlpha(this.originalColor!.alpha),
-      );
-    }
+    this.featureLabel = data.featureLabel;
   }
 
   private findGeometry(): { material: ColorMaterialProperty } | null {
@@ -449,19 +410,51 @@ class LayerInfoForEntity implements LayerInfo {
     this.viewer.zoomTo(this.entity, props?.zoomHeadingPitchRange).then();
   }
 
-  activateHighlight() {
-    // Highlights are not supported here.
-  }
-
-  deactivateHighlight() {
-    // Highlights are not supported here.
-  }
-
-  destroy() {
-    if (this.geometry === null) {
+  select(): void {
+    if (this.clearHighlight !== null) {
       return;
     }
-    this.geometry.material = new ColorMaterialProperty(this.originalColor);
+    const geometry = this.findGeometry();
+    if (geometry !== null) {
+      const highlightedMaterial = new HighlightColorMaterialProperty(
+        geometry.material,
+      );
+      geometry.material = highlightedMaterial;
+      this.clearHighlight = () => {
+        if (geometry.material === highlightedMaterial) {
+          geometry.material = highlightedMaterial.baseMaterial;
+        }
+      };
+      return;
+    }
+    const { billboard } = this.entity;
+    if (billboard !== undefined) {
+      const previousColor = billboard.color;
+      const highlightedColor = new CallbackProperty(
+        (time, result) =>
+          OBJECT_HIGHLIGHT_COLOR.withAlpha(
+            previousColor?.getValue(time)?.alpha ?? 1,
+            result,
+          ),
+        previousColor?.isConstant ?? true,
+      );
+      billboard.color = highlightedColor;
+      this.clearHighlight = () => {
+        if (billboard.color === highlightedColor) {
+          billboard.color = previousColor;
+        }
+      };
+    }
+  }
+
+  deselect(): void {
+    const clear = this.clearHighlight;
+    this.clearHighlight = null;
+    clear?.();
+  }
+
+  destroy(): void {
+    this.deselect();
   }
 }
 
