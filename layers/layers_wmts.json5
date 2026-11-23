@@ -408,6 +408,7 @@
       info_box: { source: 'api3.geo.admin.ch' },
     },
     // Geoenergy
+    // Tiefengeothermieprojekte
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-tiefengeothermie_projekte',
@@ -416,6 +417,7 @@
       geocat_id: '2df11e59-d85a-40cf-98cf-4b941577e23c',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+    // Thermalwässer
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-thermale_waesser',
@@ -424,6 +426,7 @@
       geocat_id: '04fb057a-4c46-4d6d-8a64-8003df749762',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+    // Grundwasserwärmenutzung
     {
       type: 'Wmts',
       id: 'ch.bfe.grundwasserwaermenutzungspotential',
@@ -432,6 +435,7 @@
       geocat_id: 'd64de95f-1b3d-4df3-b395-68b0404ac8ca',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+    // Geothermische Potenzialstudien Regional
     {
       type: 'Wmts',
       id: 'ch.swisstopo.geologie-geothermische_potenzialstudien_regional',
@@ -440,6 +444,47 @@
       geocat_id: '1c050393-fe3a-41b1-a31e-3173f51181d8',
       info_box: { source: 'api3.geo.admin.ch' },
     },
+    // Temperature model
+    // Data coverage
+    {
+      type: 'Wmts',
+      id: 'ch.swisstopo.geologie-geomol-temperaturmodell_eingangsdaten',
+      max_level: 18,
+      opacity: 0.7,
+      geocat_id: '1c050393-fe3a-41b1-a31e-3173f51181d8',
+      info_box: {
+        source: 'custom',
+        information: [
+          {
+            key: 'contact',
+            value: { key: 'contact_value', url: 'contact_url' },
+          },
+          {
+            key: 'download_01',
+            value: {
+              key: 'download_movz_value',
+              url: 'download_movz_url_temp_iso_60',
+            },
+          },
+          {
+            key: 'download_02',
+            value: {
+              key: 'download_gocad_value',
+              url: 'download_gocad_url_temp_iso_60',
+            },
+          },
+          {
+            key: 'download_GIS',
+            value: {
+              key: 'download_GIS_value',
+              url: 'download_gis_url_temp_iso_60',
+            },
+          },
+          { key: 'dataDate', value: '03.03.2020' },
+        ],
+      },
+    },
+
     // Mineral resources
     // Construction raw materials
     {
