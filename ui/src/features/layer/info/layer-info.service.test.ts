@@ -169,7 +169,7 @@ const setup = async (options: LayerOptions[]) => {
   service.selection$.subscribe((value) => {
     selected = value;
   });
-  await vi.waitFor(() => expect(inputAction).toHaveBeenCalled());
+  await service.initialize();
   return {
     service,
     pickPosition,
@@ -200,6 +200,14 @@ beforeEach(() => vi.clearAllMocks());
 afterEach(() => i18next.off('languageChanged'));
 
 describe('LayerInfoService', () => {
+  it('registers one click handler when initialized again', async () => {
+    const { service } = await setup([]);
+
+    await service.initialize();
+
+    expect(inputAction).toHaveBeenCalledTimes(1);
+  });
+
   it('selects a scene hit and separates the remaining direct and nearby features', async () => {
     const f = await setup([
       { id: 'geocover', type: LayerType.Wmts },

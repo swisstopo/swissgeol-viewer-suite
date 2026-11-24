@@ -43,11 +43,9 @@ const distanceToPath = (
       distanceToSegment(point, path[i - 1], path[i]),
     );
   }
-  return closed
-    ? Math.min(
-        distance,
-        distanceToSegment(point, path[path.length - 1], path[0]),
-      )
+  const last = path.at(-1);
+  return closed && last !== undefined
+    ? Math.min(distance, distanceToSegment(point, last, path[0]))
     : distance;
 };
 

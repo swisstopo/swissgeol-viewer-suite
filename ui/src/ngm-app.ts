@@ -188,6 +188,10 @@ export class NgmApp extends LitElementI18n {
 
     BaseService.initializeWith(this);
 
+    this.layerInfoService.initialize().catch((error: unknown) => {
+      console.error('Failed to initialize the object info panel.', error);
+    });
+
     i18next.on('initialized', () => {
       LexicVocabularyService.inject().then((service) =>
         service.preloadVocabularies(i18next.language),

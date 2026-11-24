@@ -112,7 +112,7 @@ export class Tiles3dLayerController extends BaseLayerController<Tiles3dLayer> {
   }
 
   override ownsSceneObject(object: Cesium3DTileset | Entity): boolean {
-    return this.tilesets.some((tileset) => tileset === object);
+    return object instanceof Cesium3DTileset && this.tilesets.includes(object);
   }
 
   get supportsSliceSelection(): boolean {

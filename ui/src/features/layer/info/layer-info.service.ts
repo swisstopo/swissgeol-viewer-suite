@@ -71,36 +71,40 @@ export class LayerInfoService extends BaseService {
 
   private pickRevision = 0;
 
+  private initialization: Promise<void> | null = null;
+
   private viewer!: Viewer;
 
   private isPicking = false;
 
   private nextPick: [Cartesian2, Cartesian3] | null = null;
 
-  constructor() {
-    super();
+  initialize(): Promise<void> {
+    return (this.initialization ??= this.initializeViewer());
+  }
 
-    PickService.inject().then((pickService) => {
-      this.pickService = pickService;
-    });
-    Promise.all([
+  private async initializeViewer(): Promise<void> {
+    const [layerService, pickService, cesiumService] = await Promise.all([
       NewLayerService.inject(),
-      CesiumService.inject().then((s) => firstValueFrom(s.viewer$)),
-    ]).then(([layerService, viewer]) => {
-      this.layerService = layerService;
-      this.viewer = viewer;
-      layerService.layerActivated$.subscribe(this.handleLayerActivated);
+      PickService.inject(),
+      CesiumService.inject(),
+    ]);
+    const viewer = await firstValueFrom(cesiumService.viewer$);
 
-      const eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas);
-      eventHandler.setInputAction(
-        (event: ScreenSpaceEventHandler.PositionedEvent) => {
-          if (!DrawStore.drawStateValue) {
-            this.pick2d(event.position);
-          }
-        },
-        ScreenSpaceEventType.LEFT_CLICK,
-      );
-    });
+    this.layerService = layerService;
+    this.pickService = pickService;
+    this.viewer = viewer;
+    layerService.layerActivated$.subscribe(this.handleLayerActivated);
+
+    const eventHandler = new ScreenSpaceEventHandler(viewer.canvas);
+    eventHandler.setInputAction(
+      (event: ScreenSpaceEventHandler.PositionedEvent) => {
+        if (!DrawStore.drawStateValue) {
+          this.pick2d(event.position);
+        }
+      },
+      ScreenSpaceEventType.LEFT_CLICK,
+    );
 
     i18next.on('languageChanged', this.handleLanguageChanged);
   }

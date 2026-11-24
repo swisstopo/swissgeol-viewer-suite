@@ -243,17 +243,16 @@ const getWmtsHits = <T extends WmtsFeature>(
     return [{ feature, geometry, distance, name, id }];
   });
 
-  return hits
-    .sort((a, b) => a.distance - b.distance)
-    .map(({ feature, geometry, distance, name, id }) => ({
-      feature,
-      geometry,
-      distance,
-      label:
-        name === undefined || (labelCounts.get(name) ?? 0) > 1
-          ? formatFeatureLabel(name, id)
-          : name,
-    }));
+  hits.sort((a, b) => a.distance - b.distance);
+  return hits.map(({ feature, geometry, distance, name, id }) => ({
+    feature,
+    geometry,
+    distance,
+    label:
+      name === undefined || (labelCounts.get(name) ?? 0) > 1
+        ? formatFeatureLabel(name, id)
+        : name,
+  }));
 };
 
 const getFeatureName = (
