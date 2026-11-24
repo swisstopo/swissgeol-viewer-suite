@@ -153,7 +153,8 @@
     "geoquat_aaretal_cs": "swissGEOQUAT3D-Profiles Aaretal",
     "j3d_faults": "swissJURA3D-MA1-Faults",
     "j3d_horizon": "swissJURA3D-MA1-Top Ifenthal-Formation",
-    "j3d_profiles": "swissJURA3D-MA1-Profiles",
+    "j3d_profiles": "swissJURA3D-MA1-Profiles (Selection)",
+    "j3d_profiles_all": "swissJURA3D-MA1-Profiles",
     "local_model_city_berne": "City of Berne",
     "sa3d_HL_faults_01": "HL - M2 All Faults",
     "sa3d_HL_horizons_crystl_basement": "HL - M2 Crystalline basement",
@@ -758,6 +759,12 @@
         "description": "The 3D geological model swissJURA3D is a three dimensional representation of the subsurface of the Swiss Jura, from northwest of the Molasse Basin to the national border. The modelling is carried out as part of the development of the National Geological Model of Switzerland (NGM). The swissJURA3D model output consists of three central components: a dense network of geological cross-sections (fence diagram), fault surfaces, and a lithostratigraphic reference horizon surface (Top Ifenthal Formation). The primary data source is the geometrically harmonised surface mapping vector data from swissGEOCOVER2D. In the subsurface, the model is based on geological cross-sections, borehole and geophysical data with varying spatial density. A consistent kinematic interpretation is therefore essential to create a geometrically and conceptually coherent 3D geological model. This download represents the first model area. Further model areas are planned to follow step by step until 2030. Additional information is documented in the associated model description.",
         "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.png",
         "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/Ma1_%C3%9Cbersichtskarte%20und%20Legende_DE_viewer.pdf"
+      },
+      "j3d_profiles_all": {
+        "title": "3D geological model of the Swiss Jura. swissJURA3D – Model area 1 St-Cergue – Le Sentier",
+        "description": "The 3D geological model swissJURA3D is a three dimensional representation of the subsurface of the Swiss Jura, from northwest of the Molasse Basin to the national border. The modelling is carried out as part of the development of the National Geological Model of Switzerland (NGM). The swissJURA3D model output consists of three central components: a dense network of geological cross-sections (fence diagram), fault surfaces, and a lithostratigraphic reference horizon surface (Top Ifenthal Formation). The primary data source is the geometrically harmonised surface mapping vector data from swissGEOCOVER2D. In the subsurface, the model is based on geological cross-sections, borehole and geophysical data with varying spatial density. A consistent kinematic interpretation is therefore essential to create a geometrically and conceptually coherent 3D geological model. This download represents the first model area. Further model areas are planned to follow step by step until 2030. Additional information is documented in the associated model description.",
+        "legend_image_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/MA1_Uebersichtskarte_und_Legende_DE_viewer-alle_Profile.png",
+        "legend_link_url": "https://download.swissgeol.ch/docu-data/Jura3D/MA1/MA1_Uebersichtskarte_und_Legende_DE_viewer-alle_Profile.pdf"
       },
       "sa3d_HL_profiles_01": {
         "title": "Helvetic3D (HL) – Milestone 2 - 3D geological model of the Swiss Alps",
