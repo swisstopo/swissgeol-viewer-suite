@@ -1,5 +1,6 @@
 import { defineConfig } from 'cypress';
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { addCucumberPreprocessorPlugin } from '@badeball/cypress-cucumber-preprocessor';
 import { default as createBundler } from '@bahmutov/cypress-esbuild-preprocessor';
 
@@ -12,7 +13,13 @@ const setupNodeEvents = async (
   config: Cypress.PluginConfigOptions,
 ): Promise<Cypress.PluginConfigOptions> => {
   const cucumberConfig = JSON.parse(
-    fs.readFileSync('.cypress-cucumber-preprocessorrc.json', 'utf-8'),
+    fs.readFileSync(
+      path.join(
+        config.projectRoot,
+        'cypress/.cypress-cucumber-preprocessorrc.json',
+      ),
+      'utf-8',
+    ),
   );
   config.env = {
     ...config.env,
