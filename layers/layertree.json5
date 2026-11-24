@@ -83,6 +83,7 @@
             'ga25_profiles_polygons',
             'geomol_cs',
             'j3d_profiles',
+            'j3d_profiles_all',
             'aar3d_aaremassive_cs',
             'geoquat_aaretal_cs',
           ],
@@ -110,7 +111,12 @@
                   children: [
                     {
                       id: 'j3d_ma_01',
-                      children: ['j3d_profiles', 'j3d_faults', 'j3d_horizon'],
+                      children: [
+                        'j3d_profiles',
+                        'j3d_profiles_all',
+                        'j3d_faults',
+                        'j3d_horizon',
+                      ],
                     },
                   ],
                 },
