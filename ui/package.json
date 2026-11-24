@@ -67,7 +67,7 @@
     "@babel/plugin-transform-class-properties": "^7.25.9",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-typescript": "^7.26.0",
-    "@badeball/cypress-cucumber-preprocessor": "^26.0.0",
+    "@badeball/cypress-cucumber-preprocessor": "^28.0.1",
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.4",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.15.0",
@@ -124,7 +124,7 @@
     "undici-types": "^7.16.0",
     "vite-bundle-analyzer": "^0.18.0",
     "vite-plugin-static-copy": "^4.1.1",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "lit": "3.2.1"
