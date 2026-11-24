@@ -1,3 +1,4 @@
+import type { Geometry, GeometryCollection } from 'geojson';
 import { LayerInfoAttribute } from 'src/features/layer/info/layer-info.model';
 import {
   getTranslationKeyForLayerAttributeName,
@@ -33,16 +34,16 @@ const WMTS_ENDPOINT_SUFFIXES = [
 
 export interface IdentifyResult {
   layerBodId: string;
-  featureId: string;
+  featureId: string | number;
+  properties?: Record<string, unknown> | null;
   geometry?: IdentifiedGeometry | null;
 }
 
-export interface IdentifiedGeometry {
-  type: string;
-  coordinates: number[] | number[][] | number[][][] | number[][][][];
-}
+// The identify and GetFeatureInfo requests both ask for LV95 coordinates.
+export type IdentifiedGeometry = Exclude<Geometry, GeometryCollection>;
 
 export interface ServiceFeatureInfoFeature {
+  id?: string | number;
   properties?: Record<string, unknown> | null;
   geometry?: IdentifiedGeometry | null;
 }

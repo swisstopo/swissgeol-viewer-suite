@@ -24,6 +24,15 @@ export class EarthquakesLayerController extends BaseLayerController<EarthquakesL
     return LayerType.Earthquakes;
   }
 
+  override ownsSceneObject(
+    object: Cesium.Cesium3DTileset | Cesium.Entity,
+  ): boolean {
+    return (
+      object instanceof Cesium.Entity &&
+      this.dataSource?.entities.contains(object)
+    );
+  }
+
   zoomIntoView(): void {
     this.viewer.flyTo(this.dataSource).then();
   }

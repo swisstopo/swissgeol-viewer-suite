@@ -11,6 +11,7 @@ import {
   VoxelCell,
 } from 'cesium';
 import { formatCartesian3AsLv95 } from 'src/projection';
+import { DRILL_PICK_LENGTH } from 'src/constants';
 import NavToolsStore from 'src/store/navTools';
 import { VoxelLayerController } from 'src/features/layer/controllers/layer-voxel.controller';
 import { Id } from 'src/models/id.model';
@@ -31,16 +32,22 @@ export class LayerInfoPickerForVoxels implements LayerInfoPicker {
   }
 
   async pick(pick: LayerPickData): Promise<LayerInfo[]> {
-    const cell = this.viewer.scene.pickVoxel(pick.windowPosition);
+    if (
+      !this.controller.layer.isVisible ||
+      this.controller.layer.opacity === 0
+    ) {
+      return [];
+    }
+    const cell = this.viewer.scene.pickVoxel(
+      pick.windowPosition,
+      DRILL_PICK_LENGTH,
+      DRILL_PICK_LENGTH,
+    );
     if (cell === undefined || cell.primitive !== this.controller.primitive) {
       return [];
     }
 
     const attributes = this.extractVoxelAttributes(cell);
-
-    const { customShader } = cell.primitive;
-    customShader.setUniform('u_selectedTile', cell.tileIndex);
-    customShader.setUniform('u_selectedSample', cell.sampleIndex);
 
     return [
       new LayerInfoForVoxels(this.viewer, {
@@ -108,6 +115,9 @@ class LayerInfoForVoxels implements LayerInfo {
   public readonly layerId: Id<VoxelLayer>;
   public readonly title: string;
   public readonly attributes: LayerInfoAttribute[];
+  public readonly match = 'scene';
+
+  private isSelected = false;
 
   private readonly cell: VoxelCell;
 
@@ -140,11 +150,24 @@ class LayerInfoForVoxels implements LayerInfo {
     });
   }
 
-  activateHighlight(): void {}
+  select(): void {
+    if (this.isSelected || this.cell.primitive.isDestroyed()) {
+      return;
+    }
+    const { customShader } = this.cell.primitive;
+    customShader.setUniform('u_selectedTile', this.cell.tileIndex);
+    customShader.setUniform('u_selectedSample', this.cell.sampleIndex);
+    this.isSelected = true;
+  }
 
-  deactivateHighlight(): void {}
-
-  destroy(): void {
+  deselect(): void {
+    if (!this.isSelected) {
+      return;
+    }
+    this.isSelected = false;
+    if (this.cell.primitive.isDestroyed()) {
+      return;
+    }
     const { customShader } = this.cell.primitive;
     if (
       customShader.uniforms['u_selectedTile'].value !== this.cell.tileIndex ||
@@ -154,5 +177,9 @@ class LayerInfoForVoxels implements LayerInfo {
     }
     customShader.setUniform('u_selectedTile', -1);
     customShader.setUniform('u_selectedSample', -1);
+  }
+
+  destroy(): void {
+    this.deselect();
   }
 }

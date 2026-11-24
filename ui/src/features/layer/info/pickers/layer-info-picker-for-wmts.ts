@@ -5,20 +5,15 @@ import {
 import { lv95ToDegrees, radiansToLv95 } from 'src/projection';
 import i18next from 'i18next';
 import {
-  CallbackProperty,
   Cartesian3,
   Color,
-  ColorMaterialProperty,
-  ConstantProperty,
   CustomDataSource,
   Entity,
   HeightReference,
+  PolygonHierarchy,
   Viewer,
 } from 'cesium';
-import {
-  OBJECT_HIGHLIGHT_COLOR,
-  SWISSTOPO_IT_HIGHLIGHT_COLOR,
-} from 'src/constants';
+import { SWISSTOPO_IT_HIGHLIGHT_COLOR } from 'src/constants';
 import {
   LayerInfo,
   LayerInfoAttribute,
@@ -26,11 +21,18 @@ import {
 import { WmtsLayerController } from 'src/features/layer/controllers/layer-wmts.controller';
 import { WmtsLayer } from 'src/features/layer';
 import { Id } from 'src/models/id.model';
+import type { Position } from 'geojson';
 import {
   IdentifiedGeometry,
   IdentifyResult,
   LayerInfoPickerForWmtsService,
+  ServiceFeatureInfoFeature,
 } from 'src/features/layer/info/pickers/layer-info-picker-for-wmts.service';
+
+import {
+  distanceToWmtsGeometry,
+  isDirectWmtsMatch,
+} from './layer-info-wmts-geometry';
 
 export class LayerInfoPickerForWmts implements LayerInfoPicker {
   private readonly highlights: CustomDataSource;
@@ -80,15 +82,9 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
       ? await this.service.fetchIdentifyResults(geom2056, tolerance, lang)
       : null;
     if (results != null && results.length > 0) {
-      const entities: Array<Promise<LayerInfo>> = [];
-      for (const result of results) {
-        if (result.geometry == null) {
-          continue;
-        }
-        const entity = this.createEntityForGeometry(result.geometry);
-        entities.push(this.getInfoForResult(result, entity));
-      }
-      return Promise.all(entities);
+      return Promise.all(
+        getWmtsHits(results, geom2056).map((hit) => this.getInfoForResult(hit)),
+      );
     }
 
     // For external (non-geo.admin) layers, or when identify returns no results,
@@ -101,131 +97,200 @@ export class LayerInfoPickerForWmts implements LayerInfoPicker {
       return [];
     }
 
-    return serviceFeatures.map((feature) => {
-      const entity =
-        feature.geometry == null
-          ? this.createPointEntity(geom2056)
-          : this.createEntityForGeometry(feature.geometry);
-      return new LayerInfoForWmts(this.viewer, this.highlights, {
-        entity,
-        title: `layers:layers.${this.controller.layer.id}`,
-        layerId: this.controller.layer.id,
-        attributes: this.service.mapFeaturePropertiesToAttributes(
-          feature.properties,
-        ),
-      });
-    });
+    // A geometry-less GetFeatureInfo response refers to the requested pixel.
+    return getWmtsHits(serviceFeatures, geom2056, {
+      type: 'Point',
+      coordinates: geom2056,
+    }).map(
+      ({ feature, geometry, distance, label }) =>
+        new LayerInfoForWmts(this.viewer, this.highlights, {
+          createHighlight: () => this.createEntitiesForGeometry(geometry),
+          title: `layers:layers.${this.controller.layer.id}`,
+          layerId: this.controller.layer.id,
+          featureLabel: label,
+          distance,
+          match: isDirectWmtsMatch(distance) ? 'direct' : 'nearby',
+          attributes: this.service.mapFeaturePropertiesToAttributes(
+            feature.properties,
+          ),
+        }),
+    );
   }
 
   destroy(): void {
     this.viewer.dataSources.remove(this.highlights, true);
   }
 
-  private async getInfoForResult(
-    result: IdentifyResult,
-    entity: Entity,
-  ): Promise<LayerInfoForWmts> {
+  private async getInfoForResult({
+    feature: result,
+    geometry,
+    distance,
+    label,
+  }: WmtsHit<IdentifyResult>): Promise<LayerInfoForWmts> {
     const lang = i18next.language;
     const html = await this.service.fetchHtmlPopup(result, lang);
     const attributes = this.service.extractPopupAttributes(html);
     return new LayerInfoForWmts(this.viewer, this.highlights, {
-      entity,
+      createHighlight: () => this.createEntitiesForGeometry(geometry),
       title: `layers:layers.${this.controller.layer.id}`,
       layerId: this.controller.layer.id,
+      featureLabel: label,
+      distance,
+      match: isDirectWmtsMatch(distance) ? 'direct' : 'nearby',
       attributes,
       identifyResult: result,
       service: this.service,
     });
   }
 
-  private createEntityForGeometry(geometry: IdentifiedGeometry): Entity {
+  private createEntitiesForGeometry(geometry: IdentifiedGeometry): Entity[] {
     switch (geometry.type) {
       case 'Polygon':
-        return this.createPolygonEntity(
-          (geometry.coordinates as number[][][])[0],
-        );
+        return [this.createPolygonEntity(geometry.coordinates)];
       case 'MultiPolygon':
-        return this.createMultiPolygonEntity(
-          geometry.coordinates as number[][][][],
+        return geometry.coordinates.map((polygon) =>
+          this.createPolygonEntity(polygon),
         );
       case 'LineString':
-        return this.createLineEntity(geometry.coordinates as number[][]);
+        return [this.createLineEntity(geometry.coordinates)];
       case 'MultiLineString':
-        return this.createLineEntity((geometry.coordinates as number[][][])[0]);
+        return geometry.coordinates.map((line) => this.createLineEntity(line));
       case 'Point':
-        return this.createPointEntity(geometry.coordinates as number[]);
+        return [this.createPointEntity(geometry.coordinates)];
       case 'MultiPoint':
-        return this.createPointEntity((geometry.coordinates as number[][])[0]);
+        return geometry.coordinates.map((point) =>
+          this.createPointEntity(point),
+        );
       default:
-        throw new Error(`Unsupported geometry type '${geometry.type}'`);
+        return [];
     }
   }
 
-  private createPolygonEntity(nestedCoordinates: number[][]) {
-    const coordinates = nestedCoordinates.map((coords) => {
-      const degrees = lv95ToDegrees(coords);
-      return Cartesian3.fromDegrees(degrees[0], degrees[1]);
-    });
+  private createPolygonEntity([outer, ...holes]: Position[][]): Entity {
     return new Entity({
       polygon: {
-        hierarchy: coordinates,
-        material: OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7),
+        hierarchy: new PolygonHierarchy(
+          outer.map(toCartesian),
+          holes.map((hole) => new PolygonHierarchy(hole.map(toCartesian))),
+        ),
+        material: SWISSTOPO_IT_HIGHLIGHT_COLOR.withAlpha(0.7),
       },
     });
   }
 
-  private createMultiPolygonEntity(nestedCoordinates: number[][][][]) {
-    const entity = new Entity();
-    for (const coordinates of nestedCoordinates) {
-      entity.merge(this.createPolygonEntity(coordinates[0]));
-    }
-    return entity;
-  }
-
-  private createLineEntity(nestedCoordinates: number[][]) {
-    const coordinates = nestedCoordinates.map((coords) => {
-      const degrees = lv95ToDegrees(coords);
-      return Cartesian3.fromDegrees(degrees[0], degrees[1]);
-    });
+  private createLineEntity(line: Position[]): Entity {
     return new Entity({
       polyline: {
-        positions: coordinates,
-        material: OBJECT_HIGHLIGHT_COLOR,
+        positions: line.map(toCartesian),
+        material: SWISSTOPO_IT_HIGHLIGHT_COLOR,
         clampToGround: true,
         width: 4,
       },
     });
   }
 
-  private createPointEntity(coords: number[]) {
-    const degrees = lv95ToDegrees(coords);
-    const coordinates = Cartesian3.fromDegrees(degrees[0], degrees[1]);
-    const entity = new Entity({
-      position: coordinates,
+  private createPointEntity(point: Position): Entity {
+    return new Entity({
+      position: toCartesian(point),
       point: {
-        color: new CallbackProperty(
-          (t) =>
-            entity.point?.outlineWidth?.getValue(t) === 1
-              ? SWISSTOPO_IT_HIGHLIGHT_COLOR
-              : Color.TRANSPARENT,
-          false,
-        ),
+        color: SWISSTOPO_IT_HIGHLIGHT_COLOR,
         pixelSize: 10,
         heightReference: HeightReference.RELATIVE_TO_GROUND,
         outlineColor: Color.BLACK,
+        outlineWidth: 1,
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
     });
-    return entity;
   }
 }
+
+const toCartesian = (position: Position): Cartesian3 => {
+  const [longitude, latitude] = lv95ToDegrees(position);
+  return Cartesian3.fromDegrees(longitude, latitude);
+};
+
+type WmtsFeature = IdentifyResult | ServiceFeatureInfoFeature;
+
+interface WmtsHit<T> {
+  feature: T;
+  geometry: IdentifiedGeometry;
+  distance: number;
+  label?: string;
+}
+
+const getWmtsHits = <T extends WmtsFeature>(
+  features: T[],
+  clickedPosition: Position,
+  fallbackGeometry?: IdentifiedGeometry,
+): WmtsHit<T>[] => {
+  const labelCounts = new Map<string, number>();
+  const hits = features.flatMap((feature) => {
+    const geometry = feature.geometry ?? fallbackGeometry;
+    if (geometry == null) {
+      return [];
+    }
+
+    const distance = distanceToWmtsGeometry(clickedPosition, geometry);
+    if (!Number.isFinite(distance)) {
+      return [];
+    }
+
+    const id = 'featureId' in feature ? feature.featureId : feature.id;
+    const name = getFeatureName(feature.properties);
+    if (name !== undefined) {
+      labelCounts.set(name, (labelCounts.get(name) ?? 0) + 1);
+    }
+    return [{ feature, geometry, distance, name, id }];
+  });
+
+  hits.sort((a, b) => a.distance - b.distance);
+  return hits.map(({ feature, geometry, distance, name, id }) => ({
+    feature,
+    geometry,
+    distance,
+    label:
+      name === undefined || (labelCounts.get(name) ?? 0) > 1
+        ? formatFeatureLabel(name, id)
+        : name,
+  }));
+};
+
+const getFeatureName = (
+  properties: Record<string, unknown> | null | undefined,
+): string | undefined => {
+  for (const key of ['label', 'name', 'title', 'bezeichnung']) {
+    const value = properties?.[key];
+    if (typeof value === 'string') {
+      const label = value.trim();
+      if (label && label !== '-') {
+        return label;
+      }
+    }
+  }
+  return undefined;
+};
+
+const formatFeatureLabel = (
+  name: string | undefined,
+  id: string | number | undefined,
+): string | undefined => {
+  if (id == null) {
+    return name;
+  }
+  return name === undefined ? '#' + id : name + ' (#' + id + ')';
+};
 
 class LayerInfoForWmts implements LayerInfo {
   public readonly title: string;
   public readonly layerId: Id<WmtsLayer>;
+  public readonly featureLabel?: string;
+  public readonly distance: number;
+  public readonly match: 'direct' | 'nearby';
   public attributes: LayerInfoAttribute[];
 
-  private readonly entity: Entity;
+  private readonly createHighlight: () => Entity[];
+  private entities?: Entity[];
+  private isSelected = false;
   private readonly identifyResult: IdentifyResult | null;
   private readonly service: LayerInfoPickerForWmtsService | null;
 
@@ -233,19 +298,24 @@ class LayerInfoForWmts implements LayerInfo {
     private readonly viewer: Viewer,
     private readonly dataSource: CustomDataSource,
     data: Pick<LayerInfo, 'layerId' | 'title' | 'attributes'> & {
-      entity: Entity;
+      createHighlight: () => Entity[];
       layerId: Id<WmtsLayer>;
+      featureLabel?: string;
+      distance: number;
+      match: 'direct' | 'nearby';
       identifyResult?: IdentifyResult;
       service?: LayerInfoPickerForWmtsService;
     },
   ) {
-    this.entity = data.entity;
+    this.createHighlight = data.createHighlight;
+    this.featureLabel = data.featureLabel;
+    this.distance = data.distance;
+    this.match = data.match;
     this.title = data.title;
     this.layerId = data.layerId;
     this.attributes = data.attributes;
     this.identifyResult = data.identifyResult ?? null;
     this.service = data.service ?? null;
-    this.dataSource.entities.add(this.entity);
   }
 
   async refreshForLanguage(lang: string): Promise<void> {
@@ -264,53 +334,37 @@ class LayerInfoForWmts implements LayerInfo {
   }
 
   zoomToObject(): void {
-    this.viewer.zoomTo(this.entity).then();
-  }
-
-  activateHighlight(): void {
-    this.viewer.scene.requestRender();
-
-    const { entity } = this;
-    if (entity.polygon !== undefined) {
-      entity.polygon.material = new ColorMaterialProperty(
-        SWISSTOPO_IT_HIGHLIGHT_COLOR,
-      );
-      return;
-    }
-    if (entity.polyline !== undefined) {
-      entity.polyline.material = new ColorMaterialProperty(
-        SWISSTOPO_IT_HIGHLIGHT_COLOR,
-      );
-      return;
-    }
-    if (entity.point !== undefined) {
-      entity.point.outlineWidth = new ConstantProperty(1);
+    const entities = (this.entities ??= this.createHighlight());
+    if (entities.length > 0) {
+      this.viewer.zoomTo(entities).then();
     }
   }
 
-  deactivateHighlight(): void {
+  select(): void {
+    if (this.isSelected) {
+      return;
+    }
+    const entities = (this.entities ??= this.createHighlight());
+    for (const entity of entities) {
+      this.dataSource.entities.add(entity);
+    }
+    this.isSelected = true;
     this.viewer.scene.requestRender();
+  }
 
-    const { entity } = this;
-    if (entity.polygon !== undefined) {
-      entity.polygon.material = new ColorMaterialProperty(
-        OBJECT_HIGHLIGHT_COLOR.withAlpha(0.7),
-      );
+  deselect(): void {
+    if (!this.isSelected) {
       return;
     }
-    if (entity.polyline !== undefined) {
-      entity.polyline.material = new ColorMaterialProperty(
-        OBJECT_HIGHLIGHT_COLOR,
-      );
-      return;
+    for (const entity of this.entities ?? []) {
+      this.dataSource.entities.remove(entity);
     }
-    if (entity.point !== undefined) {
-      entity.point.outlineWidth = new ConstantProperty(0);
-    }
+    this.isSelected = false;
+    this.viewer.scene.requestRender();
   }
 
   destroy(): void {
-    this.dataSource.entities.remove(this.entity);
+    this.deselect();
   }
 }
 

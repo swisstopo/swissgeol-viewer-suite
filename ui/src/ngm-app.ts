@@ -188,6 +188,10 @@ export class NgmApp extends LitElementI18n {
 
     BaseService.initializeWith(this);
 
+    this.layerInfoService.initialize().catch((error: unknown) => {
+      console.error('Failed to initialize the object info panel.', error);
+    });
+
     i18next.on('initialized', () => {
       LexicVocabularyService.inject().then((service) =>
         service.preloadVocabularies(i18next.language),
@@ -197,8 +201,9 @@ export class NgmApp extends LitElementI18n {
     let infoWindow: CoreWindow | null = null;
     this.layerInfoService.infos$.subscribe((layers) => {
       if (layers.length === 0) {
-        infoWindow?.close();
+        const closedWindow = infoWindow;
         infoWindow = null;
+        closedWindow?.close();
         return;
       } else if (infoWindow !== null) {
         return;
@@ -208,6 +213,9 @@ export class NgmApp extends LitElementI18n {
         title: () => i18next.t('layers:info_window.title'),
         body: () => html`<ngm-layer-info-list></ngm-layer-info-list>`,
         onClose: () => {
+          if (infoWindow === null) {
+            return;
+          }
           infoWindow = null;
           this.layerInfoService.reset();
         },

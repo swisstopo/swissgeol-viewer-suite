@@ -3,6 +3,7 @@ import {
   AnyLayer,
   isBasemapLockedLayer,
   is3dLayer,
+  isLayerEffectivelyVisible,
   LayerType,
   needsBasemapSuppression,
 } from 'src/features/layer/models/layer.model';
@@ -152,6 +153,49 @@ describe('needsBasemapSuppression', () => {
     );
     expect(
       needsBasemapSuppression(makeLayer({ type: LayerType.Earthquakes })),
+    ).toBe(false);
+  });
+});
+
+describe('isLayerEffectivelyVisible', () => {
+  it.each([
+    { type: LayerType.Wmts },
+    { type: LayerType.Tiff, terrain: null },
+    { type: LayerType.GeoJson, terrain: null },
+    { type: LayerType.Kml, shouldClampToGround: true },
+  ])('suppresses draped $type layers with the basemap off', (properties) => {
+    const layer = makeLayer({ isVisible: true, opacity: 1, ...properties });
+    expect(isLayerEffectivelyVisible(layer, false)).toBe(false);
+    expect(isLayerEffectivelyVisible(layer, true)).toBe(true);
+  });
+
+  it.each([
+    { type: LayerType.Tiles3d },
+    { type: LayerType.Voxel },
+    { type: LayerType.Earthquakes },
+    { type: LayerType.Tiff, terrain: {} },
+    { type: LayerType.GeoJson, terrain: {} },
+    { type: LayerType.Kml, shouldClampToGround: false },
+  ])(
+    'keeps independent $type layers visible with the basemap off',
+    (properties) => {
+      const layer = makeLayer({ isVisible: true, opacity: 1, ...properties });
+      expect(isLayerEffectivelyVisible(layer, false)).toBe(true);
+    },
+  );
+
+  it('rejects manually hidden and fully transparent layers', () => {
+    expect(
+      isLayerEffectivelyVisible(
+        makeLayer({ type: LayerType.Tiles3d, isVisible: false, opacity: 1 }),
+        true,
+      ),
+    ).toBe(false);
+    expect(
+      isLayerEffectivelyVisible(
+        makeLayer({ type: LayerType.Wmts, isVisible: true, opacity: 0 }),
+        true,
+      ),
     ).toBe(false);
   });
 });

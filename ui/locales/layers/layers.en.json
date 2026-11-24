@@ -609,7 +609,14 @@
   "geocat_url": "https://www.geocat.ch/geonetwork/srv/eng/catalog.search#/metadata/{{id}}",
   "info_window": {
     "title": "Info",
-    "zoom_to_object": "Zoom to object"
+    "zoom_to_object": "Zoom to object",
+    "result_tabs": "Result types",
+    "exact_tab": "Exact match",
+    "same_position_tab": "Same position",
+    "nearby_tab": "Nearby",
+    "feature": "Feature {{index}}",
+    "feature_numbered": "{{label}} ({{index}})",
+    "distance": "{{distance}} m"
   },
   "info_box": {
     "labels": {

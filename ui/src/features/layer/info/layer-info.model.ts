@@ -14,9 +14,21 @@ export interface LayerInfo {
   layerId: Id<Layer>;
 
   /**
-   * The (translated) name of the picked object.
+   * The layer label or its translation key.
    */
   title: string;
+
+  /** A name or identifier that distinguishes this feature within its layer. */
+  readonly featureLabel?: string;
+
+  /**
+   * A scene pick, a match at the geographic click location, or a match within
+   * the surrounding search area. Unspecified matches are treated as direct.
+   */
+  readonly match?: 'scene' | 'direct' | 'nearby';
+
+  /** Horizontal distance in metres from the picked location to a nearby feature. */
+  readonly distance?: number;
 
   /**
    * The picked object's attributes.
@@ -35,14 +47,14 @@ export interface LayerInfo {
   zoomToObject(): void;
 
   /**
-   * Highlights the picked object.
+   * Highlights the picked object while this result is selected.
    */
-  activateHighlight(): void;
+  select(): void;
 
   /**
    * Disables the highlight on the picked object.
    */
-  deactivateHighlight(): void;
+  deselect(): void;
 
   /**
    * Destroys any highlights and other helper entities, effectively removing it from the viewer.
